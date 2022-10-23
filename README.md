@@ -19,11 +19,6 @@ $title = new \Imdb\Title(335266);
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
 
-# Find out about the director
-$person = new \Imdb\Person($title->director()[0]['imdb']);
-$name = $person->name();
-$photo = $person->photo();
-```
 
 Installation
 ============
@@ -36,14 +31,14 @@ Get the files with one of:
 * [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
 
 ### Requirements
-* PHP >= 5.6
+* PHP >= 7.4
 * PHP cURL extension
 
 
 Configuration
 =============
 
-imdbphp needs no configuration by default but can cache imdb lookups, store images and change languages if configured.
+imdbphp needs no configuration by default but can store images and change languages if configured.
 
 Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
@@ -54,39 +49,6 @@ $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
 $imdb->orig_title(); // Lost in Translation
 ```
-
-If you're using a git clone you might prefer to configure IMDbPHP by putting an ini file in the `conf` folder. `900_localconf.sample` has some sample settings.
-
-The cache folder is `./cache` by default. Requests from imdb will be cached there for a week (by default) to speed up future requests.
-
-Advanced Configuration
-======================
-Replacing the default cache (disk cache)
-------------------------
-You can replace the caching mechanism that ImdbPHP uses to any [PSR-16 (simple cache)](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-16-simple-cache.md) cache
-by passing one into the constructor of any ImdbPHP class.
-
-The only piece of imdbphp config that will be used with your cache is the TTL which is set by `\Imdb\Config::$cache_expire` and defaults to 1 week.
-```php
-$cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
-// Search results will be cached
-$search = new \Imdb\TitleSearch(null /* config */, null /* logger */, $cache);
-$firstResultTitle = $search->search('The Matrix')[0];
-// $firstResultTitle, an \Imdb\Title will also be using $cache for caching any page requests it does
-```
-
-```php
-$cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
-$title = new \Imdb\Title(335266, null /* config */, null /* logger */, $cache);
-```
-
-Replacing the default logger (which echos coloured html, and is disabled by default)
-------------------------------------------------------------------------------------
-The logger will mostly tell you about http requests that failed at error level, each http request at info and some stuff like cache hits at debug.
-
-```php
-$logger = new \Monolog\Logger('name');
-$title = new \Imdb\Title(335266, null /* config */, $logger);
 ```
 
 Searching for a film
@@ -104,28 +66,6 @@ foreach ($results as $result) { /* @var $result \Imdb\Title */
     echo $result->title() . ' ( ' . $result->year() . ')';
 }
 ```
-
-Searching for a person
-======================
-```php
-// include "bootstrap.php"; // Load the class in if you're not using an autoloader
-$search = new \Imdb\PersonSearch(); // Optional $config parameter
-$results = $search->search('Forest Whitaker');
-
-// $results is an array of Person objects
-// The objects will have name and imdbid available, everything else must be fetched from IMDb
-foreach ($results as $result) { /* @var $result \Imdb\Person */
-    echo $result->name();
-}
-```
-
-Demo site
-=========
-The demo site gives you a quick way to make sure everything's working, some sample code and lets you easily see some of the available data.
-
-From the demo folder in the root of this repository start up php's inbuilt webserver and browse to [http://localhost:8000]()
-
-`php -S localhost:8000`
 
 
 Gotchas / Help

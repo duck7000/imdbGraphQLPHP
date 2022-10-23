@@ -11,9 +11,6 @@
 
 namespace Imdb;
 
-use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
-
 /**
  * A title on IMDb
  * @author Georgos Giagas
@@ -147,8 +144,6 @@ class Title extends MdbBase
      * @param int $year
      * @param string $type
      * @param Config $config
-     * @param LoggerInterface $logger OPTIONAL override default logger
-     * @param CacheInterface $cache OPTIONAL override default cache
      * @return Title
      */
     public static function fromSearchResult(
@@ -156,11 +151,9 @@ class Title extends MdbBase
         $title,
         $year,
         $type,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
+        Config $config = null
     ) {
-        $imdb = new Title($id, $config, $logger, $cache);
+        $imdb = new Title($id, $config);
         $imdb->main_title = $title;
         $imdb->main_year = (int)$year;
         $imdb->main_movietype = $type;
@@ -170,16 +163,12 @@ class Title extends MdbBase
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
      * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache. None of the caching config in `\Imdb\Config` have any effect except cache_expire
      */
     public function __construct(
         $id,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
+        Config $config = null
     ) {
-        parent::__construct($config, $logger, $cache);
+        parent::__construct($config);
         $this->setid($id);
     }
 
@@ -1090,7 +1079,6 @@ class Title extends MdbBase
 
         $fp2 = fopen($path, "w");
         if (!$fp2) {
-            $this->logger->warning("Failed to open [$path] for writing  at " . __FILE__ . " line " . __LINE__ . "...<BR>");
             return false;
         }
         fputs($fp2, $image);
@@ -1946,7 +1934,7 @@ class Title extends MdbBase
             if ($this->isEpisode()) {
                 $ser = $this->get_episode_details();
                 if (isset($ser['imdbid'])) {
-                    $show = new Title($ser['imdbid'], $this->config, $this->logger, $this->cache);
+                    $show = new Title($ser['imdbid'], $this->config);
                     return $this->season_episodes = $show->episodes();
                 } else {
                     return array();

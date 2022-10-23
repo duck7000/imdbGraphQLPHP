@@ -49,9 +49,7 @@ class TitleSearch extends MdbBase
                     $match['title'],
                     $match['year'],
                     $type,
-                    $this->config,
-                    $this->logger,
-                    $this->cache
+                    $this->config
                 );
 
                 if (++$resultsCounter === $maxResults) {
@@ -93,9 +91,7 @@ class TitleSearch extends MdbBase
                     trim($linkAndTitle->item(0)->nodeValue),
                     $year,
                     $type,
-                    $this->config,
-                    $this->logger,
-                    $this->cache
+                    $this->config
                 );
 
                 if (++$resultsCounter === $maxResults) {

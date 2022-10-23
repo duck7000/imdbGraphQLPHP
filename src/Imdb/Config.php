@@ -37,47 +37,6 @@ class Config
     public $imdbsite = "www.imdb.com";
 
     /**
-     * Directory to store cached pages. This must be writable by the web
-     * server. It doesn't need to be under documentroot.
-     * @var string
-     */
-    public $cachedir = './cache/';
-
-    /**
-     * Use cached pages if available?
-     * @var boolean
-     */
-    public $usecache = true;
-
-    /**
-     * Store the pages retrieved for later use?
-     * @var boolean
-     */
-    public $storecache = true;
-
-    /**
-     * Use zip compression for caching the retrieved html-files?
-     * @see $converttozip if you're changing from false to true
-     * @var boolean
-     */
-    public $usezip = true;
-
-    /**
-     * Convert non-zip cache-files to zip
-     * You might want to use this if you weren't gzipping your cache files, but now are. They will be rewritten when they're used
-     * @var boolean
-     */
-    public $converttozip = false;
-
-    /**
-     * Cache expiration time - cached pages older than this value (in seconds) will
-     * be automatically deleted.
-     * If 0 cached pages will never expire
-     * @var integer
-     */
-    public $cache_expire = 604800;
-
-    /**
      * Where to store images retrieved from the IMDB site by the method photo_localurl().
      * This needs to be under documentroot to be able to display them on your pages.
      * @var string
@@ -172,11 +131,6 @@ class Config
      */
     public function __construct($iniFile = null)
     {
-        // A little hack to maintain the old default behaviour of making sure the cache folder is
-        // within the imdbphp folder by default ('.' is the directory of the first php file loaded)
-        if ($this->cachedir == './cache/') {
-            $this->cachedir = dirname(__FILE__) . '/../../cache/';
-        }
 
         if ($iniFile) {
             $ini_files = array($iniFile);

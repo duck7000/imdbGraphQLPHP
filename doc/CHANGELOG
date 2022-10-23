@@ -2,6 +2,15 @@
 History for IMDBPHP
 ====================
 
+v7.3.2 (23.10.2022)
+-------------------
+* Remove Person search
+* Remove Logger
+* Remove Cache
+* Remove Calendar
+* Remove Charts
+* Remove Advanced title search
+
 v7.3.1 (08.10.2022)
 -------------------
 * Remove PHP 7.3 from tests
