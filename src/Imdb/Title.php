@@ -1675,40 +1675,4 @@ class Title extends MdbBase
         $this->jsonLD = json_decode($matches[1]);
         return $this->jsonLD;
     }
-
-    /**
-     * @param array $array
-     * @param \SimpleXMLElement $xml
-     */
-    protected function arrayToXml($array, &$xml)
-    {
-        foreach ($array as $key => $value) {
-            if (is_int($key)) {
-                $key = "e";
-            }
-            if (is_array($value)) {
-                $label = $xml->addChild($key);
-                $this->arrayToXml($value, $label);
-            } else {
-                $xml->addChild($key, $value);
-            }
-        }
-    }
-
-    /**
-     * @return \SimpleXMLElement
-     */
-    protected function XmlNextJson()
-    {
-        if ($this->XmlNextJson) {
-            return $this->XmlNextJson;
-        }
-        $xpath = $this->getXpathPage("Title");
-        $script = $xpath->query("//script[@id='__NEXT_DATA__']")->item(0)->nodeValue;
-        $decode = json_decode($script, true);
-        $xml = new \SimpleXMLElement('<root/>');
-        $this->arrayToXml($decode, $xml);
-        $this->XmlNextJson = $xml;
-        return $this->XmlNextJson;
-    }
 }
