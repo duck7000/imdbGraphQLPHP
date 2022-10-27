@@ -746,22 +746,28 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------[ Country of Production ]---
-
-    /** Get country of production
+    /**
+     * Get country of production
      * @return array country (array[0..n] of string)
      * @see IMDB page / (TitlePage)
      */
     public function country()
     {
         if (empty($this->countries)) {
-            if (preg_match_all('!/search/title\/?\?country_of_origin=[^>]+?>(.*?)<!m', $this->getPage("Title"),
-                $matches)) {
-                $this->countries = $matches[1];
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return array();
+            }
+            if ($countrys = $xpath->query("//li[@data-testid=\"title-details-origin\"]//a")) {
+                foreach ($countrys as $country) {
+                    if ($country->nodeValue != "") {
+                        $this->countries[] = trim($country->nodeValue);
+                    }
+                }
             }
         }
         return $this->countries;
     }
-
 
     #------------------------------------------------------------[ Movie AKAs ]---
 
