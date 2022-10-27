@@ -316,7 +316,6 @@ class Title extends MdbBase
     }
 
     #----------------------------------------------------------[ Movie Rating ]---
-
     /**
      * Get movie rating
      * @return float|string rating current rating as given by IMDB site
@@ -342,7 +341,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------[ Recommendations ]---
-
     /**
      * Get recommended movies (People who liked this...also liked)
      * @return array recommendations (array[title,imdbid,rating,img])
@@ -381,7 +379,6 @@ class Title extends MdbBase
     }
 
     #--------------------------------------------------------[ Language Stuff ]---
-
     /** Get all languages this movie is available in
      * @return array languages (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
@@ -405,9 +402,7 @@ class Title extends MdbBase
         return $this->langs;
     }
 
-
-    #--------------------------------------------------------------[ Genre(s) ]---
-
+    #--------------------------------------------------------------[ Genres ]---
     /** Get all genres the movie is registered for
      * @return array genres (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
@@ -445,7 +440,6 @@ class Title extends MdbBase
     }
 
     #---------------------------------------------------------------[ Creator ]---
-
     /**
      * Get the creator(s) of a TV Show
      * @return array creator (array[0..n] of array[name,imdb])
@@ -468,7 +462,6 @@ class Title extends MdbBase
     }
 
     #---------------------------------------------------------------[ Seasons ]---
-
     /** Get the number of seasons or 0 if not a series (Test if something is a series first with Title::is_serial())
      * @return int seasons number of seasons
      * @see IMDB page / (TitlePage)
@@ -634,7 +627,6 @@ class Title extends MdbBase
     }
 
     #--------------------------------------------------------[ Plot (Outline) ]---
-
     /** Get the main Plot outline for the movie
      * @param boolean $fallback Fallback to storyline if we could not catch plotoutline
      * @return string plotoutline
@@ -661,7 +653,6 @@ class Title extends MdbBase
     }
 
     #--------------------------------------------------------[ Photo specific ]---
-
     /**
      * Setup cover photo (thumbnail and big variant)
      * @see IMDB page / (TitlePage)
@@ -770,7 +761,6 @@ class Title extends MdbBase
     }
 
     #------------------------------------------------------------[ Movie AKAs ]---
-
     /**
      * Get movie's alternative names
      * Note: This may return an empty country or comments. The original title will have a country of '' and a comment of 'original title'
@@ -820,7 +810,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------[ MPAA / PG / FSK ]---
-
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
      * @param bool $ratings On false it will return the last rating for each country,
@@ -878,7 +867,6 @@ class Title extends MdbBase
         return $this->main_top250;
     }
 
-
     #=====================================================[ /plotsummary page ]===
     #--------------------------------------------------[ Full Plot (combined) ]---
     /** Get the movies plot(s)
@@ -913,7 +901,6 @@ class Title extends MdbBase
     }
 
     #-----------------------------------------------------[ Full Plot (split) ]---
-
     /** Get the movie plot(s) - split-up variant
      * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
      * @see IMDB page /plotsummary
@@ -940,7 +927,6 @@ class Title extends MdbBase
     }
 
     #========================================================[ /taglines page ]===
-    #--------------------------------------------------------[ Taglines Array ]---
     /**
      * Get all available taglines for the movie
      * @return array taglines (array[0..n] of strings)
@@ -995,7 +981,6 @@ class Title extends MdbBase
     }
 
     #------------------------------------------------[ Helper: Cast TableRows ]---
-
     /** Get rows for the cast table on the page
      * @param string html
      * @param string table_start
@@ -1017,7 +1002,6 @@ class Title extends MdbBase
     }
 
     #------------------------------------------------------[ Helper: RowCells ]---
-
     /** Get content of table row cells
      * @param string row (as returned by imdb::get_table_rows)
      * @return array cells (array[0..n] of strings)
@@ -1032,7 +1016,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------[ Helper: Get IMDBID from URL ]---
-
     /** Get the IMDB ID from a names URL
      * @param string href url to the staff members IMDB page
      * @return string IMDBID of the staff member
@@ -1044,7 +1027,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------------[ Directors ]---
-
     /**
      * Get the director(s) of the movie
      * @return array director (array[0..n] of arrays[imdb,name,role])
@@ -1079,7 +1061,6 @@ class Title extends MdbBase
     }
 
     #----------------------------------------------------------------[ Actors ]---
-
     /*
     * Get the Stars members for this title
     * @return empty array OR array Stars (array[0..n] of array[imdb,name])
@@ -1243,9 +1224,7 @@ class Title extends MdbBase
         return $this->credits_cast;
     }
 
-
     #---------------------------------------------------------------[ Writers ]---
-
     /** Get the writer(s)
      * @return array writers (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
@@ -1287,7 +1266,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------------[ Producers ]---
-
     /**
      * Obtain the producer(s)
      * @return array producer (array[0..n] of arrays[imdb,name,role])
@@ -1329,7 +1307,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------------[ Composers ]---
-
     /** Obtain the composer(s) ("Original Music by...")
      * @return array composer (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
@@ -1365,7 +1342,6 @@ class Title extends MdbBase
     }
 
     #========================================================[ /episodes page ]===
-    #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
      * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
@@ -1461,9 +1437,7 @@ class Title extends MdbBase
         return $this->season_episodes;
     }
 
-
     #==========================================================[ /quotes page ]===
-    #----------------------------------------------------------[ Quotes Array ]---
     /** Get the quotes for a given movie
      * @return array quotes (array[0..n] of string)
      * @see IMDB page /quotes
@@ -1526,7 +1500,6 @@ class Title extends MdbBase
     }
 
     #==========================================================[ /trivia page ]===
-    #----------------------------------------------------------[ Trivia Array ]---
     /**
      * Get the trivia info
      * @param boolean $spoil if true spoilers are also included.
@@ -1568,9 +1541,7 @@ class Title extends MdbBase
         return $this->trivia;
     }
 
-
     #======================================================[ /soundtrack page ]===
-    #------------------------------------------------------[ Soundtrack Array ]---
     /**
      * Get the soundtrack listing
      * @return array soundtracks
@@ -1578,20 +1549,6 @@ class Title extends MdbBase
      *   credits : Full text only description of the credits. Contains newline characters
      *   credits_raw : The credits as they are on the imdb page. Contains html with links
      * ]
-     * e.g
-     * <pre>[
-     *   [
-     *     'soundtrack' => 'Rock is Dead',
-     *     'credits' => 'Written by Marilyn Manson, Jeordie White, and Madonna Wayne Gacy
-    Performed by Marilyn Manson
-    Courtesy of Nothing/Interscope Records
-    Under License from Universal Music Special Markets',
-     *     'credits_raw' => 'Written by <a href="/name/nm0001504">Marilyn Manson</a>, <a href="/name/nm0708390">Jeordie White</a>, and <a href="/name/nm0300476">Madonna Wayne Gacy</a> <br />
-    Performed by <a href="/name/nm0001504">Marilyn Manson</a> <br />
-    Courtesy of Nothing/Interscope Records <br />
-    Under License from Universal Music Special Markets <br />',
-     *   ]
-     * ]</pre>
      * @see IMDB page /soundtrack
      */
     public function soundtrack() {
@@ -1612,7 +1569,6 @@ class Title extends MdbBase
     }
 
     #=======================================================[ /locations page ]===
-
     /**
      * Filming locations
      * @return string[]
@@ -1634,7 +1590,6 @@ class Title extends MdbBase
     }
 
     #========================================================[ /keywords page ]===
-    #--------------------------------------------------------------[ Keywords ]---
     /**
      * Get all keywords from movie
      * @return array keywords
@@ -1658,6 +1613,7 @@ class Title extends MdbBase
         return $this->all_keywords;
     }
 
+    #========================================================[ /Alternate versions page ]===
     /**
      * Get the Alternate Versions for a given movie
      * @return array Alternate Version (array[0..n] of string)
@@ -1686,6 +1642,7 @@ class Title extends MdbBase
         return $this->moviealternateversions;
     }
 
+    #========================================================[ Helper Functions]===
     protected function getPage($page = null)
     {
         if (!empty($this->page[$page])) {
