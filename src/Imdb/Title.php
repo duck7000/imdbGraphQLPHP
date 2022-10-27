@@ -1541,26 +1541,44 @@ class Title extends MdbBase
         return $this->trivia;
     }
 
-    #======================================================[ /soundtrack page ]===
+    #======================================================[ Soundtrack ]===
     /**
      * Get the soundtrack listing
      * @return array soundtracks
-     * [ soundtrack : name of the track
+     * [ soundtrack : name of the soundtrack
      *   credits : Full text only description of the credits. Contains newline characters
-     *   credits_raw : The credits as they are on the imdb page. Contains html with links
      * ]
      * @see IMDB page /soundtrack
      */
-    public function soundtrack() {
+    public function soundtrack()
+    {
         if (empty($this->soundtracks)) {
-            $page = $this->getPage("Soundtrack");
-            if (empty($page)) return array(); // no such page
-            if (preg_match_all('!class="soundTrack soda (odd|even)"\s*>\s*(?<title>.+?)<br\s*/>(?<desc>.+?)</div>!ims', $page, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
+            $xpath = $this->getXpathPage("Soundtrack");
+            if (empty($xpath)) {
+                return array(); // no such page
+            }
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            $cells = $xpath->query("//div[@class=\"soundTrack soda odd\" or @class=\"soundTrack soda even\"]");
+            if (!empty($cells)) {
+                foreach ($cells as $cell) {
+                    // Get all values from xpath query and save it as XML
+                    // to ensure soundtrack can be sepparated from credits
+                    $html = explode("<br/>", $cell->ownerDocument->saveXML($cell), 2);
+                    // explode all credit lines to array.
+                    $creditsExp = explode("<br/>", $html[1]);
+                    $count = count($creditsExp);
+                    $credits = '';
+                    foreach ($creditsExp as $key => $value) {
+                        $credits .= trim(strip_tags($value));
+                        if ($key < $count -1) {
+                            $credits .= "\n";
+                        }
+                    }
                     $this->soundtracks[] = array(
-                        'soundtrack' => trim($match['title']),
-                        'credits' => preg_replace("/\s*\n\s*/", "\n", trim(strip_tags($match['desc']))),
-                        'credits_raw' => trim($match['desc'])
+                        'soundtrack' => trim(strip_tags($html[0])),
+                        'credits' => trim($credits)
                     );
                 }
             }
