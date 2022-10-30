@@ -61,7 +61,6 @@ class Title extends MdbBase
     protected $season_episodes = array();
     protected $soundtracks = array();
     protected $split_plot = array();
-    protected $split_moviequotes = array();
     protected $taglines = array();
     protected $trivia = array();
     protected $locations = array();
@@ -1438,65 +1437,44 @@ class Title extends MdbBase
     }
 
     #==========================================================[ /quotes page ]===
-    /** Get the quotes for a given movie
-     * @return array quotes (array[0..n] of string)
-     * @see IMDB page /quotes
-     */
-    public function quotes()
-    {
-        if (empty($this->moviequotes)) {
-            $page = $this->getPage("Quotes");
-            if (empty($page)) {
-                return array();
-            }
-
-            if (preg_match_all('!<div class="sodatext">\s*(.*?)\s*</div>!ims', str_replace("\n", " ", $page),
-                $matches)) {
-                foreach ($matches[1] as $match) {
-                    $this->moviequotes[] = str_replace('href="/name/', 'href="https://' . $this->imdbsite . '/name/',
-                        preg_replace('!<span class="linksoda".+?</span>!ims', '', $match));
-                }
-            }
-        }
-        return $this->moviequotes;
-    }
-
     /** Get the quotes for a given movie (split-up variant)
      * @return array quote array[string quote, array character]; character: array[string url, string name]
      * @see IMDB page /quotes
      */
     public function quotes_split()
     {
-        if (empty($this->split_moviequotes)) {
-            if (empty($this->moviequotes)) {
-                $quote = $this->quotes();
+        if (empty($this->moviequotes)) {
+            $xpath = $this->getXpathPage("Quotes");
+            if (empty($xpath)) {
+                return array(); // no such page
             }
-            $i = 0;
-            if (!empty($this->moviequotes)) {
-                foreach ($this->moviequotes as $moviequotes) {
-                    if (@preg_match_all('!<p>\s*(.*?)\s*</p>!', $moviequotes, $matches)) {
-                        if (!empty($matches[1])) {
-                            foreach ($matches[1] as $quote) {
-                                if (@preg_match('!href="([^"]*)"\s*>.+?character">(.*?)</span.+?:(.*)!', $quote,
-                                    $match)) {
-                                    $this->split_moviequotes[$i][] = array(
-                                        'quote' => trim(strip_tags($match[3])),
-                                        'character' => array('url' => $match[1], 'name' => $match[2])
+            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+                return array(); // no data available
+            }
+            if ($quotesContent = $xpath->query("//div[@class='sodatext']")) {
+                foreach ($quotesContent as $key => $value) {
+                    $p = $value->getElementsByTagName('p');
+                    foreach ($p as $quoteItem) {
+                        if ($anchor = $quoteItem->getElementsByTagName('a')->item(0)) {
+                           $href = $anchor->getAttribute('href');
+                           $url = str_replace('/name/', 'https://' . $this->imdbsite . '/name/', $href);
+                           $quoteLine = explode(":", $quoteItem->nodeValue, 2);
+                           $this->moviequotes[$key][] = array(
+                                        'quote' => trim(strip_tags($quoteLine[1])),
+                                        'character' => array('url' => $url, 'name' => trim($quoteLine[0]))
                                     );
-                                } else {
-                                    $this->split_moviequotes[$i][] = array(
-                                        'quote' => trim(strip_tags($quote)),
+                        } else {
+                            $this->moviequotes[$key][] = array(
+                                        'quote' => trim(strip_tags($quoteItem->nodeValue)),
                                         'character' => array('url' => '', 'name' => '')
                                     );
-                                }
-                            }
                         }
                     }
-                    ++$i;
+                    ++$key;
                 }
             }
         }
-        return $this->split_moviequotes;
+        return $this->moviequotes;
     }
 
     #==========================================================[ /trivia page ]===
