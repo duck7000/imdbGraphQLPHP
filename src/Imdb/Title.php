@@ -33,14 +33,12 @@ class Title extends MdbBase
 
     protected $akas = array();
     protected $countries = array();
-    protected $castlist = array(); // pilot only
     protected $credits_cast = array();
     protected $credits_composer = array();
     protected $credits_director = array();
     protected $credits_producer = array();
     protected $credits_writing = array();
     protected $langs = array();
-    protected $langs_full = array();
     protected $all_keywords = array();
     protected $main_poster = "";
     protected $main_poster_thumb = "";
@@ -385,20 +383,19 @@ class Title extends MdbBase
     public function languages()
     {
         if (empty($this->langs)) {
-            if (preg_match_all('!href="/search/title\?.+?primary_language=([^&]*)[^>]*>\s*(.*?)\s*</a>(\s+\((.*?)\)|)!m',
-                $this->getPage("Title"), $matches)) {
-                $this->langs = $matches[2];
-                $mc = count($matches[2]);
-                for ($i = 0; $i < $mc; $i++) {
-                    $this->langs_full[] = array(
-                        'name' => $matches[2][$i],
-                        'code' => $matches[1][$i],
-                        'comment' => trim($matches[4][$i])
-                    );
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return array();
+            }
+            if ($languages = $xpath->query("//li[@data-testid=\"title-details-languages\"]//a")) {
+                foreach ($languages as $language) {
+                    if ($language->nodeValue != "") {
+                        $this->langs[] = trim($language->nodeValue);
+                    }
                 }
             }
+            return $this->langs;
         }
-        return $this->langs;
     }
 
     #--------------------------------------------------------------[ Genres ]---
