@@ -259,28 +259,6 @@ class Title extends MdbBase
     }
 
     #---------------------------------------------------------------[ Runtime ]---
-
-    /**
-     * Get general runtime
-     * @return string runtime complete runtime string, e.g. "150 min / USA:153 min (director's cut)"
-     */
-    protected function runtime_all()
-    {
-        if ($this->main_runtime == "") {
-            $this->getPage("Title");
-            if (@preg_match('!Runtime:</h4>\s*(.+?)\s*</div!ms', $this->page["Title"], $match)) {
-                $this->main_runtime = $match[1];
-            }
-        }
-        if ($this->main_runtime == "") {
-            $this->getPage("Technical");
-            if (@preg_match('!Runtime.*?<td>(.+?)</td!ms', $this->page["Technical"], $match)) {
-                $this->main_runtime = $match[1];
-            }
-        }
-        return $this->main_runtime;
-    }
-
     /**
      * Retrieve all runtimes and their descriptions
      * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
@@ -289,27 +267,39 @@ class Title extends MdbBase
     public function runtimes()
     {
         if (empty($this->movieruntimes)) {
-            $this->movieruntimes = array();
-            $rt = $this->runtime_all();
-            foreach (preg_split('!(\||<br>)!', strip_tags($rt, '<br>')) as $runtimestring) {
-                if (preg_match_all('/(\d+\s+hr\s+\d+\s+min)? ?\((\d+)\s+min\)|(\d+)\s+min/', trim($runtimestring),
-                    $matches,
-                    PREG_SET_ORDER, 0)) {
-                    $runtime = (!empty($matches[1][2]) ? $matches[1][2] : (!empty($matches[0][2]) ? $matches[0][2] : (!empty($matches[0][3]) ? $matches[0][3] : 0)));
-                    $annotations = array();
-                    if (preg_match_all("/\((?!\d+\s+min)(.+?)\)/", trim($runtimestring), $matches)) {
-                        $annotations = $matches[1];
+            $xpath = $this->getXpathPage("Technical");
+            if (empty($xpath)) {
+                return array();
+            }
+            if ($runtimesRaw = $xpath->query("//td[normalize-space(text())='Runtime']/following-sibling::td[1]")) {
+                $runtimesHtml = $runtimesRaw->item(0)->ownerDocument->saveHTML($runtimesRaw->item(0));
+                $runtimes = explode("<br>", $runtimesHtml);
+                foreach ($runtimes as $runtime) {
+                    if ($runtime != "") {
+                        $pos = strpos($runtime, '(');
+                        $annotations = array();
+                        if ($pos !== false) {
+                            $timeTemp = explode("(", substr($runtime, $pos + 1));
+                            $time = intval(preg_replace('/[^0-9]/', '', $timeTemp[0]));
+                            if (isset($timeTemp[1]) && !empty($timeTemp[1])) {
+                                $desc = '(' . trim(strip_tags($timeTemp[1]));
+                            } else {
+                                $desc = '';
+                            }
+                        } else {
+                            $time = intval(preg_replace('/[^0-9]/', '', $runtime));
+                            $desc = '';
+                        }
+                        $annotations[] = $desc;
+                        $this->movieruntimes[] = array(
+                            "time" => $time,
+                            "annotations" => $annotations
+                        );
                     }
-                    $this->movieruntimes[] = array(
-                        "time" => $runtime,
-                        "country" => '',
-                        "comment" => '',
-                        "annotations" => $annotations
-                    );
                 }
             }
+            return $this->movieruntimes;
         }
-        return $this->movieruntimes;
     }
 
     #----------------------------------------------------------[ Movie Rating ]---
