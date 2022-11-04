@@ -43,7 +43,6 @@ class Title extends MdbBase
     protected $main_poster = "";
     protected $main_poster_thumb = "";
     protected $main_plotoutline = "";
-    protected $main_runtime = "";
     protected $main_movietype = "";
     protected $main_title = "";
     protected $main_year = -1;
