@@ -938,132 +938,73 @@ class Title extends MdbBase
 
     /**
      * Get the actors/cast members for this title
-     * @return array cast (array[0..n] of array[imdb,name,name_alias,role,role_episodes,role_start_year,role_end_year,thumb,photo])
+     * @return array cast (array[0..n] of array[imdb,name,role,thumb])
      * e.g.
      * <pre>
      * array (
      *  'imdb' => '0922035',
      *  'name' => 'Dominic West', // Actor's name on imdb
-     *  'name_alias' => NULL, // Name credited to actor if it is different to their imdb name
-     *  'credited' => true, // Was the actor credited in the film?
-     *  'role' => "Det. James 'Jimmy' McNulty",
-     *  'role_episodes' => 60, // Only applies to episodic titles. Will be NULL if not available
-     *  'role_start_year' => 2002, // Only applies to episodic titles. Will be NULL if not available
-     *  'role_end_year' => 2008, // Only applies to episodic titles. Will be NULL if not available
-     *  'role_other' => array() // Any other information about what the cast member did e.g. 'voice', 'archive footage'
+     *  'role' => "Det. James 'Jimmy' McNulty" including all comments in brackets,
      *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
-     *  'photo' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@.jpg' // Fullsize image of actor
      * )
      * </pre>
      * @see IMDB page /fullcredits
      */
     public function cast()
     {
-
         if (!empty($this->credits_cast)) {
             return $this->credits_cast;
         }
-
-        $page = $this->getPage("Credits");
-
-        if (empty($page)) {
+        $xpath = $this->getXpathPage("Credits");
+        if (empty($xpath)) {
             return array(); // no such page
         }
-
-        $cast_rows = $this->get_table_rows_cast($page, "Cast", "itemprop");
-        foreach ($cast_rows as $cast_row) {
-            $cels = $this->get_row_cels($cast_row);
-            if (4 !== count($cels)) {
-                continue;
-            }
-            $dir = array(
-                'imdb' => null,
-                'name' => null,
-                'name_alias' => null,
-                'credited' => true,
-                'role' => null,
-                'role_episodes' => null,
-                'role_start_year' => null,
-                'role_end_year' => null,
-                'role_other' => array(),
-                'thumb' => null,
-                'photo' => null
-            );
-            $dir["imdb"] = preg_replace('!.*href="/name/nm(\d+)/.*!ims', '$1', $cels[1]);
-            $dir["name"] = trim(strip_tags($cels[1]));
-            if (empty($dir['name'])) {
-                continue;
-            }
-
-
-            $role_cell = trim(strip_tags(str_replace('&nbsp;', '', $cels[3])));
-            if ($role_cell) {
-                $role_lines = explode("\n", $role_cell);
-                // The first few lines (before any lines starting with brackets) are the role name
-                while ($role_line = array_shift($role_lines)) {
-                    $role_line = trim($role_line);
-                    if (!$role_line) {
+        if ($castRows = $xpath->query("//table[@class='cast_list']/tr[@class=\"odd\" or @class=\"even\"]")) {
+            foreach ($castRows as $castRow) {
+                $castTds = $castRow->getElementsByTagName('td');
+                if (4 !== count($castTds)) {
+                    continue;
+                }
+                $dir = array(
+                    'imdb' => null,
+                    'name' => null,
+                    'role' => null,
+                    'thumb' => null
+                );
+                //Actor name and imdbId
+                if ($actorAnchor = $castTds->item(1)->getElementsByTagName('a')->item(0)) {
+                    $actorHref = $actorAnchor->getAttribute('href');
+                    $dir["imdb"] = preg_replace('!.*/name/nm(\d+)/.*!ims', '$1', $actorHref);
+                    $dir["name"] = trim($actorAnchor->nodeValue);
+                } else {
+                    if (!empty(trim($castTds->item(1)->nodeValue))) {
+                       $dir["name"] = trim($castTds->item(1)->nodeValue);
+                    } else {
                         continue;
                     }
-                    if ($role_line[0] == '(' || preg_match('@\d+ episode@', $role_line)) {
-                        // Start of additional information, stop looking for the role name
-                        array_unshift($role_lines, $role_line);
-                        break;
-                    }
-                    if ($dir['role']) {
-                        $dir['role'] .= ' ' . $role_line;
-                    } else {
-                        $dir['role'] = $role_line;
-                    }
                 }
-
-                // Trim off the funny / ... role added on tv shows where an actor has multiple characters
-                $dir['role'] = str_replace(' / ...', '', $dir['role']);
-
-                $cleaned_role_cell = implode("\n", $role_lines);
-
-                if (preg_match("#\(as (.+?)\)#s", $cleaned_role_cell, $matches)) {
-                    $dir['name_alias'] = $matches[1];
-                    $cleaned_role_cell = preg_replace("#\(as (.+?)\)#s", '', $cleaned_role_cell);
+                // actor thumb image
+                if ($imgUrl = $castTds->item(0)->getElementsByTagName('img')->item(0)->getAttribute('loadlate')) {
+                    $dir["thumb"] = $imgUrl;
+                } else {
+                    $dir["thumb"] = '';
                 }
-
-                if (preg_match("#(\d+) episodes?, (\d+)(?:-(\d+))?#", $cleaned_role_cell, $matches)) {
-                    $dir['role_episodes'] = (int)$matches[1];
-                    $dir['role_start_year'] = (int)$matches[2];
-                    if (isset($matches[3])) {
-                        $dir['role_end_year'] = (int)$matches[3];
-                    } else {
-                        // If no end year, make the same as start year
-                        $dir['role_end_year'] = (int)$matches[2];
-                    }
-                    $cleaned_role_cell = preg_replace("#\((\d+) episodes?, (\d+)(?:-(\d+))?\)#", '',
-                        $cleaned_role_cell);
-                }
-
-                // Extract uncredited and other bits from their brackets after the role
-                if (preg_match_all("#\((.+?)\)#", $cleaned_role_cell, $matches)) {
-                    foreach ($matches[1] as $role_info) {
-                        $role_info = trim($role_info);
-                        if ($role_info == 'uncredited') {
-                            $dir['credited'] = false;
+                //Role including all comments in brackets
+                if ($roleCell = $castTds->item(3)->nodeValue) {
+                    $roleLines = explode("\n", $roleCell);
+                    $role = '';
+                    foreach ($roleLines as $key => $roleLine) {
+                        //get rid of not needed episode info
+                        if (strpos($roleLine, 'episode') !== false || strpos($roleLine, '/ ...') !== false || empty($roleLine)) {
+                            continue;
                         } else {
-                            $dir['role_other'][] = $role_info;
+                            $role .=  trim(preg_replace('#[\xC2\xA0]#', '', $roleLine)) . ' ';
                         }
                     }
                 }
+                $dir['role'] = trim($role);
+                $this->credits_cast[] = $dir;
             }
-
-
-            if (preg_match('!.*<img [^>]*loadlate="([^"]+)".*!ims', $cels[0], $match)) {
-                $dir["thumb"] = $match[1];
-                if (strpos($dir["thumb"], '._V1')) {
-                    $dir["photo"] = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $dir["thumb"]);
-                }
-            } else {
-                $dir["thumb"] = $dir["photo"] = "";
-            }
-
-            $this->credits_cast[] = $dir;
         }
         return $this->credits_cast;
     }
