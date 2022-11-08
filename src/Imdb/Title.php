@@ -607,46 +607,34 @@ class Title extends MdbBase
     #------------------------------------------------------------[ Movie AKAs ]---
     /**
      * Get movie's alternative names
-     * Note: This may return an empty country or comments. The original title will have a country of '' and a comment of 'original title'
-     * comment, year and lang are there for backwards compatibility and should not be used
-     * @return array array[0..n] of array[title,country,comments[]]
+     * @return array array[0..n] of array[title,country]
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
     {
         if (empty($this->akas)) {
-            $page = $this->getPage("ReleaseInfo");
-            if (empty($page)) {
-                return array();
-            } // no such page
-
-            $table = Parsing::table($page, "//*[@id=\"akas\"]/following-sibling::table");
-
-            if (empty($table)) {
-                return array();
+            $xpath = $this->getXpathPage("ReleaseInfo");
+            if (empty($xpath)) {
+                return array(); // no such page
             }
+            $akaTableRows = $xpath->query("//*[@id=\"akas\"]/following-sibling::table/tr");
 
-            foreach ($table as $row) {
-                $description = $row[0];
-                $title = $row[1];
-
-                $firstbracket = strpos($description, '(');
-                if ($firstbracket === false) {
+            if (empty($akaTableRows)) {
+                return array(); // no data available
+            }
+            foreach ($akaTableRows as $row) {
+                $akaTds = $row->getElementsByTagName('td');
+                $title = trim($akaTds->item(1)->nodeValue);
+                $description = trim($akaTds->item(0)->nodeValue);
+                if (stripos($description, 'original title') !== false) {
                     $country = $description;
-                    $comments = array();
                 } else {
-                    $country = trim(substr($description, 0, $firstbracket));
-                    preg_match_all("@\((.+?)\)@", $description, $matches);
-                    $comments = $matches[1];
+                    $countryRaw = explode("(", $description);
+                    $country = trim($countryRaw[0]);
                 }
-
                 $this->akas[] = array(
-                    "title" => $title,
                     "country" => $country,
-                    "comments" => $comments,
-                    "comment" => implode(', ', $comments),
-                    "year" => '',
-                    "lang" => ''
+                    "title" => $title
                 );
             }
         }
