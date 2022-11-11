@@ -53,11 +53,10 @@ class Title extends MdbBase
     protected $movierecommendations = array();
     protected $movieruntimes = array();
     protected $mpaas = array();
-    protected $plot_plot = array();
+    protected $plot = array();
     protected $seasoncount = -1;
     protected $season_episodes = array();
     protected $soundtracks = array();
-    protected $split_plot = array();
     protected $taglines = array();
     protected $trivia = array();
     protected $locations = array();
@@ -700,62 +699,44 @@ class Title extends MdbBase
     }
 
     #=====================================================[ /plotsummary page ]===
-    #--------------------------------------------------[ Full Plot (combined) ]---
-    /** Get the movies plot(s)
-     * @return array plot (array[0..n] of strings)
+    /** Get the movie plot(s) - split-up variant
+     * @return array array[0..n] of array[string plot,string author]
      * @see IMDB page /plotsummary
      */
     public function plot()
     {
-        if (empty($this->plot_plot)) {
+        if (empty($this->plot)) {
             $xpath = $this->getXpathPage("Plot");
             if (empty($xpath)) {
                 return array();
             } // no such page
-            $cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]");
-            foreach ($cells as $cell) {
-                $link = '';
-                $anchors = $cell->getElementsByTagName('a');
-                if ($a = $anchors->item($anchors->length - 1)) {
-                    if (preg_match('!/search/title!i', $a->getAttribute('href'))) {
-                        $href = preg_replace(
-                            '!/search/title!i',
-                            'https://' . $this->imdbsite . '/search/title',
-                            $a->getAttribute('href')
-                        );
-                        $link = "\n-\n" . '<a href="' . $href . '">' . trim($a->nodeValue) . '</a>';
+            if ($cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]")) {
+                foreach ($cells as $key => $cell) {
+                    if ($key >= 1) { //skip first element, this is often used as plotoutline
+                        $author = '';
+                        $xml = $cell->ownerDocument->saveXML($cell);
+                        $t = explode("—", $xml); //this is not a normal dash!
+                        if (count($t) > 1) {
+                            // author available, get only author name
+                            $authorRaw = explode("@", strip_tags($t[1]));
+                            $authorArray = array_values(array_filter(explode("&lt;", $authorRaw[0])));
+                            $authorStripped = explode(",", $authorArray[0]);
+                            $author = trim($authorStripped[0]);
+                        }
+                        // plot
+                        if ($cell->getElementsByTagName('p')->item(0)) {
+                            $plotRaw = $cell->getElementsByTagName('p')->item(0)->nodeValue;
+                            $plot = trim(strip_tags($plotRaw));
+                        }
+                        $this->plot[] = array("plot" => $plot, "author" => $author);
+                    } else {
+                    if (count($cells) == 1)
+                        $this->plot[] = array("plot" => '', "author" => '');
                     }
                 }
-                $this->plot_plot[] = $cell->getElementsByTagName('p')->item(0)->nodeValue . $link;
             }
         }
-        return $this->plot_plot;
-    }
-
-    #-----------------------------------------------------[ Full Plot (split) ]---
-    /** Get the movie plot(s) - split-up variant
-     * @return array array[0..n] of array[string plot,array author] - where author consists of string name and string url
-     * @see IMDB page /plotsummary
-     */
-    public function plot_split()
-    {
-        if (empty($this->split_plot)) {
-            if (empty($this->plot_plot)) {
-                $this->plot_plot = $this->plot();
-            }
-            foreach ($this->plot_plot as $plot) {
-                if (preg_match('!(?<plot>.*?)\n-\n<a href="(?<author_url>.*?)">(?<author_name>.*?)<\/a>!ims', $plot,
-                    $match)) {
-                    $this->split_plot[] = array(
-                        "plot" => $match['plot'],
-                        "author" => array("name" => $match['author_name'], "url" => $match['author_url'])
-                    );
-                } else {
-                    $this->split_plot[] = array("plot" => $plot, "author" => array("name" => '', "url" => ''));
-                }
-            }
-        }
-        return $this->split_plot;
+        return $this->plot;
     }
 
     #========================================================[ /taglines page ]===
