@@ -300,7 +300,7 @@ class Title extends MdbBase
     #----------------------------------------------------------[ Movie Rating ]---
     /**
      * Get movie rating
-     * @return float|string rating current rating as given by IMDB site
+     * @return float rating current rating as given by IMDB site
      * @see IMDB page / (TitlePage)
      */
     public function rating()
@@ -309,7 +309,7 @@ class Title extends MdbBase
             $xpath = $this->getXpathPage("Title");
             $ratingRaw = $xpath->query("//div[@data-testid='hero-rating-bar__aggregate-rating__score']//span[1]");
             if (!empty($ratingRaw->item(0)->nodeValue)) {
-                $this->main_rating = trim($ratingRaw->item(0)->nodeValue);
+                $this->main_rating = floatval($ratingRaw->item(0)->nodeValue);
             } else {
                 $this->main_rating = 0;
             }
