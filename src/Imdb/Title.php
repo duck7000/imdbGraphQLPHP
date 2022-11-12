@@ -830,13 +830,13 @@ class Title extends MdbBase
             $imdb = '';
             $name = '';
             $role = null;
-            if ($directorTds->item(0)) {
+            if (!empty(preg_replace('/[\s]+/mu', '', $directorTds->item(0)->nodeValue))) {
                 if ($directorTds->item(2)) {
                     $role = trim(strip_tags($directorTds->item(2)->nodeValue));
                 }
-                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')) {
-                    $imdb = $this->get_imdbname($anchor->item(0)->getAttribute('href'));
-                    $name = trim(strip_tags($anchor->item(0)->nodeValue));
+                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')->item(0)) {
+                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
+                    $name = trim(strip_tags($anchor->nodeValue));
                 } elseif (!empty($directorTds->item(0))) {
                         $name = trim($directorTds->item(0)->nodeValue);
                 }
