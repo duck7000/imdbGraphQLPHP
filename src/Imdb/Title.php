@@ -991,16 +991,9 @@ class Title extends MdbBase
         return $this->credits_writer;
     }
 
-    #-------------------------------------------------------------[ Producers ]---
-    /**
-     * Obtain the producer(s)
-     * @return array producer (array[0..n] of arrays[imdb,name,role])
-     * e.g.
-     * Array (
-     *  'imdb' => '0905152'
-     *  'name' => 'Lilly Wachowski'
-     *  'role' => 'executive producer' // Can be null if no role is given
-     * )
+    #---------------------------------------------------------------[ Producers ]---
+    /** Get the producers(s)
+     * @return array producers (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
      */
     public function producer()
@@ -1008,24 +1001,26 @@ class Title extends MdbBase
         if (!empty($this->credits_producer)) {
             return $this->credits_producer;
         }
-        $producerRows = $this->get_table_rows($this->getPage("Credits"), "Produced by");
-        if (!$producerRows) {
-            $producerRows = $this->get_table_rows($this->getPage("Credits"), "Series Produced by");
-        }
+        $producerRows = $this->get_table_rows("producer");
         foreach ($producerRows as $producerRow) {
-            $cells = $this->get_row_cels($producerRow);
-            if (count($cells) > 2) {
-                if (isset($cells[2])) {
-                    $role = trim(strip_tags($cells[2]));
-                    $role = preg_replace('/ \(as .+\)$/', '', $role);
-                } else {
-                    $role = null;
+            $producerTds = $this->get_row_cels($producerRow);
+            $imdb = '';
+            $name = '';
+            $role = null;
+            if (!empty(preg_replace('/[\s]+/mu', '', $producerTds->item(0)->nodeValue))) {
+                if ($producerTds->item(2)) {
+                    $role = trim(strip_tags($producerTds->item(2)->nodeValue));
                 }
-
+                if ($anchor = $producerTds->item(0)->getElementsByTagName('a')->item(0)) {
+                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
+                    $name = trim(strip_tags($anchor->nodeValue));
+                } elseif (!empty($producerTds->item(0)->nodeValue)) {
+                        $name = trim($producerTds->item(0)->nodeValue);
+                }
                 $this->credits_producer[] = array(
-                    'imdb' => $this->get_imdbname($cells[0]),
-                    'name' => trim(strip_tags($cells[0])),
-                    'role' => $role ?: null
+                    'imdb' => $imdb,
+                    'name' => $name,
+                    'role' => $role
                 );
             }
         }
