@@ -48,6 +48,7 @@ class Title extends MdbBase
     protected $main_year = -1;
     protected $main_endyear = -1;
     protected $main_top250 = -1;
+    protected $main_rating = -1;
     protected $moviegenres = array();
     protected $moviequotes = array();
     protected $movierecommendations = array();
@@ -62,7 +63,6 @@ class Title extends MdbBase
     protected $locations = array();
     protected $moviealternateversions = array();
     protected $jsonLD = null;
-    protected $XmlNextJson = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -305,7 +305,16 @@ class Title extends MdbBase
      */
     public function rating()
     {
-        return isset($this->jsonLD()->aggregateRating->ratingValue) ? $this->jsonLD()->aggregateRating->ratingValue : '';
+        if ($this->main_rating == -1) {
+            $xpath = $this->getXpathPage("Title");
+            $ratingRaw = $xpath->query("//div[@data-testid='hero-rating-bar__aggregate-rating__score']//span[1]");
+            if (!empty($ratingRaw->item(0)->nodeValue)) {
+                $this->main_rating = trim($ratingRaw->item(0)->nodeValue);
+            } else {
+                $this->main_rating = 0;
+            }
+        }
+        return $this->main_rating;
     }
 
     /**
