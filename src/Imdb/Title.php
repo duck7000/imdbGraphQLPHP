@@ -767,67 +767,7 @@ class Title extends MdbBase
     }
 
     #=====================================================[ /fullcredits page ]===
-    #-----------------------------------------------------[ Helper: TableRows ]---
-    /**
-     * Get rows for a given table on the page
-     * @param string html
-     * @param string table_start
-     * @return string[] Contents of each row of the table
-     * @see used by the methods director, cast, writing, producer, composer
-     */
-    protected function get_table_rows($html, $table_start)
-    {
-        if ($table_start == "Writing Credits" || $table_start == "Series Writing Credits") {
-            $row_s = strpos($html, ">" . $table_start);
-        } else {
-            $row_s = strpos($html, ">" . $table_start . "&nbsp;<");
-        }
-        if ($row_s == 0) {
-            return array();
-        }
-        $endtable = strpos($html, "</table>", $row_s);
-        $block = substr($html, $row_s, $endtable - $row_s);
-        if (preg_match_all('!<tr>(.+?)</tr>!ims', $block, $matches)) {
-            $rows = $matches[1];
-        }
-        return $rows;
-    }
-
-    #------------------------------------------------[ Helper: Cast TableRows ]---
-    /** Get rows for the cast table on the page
-     * @param string html
-     * @param string table_start
-     * @return array array[0..n] of strings
-     * @see used by the method cast
-     */
-    protected function get_table_rows_cast($html, $table_start, $class = "nm")
-    {
-        $row_s = strpos($html, '<table class="cast_list">');
-        if ($row_s == 0) {
-            return array();
-        }
-        $endtable = strpos($html, "</table>", $row_s);
-        $block = substr($html, $row_s, $endtable - $row_s);
-        if (preg_match_all('!<tr.*?>(.*?)</tr>!ims', $block, $matches)) {
-            return $matches[1];
-        }
-        return array();
-    }
-
-    #------------------------------------------------------[ Helper: RowCells ]---
-    /** Get content of table row cells
-     * @param string row (as returned by imdb::get_table_rows)
-     * @return array cells (array[0..n] of strings)
-     * @see used by the methods director, cast, writing, producer, composer
-     */
-    protected function get_row_cels($row)
-    {
-        if (preg_match_all("/<td.*?>(.*?)<\/td>/ims", $row, $matches)) {
-            return $matches[1];
-        }
-        return array();
-    }
-
+    
     #-------------------------------------------[ Helper: Get IMDBID from URL ]---
     /** Get the IMDB ID from a names URL
      * @param string href url to the staff members IMDB page
@@ -837,6 +777,40 @@ class Title extends MdbBase
     protected function get_imdbname($href)
     {
         return preg_replace('!^.*nm(\d+).*$!ims', '$1', $href);
+    }
+    
+    #-----------------------------------------------------[ Helper: TableRows ]---
+    /**
+     * Get rows for a given table on the page
+     * @param string html
+     * @param string table_start
+     * @return string[] Contents of each row of the table
+     * @see used by the methods director, writing, producer, composer
+     */
+    protected function get_table_rows($id)
+    {
+        $xpath = $this->getXpathPage("Credits");
+        if (empty($xpath)) {
+            return array();
+        } // no such page
+        if ($cells = $xpath->query("//h4[@id='$id']/following-sibling::table[1]/tbody/tr")) {
+            return $cells;
+        
+        }
+    }
+
+    #------------------------------------------------------[ Helper: RowCells ]---
+    /** Get content of table row cells
+     * @param string row (as returned by imdb::get_table_rows)
+     * @return array cells (array[0..n] of strings)
+     * @see used by the methods director, writing, producer, composer
+     */
+    protected function get_row_cels($row)
+    {
+        if ($rowTds = $row->getElementsByTagName('td')) {
+            return $rowTds;
+        }
+        return array();
     }
 
     #-------------------------------------------------------------[ Directors ]---
@@ -850,23 +824,22 @@ class Title extends MdbBase
         if (!empty($this->credits_director)) {
             return $this->credits_director;
         }
-        $directorRows = $this->get_table_rows($this->getPage('Credits'), "Directed by");
-        if (!$directorRows) {
-            $directorRows = $this->get_table_rows($this->getPage('Credits'), "Series Directed by");
-        }
+        $directorRows = $this->get_table_rows("director");
         foreach ($directorRows as $directorRow) {
-            $cells = $this->get_row_cels($directorRow);
-            if (isset($cells[0])) {
-                if (isset($cells[2])) {
-                    $role = trim(strip_tags($cells[2]));
-                } else {
-                    $role = null;
+            $directorTds = $this->get_row_cels($directorRow);
+            $role = null;
+            if ($directorTds->item(0)) {
+                if ($directorTds->item(2)) {
+                    $role = trim(strip_tags($directorTds->item(2)->nodeValue));
                 }
-
+                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')) {
+                    $href = $anchor->item(0)->getAttribute('href');
+                    $name = trim(strip_tags($anchor->item(0)->nodeValue));
+                }
                 $this->credits_director[] = array(
-                    'imdb' => $this->get_imdbname($cells[0]),
-                    'name' => trim(strip_tags($cells[0])),
-                    'role' => $role ?: null
+                    'imdb' => $this->get_imdbname($href),
+                    'name' => $name,
+                    'role' => $role
                 );
             }
         }
