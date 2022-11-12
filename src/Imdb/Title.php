@@ -827,17 +827,21 @@ class Title extends MdbBase
         $directorRows = $this->get_table_rows("director");
         foreach ($directorRows as $directorRow) {
             $directorTds = $this->get_row_cels($directorRow);
+            $imdb = '';
+            $name = '';
             $role = null;
             if ($directorTds->item(0)) {
                 if ($directorTds->item(2)) {
                     $role = trim(strip_tags($directorTds->item(2)->nodeValue));
                 }
                 if ($anchor = $directorTds->item(0)->getElementsByTagName('a')) {
-                    $href = $anchor->item(0)->getAttribute('href');
+                    $imdb = $this->get_imdbname($anchor->item(0)->getAttribute('href'));
                     $name = trim(strip_tags($anchor->item(0)->nodeValue));
+                } elseif (!empty($directorTds->item(0))) {
+                        $name = trim($directorTds->item(0)->nodeValue);
                 }
                 $this->credits_director[] = array(
-                    'imdb' => $this->get_imdbname($href),
+                    'imdb' => $imdb,
                     'name' => $name,
                     'role' => $role
                 );
