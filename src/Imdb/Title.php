@@ -1042,27 +1042,28 @@ class Title extends MdbBase
         if (!empty($this->credits_composer)) {
             return $this->credits_composer;
         }
-        $composer_rows = $this->get_table_rows($this->getPage('Credits'), "Music by");
-        if (!$composer_rows) {
-            $composer_rows = $this->get_table_rows($this->getPage('Credits'), "Series Music by");
-        }
-        foreach ($composer_rows as $composer_row) {
-            $composer = array();
-            if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $composer_row, $match)) {
-                $composer['imdb'] = $match[1];
-                $composer['name'] = trim($match[2]);
-            } elseif (preg_match('!<td\s+class="name">(.+?)</td!ims', $composer_row, $match)) {
-                $composer['imdb'] = '';
-                $composer['name'] = trim($match[1]);
-            } else {
-                continue;
+        $composerRows = $this->get_table_rows("composer");
+        foreach ($composerRows as $composerRow) {
+            $composerTds = $this->get_row_cels($composerRow);
+            $imdb = '';
+            $name = '';
+            $role = null;
+            if (!empty(preg_replace('/[\s]+/mu', '', $composerTds->item(0)->nodeValue))) {
+                if ($composerTds->item(2)) {
+                    $role = trim(strip_tags($composerTds->item(2)->nodeValue));
+                }
+                if ($anchor = $composerTds->item(0)->getElementsByTagName('a')->item(0)) {
+                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
+                    $name = trim(strip_tags($anchor->nodeValue));
+                } elseif (!empty($composerTds->item(0)->nodeValue)) {
+                        $name = trim($composerTds->item(0)->nodeValue);
+                }
+                $this->credits_composer[] = array(
+                    'imdb' => $imdb,
+                    'name' => $name,
+                    'role' => $role
+                );
             }
-            if (preg_match('!<td\s+class="credit"\s*>\s*(.+?)\s*</td>!ims', $composer_row, $match)) {
-                $composer['role'] = trim($match[1]);
-            } else {
-                $composer['role'] = null;
-            }
-            $this->credits_composer[] = $composer;
         }
         return $this->credits_composer;
     }
