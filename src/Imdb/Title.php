@@ -837,7 +837,7 @@ class Title extends MdbBase
                 if ($anchor = $directorTds->item(0)->getElementsByTagName('a')->item(0)) {
                     $imdb = $this->get_imdbname($anchor->getAttribute('href'));
                     $name = trim(strip_tags($anchor->nodeValue));
-                } elseif (!empty($directorTds->item(0))) {
+                } elseif (!empty($directorTds->item(0)->nodeValue)) {
                         $name = trim($directorTds->item(0)->nodeValue);
                 }
                 $this->credits_director[] = array(
