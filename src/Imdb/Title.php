@@ -960,40 +960,35 @@ class Title extends MdbBase
      * @return array writers (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
      */
-    public function writing()
+    public function writer()
     {
-        if (empty($this->credits_writing)) {
-            $page = $this->getPage("Credits");
-            if (empty($page)) {
-                return array(); // no such page
+        if (!empty($this->credits_writer)) {
+            return $this->credits_writer;
+        }
+        $writerRows = $this->get_table_rows("writer");
+        foreach ($writerRows as $writerRow) {
+            $writerTds = $this->get_row_cels($writerRow);
+            $imdb = '';
+            $name = '';
+            $role = null;
+            if (!empty(preg_replace('/[\s]+/mu', '', $writerTds->item(0)->nodeValue))) {
+                if ($writerTds->item(2)) {
+                    $role = trim(strip_tags($writerTds->item(2)->nodeValue));
+                }
+                if ($anchor = $writerTds->item(0)->getElementsByTagName('a')->item(0)) {
+                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
+                    $name = trim(strip_tags($anchor->nodeValue));
+                } elseif (!empty($writerTds->item(0)->nodeValue)) {
+                        $name = trim($writerTds->item(0)->nodeValue);
+                }
+                $this->credits_writer[] = array(
+                    'imdb' => $imdb,
+                    'name' => $name,
+                    'role' => $role
+                );
             }
         }
-        $writing_rows = $this->get_table_rows($this->page["Credits"], "Writing Credits");
-        if (!$writing_rows) {
-            $writing_rows = $this->get_table_rows($this->page["Credits"], "Series Writing Credits");
-        }
-        if (!$writing_rows) {
-            return array();
-        }
-        for ($i = 0; $i < count($writing_rows); $i++) {
-            $wrt = array();
-            if (preg_match('!<a\s+href="/name/nm(\d+)/[^>]*>\s*(.+)\s*</a>!ims', $writing_rows[$i], $match)) {
-                $wrt['imdb'] = $match[1];
-                $wrt['name'] = trim($match[2]);
-            } elseif (preg_match('!<td\s+class="name">(.+?)</td!ims', $writing_rows[$i], $match)) {
-                $wrt['imdb'] = '';
-                $wrt['name'] = trim($match[1]);
-            } else {
-                continue;
-            }
-            if (preg_match('!<td\s+class="credit"\s*>\s*(.+?)\s*</td>!ims', $writing_rows[$i], $match)) {
-                $wrt['role'] = trim($match[1]);
-            } else {
-                $wrt['role'] = null;
-            }
-            $this->credits_writing[] = $wrt;
-        }
-        return $this->credits_writing;
+        return $this->credits_writer;
     }
 
     #-------------------------------------------------------------[ Producers ]---
