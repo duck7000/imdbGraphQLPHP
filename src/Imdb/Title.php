@@ -1304,7 +1304,8 @@ class Title extends MdbBase
     #=======================================================[ /locations page ]===
     /**
      * Filming locations
-     * @return string[]
+     * @return array locations (array[0..n] of arrays[real_loc,movie_loc])
+     * real_loc: Real filming location, movie_loc: location in the movie
      * @see IMDB page /locations
      */
     public function locations()
@@ -1314,9 +1315,23 @@ class Title extends MdbBase
             if (empty($xpath)) {
                 return array();
             } // no such page
-            $cells = $xpath->query("//section[@id=\"filming_locations\"]//dt");
-            foreach ($cells as $cell) {
-                $this->locations[] = trim($cell->nodeValue);
+            $cells = $xpath->query("//section[@id=\"filming_locations\"]
+                                    //div[@class=\"soda sodavote odd\" or @class=\"soda sodavote even\"]");
+            if ($cells != null) {
+                foreach ($cells as $cell) {
+                    $real = '';
+                    $movie = '';
+                    if ($cell->getElementsByTagName('dt')->item(0)) {
+                        $real = trim($cell->getElementsByTagName('dt')->item(0)->nodeValue);
+                    }
+                    if ($cell->getElementsByTagName('dd')->item(0)) {
+                        $movie = trim($cell->getElementsByTagName('dd')->item(0)->nodeValue);
+                    }
+                    $this->locations[] = array(
+                        'real_loc' => $real,
+                        'movie_loc' => $movie
+                    );
+                }
             }
         }
         return $this->locations;
