@@ -392,7 +392,7 @@ class Title extends MdbBase
         }
     }
 
-    #--------------------------------------------------------------[ Genres ]---
+    #--------------------------------------------------------------[ Genre(s) ]---
     /** Get all genres the movie is registered for
      * @return array genres (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
@@ -400,31 +400,11 @@ class Title extends MdbBase
     public function genres()
     {
         if (empty($this->moviegenres)) {
-            $xpath = $this->getXpathPage("Title");
-            $extract_genres = $xpath->query("//li[@data-testid='storyline-genres']//li[@class='ipc-inline-list__item']/a");
-            $genres = array();
-            foreach ($extract_genres as $genre) {
-                if (!empty($genre->nodeValue)) {
-                    $genres[] = trim($genre->nodeValue);
-                }
-            }
-            if (count($genres) > 0) {
-                $this->moviegenres = $genres;
-            }
-        }
-        if (empty($this->moviegenres)) {
             $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
             if (!is_array($genres)) {
                 $genres = (array)$genres;
             }
             $this->moviegenres = $genres;
-        }
-        if (empty($this->moviegenres)) {
-            if (@preg_match('!Genres:</h4>(.*?)</div!ims', $this->page["Title"], $match)) {
-                if (@preg_match_all('!href="[^>]+?>\s*(.*?)\s*<!', $match[1], $matches)) {
-                    $this->moviegenres = $matches[1];
-                }
-            }
         }
         return $this->moviegenres;
     }
