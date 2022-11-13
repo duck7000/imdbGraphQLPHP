@@ -337,7 +337,7 @@ class Title extends MdbBase
      * @return array recommendations (array[title,imdbid,rating,img])
      * @see IMDB page / (TitlePage)
      */
-    public function movie_recommendations()
+    public function recommendations()
     {
         if (empty($this->movierecommendations)) {
             $xp = $this->getXpathPage("Title");
