@@ -158,34 +158,49 @@ class Title extends MdbBase
      */
     protected function title_year()
     {
-        $this->getPage("Title");
-        if (@preg_match('!<title>(IMDb\s*-\s*)?(?<ititle>.*)(\s*-\s*IMDb)?</title>!', $this->page["Title"], $imatch)) {
-            $ititle = $imatch['ititle'];
-            if (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4})((&nbsp;|–)(?<endyear>\d{4}|)).*\)(.*)!',
-                $ititle, $match)) { // serial
-                $this->main_movietype = trim($match['movietype']);
-                $this->main_year = $match['year'];
-                $this->main_endyear = $match['endyear'] ? $match['endyear'] : '0';
-                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
-            } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)(?<year>\d{4}|\?{4}).*\)(.*)!', $ititle, $match)) {
-                $this->main_movietype = trim($match['movietype']);
-                $this->main_year = $match['year'];
-                $this->main_endyear = $match['year'];
-                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
-            } elseif (preg_match('!(?<title>.*) \((?<movietype>.*)\)(.*)!', $ititle,
-                $match)) { // not yet released, but have been given a movietype.
-                $this->main_movietype = trim($match['movietype']);
-                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
-                $this->main_year = '0';
-                $this->main_endyear = '0';
-            } elseif (preg_match('!<title>(?<title>.*) - IMDb</title>!', $this->page["Title"],
-                $match)) { // not yet released, so no dates etc.
-                $this->main_title = htmlspecialchars_decode($match['title'], ENT_QUOTES);
-                $this->main_year = '0';
-                $this->main_endyear = '0';
+        $xpath = $this->getXpathPage("Title");
+        if (empty($xpath)) {
+            return array();  // no such page
+        }
+        if ($cells = $xpath->query("//title")) {
+            $title = explode("(", $cells->item(0)->nodeValue);
+            if (!empty($title[0])) {
+                $this->main_title = htmlspecialchars_decode(trim($title[0]), ENT_QUOTES);
             }
-            if ($this->main_year == "????") {
+            if (isset($title[1]) && !empty($title[1])) {
+                $typeYear = explode(")", $title[1]);
+                $posFirstDigit = strcspn($typeYear[0], '0123456789');
+                // Movietype available, year or year span possible
+                if ($posFirstDigit > 2) {
+                    $this->main_movietype = trim(substr($typeYear[0], 0, $posFirstDigit));
+                    $yearRaw = trim(substr($typeYear[0], $posFirstDigit));
+                    // Year only
+                    if (strpos($yearRaw, "–") === false) { // Not a normal dash
+                        $this->main_year = trim($yearRaw);
+                        $this->main_endyear = '0';
+                    } else {
+                        // year span
+                        $yearSpan = explode("–", $yearRaw); // Not a normal dash
+                        $this->main_year = trim($yearSpan[0]);
+                        $this->main_endyear = trim($yearSpan[1]);
+                    }
+                } else {
+                    // No movietype, year or year span possible
+                    $yearRaw = trim(substr($typeYear[0], $posFirstDigit));
+                    // Year only
+                    if (strpos($yearRaw, "–") === false) { // Not a normal dash
+                        $this->main_year = trim($yearRaw);
+                        $this->main_endyear = '0';
+                    } else {
+                        //year span
+                        $yearSpan = explode("–", $yearRaw); // Not a normal dash
+                        $this->main_year = trim($yearSpan[0]);
+                        $this->main_endyear = trim($yearSpan[1]);
+                    }
+                }
+                if ($this->main_year == "????") {
                 $this->main_year = "";
+            }
             }
         }
     }
@@ -193,8 +208,7 @@ class Title extends MdbBase
     /** Get movie type
      * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini-Series, Video Game, TV Short, Video)
      * @see IMDB page / (TitlePage)
-     * @brief This is faster than movietypes() as it is retrieved already together with the title.
-     *        If no movietype had been defined explicitly, it returns 'Movie' -- so this is always set.
+     * If no movietype has been defined explicitly, it returns 'Movie' -- so this is always set.
      */
     public function movietype()
     {
@@ -204,10 +218,6 @@ class Title extends MdbBase
             } // Most types are shown in the <title> tag
             if (!empty($this->main_movietype)) {
                 return $this->main_movietype;
-            }
-            // TV Special isn't shown in the page title but is mentioned next to the release date
-            if (preg_match('/title="See more release dates" >TV Special/', $this->getPage("Title"), $match)) {
-                $this->main_movietype = 'TV Special';
             }
             if (empty($this->main_movietype)) {
                 $this->main_movietype = 'Movie';
@@ -241,8 +251,8 @@ class Title extends MdbBase
     }
 
     /** Get end-year
-     *  Usually this returns the same value as year() -- except for those cases where production spanned multiple years, usually for series
-     * @return string year
+     * if production spanned multiple years, usually for series
+     * @return string year,  '' stil running tv series,  '0' if no end-year (Movies)
      * @see IMDB page / (TitlePage)
      */
     public function endyear()
