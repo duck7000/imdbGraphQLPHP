@@ -442,7 +442,7 @@ class Title extends MdbBase
     }
 
     #---------------------------------------------------------------[ Seasons ]---
-    /** Get the number of seasons or 0 if not a series (Test if something is a series first with Title::is_serial())
+    /** Get the number of seasons or 0 if not a series
      * @return int seasons number of seasons
      * @see IMDB page / (TitlePage)
      */
@@ -460,8 +460,11 @@ class Title extends MdbBase
 
             if ($this->seasoncount === 0) {
                 // Single season shows have a link rather than a select box
-                if (preg_match('|href="/title/tt\d{7,8}/episodes\?season=\d+|i', $this->getPage("Title"))) {
-                    $this->seasoncount = 1;
+                if ($singleSeason = $xpath->query('//div[@data-testid="episodes-browse-episodes"]//a')) {
+                    $href = $singleSeason->item(0)->getAttribute('href');
+                    if (stripos($href, "?season=1") !== false) {
+                        $this->seasoncount = 1;
+                    }
                 }
             }
         }
