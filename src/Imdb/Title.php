@@ -485,7 +485,7 @@ class Title extends MdbBase
                 return $this->main_plotoutline;
             }
             if ($plotoutlineRaw = $xpath->query('//span[@data-testid="plot-xl"]')) {
-                $this->main_plotoutline = trim(strip_tags($plotoutlineRaw->item(0)->nodeValue));
+                $this->main_plotoutline = htmlspecialchars_decode(trim(strip_tags($plotoutlineRaw->item(0)->nodeValue)));
             }
             // fallback if xpath does not work
             if ($this->main_plotoutline == "") {
