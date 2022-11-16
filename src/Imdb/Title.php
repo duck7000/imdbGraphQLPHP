@@ -504,21 +504,15 @@ class Title extends MdbBase
      */
     private function populatePoster()
     {
-        if (isset($this->jsonLD()->image)) {
-            $this->main_poster = $this->jsonLD()->image;
-        }
-        if (preg_match('!<img [^>]+title="[^"]+Poster"[^>]+src="([^"]+)"[^>]+/>!ims', $this->getPage("Title"), $match)
-            && !empty($match[1])) {
-            $this->main_poster_thumb = $match[1];
-        } else {
-            $xpath = $this->getXpathPage("Title");
-            $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
-            if (!empty($thumb) && $thumb->item(0) != null) {
-                $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
+        $xpath = $this->getXpathPage("Title");
+        $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
+        if (!empty($thumb) && $thumb->item(0) != null) {
+            $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
+            if (strpos($this->main_poster_thumb, '._V1')) {
+                $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
             }
         }
     }
-
 
     /**
      * Get the poster/cover image URL
@@ -557,7 +551,6 @@ class Title extends MdbBase
         if (!$photo_url) {
             return false;
         }
-
         $req = new Request($photo_url, $this->config);
         $req->sendRequest();
         if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
@@ -565,14 +558,8 @@ class Title extends MdbBase
             strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
             $image = $req->getResponseBody();
         } else {
-            $ctype = $req->getResponseHeader("Content-Type");
-            $this->debug_scalar("*photoerror* at " . __FILE__ . " line " . __LINE__ . ": " . $photo_url . ": Content Type is '$ctype'");
-            if (substr($ctype, 0, 4) == 'text') {
-                $this->debug_scalar("Details: <PRE>" . $req->getResponseBody() . "</PRE>\n");
-            }
             return false;
         }
-
         $fp2 = fopen($path, "w");
         if (!$fp2) {
             return false;
