@@ -460,7 +460,8 @@ class Title extends MdbBase
 
             if ($this->seasoncount === 0) {
                 // Single season shows have a link rather than a select box
-                if ($singleSeason = $xpath->query('//div[@data-testid="episodes-browse-episodes"]//a')) {
+                $singleSeason = $xpath->query('//div[@data-testid="episodes-browse-episodes"]//a');
+                if (!empty($singleSeason->item(0))) {
                     $href = $singleSeason->item(0)->getAttribute('href');
                     if (stripos($href, "?season=1") !== false) {
                         $this->seasoncount = 1;
