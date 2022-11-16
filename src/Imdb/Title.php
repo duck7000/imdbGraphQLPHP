@@ -474,27 +474,26 @@ class Title extends MdbBase
 
     #--------------------------------------------------------[ Plot (Outline) ]---
     /** Get the main Plot outline for the movie
-     * @param boolean $fallback Fallback to storyline if we could not catch plotoutline
      * @return string plotoutline
      * @see IMDB page / (TitlePage)
      */
     public function plotoutline()
     {
         if ($this->main_plotoutline == "") {
-            if (isset($this->jsonLD()->description)) {
-                $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description, ENT_QUOTES | ENT_HTML5);
-            } else {
-                $page = $this->getPage("Title");
-                if (preg_match('!class="summary_text">\s*(.*?)\s*</div>!ims', $page, $match)) {
-                    $this->main_plotoutline = trim($match[1]);
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return $this->main_plotoutline;
+            }
+            if ($plotoutlineRaw = $xpath->query('//span[@data-testid="plot-xl"]')) {
+                $this->main_plotoutline = trim(strip_tags($plotoutlineRaw->item(0)->nodeValue));
+            }
+            // fallback if xpath does not work
+            if ($this->main_plotoutline == "") {
+                if (isset($this->jsonLD()->description)) {
+                    $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description, ENT_QUOTES | ENT_HTML5);
                 }
             }
-
         }
-        $this->main_plotoutline = preg_replace('!\s*<a href="/title/tt\d{7,8}/(plotsummary|synopsis)[^>]*>See full (summary|synopsis).*$!i',
-            '', $this->main_plotoutline);
-        $this->main_plotoutline = preg_replace('#<a href="[^"]+"\s+>Add a Plot</a>&nbsp;&raquo;#', '',
-            $this->main_plotoutline);
         return $this->main_plotoutline;
     }
 
