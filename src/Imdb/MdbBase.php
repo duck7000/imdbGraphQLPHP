@@ -20,32 +20,6 @@ class MdbBase extends Config
 {
     public $version = '7.3.1';
 
-    protected $months = array(
-      "January" => "01",
-      "Jan" => "01",
-      "February" => "02",
-      "Feb" => "02",
-      "March" => "03",
-      "Mar" => "03",
-      "April" => "04",
-      "Apr" => "04",
-      "May" => "05",
-      "June" => "06",
-      "Jun" => "06",
-      "July" => "07",
-      "Jul" => "07",
-      "August" => "08",
-      "Aug" => "08",
-      "September" => "09",
-      "Sep" => "09",
-      "October" => "10",
-      "Oct" => "10",
-      "November" => "11",
-      "Nov" => "11",
-      "December" => "12",
-      "Dec" => "12"
-    );
-
     /**
      * @var Config
      */
@@ -80,7 +54,6 @@ class MdbBase extends Config
                        "photoroot",
                        "imdb_img_url",
                        "debug",
-                       "throwHttpExceptions",
                        "use_proxy",
                        "ip_address",
                        "proxy_host",
@@ -118,16 +91,6 @@ class MdbBase extends Config
         } elseif (preg_match("/(?:nm|tt)(\d{7,8})/", $id, $matches)) {
             $this->imdbID = $matches[1];
         }
-    }
-
-    /**
-     * Get numerical value for month name
-     * @param string name name of month
-     * @return integer month number
-     */
-    protected function monthNo($mon)
-    {
-        return @$this->months[$mon];
     }
 
     /**
@@ -169,5 +132,4 @@ class MdbBase extends Config
     {
         return '';
     }
-
 }

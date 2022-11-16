@@ -56,11 +56,7 @@ class Pages
     {
         $req = $this->buildRequest($url);
         if (!$req->sendRequest()) {
-            if ($this->config->throwHttpExceptions) {
-                throw new Exception\Http("Failed to connect to server when requesting url [$url]");
-            } else {
-                return '';
-            }
+            return '';
         }
 
         if (200 == $req->getStatus()) {
@@ -68,13 +64,7 @@ class Pages
         } elseif ($redirectUrl = $req->getRedirect()) {
             return $this->requestPage($redirectUrl);
         } else {
-            if ($this->config->throwHttpExceptions) {
-                $exception = new Exception\Http("Failed to retrieve url [$url]. Status code [{$req->getStatus()}]");
-                $exception->HTTPStatusCode = $req->getStatus();
-                throw $exception;
-            } else {
-                return '';
-            }
+            return '';
         }
     }
 
@@ -82,5 +72,4 @@ class Pages
     {
         return new Request($url, $this->config);
     }
-
 }

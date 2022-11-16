@@ -87,9 +87,6 @@ class Request
         if ($this->page !== false) {
             return true;
         }
-        if ($this->config->throwHttpExceptions) {
-            throw new Exception\Http("Failed fetch url [$this->urltoopen] " . curl_error($this->ch));
-        }
         return false;
     }
 
