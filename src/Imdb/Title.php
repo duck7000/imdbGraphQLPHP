@@ -1077,8 +1077,13 @@ class Title extends MdbBase
     public function episodes()
     {
         if (empty($this->season_episodes)) {
+
+            if ($this->seasons() === 0) {
+                return $this->season_episodes;
+            }
+
             $xpath = $this->getXpathPage("Episodes");
-            if (empty((array) $xpath)) {
+            if (empty($xpath)) {
                 return $this->season_episodes; // no such page
             }
             /*
