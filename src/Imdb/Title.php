@@ -1078,7 +1078,7 @@ class Title extends MdbBase
     {
         if (empty($this->season_episodes)) {
             $xpath = $this->getXpathPage("Episodes");
-            if (empty($xpath)) {
+            if (empty((array) $xpath)) {
                 return $this->season_episodes; // no such page
             }
             /*
