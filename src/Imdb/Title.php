@@ -55,6 +55,7 @@ class Title extends MdbBase
     protected $movieruntimes = array();
     protected $mpaas = array();
     protected $plot = array();
+    protected $creators = array();
     protected $seasoncount = -1;
     protected $season_episodes = array();
     protected $soundtracks = array();
@@ -431,18 +432,29 @@ class Title extends MdbBase
      */
     public function creator()
     {
-        $result = array();
-        if ($this->jsonLD()->{'@type'} === 'TVSeries' && isset($this->jsonLD()->creator) && is_array($this->jsonLD()->creator)) {
-            foreach ($this->jsonLD()->creator as $creator) {
-                if ($creator->{'@type'} === 'Person') {
-                    $result[] = array(
-                        'name' => $creator->name,
-                        'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
-                    );
+        if (empty($this->creators)) {
+            if ($this->seasons() === 0) {
+                return $this->creators;
+            }
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return $this->creators;
+            }
+            if ($creatorsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
+                if ($creatorsListItems = $creatorsRaw->item(0)->getElementsByTagName('li')) {
+                    foreach ($creatorsListItems as $creator) {
+                        if ($anchor = $creator->getElementsByTagName('a')) {
+                            $href = $anchor->item(0)->getAttribute('href');
+                            $this->creators[] = array(
+                                'name' => trim($anchor->item(0)->nodeValue),
+                                'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
+                            );
+                        }
+                    }
                 }
             }
         }
-        return $result;
+        return $this->creators;
     }
 
     #---------------------------------------------------------------[ Seasons ]---
