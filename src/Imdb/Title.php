@@ -410,11 +410,15 @@ class Title extends MdbBase
     public function genres()
     {
         if (empty($this->moviegenres)) {
-            $genres = isset($this->jsonLD()->genre) ? $this->jsonLD()->genre : array();
-            if (!is_array($genres)) {
-                $genres = (array)$genres;
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return array();
             }
-            $this->moviegenres = $genres;
+            if ($genresRaw = $xpath->query("//div[@data-testid=\"genres\"]//a")) {
+                foreach ($genresRaw as $genre) {
+                    $this->moviegenres[] = trim($genre->nodeValue);
+                }
+            }
         }
         return $this->moviegenres;
     }
