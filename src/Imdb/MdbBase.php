@@ -18,7 +18,7 @@ namespace Imdb;
  */
 class MdbBase extends Config
 {
-    public $version = '7.3.1';
+    public $version = '8.0.0';
 
     /**
      * @var Config
