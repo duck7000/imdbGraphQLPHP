@@ -269,7 +269,7 @@ class Title extends MdbBase
      * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
      * @see IMDB page / (TitlePage)
      */
-    public function runtimes()
+    public function runtime()
     {
         if (empty($this->movieruntimes)) {
             $xpath = $this->getXpathPage("Technical");
