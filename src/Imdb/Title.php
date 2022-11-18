@@ -384,7 +384,7 @@ class Title extends MdbBase
      * @return array languages (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
      */
-    public function languages()
+    public function language()
     {
         if (empty($this->langs)) {
             $xpath = $this->getXpathPage("Title");
