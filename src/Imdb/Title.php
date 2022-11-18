@@ -1339,7 +1339,7 @@ class Title extends MdbBase
      * @return array keywords
      * @see IMDB page /keywords
      */
-    public function keywords()
+    public function keyword()
     {
         if (empty($this->all_keywords)) {
             $xpath = $this->getXpathPage("Keywords");
