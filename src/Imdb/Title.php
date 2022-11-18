@@ -743,7 +743,7 @@ class Title extends MdbBase
      * @return array taglines (array[0..n] of strings)
      * @see IMDB page /taglines
      */
-    public function taglines()
+    public function tagline()
     {
         if (empty($this->taglines)) {
             $xpath = $this->getXpathPage("Taglines");
