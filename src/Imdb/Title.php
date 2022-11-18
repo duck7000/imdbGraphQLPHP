@@ -1304,7 +1304,7 @@ class Title extends MdbBase
      * real_loc: Real filming location, movie_loc: location in the movie
      * @see IMDB page /locations
      */
-    public function locations()
+    public function location()
     {
         if (empty($this->locations)) {
             $xpath = $this->getXpathPage("Locations");
