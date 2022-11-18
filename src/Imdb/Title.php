@@ -461,7 +461,7 @@ class Title extends MdbBase
      * @return int seasons number of seasons
      * @see IMDB page / (TitlePage)
      */
-    public function seasons()
+    public function season()
     {
         if ($this->seasoncount == -1) {
             $xpath = $this->getXpathPage("Title");
