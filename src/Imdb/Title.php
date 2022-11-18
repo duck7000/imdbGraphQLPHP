@@ -421,7 +421,7 @@ class Title extends MdbBase
     public function creator()
     {
         if (empty($this->creators)) {
-            if ($this->seasons() === 0) {
+            if ($this->season() === 0) {
                 return $this->creators;
             }
             $xpath = $this->getXpathPage("Title");
