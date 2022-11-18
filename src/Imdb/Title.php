@@ -63,7 +63,6 @@ class Title extends MdbBase
     protected $trivia = array();
     protected $locations = array();
     protected $moviealternateversions = array();
-    protected $jsonLD = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -1385,28 +1384,5 @@ class Title extends MdbBase
             }
         }
         return $this->moviealternateversions;
-    }
-
-    #========================================================[ Helper Functions]===
-    protected function getPage($page = null)
-    {
-        if (!empty($this->page[$page])) {
-            return $this->page[$page];
-        }
-
-        $this->page[$page] = parent::getPage($page);
-
-        return $this->page[$page];
-    }
-
-    protected function jsonLD()
-    {
-        if ($this->jsonLD) {
-            return $this->jsonLD;
-        }
-        $page = $this->getPage("Title");
-        preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
-        $this->jsonLD = json_decode($matches[1]);
-        return $this->jsonLD;
     }
 }
