@@ -294,7 +294,7 @@ class Title extends MdbBase
      * Rating out of 100 on metacritic
      * @return int|null
      */
-    public function metacriticRating()
+    public function metacritic()
     {
         $xpath = $this->getXpathPage("Title");
         $extract = $xpath->query("//span[@class='score-meta']");
