@@ -1071,7 +1071,7 @@ class Title extends MdbBase
      * @see IMDB page /episodes
      * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
      */
-    public function episodes()
+    public function episode()
     {
         if (empty($this->season_episodes)) {
 
