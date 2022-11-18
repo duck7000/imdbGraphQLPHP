@@ -116,41 +116,6 @@ class Title extends MdbBase
         $this->setid($id);
     }
 
-    #-------------------------------------------------------------[ Open Page ]---
-
-    protected function buildUrl($page = null)
-    {
-        return "https://" . $this->imdbsite . "/title/tt" . $this->imdbID . $this->getUrlSuffix($page);
-    }
-
-    /**
-     * @param string $pageName internal name of the page
-     * @return string
-     */
-    protected function getUrlSuffix($pageName)
-    {
-        if (isset($this->pageUrls[$pageName])) {
-            return $this->pageUrls[$pageName];
-        }
-
-        if (preg_match('!^Episodes-(-?\d+)$!', $pageName, $match)) {
-            if (strlen($match[1]) == 4) {
-                return '/episodes?year=' . $match[1];
-            } else {
-                return '/episodes?season=' . $match[1];
-            }
-        }
-    }
-
-    /**
-     * Get the URL for this title's page
-     * @return string
-     */
-    public function main_url()
-    {
-        return "https://" . $this->imdbsite . "/title/tt" . $this->imdbid() . "/";
-    }
-
     /**
      * Setup title and year properties
      */
