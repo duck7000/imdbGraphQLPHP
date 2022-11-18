@@ -1064,7 +1064,7 @@ class Title extends MdbBase
     {
         if (empty($this->season_episodes)) {
 
-            if ($this->seasons() === 0) {
+            if ($this->season() === 0) {
                 return $this->season_episodes;
             }
 
