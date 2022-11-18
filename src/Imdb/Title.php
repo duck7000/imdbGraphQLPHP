@@ -857,34 +857,36 @@ class Title extends MdbBase
 
     #----------------------------------------------------------------[ Actors ]---
     /*
-    * Get the Stars members for this title
+    * Get the Star cast members for this title
     * @return empty array OR array Stars (array[0..n] of array[imdb,name])
-     * e.g.
-     * <pre>
-     * array (
-     *  'imdb' => '0000134',
-     *  'name' => 'Robert De Niro', // Actor's name on imdb
-     * )
-     * </pre>
     */
-    public function actor_stars()
+    public function stars()
     {
-        $stars = array();
-        if (empty($this->jsonLD()->actor)) {
-            return $stars;
+        if (empty($this->actor_stars)) {
+            $xpath = $this->getXpathPage("Title");
+            if (empty($xpath)) {
+                return $this->actor_stars;
+            }
+            if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
+                foreach ($actorStarsRaw as $items) {
+                    if ($items->getElementsByTagName('a')->item(0)->nodeValue === 'Stars') {
+                        if ($actorStarsListItems = $items->getElementsByTagName('li')) {
+                            foreach ($actorStarsListItems as $actorStars) {
+                                if ($anchor = $actorStars->getElementsByTagName('a')) {
+                                    $href = $anchor->item(0)->getAttribute('href');
+                                    $this->actor_stars[] = array(
+                                        'name' => trim($anchor->item(0)->nodeValue),
+                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
+                                    );
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
         }
-        $actors = $this->jsonLD()->actor;
-        if (!is_array($this->jsonLD()->actor)) {
-            $actors = array($this->jsonLD()->actor);
-        }
-        foreach ($actors as $actor) {
-            $act = array(
-                'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $actor->url),
-                'name' => $actor->name,
-            );
-            $stars[] = $act;
-        }
-        return $stars;
+        return $this->actor_stars;
     }
 
     /**
