@@ -1174,7 +1174,7 @@ class Title extends MdbBase
      * @return array quote array[string quote, array character]; character: array[string url, string name]
      * @see IMDB page /quotes
      */
-    public function quotes()
+    public function quote()
     {
         if (empty($this->moviequotes)) {
             $xpath = $this->getXpathPage("Quotes");
