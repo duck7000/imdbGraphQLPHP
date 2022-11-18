@@ -1375,6 +1375,8 @@ class Title extends MdbBase
         return $this->moviealternateversions;
     }
 
+    #========================================================[ Helper functions ]===  
+
     protected function getPage($page = null)
     {
         if (!empty($this->page[$page])) {
