@@ -1383,4 +1383,15 @@ class Title extends MdbBase
         }
         return $this->moviealternateversions;
     }
+
+    protected function getPage($page = null)
+    {
+        if (!empty($this->page[$page])) {
+            return $this->page[$page];
+        }
+
+        $this->page[$page] = parent::getPage($page);
+
+        return $this->page[$page];
+    }
 }
