@@ -503,12 +503,6 @@ class Title extends MdbBase
             if ($plotoutlineRaw = $xpath->query('//span[@data-testid="plot-xl"]')) {
                 $this->main_plotoutline = htmlspecialchars_decode(trim(strip_tags($plotoutlineRaw->item(0)->nodeValue)), ENT_QUOTES | ENT_HTML5);
             }
-            // fallback if xpath does not work
-            if ($this->main_plotoutline == "") {
-                if (isset($this->jsonLD()->description)) {
-                    $this->main_plotoutline = htmlspecialchars_decode($this->jsonLD()->description, ENT_QUOTES | ENT_HTML5);
-                }
-            }
         }
         return $this->main_plotoutline;
     }
