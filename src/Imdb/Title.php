@@ -407,7 +407,7 @@ class Title extends MdbBase
      * @return array genres (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
      */
-    public function genres()
+    public function genre()
     {
         if (empty($this->moviegenres)) {
             $xpath = $this->getXpathPage("Title");
