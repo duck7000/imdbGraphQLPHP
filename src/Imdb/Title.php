@@ -49,6 +49,7 @@ class Title extends MdbBase
     protected $main_endyear = -1;
     protected $main_top250 = -1;
     protected $main_rating = -1;
+    protected $main_photo = array();
     protected $moviegenres = array();
     protected $moviequotes = array();
     protected $movierecommendations = array();
@@ -77,6 +78,7 @@ class Title extends MdbBase
         "Soundtrack" => "/soundtrack",
         "Taglines" => "/taglines",
         "Technical" => "/technical",
+        "Mediaindex" => "/mediaindex",
         "Title" => "/",
         "Trivia" => "/trivia",
     );
@@ -1373,6 +1375,31 @@ class Title extends MdbBase
             }
         }
         return $this->moviealternateversions;
+    }
+
+    #-------------------------------------------------[ Main images on title page ]---
+    /**
+     * Get image URLs for the 12 pictures on the title page
+     * @return array [0..n] of string image source
+     */
+    public function mainphoto()
+    {
+        if (empty($this->main_photo)) {
+            $xpath = $this->getXpathPage("Mediaindex");
+            if ($cells = $xpath->query('//div[@id="media_index_thumbnail_grid"]//img')) {
+                if ($cells->length > 0) {
+                    foreach ($cells as $key => $cell) {
+                        if ($src = $cell->getAttribute('src')) {
+                            $this->main_photo[] = $src;
+                        }
+                        if ($key == 11) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return $this->main_photo;
     }
 
     #========================================================[ Helper functions ]===  
