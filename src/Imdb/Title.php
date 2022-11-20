@@ -50,6 +50,7 @@ class Title extends MdbBase
     protected $main_top250 = -1;
     protected $main_rating = -1;
     protected $main_photo = array();
+    protected $main_awards = array();
     protected $moviegenres = array();
     protected $moviequotes = array();
     protected $movierecommendations = array();
@@ -1400,6 +1401,35 @@ class Title extends MdbBase
             }
         }
         return $this->main_photo;
+    }
+
+    #-------------------------------------------------------[ Main Awards ]---
+    /**
+     * Get main awards from yellow block at title page
+     * @return array main_awards (array[string award,string win_nom])
+     * @see IMDB page / (TitlePage)
+     */
+    public function mainaward()
+    {
+        if (empty($this->main_awards)) {
+            $xp = $this->getXpathPage("Title");
+            $awards = $xp->query("//li[contains(@data-testid, 'award_information')]");
+            if ($awards->length > 0) {
+                $this->main_awards['award'] = '';
+                $this->main_awards['win_nom'] = '';
+                if ($anchor = $awards->item(0)->getElementsByTagName('a')) {
+                    if ($anchor->item(0)->nodeValue !== '') {
+                        $this->main_awards['award'] = trim($anchor->item(0)->nodeValue);
+                    }
+                }
+                if ($label = $awards->item(0)->getElementsByTagName('label')) {
+                    if ($label->item(0)->nodeValue !== '') {
+                        $this->main_awards['win_nom'] = trim($label->item(0)->nodeValue); 
+                    }
+                }
+            }
+        }
+        return $this->main_awards;
     }
 
     #========================================================[ Helper functions ]===  
