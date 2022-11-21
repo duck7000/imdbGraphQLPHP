@@ -169,12 +169,16 @@ class Title extends MdbBase
                     // Year only
                     if (strpos($yearRaw, "–") === false) { // Not a normal dash
                         $this->main_year = trim($yearRaw);
-                        $this->main_endyear = '0';
+                        $this->main_endyear = '';
                     } else {
                         // year span
                         $yearSpan = explode("–", $yearRaw); // Not a normal dash
                         $this->main_year = trim($yearSpan[0]);
-                        $this->main_endyear = trim($yearSpan[1]);
+                        if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
+                            $this->main_endyear = trim($yearSpan[1]);
+                        } else {
+                            $this->main_endyear = '';
+                        }
                     }
                 } else {
                     // No movietype, year or year span possible
@@ -182,17 +186,21 @@ class Title extends MdbBase
                     // Year only
                     if (strpos($yearRaw, "–") === false) { // Not a normal dash
                         $this->main_year = trim($yearRaw);
-                        $this->main_endyear = '0';
+                        $this->main_endyear = '';
                     } else {
                         //year span
                         $yearSpan = explode("–", $yearRaw); // Not a normal dash
                         $this->main_year = trim($yearSpan[0]);
-                        $this->main_endyear = trim($yearSpan[1]);
+                        if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
+                            $this->main_endyear = trim($yearSpan[1]);
+                        } else {
+                            $this->main_endyear = '';
+                        }
                     }
                 }
                 if ($this->main_year == "????") {
-                $this->main_year = "";
-            }
+                    $this->main_year = "";
+                }
             }
         }
     }
