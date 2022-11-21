@@ -622,8 +622,8 @@ class Title extends MdbBase
                     $country = trim($countryRaw[0]);
                 }
                 $this->akas[] = array(
-                    "country" => $country,
-                    "title" => $title
+                    "country" => ucwords($country),
+                    "title" => ucwords($title)
                 );
             }
         }
