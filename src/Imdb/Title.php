@@ -948,7 +948,7 @@ class Title extends MdbBase
                     $role = '';
                     foreach ($roleLines as $key => $roleLine) {
                         //get rid of not needed episode info
-                        if (strpos($roleLine, 'episode') !== false || strpos($roleLine, '/ ...') !== false || empty($roleLine)) {
+                        if (strpos($roleLine, 'episode') !== false || strpos($roleLine, '/ ...') !== false || empty(trim($roleLine))) {
                             continue;
                         } else {
                             $role .=  trim(preg_replace('#[\xC2\xA0]#', '', $roleLine)) . ' ';
