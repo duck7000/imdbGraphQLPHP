@@ -287,7 +287,7 @@ class Title extends MdbBase
                             $timeTemp = explode("(", substr($runtime, $pos + 1));
                             $time = intval(preg_replace('/[^0-9]/', '', $timeTemp[0]));
                             if (isset($timeTemp[1]) && !empty($timeTemp[1])) {
-                                $desc = '(' . trim(strip_tags($timeTemp[1]));
+                                $desc = '(' . htmlspecialchars_decode(trim(strip_tags($timeTemp[1])));
                             } else {
                                 $desc = '';
                             }
