@@ -717,7 +717,14 @@ class Title extends MdbBase
                         if (count($t) > 1) {
                             // author available, get only author name
                             $authorRaw = explode("@", strip_tags($t[1]));
-                            $authorArray = array_values(array_filter(explode("&lt;", $authorRaw[0])));
+                            if (strpos($authorRaw[0], "(") !== false) {
+                                $needle = "(";
+                            } elseif (strpos($authorRaw[0], "{") !== false) {
+                                $needle = "{";
+                            } else {
+                                $needle = "&lt;";
+                            }
+                            $authorArray = array_values(array_filter(explode($needle, $authorRaw[0])));
                             $authorStripped = explode(",", $authorArray[0]);
                             $author = trim($authorStripped[0]);
                         }
