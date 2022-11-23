@@ -266,7 +266,7 @@ class Title extends MdbBase
     #---------------------------------------------------------------[ Runtime ]---
     /**
      * Retrieve all runtimes and their descriptions
-     * @return array runtimes (array[0..n] of array[time,annotations]) where annotations is an array of comments meant to describe this cut
+     * @return array runtimes (array[0..n] of array[time,annotations])
      * @see IMDB page / (TitlePage)
      */
     public function runtime()
@@ -281,25 +281,30 @@ class Title extends MdbBase
                 $runtimes = explode("<br>", $runtimesHtml);
                 foreach ($runtimes as $runtime) {
                     if ($runtime != "") {
-                        $pos = strpos($runtime, '(');
-                        $annotations = array();
-                        if ($pos !== false) {
-                            $timeTemp = explode("(", substr($runtime, $pos + 1));
-                            $time = intval(preg_replace('/[^0-9]/', '', $timeTemp[0]));
-                            if (isset($timeTemp[1]) && !empty($timeTemp[1])) {
-                                $desc = '(' . htmlspecialchars_decode(trim(strip_tags($timeTemp[1])));
+                        $timeTemp = explode("(", $runtime);
+                        $arr = array();
+                        $count = count($timeTemp);
+                        foreach ($timeTemp as $value) {
+                            if (stripos($value, "hr") !== false) {
+                                continue;
+                            } elseif (stripos($value, "min") !== false) {
+                                $arr["time"] = intval(preg_replace('/[^0-9]/', '', $value));
+                                if ($key <= $count -1) {
+                                    $arr["annotations"] = '';
+                                }
+                            } elseif (stripos($value, ")") !== false) {
+                                if ($key <= $count -1) {
+                                    $arr["annotations"] = '(' . htmlspecialchars_decode(trim(strip_tags($value)));
+                                } else {
+                                    break;
+                                }
                             } else {
-                                $desc = '';
+                                if ($key <= $count -1) {
+                                    $arr["annotations"] = '';
+                                }
                             }
-                        } else {
-                            $time = intval(preg_replace('/[^0-9]/', '', $runtime));
-                            $desc = '';
                         }
-                        $annotations[] = $desc;
-                        $this->movieruntimes[] = array(
-                            "time" => $time,
-                            "annotations" => $annotations
-                        );
+                        $this->movieruntimes[] = $arr;
                     }
                 }
             }
