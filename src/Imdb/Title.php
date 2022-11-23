@@ -1331,8 +1331,8 @@ class Title extends MdbBase
                         $movie = trim($cell->getElementsByTagName('dd')->item(0)->nodeValue);
                     }
                     $this->locations[] = array(
-                        'real_loc' => $real,
-                        'movie_loc' => $movie
+                        'real' => $real,
+                        'movie' => $movie
                     );
                 }
             }
