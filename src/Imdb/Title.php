@@ -1295,7 +1295,7 @@ class Title extends MdbBase
                         }
                     }
                     $this->soundtracks[] = array(
-                        'soundtrack' => trim(strip_tags($html[0])),
+                        'soundtrack' => ucwords(strtolower(trim(strip_tags($html[0])))),
                         'credits' => trim($credits)
                     );
                 }
