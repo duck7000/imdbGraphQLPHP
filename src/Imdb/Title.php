@@ -1370,7 +1370,7 @@ class Title extends MdbBase
      * @return array Alternate Version (array[0..n] of string)
      * @see IMDB page /alternateversions
      */
-    public function alternateVersion()
+    public function alternateversion()
     {
         if (empty($this->moviealternateversions)) {
             $xpath = $this->getXpathPage("AlternateVersions");
