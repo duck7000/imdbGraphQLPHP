@@ -1203,14 +1203,15 @@ class Title extends MdbBase
                         if ($anchor = $quoteItem->getElementsByTagName('a')->item(0)) {
                            $href = $anchor->getAttribute('href');
                            $url = str_replace('/name/', 'https://' . $this->imdbsite . '/name/', $href);
-                           $quoteLine = explode(":", $quoteItem->nodeValue, 2);
+                           $quoteItemStripped = str_replace("\n", " ", $quoteItem->nodeValue);
+                           $quoteLine = explode(":", $quoteItemStripped, 2);
                            $this->moviequotes[$key][] = array(
                                         'quote' => trim(strip_tags($quoteLine[1])),
                                         'character' => array('url' => $url, 'name' => trim($quoteLine[0]))
                                     );
                         } else {
                             $this->moviequotes[$key][] = array(
-                                        'quote' => trim(strip_tags($quoteItem->nodeValue)),
+                                        'quote' => trim(strip_tags($quoteItemStripped)),
                                         'character' => array('url' => '', 'name' => '')
                                     );
                         }
