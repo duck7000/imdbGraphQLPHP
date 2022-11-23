@@ -1182,8 +1182,8 @@ class Title extends MdbBase
     }
 
     #==========================================================[ /quotes page ]===
-    /** Get the quotes for a given movie (split-up variant)
-     * @return array quote array[string quote, array character]; character: array[string url, string name]
+    /** Get the quotes for a given movie
+     * @return array quote array[string quote];
      * @see IMDB page /quotes
      */
     public function quote()
@@ -1196,25 +1196,12 @@ class Title extends MdbBase
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array(); // no data available
             }
-            if ($quotesContent = $xpath->query("//div[@class='sodatext']")) {
+            if ($quotesContent = $xpath->query("//div[@class=\"quote soda sodavote odd\" or @class=\"quote soda sodavote even\"]")) {
                 foreach ($quotesContent as $key => $value) {
                     $p = $value->getElementsByTagName('p');
                     foreach ($p as $quoteItem) {
-                        if ($anchor = $quoteItem->getElementsByTagName('a')->item(0)) {
-                           $href = $anchor->getAttribute('href');
-                           $url = str_replace('/name/', 'https://' . $this->imdbsite . '/name/', $href);
-                           $quoteItemStripped = str_replace("\n", " ", $quoteItem->nodeValue);
-                           $quoteLine = explode(":", $quoteItemStripped, 2);
-                           $this->moviequotes[$key][] = array(
-                                        'quote' => trim(strip_tags($quoteLine[1])),
-                                        'character' => array('url' => $url, 'name' => trim($quoteLine[0]))
-                                    );
-                        } else {
-                            $this->moviequotes[$key][] = array(
-                                        'quote' => trim(strip_tags($quoteItemStripped)),
-                                        'character' => array('url' => '', 'name' => '')
-                                    );
-                        }
+                       $quoteItemStripped = str_replace("\n", " ", $quoteItem->nodeValue);
+                       $this->moviequotes[$key][] = trim(strip_tags($quoteItemStripped));
                     }
                     ++$key;
                 }
