@@ -157,7 +157,7 @@ class Title extends MdbBase
         if ($cells = $xpath->query("//title")) {
             $title = explode("(", $cells->item(0)->nodeValue);
             if (!empty($title[0])) {
-                $this->main_title = ucwords(htmlspecialchars_decode(trim($title[0]), ENT_QUOTES));
+                $this->main_title = ucwords(trim(str_replace('"', '', $title[0])));
             }
             if (isset($title[1]) && !empty($title[1])) {
                 $typeYear = explode(")", $title[1]);
