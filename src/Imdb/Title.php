@@ -445,16 +445,24 @@ class Title extends MdbBase
                 return $this->creators;
             }
             if ($creatorsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
-                if ($creatorsListItems = $creatorsRaw->item(0)->getElementsByTagName('li')) {
-                    foreach ($creatorsListItems as $creator) {
-                        if ($anchor = $creator->getElementsByTagName('a')) {
-                            $href = $anchor->item(0)->getAttribute('href');
-                            $this->creators[] = array(
-                                'name' => trim($anchor->item(0)->nodeValue),
-                                'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
-                            );
+                foreach ($creatorsRaw as $items) {
+                    if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "creator") !== false ||
+                        stripos($items->getElementsByTagName('button')->item(0)->nodeValue, "creator") !== false) {
+                        if ($listItems = $items->getElementsByTagName('li')) {
+                            foreach ($listItems as $creator) {
+                                if ($anchor = $creator->getElementsByTagName('a')) {
+                                    $href = $anchor->item(0)->getAttribute('href');
+                                    $this->creators[] = array(
+                                        'name' => trim($anchor->item(0)->nodeValue),
+                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
+                                    );
+                                }
+                            }
                         }
+                    } else {
+                        continue;
                     }
+                    break;
                 }
             }
         }
