@@ -872,9 +872,10 @@ class Title extends MdbBase
             }
             if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($actorStarsRaw as $items) {
-                    if ($items->getElementsByTagName('a')->item(0)->nodeValue === 'Stars') {
-                        if ($actorStarsListItems = $items->getElementsByTagName('li')) {
-                            foreach ($actorStarsListItems as $actorStars) {
+                    if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "star") !== false ||
+                        stripos($items->getElementsByTagName('button')->item(0)->nodeValue, "star") !== false) {
+                        if ($listItems = $items->getElementsByTagName('li')) {
+                            foreach ($listItems as $actorStars) {
                                 if ($anchor = $actorStars->getElementsByTagName('a')) {
                                     $href = $anchor->item(0)->getAttribute('href');
                                     $this->actor_stars[] = array(
@@ -884,8 +885,10 @@ class Title extends MdbBase
                                 }
                             }
                         }
-                        break;
+                    } else {
+                        continue;
                     }
+                    break;
                 }
             }
         }
