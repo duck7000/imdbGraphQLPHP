@@ -50,6 +50,7 @@ class Title extends MdbBase
     protected $main_top250 = -1;
     protected $main_rating = -1;
     protected $main_photo = array();
+    protected $trailers = array();
     protected $main_awards = array();
     protected $moviegenres = array();
     protected $moviequotes = array();
@@ -79,6 +80,7 @@ class Title extends MdbBase
         "Soundtrack" => "/soundtrack",
         "Taglines" => "/taglines",
         "Technical" => "/technical",
+        "Video" => "/videogallery/content_type-trailer",
         "Mediaindex" => "/mediaindex",
         "Title" => "/",
         "Trivia" => "/trivia",
@@ -555,37 +557,6 @@ class Title extends MdbBase
             return $this->main_poster_thumb;
         }
         return $this->main_poster;
-    }
-
-    /**
-     * Save the poster/cover image to disk
-     * @param string $path where to store the file
-     * @param boolean $thumb get the thumbnail (100x140, default) or the
-     *        bigger variant (400x600 - FALSE)
-     * @return boolean success
-     * @see IMDB page / (TitlePage)
-     */
-    public function savephoto($path, $thumb = true)
-    {
-        $photo_url = $this->photo($thumb);
-        if (!$photo_url) {
-            return false;
-        }
-        $req = new Request($photo_url, $this->config);
-        $req->sendRequest();
-        if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
-            strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
-            strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
-            $image = $req->getResponseBody();
-        } else {
-            return false;
-        }
-        $fp2 = fopen($path, "w");
-        if (!$fp2) {
-            return false;
-        }
-        fputs($fp2, $image);
-        return true;
     }
 
     #-------------------------------------------------[ Country of Production ]---
@@ -1418,6 +1389,53 @@ class Title extends MdbBase
             }
         }
         return $this->main_photo;
+    }
+
+    #-------------------------------------------------[ Trailer ]---
+    /**
+     * Get video URL's and images from videogallery page (Trailers only)
+     * @return array trailers (array[string url,string img])
+     * Url is a embeded url that is tested to work in iframe (won't work in html5 <video>)
+     */
+    public function trailer()
+    {
+        if (empty($this->trailers)) {
+            if ($xpath = $this->getXpathPage("Video")) {
+                if ($cells = $xpath->query('//div[@class="search-results"]//li')) {
+                    if ($cells->length > 0) {
+                        foreach ($cells as $cell) {
+                            $temp = array();
+                            if ($imgRaw = $cell->getElementsByTagName('img')) {
+                                if ($imgSrc = $imgRaw->item(0)->getAttribute('loadlate')) {
+                                    $img = $imgSrc;
+                                } else {
+                                    $img = '';
+                                }
+                            }
+                            if ($anchor = $cell->getElementsByTagName('a')) {
+                                if ($videoId = $anchor->item(0)->getAttribute('data-video')) {
+                                    $urlEmbed = "https://" . $this->imdbsite . "/video/imdb/" . $videoId . "/imdb/embed";
+                                    $headers = get_headers($urlEmbed);
+			                        if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+			                            continue;
+			                        } else {
+			                            $html = file_get_contents($urlEmbed);
+			                            if (stripos($html, 'class="available"') !== false) {
+				                            $temp["url"] = $urlEmbed;
+				                            $temp["img"] = $img;
+			                            }
+			                        }
+                                }
+                            }
+                            if (!empty($temp) && count($this->trailers) <= 2) {
+                                $this->trailers[] = $temp;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $this->trailers;
     }
 
     #-------------------------------------------------------[ Main Awards ]---
