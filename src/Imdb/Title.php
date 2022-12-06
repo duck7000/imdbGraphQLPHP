@@ -1381,7 +1381,7 @@ class Title extends MdbBase
                         if ($src = $cell->getAttribute('src')) {
                             $this->main_photo[] = $src;
                         }
-                        if ($key == 11) {
+                        if ($key == 3) {
                             break;
                         }
                     }
