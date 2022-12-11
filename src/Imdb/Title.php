@@ -610,8 +610,7 @@ class Title extends MdbBase
                 } elseif (stripos($description, 'alternative title') !== false) {
                     $country = '(Alternative Title)';
                 } else {
-                    $countryRaw = explode("(", $description);
-                    $country = trim($countryRaw[0]);
+                    $country = trim($description);
                 }
                 $this->akas[] = array(
                     "country" => ucwords(htmlspecialchars($country)),
