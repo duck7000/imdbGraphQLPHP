@@ -607,6 +607,8 @@ class Title extends MdbBase
                 $description = trim($akaTds->item(0)->nodeValue);
                 if (stripos($description, 'original title') !== false) {
                     $country = '(Original Title)';
+                } elseif (stripos($description, 'alternative title') !== false) {
+                    $country = '(Alternative Title)';
                 } else {
                     $countryRaw = explode("(", $description);
                     $country = trim($countryRaw[0]);
