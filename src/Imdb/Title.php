@@ -179,7 +179,7 @@ class Title extends MdbBase
                         if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
                             $this->main_endyear = trim($yearSpan[1]);
                         } else {
-                            $this->main_endyear = '';
+                            $this->main_endyear = '----';
                         }
                     }
                 } else {
@@ -196,7 +196,7 @@ class Title extends MdbBase
                         if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
                             $this->main_endyear = trim($yearSpan[1]);
                         } else {
-                            $this->main_endyear = '';
+                            $this->main_endyear = '----';
                         }
                     }
                 }
@@ -254,7 +254,7 @@ class Title extends MdbBase
 
     /** Get end-year
      * if production spanned multiple years, usually for series
-     * @return string year,  '' stil running tv series,  '0' if no end-year (Movies)
+     * @return string endyear,  '----' stil running tv series,  '' if no end-year (Movies)
      * @see IMDB page / (TitlePage)
      */
     public function endyear()
