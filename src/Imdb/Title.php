@@ -624,12 +624,10 @@ class Title extends MdbBase
     #-------------------------------------------------------[ MPAA / PG / FSK ]---
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
-     * @param bool $ratings On false it will return the last rating for each country,
-     *                      otherwise return every rating in an array.
-     * @return array [country => rating] or [country => [rating,]]
+     * @return array array[0..n] of array[country,rating,comment] comment includes brackets
      * @see IMDB Parental Guidance page / (parentalguide)
      */
-    public function mpaa($ratings = false)
+    public function mpaa()
     {
         if (empty($this->mpaas)) {
             $xpath = $this->getXpathPage("ParentalGuide");
@@ -637,21 +635,23 @@ class Title extends MdbBase
                 return array();
             }
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
-            foreach ($cells as $cell) {
-                if ($a = $cell->getElementsByTagName('a')->item(0)) {
-                    $mpaa = explode(':', $a->nodeValue, 2);
-                    $country = trim($mpaa[0]);
-                    $rating = isset($mpaa[1]) ? $mpaa[1] : '';
-
-                    if ($ratings) {
-                        if (!isset($this->mpaas[$country])) {
-                            $this->mpaas[$country] = [];
+            if ($cells->length > 0) {
+                foreach ($cells as $cell) {
+                    $comment = '';
+                    $rating = '';
+                    $mpaa = explode(':', $cell->nodeValue, 2);
+                    if (isset($mpaa[1])) {
+                        $ratingComment = explode('(', $mpaa[1]);
+                        $rating = trim($ratingComment[0]);
+                        if (isset($ratingComment[1])) {
+                            $comment = '(' . trim($ratingComment[1]);
                         }
-
-                        $this->mpaas[$country][] = $rating;
-                    } else {
-                        $this->mpaas[$country] = $rating;
                     }
+                    $this->mpaas[] = array(
+                    "country" => trim($mpaa[0]),
+                    "rating" => $rating,
+                    "comment" => $comment
+                );
                 }
             }
         }
