@@ -1103,8 +1103,11 @@ class Title extends MdbBase
                     foreach ($cells as $cell) {
                         //image
                         $imgUrl = '';
-                        if ($cell->getElementsByTagName('img')->item(0)) {
-                            $imgUrl = $cell->getElementsByTagName('img')->item(0)->getAttribute('src');
+                        $imageDiv = $xpathEpisodes->query(".//div[contains(@class, 'image')]", $cell);
+                        if ($imageDiv->length !== null) {
+                            if ($imageDiv->item(0)->getElementsByTagName('img')->item(0) !== null) {
+                                $imgUrl = $imageDiv->item(0)->getElementsByTagName('img')->item(0)->getAttribute('src');
+                            }
                         }
                         // ImdbId and Title
                         $imdbId = '';
