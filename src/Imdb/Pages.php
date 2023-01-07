@@ -7,7 +7,6 @@ namespace Imdb;
  */
 class Pages
 {
-
     /**
      * @var Config
      */
