@@ -115,7 +115,7 @@ class MdbBase extends Config
         $source = $this->getPage($page);
         libxml_use_internal_errors(true);
         /* Creates a new DomDocument object */
-        $dom = new \DomDocument;
+        $dom = new \DomDocument();
         /* Load the HTML */
         $dom->loadHTML('<?xml encoding="utf-8" ?>' .$source);
         /* Create a new XPath object */
