@@ -153,9 +153,6 @@ class Title extends MdbBase
     protected function title_year()
     {
         $xpath = $this->getXpathPage("Title");
-        if (empty($xpath)) {
-            return array();  // no such page
-        }
         if ($cells = $xpath->query("//title")) {
             $title = explode("(", $cells->item(0)->nodeValue);
             if (!empty($title[0])) {
@@ -275,9 +272,6 @@ class Title extends MdbBase
     {
         if (empty($this->movieruntimes)) {
             $xpath = $this->getXpathPage("Technical");
-            if (empty($xpath)) {
-                return array();
-            }
             if ($runtimesRaw = $xpath->query("//td[normalize-space(text())='Runtime']/following-sibling::td[1]")) {
                 $runtimesHtml = $runtimesRaw->item(0)->ownerDocument->saveHTML($runtimesRaw->item(0));
                 $runtimes = explode("<br>", $runtimesHtml);
@@ -395,9 +389,6 @@ class Title extends MdbBase
     {
         if (empty($this->langs)) {
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return array();
-            }
             if ($languages = $xpath->query("//li[@data-testid=\"title-details-languages\"]//a")) {
                 foreach ($languages as $language) {
                     if ($language->nodeValue != "") {
@@ -418,9 +409,6 @@ class Title extends MdbBase
     {
         if (empty($this->moviegenres)) {
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return array();
-            }
             if ($genresRaw = $xpath->query("//div[@data-testid=\"genres\"]//a")) {
                 foreach ($genresRaw as $genre) {
                     $this->moviegenres[] = trim($genre->nodeValue);
@@ -443,9 +431,6 @@ class Title extends MdbBase
                 return $this->creators;
             }
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return $this->creators;
-            }
             if ($creatorsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($creatorsRaw as $items) {
                     if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "creator") !== false ||
@@ -509,9 +494,6 @@ class Title extends MdbBase
     {
         if ($this->main_plotoutline == "") {
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return $this->main_plotoutline;
-            }
             if ($plotoutlineRaw = $xpath->query('//span[@data-testid="plot-xl"]')) {
                 $this->main_plotoutline = htmlspecialchars_decode(trim(strip_tags($plotoutlineRaw->item(0)->nodeValue)), ENT_QUOTES | ENT_HTML5);
             }
@@ -569,9 +551,6 @@ class Title extends MdbBase
     {
         if (empty($this->countries)) {
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return array();
-            }
             if ($countrys = $xpath->query("//li[@data-testid=\"title-details-origin\"]//a")) {
                 foreach ($countrys as $country) {
                     if ($country->nodeValue != "") {
@@ -593,9 +572,6 @@ class Title extends MdbBase
     {
         if (empty($this->akas)) {
             $xpath = $this->getXpathPage("ReleaseInfo");
-            if (empty($xpath)) {
-                return array(); // no such page
-            }
             $akaTableRows = $xpath->query("//*[@id=\"akas\"]/following-sibling::table/tr");
 
             if (empty($akaTableRows)) {
@@ -631,9 +607,6 @@ class Title extends MdbBase
     {
         if (empty($this->mpaas)) {
             $xpath = $this->getXpathPage("ParentalGuide");
-            if (empty($xpath)) {
-                return array();
-            }
             $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
             if ($cells->length > 0) {
                 foreach ($cells as $cell) {
@@ -688,9 +661,6 @@ class Title extends MdbBase
     {
         if (empty($this->plot)) {
             $xpath = $this->getXpathPage("Plot");
-            if (empty($xpath)) {
-                return array();
-            } // no such page
             if ($cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]")) {
                 foreach ($cells as $key => $cell) {
                     if ($key >= 1) { //skip first element, this is often used as plotoutline
@@ -737,9 +707,6 @@ class Title extends MdbBase
     {
         if (empty($this->taglines)) {
             $xpath = $this->getXpathPage("Taglines");
-            if (empty($xpath)) {
-                return array(); // no such page
-            }
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array(); // no data available
             }
@@ -778,9 +745,6 @@ class Title extends MdbBase
     protected function get_table_rows($id)
     {
         $xpath = $this->getXpathPage("Credits");
-        if (empty($xpath)) {
-            return array();
-        } // no such page
         if ($cells = $xpath->query("//h4[@id='$id']/following-sibling::table[1]/tbody/tr")) {
             return $cells;
         
@@ -847,9 +811,6 @@ class Title extends MdbBase
     {
         if (empty($this->actor_stars)) {
             $xpath = $this->getXpathPage("Title");
-            if (empty($xpath)) {
-                return $this->actor_stars;
-            }
             if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($actorStarsRaw as $items) {
                     if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "star") !== false ||
@@ -895,9 +856,6 @@ class Title extends MdbBase
             return $this->credits_cast;
         }
         $xpath = $this->getXpathPage("Credits");
-        if (empty($xpath)) {
-            return array(); // no such page
-        }
         if ($castRows = $xpath->query("//table[@class='cast_list']/tr[@class=\"odd\" or @class=\"even\"]")) {
             foreach ($castRows as $castRow) {
                 $castTds = $castRow->getElementsByTagName('td');
@@ -1073,9 +1031,6 @@ class Title extends MdbBase
             }
 
             $xpath = $this->getXpathPage("Episodes");
-            if (empty($xpath)) {
-                return $this->season_episodes; // no such page
-            }
             /*
              * There are (sometimes) two select boxes: one per season and one per year.
              * IMDb picks one select to use by default and the other starts with an empty option.
@@ -1174,9 +1129,6 @@ class Title extends MdbBase
     {
         if (empty($this->moviequotes)) {
             $xpath = $this->getXpathPage("Quotes");
-            if (empty($xpath)) {
-                return array(); // no such page
-            }
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array(); // no data available
             }
@@ -1205,9 +1157,6 @@ class Title extends MdbBase
     {
         if (empty($this->trivia)) {
             $xpath = $this->getXpathPage("Trivia");
-            if (empty($xpath)) {
-                return array(); // no such page
-            }
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array(); // no data available
             }
@@ -1249,9 +1198,6 @@ class Title extends MdbBase
     {
         if (empty($this->soundtracks)) {
             $xpath = $this->getXpathPage("Soundtrack");
-            if (empty($xpath)) {
-                return array(); // no such page
-            }
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array(); // no data available
             }
@@ -1292,9 +1238,6 @@ class Title extends MdbBase
     {
         if (empty($this->locations)) {
             $xpath = $this->getXpathPage("Locations");
-            if (empty($xpath)) {
-                return array();
-            } // no such page
             $cells = $xpath->query("//section[@id=\"filming_locations\"]
                                     //div[@class=\"soda sodavote odd\" or @class=\"soda sodavote even\"]");
             if ($cells != null) {
