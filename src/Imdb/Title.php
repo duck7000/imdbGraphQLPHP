@@ -657,7 +657,7 @@ class Title extends MdbBase
     }
 
     #=====================================================[ /plotsummary page ]===
-    /** Get the movie plot(s) - split-up variant
+    /** Get the movie second plot, first is skipped
      * @return array array[0..n] of array[string plot,string author]
      * @see IMDB page /plotsummary
      */
@@ -665,14 +665,14 @@ class Title extends MdbBase
     {
         if (empty($this->plot)) {
             $xpath = $this->getXpathPage("Plot");
-            if ($cells = $xpath->query("//ul[@id=\"plot-summaries-content\"]/li[@id!=\"no-summary-content\"]")) {
+            if ($cells = $xpath->query("//div[@data-testid=\"sub-section-summaries\"]/ul//li")) {
                 foreach ($cells as $key => $cell) {
-                    if ($key >= 1) { //skip first element, this is often used as plotoutline
+                    if ($key == 1) { //skip first element, this is often used as plotoutline
                         $author = '';
-                        $xml = $cell->ownerDocument->saveXML($cell);
-                        $t = explode("—", $xml); //this is not a normal dash!
+                        $plot = '';
+                        $t = explode("—", $cell->textContent); //this is not a normal dash!
                         if (count($t) > 1) {
-                            // author available, get only author name
+                            // author available
                             $authorRaw = explode("@", strip_tags($t[1]));
                             if (strpos($authorRaw[0], "(") !== false) {
                                 $needle = "(";
@@ -684,16 +684,18 @@ class Title extends MdbBase
                             $authorArray = array_values(array_filter(explode($needle, $authorRaw[0])));
                             $authorStripped = explode(",", $authorArray[0]);
                             $author = trim($authorStripped[0]);
-                        }
-                        // plot
-                        if ($cell->getElementsByTagName('p')->item(0)) {
-                            $plotRaw = $cell->getElementsByTagName('p')->item(0)->nodeValue;
-                            $plot = trim(strip_tags($plotRaw));
+                            $plot = trim(strip_tags($t[0]));
+                        } else {
+                            // if not empty, plot only
+                            if (!empty($t[0])) {
+                                $plot = trim(strip_tags($t[0]));
+                            }
                         }
                         $this->plot[] = array("plot" => $plot, "author" => $author);
                     } else {
-                    if (count($cells) == 1)
-                        $this->plot[] = array("plot" => '', "author" => '');
+                        if (count($cells) == 1) {
+                            $this->plot[] = array("plot" => '', "author" => '');
+                        }
                     }
                 }
             }
