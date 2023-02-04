@@ -272,35 +272,39 @@ class Title extends MdbBase
     {
         if (empty($this->movieruntimes)) {
             $xpath = $this->getXpathPage("Technical");
-            if ($runtimesRaw = $xpath->query("//td[normalize-space(text())='Runtime']/following-sibling::td[1]")) {
-                $runtimesHtml = $runtimesRaw->item(0)->ownerDocument->saveHTML($runtimesRaw->item(0));
-                $runtimes = explode("<br>", $runtimesHtml);
-                foreach ($runtimes as $runtime) {
-                    if ($runtime != "") {
-                        $timeTemp = explode("(", $runtime);
-                        $arr = array();
-                        $count = count($timeTemp);
-                        foreach ($timeTemp as $value) {
-                            if (stripos($value, "hr") !== false) {
-                                continue;
-                            } elseif (stripos($value, "min") !== false) {
-                                $arr["time"] = intval(preg_replace('/[^0-9]/', '', $value));
-                                if ($key <= $count -1) {
-                                    $arr["annotations"] = '';
+            if ($listItem = $xpath->query("//li[@data-testid=\"list-item\"]")) {
+                foreach ($listItem as $item) {
+                    if ($item->getElementsByTagname('button')->item(0)->textContent == "Runtime") {
+                        if ($runtimeValue = $item->getElementsByTagname('li')) {
+                            foreach ($runtimeValue as $value) {
+                                $arr = array();
+                                $arr["time"] = 0;
+                                $arr["annotations"] = '';
+                                $label = $value->getElementsByTagname('label')->item(0)->textContent;
+                                if (stripos($label, "h") !== false) {
+                                    $timeParts = explode("h", $label);
+                                    $hourToMin = (int)$timeParts[0] * 60;
+                                    $arr["time"] = $hourToMin + (int)(preg_replace('/[^0-9]/', '', $timeParts[1]));
+                                } elseif (!empty($label)) {
+                                    $arr["time"] = intval(preg_replace('/[^0-9]/', '', $label));
                                 }
-                            } elseif (stripos($value, ")") !== false) {
-                                if ($key <= $count -1) {
-                                    $arr["annotations"] = '(' . htmlspecialchars_decode(trim(strip_tags($value)));
-                                } else {
-                                    break;
+                                if ($value->getElementsByTagname('span') !== false) {
+                                    $span = $value->getElementsByTagname('span')->item(0)->textContent;
+                                    $spanParts = explode("(", $span);
+                                    $count = count($spanParts);
+                                    foreach ($spanParts as $key => $part) {
+                                        if (empty($part) || stripos($part, "min)")) {
+                                            continue;
+                                        }
+                                        $arr["annotations"] .= '(' . htmlspecialchars_decode(trim($part));
+                                        if ($key < $count - 1) {
+                                            $arr["annotations"] .= ' ';
+                                        }
+                                    }
                                 }
-                            } else {
-                                if ($key <= $count -1) {
-                                    $arr["annotations"] = '';
-                                }
+                                $this->movieruntimes[] = $arr;
                             }
                         }
-                        $this->movieruntimes[] = $arr;
                     }
                 }
             }
