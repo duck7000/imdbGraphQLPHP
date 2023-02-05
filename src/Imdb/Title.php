@@ -1291,20 +1291,12 @@ class Title extends MdbBase
     {
         if (empty($this->moviealternateversions)) {
             $xpath = $this->getXpathPage("AlternateVersions");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array();
-            }
-            $cells = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]");
-            foreach ($cells as $cell) {
-                $output = '';
-                $nodes = $xpath->query(".//text()", $cell);
-                foreach ($nodes as $node) {
-                    if ($node->parentNode->nodeName === 'li') {
-                        $output .= '- ';
+            if ($cells = $xpath->query("//li[@data-testid=\"list-item\"]")) {
+                foreach ($cells as $cell) {
+                    if ($cell->textContent != "") {
+                        $this->moviealternateversions[] = trim($cell->textContent);
                     }
-                    $output .= trim($node->nodeValue) . "\n";
                 }
-                $this->moviealternateversions[] = trim($output);
             }
         }
         return $this->moviealternateversions;
