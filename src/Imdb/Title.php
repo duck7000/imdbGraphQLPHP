@@ -707,10 +707,7 @@ class Title extends MdbBase
     {
         if (empty($this->taglines)) {
             $xpath = $this->getXpathPage("Taglines");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array(); // no data available
-            }
-            if ($taglinesContent = $xpath->query("//div[@class=\"soda odd\" or @class=\"soda even\"]")) {
+            if ($taglinesContent = $xpath->query("//li[@data-testid=\"list-item\"]")) {
                 foreach ($taglinesContent as $tagline) {
                     if ($tagline->nodeValue != "") {
                         $this->taglines[] = trim($tagline->nodeValue);
