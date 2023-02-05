@@ -568,7 +568,7 @@ class Title extends MdbBase
 
     #------------------------------------------------------------[ Movie AKAs ]---
     /**
-     * Get movie's alternative names
+     * Get movie's alternative names (Temp. only original title)
      * @return array array[0..n] of array[title,country]
      * @see IMDB page ReleaseInfo
      */
@@ -576,26 +576,20 @@ class Title extends MdbBase
     {
         if (empty($this->akas)) {
             $xpath = $this->getXpathPage("ReleaseInfo");
-            $akaTableRows = $xpath->query("//*[@id=\"akas\"]/following-sibling::table/tr");
-
-            if (empty($akaTableRows)) {
-                return array(); // no data available
-            }
-            foreach ($akaTableRows as $row) {
-                $akaTds = $row->getElementsByTagName('td');
-                $title = trim($akaTds->item(1)->nodeValue);
-                $description = trim($akaTds->item(0)->nodeValue);
-                if (stripos($description, 'original title') !== false) {
-                    $country = '(Original Title)';
-                } elseif (stripos($description, 'alternative title') !== false) {
-                    $country = '(Alternative Title)';
-                } else {
-                    $country = trim($description);
+            $akaTableRows = $xpath->query("//div[@data-testid=\"sub-section-akas\"]/ul//li");
+            $country = '';
+            $title = '';
+            if($akaTableRows->length > 0){
+                if ($akaCountry = $akaTableRows->item(0)->getElementsByTagName('button')->item(0)->nodeValue) {
+                    $country = trim($akaCountry);
+                }
+                if ($akaTitle = $akaTableRows->item(0)->getElementsByTagName('label')->item(0)->nodeValue) {
+                    $title = trim($akaTitle);
                 }
                 $this->akas[] = array(
-                    "country" => ucwords(htmlspecialchars($country)),
-                    "title" => ucwords(htmlspecialchars($title))
-                );
+                        "country" => ucwords(htmlspecialchars($country)),
+                        "title" => ucwords(htmlspecialchars($title))
+                    );
             }
         }
         return $this->akas;
