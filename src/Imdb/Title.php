@@ -1195,28 +1195,40 @@ class Title extends MdbBase
     {
         if (empty($this->soundtracks)) {
             $xpath = $this->getXpathPage("Soundtrack");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array(); // no data available
-            }
-            $cells = $xpath->query("//div[@class=\"soundTrack soda odd\" or @class=\"soundTrack soda even\"]");
-            if (!empty($cells)) {
+            if ($cells = $xpath->query("//li[@data-testid=\"list-item\"]")) {
                 foreach ($cells as $cell) {
-                    // Get all values from xpath query and save it as XML
-                    // to ensure soundtrack can be sepparated from credits
-                    $html = explode("<br/>", $cell->ownerDocument->saveXML($cell), 2);
-                    // explode all credit lines to array.
-                    $creditsExp = explode("<br/>", $html[1]);
-                    $count = count($creditsExp);
+                    $title = '';
                     $credits = '';
-                    foreach ($creditsExp as $key => $value) {
-                        $credits .= trim(strip_tags($value));
-                        if ($key < $count -1) {
-                            $credits .= "\n";
+                    if ($button = $cell->getElementsByTagName('button')->item(0)) {
+                        $title = trim($button->textContent);
+                        if ($content = $xpath->query(".//div[contains(@class, 'ipc-html-content-inner-div')]", $cell)) {
+                            $count = count($content);
+                            foreach ($content as $key => $value) {
+                                $credits .= trim(strip_tags($value->textContent));
+                                if ($key < $count -1) {
+                                    $credits .= "\n";
+                                }
+                            }
+                        }
+                    } elseif ($content = $xpath->query(".//div[contains(@class, 'ipc-html-content-inner-div')]", $cell)) {
+                        $count = count($content);
+                        foreach ($content as $key => $value) {
+                            if ($key == 0) {
+                                $title = trim($value->textContent, '\'"');
+                                if (empty($title)) {
+                                    $title = 'Unknown';
+                                }
+                                continue;
+                            }
+                            $credits .= trim(strip_tags($value->textContent));
+                            if ($key < $count -1) {
+                                $credits .= "\n";
+                            }
                         }
                     }
                     $this->soundtracks[] = array(
-                        'soundtrack' => ucwords(strtolower(trim(strip_tags($html[0])))),
-                        'credits' => trim($credits)
+                        'soundtrack' => ucwords(strtolower(trim($title))),
+                        'credits' => $credits
                     );
                 }
             }
