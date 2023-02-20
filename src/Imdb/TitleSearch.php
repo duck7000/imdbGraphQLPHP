@@ -5,125 +5,80 @@ namespace Imdb;
 class TitleSearch extends MdbBase
 {
 
-    public const MOVIE = Title::MOVIE;
-    public const TV_SERIES = Title::TV_SERIES;
-    public const TV_EPISODE = Title::TV_EPISODE;
-    public const TV_MINI_SERIES = Title::TV_MINI_SERIES;
-    public const TV_MOVIE = Title::TV_MOVIE;
-    public const TV_SPECIAL = Title::TV_SPECIAL;
-    public const TV_SHORT = Title::TV_SHORT;
-    public const GAME = Title::GAME;
-    public const VIDEO = Title::VIDEO;
-    public const SHORT = Title::SHORT;
+    public const MOVIE = 'Movie';
+    public const TV_SERIES = 'TV Series';
+    public const TV_EPISODE = 'TV Episode';
+    public const TV_MINI_SERIES = 'TV Mini Series';
+    public const TV_MOVIE = 'TV Movie';
+    public const TV_SPECIAL = 'TV Special';
+    public const TV_SHORT = 'TV Short';
+    public const GAME = 'Video Game';
+    public const VIDEO = 'Video';
+    public const SHORT = 'Short';
 
     /**
      * Search IMDb for titles matching $searchTerms
      * @param string $searchTerms
-     * @param array $wantedTypes *optional* imdb types that should be returned. Defaults to returning all types.
-     *                            The class constants MOVIE,GAME etc should be used e.g. [TitleSearch::MOVIE, TitleSearch::TV_SERIES]
-     * @param integer $maxResults *optional* specifies the maximum number of results for the search. The default is unlimited.
-     * @return Title[] array of Title objects
+     * @return Title[] array of Titles
      */
-    public function search($searchTerms, $wantedTypes = null, $maxResults = -1)
+    public function search($searchTerms)
     {
         $results = array();
-        $resultsCounter = 0;
         $page = $this->getPage($searchTerms);
-
-        // Parse & filter results
-        if (preg_match_all(
-            '!class="result_text"\s*>\s*<a href="/title/tt(?<imdbid>\d{7,8})/[^>]*>(?<title>.*?)</a>\s*(?:\(in development\))?(\([XIV]+\)\s*)?(?:\((?<year>\d{4})\))?(?<type>[^<]*)!ims',
-            $page,
-            $matches,
-            PREG_SET_ORDER
-        )) {
-            foreach ($matches as $match) {
-                $type = $this->parseTitleType($match['type']);
-
-                if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
-                    continue;
+        if ($page != "") {
+            $object = json_decode($page);
+            foreach ($object->d as $match) {
+                $imdbid = '';
+                $title = '';
+                $year = '';
+                $movietype = '';
+                if (isset($match->qid) && !empty($match->qid)) {
+                    $movietype = $this->parseTitleType($match->qid);
                 }
-
-                $results[] = Title::fromSearchResult(
-                    $match['imdbid'],
-                    $match['title'],
-                    $match['year'],
-                    $type,
-                    $this->config
-                );
-
-                if (++$resultsCounter === $maxResults) {
-                    break;
+                if (isset($match->id) && !empty($match->id)) {
+                    $imdbid = preg_replace('/[^0-9]+/', '', $match->id);
                 }
+                if (isset($match->l) && !empty($match->l)) {
+                    $title = $match->l;
+                }
+                if (isset($match->yr) && !empty($match->yr)) {
+                    $year = $match->yr;
+                } elseif (isset($match->y) && !empty($match->y)) {
+                    $year = $match->y;
+                }
+                
+                $results[] = array(
+                        'imdbid' => $imdbid,
+                        'title' => $title,
+                        'year' => $year,
+                        'movietype' => $movietype
+                    );
             }
-        } else {
-            $xpath = $this->getXpathPage($searchTerms);
-
-            $cells = $xpath->query("//section[@data-testid='find-results-section-title']//div[@class='ipc-metadata-list-summary-item__tc']");
-
-            foreach ($cells as $key => $cell) {
-                $year = 0;
-                $type = '';
-
-                $yearType = $xpath->query(".//ul[contains(@class, 'ipc-metadata-list-summary-item__tl')]", $cell);
-
-                if ($yearType->length > 0) {
-                    if (preg_match('!^(?<year>\d{4})?(-(\d{4})?)?(?:s\d+\.e\d+)?(?<type>.*)!', $yearType->item(0)->nodeValue, $match)) {
-                        $year = (int) $match['year'];
-                        $type = $match['type'];
-                    }
-                }
-
-                $type = $this->parseTitleType($type);
-
-                if (is_array($wantedTypes) && !in_array($type, $wantedTypes)) {
-                    continue;
-                }
-
-                $linkAndTitle = $xpath->query(".//a[@class='ipc-metadata-list-summary-item__t']", $cell);
-
-                if ($linkAndTitle->length < 1 || !preg_match('!tt(?<imdbid>\d+)!', $linkAndTitle->item(0)->getAttribute('href'), $href)) {
-                    continue;
-                }
-
-                $results[] = Title::fromSearchResult(
-                    $href['imdbid'],
-                    trim($linkAndTitle->item(0)->nodeValue),
-                    $year,
-                    $type,
-                    $this->config
-                );
-
-                if (++$resultsCounter === $maxResults) {
-                    break;
-                }
-            }
+            return $results;
         }
-
-        return $results;
     }
 
     protected function parseTitleType($string)
     {
         $string = strtoupper($string);
 
-        if (strpos($string, 'TV SERIES') !== false) {
+        if (strpos($string, 'TVSERIES') !== false) {
             return self::TV_SERIES;
-        } elseif (strpos($string, 'TV EPISODE') !== false) {
+        } elseif (strpos($string, 'TVEPISODE') !== false) {
             return self::TV_EPISODE;
-        } elseif (strpos($string, 'VIDEO GAME') !== false) {
+        } elseif (strpos($string, 'VIDEOGAME') !== false) {
             return self::GAME;
         } elseif (strpos($string, 'VIDEO') !== false) {
             return self::VIDEO;
         } elseif (strpos($string, 'SHORT') !== false) {
             return self::SHORT;
-        } elseif (strpos($string, 'TV MINI SERIES') !== false) {
+        } elseif (strpos($string, 'TVMINISERIES') !== false) {
             return self::TV_MINI_SERIES;
-        } elseif (strpos($string, 'TV MOVIE') !== false) {
+        } elseif (strpos($string, 'TVMOVIE') !== false) {
             return self::TV_MOVIE;
-        } elseif (strpos($string, 'TV SPECIAL') !== false) {
+        } elseif (strpos($string, 'TVSPECIAL') !== false) {
             return self::TV_SPECIAL;
-        } elseif (strpos($string, 'TV SHORT') !== false) {
+        } elseif (strpos($string, 'TVSHORT') !== false) {
             return self::TV_SHORT;
         } else {
             return self::MOVIE;
@@ -132,6 +87,8 @@ class TitleSearch extends MdbBase
 
     protected function buildUrl($searchTerms = null)
     {
-        return "https://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
+        $first = substr($searchTerms, 0, 1);
+        return "https://v3.sg.media-imdb.com/suggestion/" . $first . "/" . urlencode($searchTerms) . ".json";
+        //return "https://" . $this->imdbsite . "/find?s=tt&q=" . urlencode($searchTerms);
     }
 }
