@@ -569,7 +569,7 @@ class Title extends MdbBase
             $country = '';
             $title = '';
             if($akaTableRows->length > 0){
-                if ($akaCountry = $akaTableRows->item(0)->getElementsByTagName('button')->item(0)->nodeValue) {
+                if ($akaCountry = $akaTableRows->item(0)->getElementsByTagName('span')->item(0)->nodeValue) {
                     $country = trim($akaCountry);
                 }
                 if ($akaTitle = $akaTableRows->item(0)->getElementsByTagName('label')->item(0)->nodeValue) {
