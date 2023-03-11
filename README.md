@@ -26,9 +26,9 @@ Installation
 This library scrapes imdb.com so changes their site can cause parts of this library to fail. You will probably need to update a few times a year. Keep this in mind when choosing how to install/configure.
 
 Get the files with one of:
-* [Composer](https://www.getcomposer.org) (recommended). Include the [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) package.
+* [Composer](https://www.getcomposer.org)
 * Git clone. Checkout the latest release tag.
-* [Zip/Tar download](https://github.com/tboothman/imdbphp/releases)
+* [Zip/Tar download]
 
 ### Requirements
 * PHP >= 7.4
@@ -38,7 +38,7 @@ Get the files with one of:
 Configuration
 =============
 
-imdbphp needs no configuration by default but can store images and change languages if configured.
+imdbphp needs no configuration by default but can change languages if configured.
 
 Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
@@ -57,14 +57,11 @@ Searching for a film
 ```php
 // include "bootstrap.php"; // Load the class in if you're not using an autoloader
 $search = new \Imdb\TitleSearch(); // Optional $config parameter
-$results = $search->search('The Matrix', array(\Imdb\TitleSearch::MOVIE)); // Optional second parameter restricts types returned
+$results = $search->search('The Matrix');
 
-// $results is an array of Title objects
-// The objects will have title, year and movietype available
+// $results is an array of Titles
+// The array will have title, imdbid, year and movietype available
 // immediately, but any other data will have to be fetched from IMDb
-foreach ($results as $result) { /* @var $result \Imdb\Title */
-    echo $result->title() . ' ( ' . $result->year() . ')';
-}
 ```
 
 
