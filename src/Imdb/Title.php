@@ -277,7 +277,7 @@ class Title extends MdbBase
                                 } elseif (!empty($label)) {
                                     $arr["time"] = intval(preg_replace('/[^0-9]/', '', $label));
                                 }
-                                if ($value->getElementsByTagname('span') !== false) {
+                                if ($value->getElementsByTagname('span')->length > 0) {
                                     $span = $value->getElementsByTagname('span')->item(0)->textContent;
                                     $spanParts = explode("(", $span);
                                     $count = count($spanParts);
