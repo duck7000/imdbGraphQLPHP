@@ -263,7 +263,7 @@ class Title extends MdbBase
             $xpath = $this->getXpathPage("Technical");
             if ($listItem = $xpath->query("//li[@data-testid=\"list-item\"]")) {
                 foreach ($listItem as $item) {
-                    if ($item->getElementsByTagname('button')->item(0)->textContent == "Runtime") {
+                    if ($item->getElementsByTagname('span')->item(0)->textContent == "Runtime") {
                         if ($runtimeValue = $item->getElementsByTagname('li')) {
                             foreach ($runtimeValue as $value) {
                                 $arr = array();
