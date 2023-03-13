@@ -576,7 +576,7 @@ class Title extends MdbBase
                     $title = trim($akaTitle);
                 }
                 $this->akas[] = array(
-                        "country" => ucwords(htmlspecialchars($country)),
+                        "country" => ucwords(htmlspecialchars($country), "( "),
                         "title" => ucwords(htmlspecialchars($title))
                     );
             }
