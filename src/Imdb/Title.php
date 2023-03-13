@@ -426,8 +426,8 @@ class Title extends MdbBase
             $xpath = $this->getXpathPage("Title");
             if ($creatorsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($creatorsRaw as $items) {
-                    if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "creator") !== false ||
-                        stripos($items->getElementsByTagName('button')->item(0)->nodeValue, "creator") !== false) {
+                    if ($items->getElementsByTagName('span')->length > 0 &&
+                        stripos($items->getElementsByTagName('span')->item(0)->nodeValue, "creator") !== false) {
                         if ($listItems = $items->getElementsByTagName('li')) {
                             foreach ($listItems as $creator) {
                                 if ($anchor = $creator->getElementsByTagName('a')) {
