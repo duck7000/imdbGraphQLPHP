@@ -799,8 +799,8 @@ class Title extends MdbBase
             $xpath = $this->getXpathPage("Title");
             if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($actorStarsRaw as $items) {
-                    if (stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "star") !== false ||
-                        stripos($items->getElementsByTagName('button')->item(0)->nodeValue, "star") !== false) {
+                    if ($items->getElementsByTagName('a')->length > 0 &&
+                        stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "star") !== false) {
                         if ($listItems = $items->getElementsByTagName('li')) {
                             foreach ($listItems as $actorStars) {
                                 if ($anchor = $actorStars->getElementsByTagName('a')) {
