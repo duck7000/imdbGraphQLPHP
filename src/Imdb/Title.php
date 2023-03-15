@@ -572,9 +572,6 @@ class Title extends MdbBase
                 if ($akaCountry = $akaTableRows->item(0)->getElementsByTagName('span')->item(0)->nodeValue) {
                     $country = trim($akaCountry);
                 }
-                if ($akaTitle = $akaTableRows->item(0)->getElementsByTagName('label')->item(0)->nodeValue) {
-                    $title = trim($akaTitle);
-                }
                 $this->akas[] = array(
                         "country" => ucwords(htmlspecialchars($country), "( "),
                         "title" => ucwords(htmlspecialchars($title))
