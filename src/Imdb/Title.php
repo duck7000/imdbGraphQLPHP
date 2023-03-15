@@ -269,7 +269,7 @@ class Title extends MdbBase
                                 $arr = array();
                                 $arr["time"] = 0;
                                 $arr["annotations"] = '';
-                                $label = $value->getElementsByTagname('label')->item(0)->textContent;
+                                $label = $value->getElementsByTagname('span')->item(0)->textContent;
                                 if (stripos($label, "h") !== false) {
                                     $timeParts = explode("h", $label);
                                     $hourToMin = (int)$timeParts[0] * 60;
@@ -277,8 +277,8 @@ class Title extends MdbBase
                                 } elseif (!empty($label)) {
                                     $arr["time"] = intval(preg_replace('/[^0-9]/', '', $label));
                                 }
-                                if ($value->getElementsByTagname('span')->length > 0) {
-                                    $span = $value->getElementsByTagname('span')->item(0)->textContent;
+                                if ($value->getElementsByTagname('span')->item(1)) {
+                                    $span = $value->getElementsByTagname('span')->item(1)->textContent;
                                     $spanParts = explode("(", $span);
                                     $count = count($spanParts);
                                     foreach ($spanParts as $key => $part) {
