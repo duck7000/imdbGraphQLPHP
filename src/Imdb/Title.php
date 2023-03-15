@@ -1391,7 +1391,7 @@ class Title extends MdbBase
                         $this->main_awards['award'] = trim($anchor->item(0)->nodeValue);
                     }
                 }
-                if ($label = $awards->item(0)->getElementsByTagName('label')) {
+                if ($label = $awards->item(0)->getElementsByTagName('span')) {
                     if ($label->item(0)->nodeValue !== '') {
                         $this->main_awards['win_nom'] = trim($label->item(0)->nodeValue); 
                     }
