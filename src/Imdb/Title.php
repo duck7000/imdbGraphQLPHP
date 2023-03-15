@@ -1189,7 +1189,7 @@ class Title extends MdbBase
                 foreach ($cells as $cell) {
                     $title = '';
                     $credits = '';
-                    if ($button = $cell->getElementsByTagName('button')->item(0)) {
+                    if ($button = $cell->getElementsByTagName('span')->item(0)) {
                         $title = trim($button->textContent);
                         if ($content = $xpath->query(".//div[contains(@class, 'ipc-html-content-inner-div')]", $cell)) {
                             $count = count($content);
