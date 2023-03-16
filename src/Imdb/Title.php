@@ -323,7 +323,7 @@ class Title extends MdbBase
 
     /**
      * Rating out of 100 on metacritic
-     * @return int|null
+     * @return int|0
      */
     public function metacritic()
     {
@@ -332,7 +332,7 @@ class Title extends MdbBase
         if ($extract && $extract->item(0) != null) {
             return intval(trim($extract->item(0)->nodeValue));
         }
-        return null;
+        return 0;
     }
 
     #-------------------------------------------------------[ Recommendations ]---
