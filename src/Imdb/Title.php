@@ -801,7 +801,7 @@ class Title extends MdbBase
             if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
                 foreach ($actorStarsRaw as $items) {
                     if ($items->getElementsByTagName('a')->length > 0 &&
-                        stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "star") !== false) {
+                        stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "stars") !== false) {
                         if ($listItems = $items->getElementsByTagName('li')) {
                             foreach ($listItems as $actorStars) {
                                 if ($anchor = $actorStars->getElementsByTagName('a')) {
@@ -813,10 +813,22 @@ class Title extends MdbBase
                                 }
                             }
                         }
+                        break;
+                    } elseif ($items->getElementsByTagName('span')->length > 0 &&
+                        stripos($items->getElementsByTagName('span')->item(0)->nodeValue, "star") !== false) {
+                        if ($listItems = $items->getElementsByTagName('li')) {
+                            if ($anchor = $listItems->item(0)->getElementsByTagName('a')) {
+                                $href = $anchor->item(0)->getAttribute('href');
+                                $this->actor_stars[] = array(
+                                    'name' => trim($anchor->item(0)->nodeValue),
+                                    'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
+                                );
+                            }
+                        }
+                        break;
                     } else {
                         continue;
                     }
-                    break;
                 }
             }
         }
