@@ -23,6 +23,7 @@ class Title extends MdbBase
     protected $akas = array();
     protected $countries = array();
     protected $credits_cast = array();
+    protected $actor_stars = array();
     protected $credits_composer = array();
     protected $credits_director = array();
     protected $credits_producer = array();
