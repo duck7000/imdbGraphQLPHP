@@ -820,12 +820,14 @@ class Title extends MdbBase
                     } elseif ($items->getElementsByTagName('span')->length > 0 &&
                         stripos($items->getElementsByTagName('span')->item(0)->nodeValue, "star") !== false) {
                         if ($listItems = $items->getElementsByTagName('li')) {
-                            if ($anchor = $listItems->item(0)->getElementsByTagName('a')) {
-                                $href = $anchor->item(0)->getAttribute('href');
-                                $this->actor_stars[] = array(
-                                    'name' => trim($anchor->item(0)->nodeValue),
-                                    'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
-                                );
+                            foreach ($listItems as $actorStars) {
+                                if ($anchor = $actorStars->getElementsByTagName('a')) {
+                                    $href = $anchor->item(0)->getAttribute('href');
+                                    $this->actor_stars[] = array(
+                                        'name' => trim($anchor->item(0)->nodeValue),
+                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
+                                    );
+                                }
                             }
                         }
                         break;
