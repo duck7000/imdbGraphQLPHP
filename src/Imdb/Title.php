@@ -1286,7 +1286,7 @@ class Title extends MdbBase
     {
         if (empty($this->all_keywords)) {
             $xpath = $this->getXpathPage("Keywords");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
+            if ($xpath->evaluate("//article[contains(@data-testid,'empty-message')]")->count()) {
                 return array();
             }
             if ($cells = $xpath->query("//li[@data-testid=\"list-summary-item\"]")) {
