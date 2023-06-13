@@ -1289,10 +1289,11 @@ class Title extends MdbBase
             if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
                 return array();
             }
-            if ($cells = $xpath->query("//div[@class=\"sodatext\"]/a")) {
+            if ($cells = $xpath->query("//li[@data-testid=\"list-summary-item\"]")) {
                 foreach ($cells as $cell) {
                     if ($cell->nodeValue != "") {
-                        $this->all_keywords[] = trim($cell->nodeValue);
+                        $anchor = $cell->getElementsByTagName('a')->item(0)->nodeValue;
+                        $this->all_keywords[] = trim($anchor);
                     }
                 }
             }
