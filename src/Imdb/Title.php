@@ -56,6 +56,7 @@ class Title extends MdbBase
     protected $trivia = array();
     protected $locations = array();
     protected $moviealternateversions = array();
+    protected $jsonLD = null;
 
     protected $pageUrls = array(
         "AlternateVersions" => '/alternateversions',
@@ -324,7 +325,7 @@ class Title extends MdbBase
 
     /**
      * Rating out of 100 on metacritic
-     * @return int|0
+     * @return int|null
      */
     public function metacritic()
     {
@@ -413,6 +414,7 @@ class Title extends MdbBase
     }
 
     #---------------------------------------------------------------[ Creator ]---
+
     /**
      * Get the creator(s) of a TV Show
      * @return array creator (array[0..n] of array[name,imdb])
@@ -420,30 +422,14 @@ class Title extends MdbBase
      */
     public function creator()
     {
-        if (empty($this->creators)) {
-            if ($this->season() === 0) {
-                return $this->creators;
-            }
-            $xpath = $this->getXpathPage("Title");
-            if ($creatorsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
-                foreach ($creatorsRaw as $items) {
-                    if ($items->getElementsByTagName('span')->length > 0 &&
-                        stripos($items->getElementsByTagName('span')->item(0)->nodeValue, "creator") !== false) {
-                        if ($listItems = $items->getElementsByTagName('li')) {
-                            foreach ($listItems as $creator) {
-                                if ($anchor = $creator->getElementsByTagName('a')) {
-                                    $href = $anchor->item(0)->getAttribute('href');
-                                    $this->creators[] = array(
-                                        'name' => trim($anchor->item(0)->nodeValue),
-                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
-                                    );
-                                }
-                            }
-                        }
-                    } else {
-                        continue;
-                    }
-                    break;
+        $result = array();
+        if ($this->jsonLD()->{'@type'} === 'TVSeries' && isset($this->jsonLD()->creator) && is_array($this->jsonLD()->creator)) {
+            foreach ($this->jsonLD()->creator as $creator) {
+                if ($creator->{'@type'} === 'Person') {
+                    $this->creators[] = array(
+                        'name' => $creator->name,
+                        'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
+                    );
                 }
             }
         }
@@ -557,32 +543,76 @@ class Title extends MdbBase
     }
 
     #------------------------------------------------------------[ Movie AKAs ]---
+
     /**
-     * Get movie's alternative names (Temp. only original title)
-     * @return array array[0..n] of array[title,country]
+     * Get movie original title
+     * @return string|null original movie title (name), if it differs from the result of title(). null otherwise
+     * @see IMDB page / (TitlePage)
+     */
+    private function orig_title()
+    {
+        $jsonLD = $this->jsonLD();
+        $originalName = $jsonLD->name;
+        if ($originalName) {
+            return $originalName;
+        }
+        return null;
+    }
+
+    /**
+     * Get movie's alternative names
+     * The first item in the list will be the original title if it is different from your language's title
+     * @return array<array{title: string, country: string}>
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
     {
         if (empty($this->akas)) {
-            $xpath = $this->getXpathPage("ReleaseInfo");
-            $akaTableRows = $xpath->query("//div[@data-testid=\"sub-section-akas\"]/ul//li");
-            $country = '';
-            $title = '';
-            if($akaTableRows->length > 0){
-                if ($akaCountry = $akaTableRows->item(0)->getElementsByTagName('span')->item(0)->nodeValue) {
-                    $country = trim($akaCountry);
-                }
-                if ($akaTableRows->item(0)->getElementsByTagName('span')->item(1)) {
-                    $akaTitle = $akaTableRows->item(0)->getElementsByTagName('span')->item(1)->nodeValue;
-                    $title = trim($akaTitle);
-                }
+            $query = <<<EOF
+query AlsoKnow(\$id: ID!) {
+  title(id: \$id) {
+    akas(first: 9999) {
+      edges {
+        node {
+          country {
+            id
+            text
+          }
+          language {
+            text
+          }
+          displayableProperty {
+            qualifiersInMarkdownList {
+              plainText
+            }
+            value {
+              plainText
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
+
+            $originalTitle = $this->orig_title();
+            if (!empty($originalTitle)) {
                 $this->akas[] = array(
-                        "country" => ucwords(htmlspecialchars($country), "( "),
-                        "title" => ucwords(htmlspecialchars($title))
-                    );
+                    "title" => $originalTitle,
+                    "country" => "(Original Title)"
+                );
+            }
+
+            foreach ($data->title->akas->edges as $edge) {
+                $this->akas[] = array(
+                    "title" => $edge->node->displayableProperty->value->plainText,
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : ''
+                );
             }
         }
+        usort($this->akas, fn($a, $b) => $a['country'] <=> $b['country']);
         return $this->akas;
     }
 
@@ -1110,7 +1140,7 @@ class Title extends MdbBase
                             'episode' => $epNumber,
                             'image_url' => $imgUrl
                         );
-                        
+
                         if ($epNumber == -1) {
                             $this->season_episodes[$s][] = $episode;
                         } else {
@@ -1337,7 +1367,7 @@ class Title extends MdbBase
                         if ($src = $cell->getAttribute('src')) {
                             $this->main_photo[] = $src;
                         }
-                        if ($key == 3) {
+                        if ($key == 5) {
                             break;
                         }
                     }
@@ -1346,7 +1376,7 @@ class Title extends MdbBase
         }
         return $this->main_photo;
     }
-
+    
     #-------------------------------------------------[ Trailer ]---
     /**
      * Get video URL's and images from videogallery page (Trailers only)
@@ -1434,5 +1464,57 @@ class Title extends MdbBase
         $this->page[$page] = parent::getPage($page);
 
         return $this->page[$page];
+    }
+
+    protected function jsonLD()
+    {
+        if ($this->jsonLD) {
+            return $this->jsonLD;
+        }
+        $page = $this->getPage("Title");
+        preg_match('#<script type="application/ld\+json">(.+?)</script>#ims', $page, $matches);
+        $this->jsonLD = json_decode($matches[1]);
+        return $this->jsonLD;
+    }
+
+    /**
+     * Get all edges of a field in the title type
+     * @param string $queryName The cached query name
+     * @param string $fieldName The field on title you want to get
+     * @param string $nodeQuery Graphql query that fits inside node { }
+     * @return \stdClass[]
+     */
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery)
+    {
+        $query = <<<EOF
+query $queryName(\$id: ID!, \$after: ID) {
+  title(id: \$id) {
+    $fieldName(first: 9999, after: \$after) {
+      edges {
+        node {
+          $nodeQuery
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+EOF;
+
+        // Results are paginated, so loop until we've got all the data
+        $endCursor = null;
+        $hasNextPage = true;
+        $edges = array();
+        while ($hasNextPage) {
+            $data = $this->graphql->query($query, $queryName, ["id" => "tt$this->imdbID", "after" => $endCursor]);
+            $edges = array_merge($edges, $data->title->{$fieldName}->edges);
+            $hasNextPage = $data->title->{$fieldName}->pageInfo->hasNextPage;
+            $endCursor = $data->title->{$fieldName}->pageInfo->endCursor;
+        }
+
+        return $edges;
     }
 }
