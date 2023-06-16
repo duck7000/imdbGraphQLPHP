@@ -1,5 +1,4 @@
 <?php
-
 #############################################################################
 # PHP MovieAPI                                          (c) Itzchak Rehberg #
 # written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
@@ -30,6 +29,11 @@ class MdbBase extends Config
      * @var Pages
      */
     protected $pages;
+
+    /**
+     * @var GraphQL
+     */
+    protected $graphql;
 
     protected $page = array();
 
@@ -70,6 +74,7 @@ class MdbBase extends Config
 
         $this->config = $config ?: $this;
         $this->pages = new Pages($this->config);
+        $this->graphql = new GraphQL($this->config);
     }
 
     /**
