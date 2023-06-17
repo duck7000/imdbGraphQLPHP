@@ -575,16 +575,12 @@ query AlsoKnow(\$id: ID!) {
       edges {
         node {
           country {
-            id
             text
           }
           language {
             text
           }
           displayableProperty {
-            qualifiersInMarkdownList {
-              plainText
-            }
             value {
               plainText
             }
