@@ -256,51 +256,44 @@ class Title extends MdbBase
     #---------------------------------------------------------------[ Runtime ]---
     /**
      * Retrieve all runtimes and their descriptions
-     * @return array runtimes (array[0..n] of array[time,annotations])
-     * @see IMDB page / (TitlePage)
+     * @return array<array{time: integer, country: string|null, annotations: string[]}>
+     * time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments meant to describe this cut
      */
     public function runtime()
     {
         if (empty($this->movieruntimes)) {
-            $xpath = $this->getXpathPage("Technical");
-            if ($listItem = $xpath->query("//li[@data-testid=\"list-item\"]")) {
-                foreach ($listItem as $item) {
-                    if ($item->getElementsByTagname('span')->item(0)->textContent == "Runtime") {
-                        if ($runtimeValue = $item->getElementsByTagname('li')) {
-                            foreach ($runtimeValue as $value) {
-                                $arr = array();
-                                $arr["time"] = 0;
-                                $arr["annotations"] = '';
-                                $label = $value->getElementsByTagname('span')->item(0)->textContent;
-                                if (stripos($label, "h") !== false) {
-                                    $timeParts = explode("h", $label);
-                                    $hourToMin = (int)$timeParts[0] * 60;
-                                    $arr["time"] = $hourToMin + (int)(preg_replace('/[^0-9]/', '', $timeParts[1]));
-                                } elseif (!empty($label)) {
-                                    $arr["time"] = intval(preg_replace('/[^0-9]/', '', $label));
-                                }
-                                if ($value->getElementsByTagname('span')->item(1)) {
-                                    $span = $value->getElementsByTagname('span')->item(1)->textContent;
-                                    $spanParts = explode("(", $span);
-                                    $count = count($spanParts);
-                                    foreach ($spanParts as $key => $part) {
-                                        if (empty($part) || stripos($part, "min)")) {
-                                            continue;
-                                        }
-                                        $arr["annotations"] .= '(' . htmlspecialchars_decode(trim($part));
-                                        if ($key < $count - 1) {
-                                            $arr["annotations"] .= ' ';
-                                        }
-                                    }
-                                }
-                                $this->movieruntimes[] = $arr;
-                            }
-                        }
-                    }
-                }
-            }
-            return $this->movieruntimes;
+            $query = <<<EOF
+query Runtimes(\$id: ID!) {
+  title(id: \$id) {
+    runtimes(first: 9999) {
+      edges {
+        node {
+          attributes {
+            text
+          }
+          country {
+            text
+          }
+          seconds
         }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->runtimes->edges as $edge) {
+                $this->movieruntimes[] = array(
+                    "time" => $edge->node->seconds / 60,
+                    "annotations" => array_map(function ($attribute) {
+                        return $attribute->text;
+                    }, $edge->node->attributes),
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : null
+                );
+            }
+        }
+        return $this->movieruntimes;
     }
 
     #----------------------------------------------------------[ Movie Rating ]---
