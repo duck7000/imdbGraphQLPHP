@@ -723,19 +723,29 @@ EOF;
     #========================================================[ /taglines page ]===
     /**
      * Get all available taglines for the movie
-     * @return array taglines (array[0..n] of strings)
+     * @return string[] taglines
      * @see IMDB page /taglines
      */
     public function tagline()
     {
         if (empty($this->taglines)) {
-            $xpath = $this->getXpathPage("Taglines");
-            if ($taglinesContent = $xpath->query("//li[@data-testid=\"list-item\"]")) {
-                foreach ($taglinesContent as $tagline) {
-                    if ($tagline->nodeValue != "") {
-                        $this->taglines[] = trim($tagline->nodeValue);
-                    }
-                }
+            $query = <<<EOF
+query Taglines(\$id: ID!) {
+  title(id: \$id) {
+    taglines(first: 9999) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Taglines", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->taglines->edges as $edge) {
+                $this->taglines[] = $edge->node->text;
             }
         }
         return $this->taglines;
