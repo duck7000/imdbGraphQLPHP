@@ -331,38 +331,50 @@ EOF;
     }
 
     #-------------------------------------------------------[ Recommendations ]---
+
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array recommendations (array[title,imdbid,rating,img])
+     * @return array<array{title: string, imdbid: number, rating: string| null, img: string|'', year: number|null}>
      * @see IMDB page / (TitlePage)
      */
     public function recommendation()
     {
         if (empty($this->movierecommendations)) {
-            $xp = $this->getXpathPage("Title");
-            $cells = $xp->query("//div[contains(@class, 'ipc-poster-card ipc-poster-card--base')]");
-            /** @var \DOMElement $cell */
-            foreach ($cells as $key => $cell) {
-                $movie = array();
-                $get_link_and_name = $xp->query(".//a[contains(@class, 'ipc-poster-card__title')]", $cell);
-                if (!empty($get_link_and_name) && preg_match('!tt(\d+)!',
-                        $get_link_and_name->item(0)->getAttribute('href'), $ref)) {
-                    $movie['title'] = ucwords(trim($get_link_and_name->item(0)->nodeValue));
-                    $movie['imdbid'] = $ref[1];
-                    $get_rating = $xp->query(".//span[contains(@class, 'ipc-rating-star--imdb')]", $cell);
-                    if (!empty($get_rating->item(0))) {
-                        $movie['rating'] = trim($get_rating->item(0)->nodeValue);
-                    } else {
-                        $movie['rating'] = -1;
-                    }
-                    $getImage = $xp->query(".//div[contains(@class, 'ipc-media ipc-media--poster')]//img", $cell);
-                    if (!empty($getImage->item(0)) && !empty($getImage->item(0)->getAttribute('src'))) {
-                        $movie['img'] = $getImage->item(0)->getAttribute('src');
-                    } else {
-                        $movie['img'] = "";
-                    }
-                    $this->movierecommendations[] = $movie;
-                }
+            $query = <<<EOF
+query Recommendations(\$id: ID!) {
+  title(id: \$id) {
+    moreLikeThisTitles(first: 12) {
+      edges {
+        node {
+          id
+          titleText {
+            text
+          }
+          ratingsSummary {
+            aggregateRating
+          }
+          primaryImage {
+            url
+          }
+          releaseYear {
+            year
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->moreLikeThisTitles->edges as $edge) {
+                $this->movierecommendations[] = array(
+                    "title" => $edge->node->titleText->text,
+                    "imdbid" => str_replace('tt', '', $edge->node->id),
+                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
+                    "img" => isset($edge->node->primaryImage->url) ? $edge->node->primaryImage->url : '',
+                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
+                );
             }
         }
         return $this->movierecommendations;
