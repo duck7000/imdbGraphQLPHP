@@ -673,49 +673,40 @@ EOF;
     }
 
     #=====================================================[ /plotsummary page ]===
-    /** Get the movie second plot, first is skipped
-     * @return array array[0..n] of array[string plot,string author]
+    /** Get movie plots without Synopsis
+     * @return array array[0..n] string plot, string author]
      * @see IMDB page /plotsummary
      */
     public function plot()
     {
         if (empty($this->plot)) {
-            $xpath = $this->getXpathPage("Plot");
-            if ($cells = $xpath->query("//div[@data-testid=\"sub-section-summaries\"]/ul//li")) {
-                foreach ($cells as $key => $cell) {
-                    if ($key == 1) { //skip first element, this is often used as plotoutline
-                        $author = '';
-                        $plot = '';
-                        $t = explode("—", $cell->textContent); //this is not a normal dash!
-                        if (count($t) > 1) {
-                            // author available
-                            if (!empty(strip_tags($t[1]))) {
-                                $authorRaw = explode("@", strip_tags($t[1]));
-                                if (strpos($authorRaw[0], "(") !== false) {
-                                    $needle = "(";
-                                } elseif (strpos($authorRaw[0], "{") !== false) {
-                                    $needle = "{";
-                                } else {
-                                    $needle = "&lt;";
-                                }
-                                $authorArray = array_values(array_filter(explode($needle, $authorRaw[0])));
-                                $authorStripped = explode(",", $authorArray[0]);
-                                $author = trim($authorStripped[0]);
-                            }
-                            $plot = trim(strip_tags($t[0]));
-                        } else {
-                            // if not empty, plot only
-                            if (!empty($t[0])) {
-                                $plot = trim(strip_tags($t[0]));
-                            }
-                        }
-                        $this->plot[] = array("plot" => $plot, "author" => $author);
-                    } else {
-                        if (count($cells) == 1) {
-                            $this->plot[] = array("plot" => '', "author" => '');
-                        }
-                    }
+                    $query = <<<EOF
+query Plots(\$id: ID!) {
+  title(id: \$id) {
+    plots(first: 9999) {
+      edges {
+        node {
+          author
+          plotType
+          plotText {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
+
+            foreach ($data->title->plots->edges as $key => $edge) {
+                if ($edge->node->plotType == 'SYNOPSIS') {
+                    continue;
                 }
+                $this->plot[] = array(
+                    'plot' => $edge->node->plotText->plainText,
+                    'author' => isset($edge->node->author) ? $edge->node->author : ''
+                );
             }
         }
         return $this->plot;
