@@ -1339,16 +1339,27 @@ EOF;
      * @return array Alternate Version (array[0..n] of string)
      * @see IMDB page /alternateversions
      */
-    public function alternateversion()
+    public function alternateVersion()
     {
         if (empty($this->moviealternateversions)) {
-            $xpath = $this->getXpathPage("AlternateVersions");
-            if ($cells = $xpath->query("//li[@data-testid=\"list-item\"]")) {
-                foreach ($cells as $cell) {
-                    if ($cell->textContent != "") {
-                        $this->moviealternateversions[] = trim($cell->textContent);
-                    }
-                }
+            $query = <<<EOF
+query AlternateVersions(\$id: ID!) {
+  title(id: \$id) {
+    alternateVersions(first: 9999) {
+      edges {
+        node {
+          text {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "AlternateVersions", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->alternateVersions->edges as $edge) {
+                $this->moviealternateversions[] = $edge->node->text->plainText;
             }
         }
         return $this->moviealternateversions;
