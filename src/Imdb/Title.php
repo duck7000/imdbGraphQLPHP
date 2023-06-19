@@ -1164,20 +1164,34 @@ EOF;
     public function quote()
     {
         if (empty($this->moviequotes)) {
-            $xpath = $this->getXpathPage("Quotes");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array(); // no data available
+            $query = <<<EOF
+query Quotes(\$id: ID!) {
+  title(id: \$id) {
+    quotes(first: 9999) {
+      edges {
+        node {
+          displayableArticle {
+            body {
+              plaidHtml
             }
-            if ($quotesContent = $xpath->query("//div[@class=\"quote soda sodavote odd\" or @class=\"quote soda sodavote even\"]")) {
-                foreach ($quotesContent as $key => $value) {
-                    $p = $value->getElementsByTagName('p');
-                    foreach ($p as $quoteItem) {
-                       $quoteItemStripped = str_replace("\n", " ", $quoteItem->nodeValue);
-                       $this->moviequotes[$key][] = trim(strip_tags($quoteItemStripped));
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Quotes", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->quotes->edges as $key => $edge) {
+                $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
+                foreach ($quoteParts as $quoteItem) {
+                    if (trim(strip_tags($quoteItem)) == '') {
+                        continue;
                     }
-                    ++$key;
+                    $this->moviequotes[$key][] = trim(strip_tags($quoteItem));
                 }
             }
+            
         }
         return $this->moviequotes;
     }
