@@ -1266,7 +1266,12 @@ EOF;
             $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->soundtrack->edges as $edge) {
                 $credits = '';
-                $title = ucwords(strtolower(trim($edge->node->text)), "(");
+                $title = '';
+                if (isset($edge->node->text) && $edge->node->text !== '') {
+                    $title = ucwords(strtolower(trim($edge->node->text)), "(");
+                } else {
+                    $title = 'Unknown';
+                }
                 foreach ($edge->node->comments as $key => $comment) {
                     if (trim(strip_tags($comment->plaidHtml)) !== '') {
                         $credits .= trim(strip_tags($comment->plaidHtml));
