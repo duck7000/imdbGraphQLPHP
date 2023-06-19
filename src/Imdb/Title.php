@@ -1247,43 +1247,38 @@ EOF;
     public function soundtrack()
     {
         if (empty($this->soundtracks)) {
-            $xpath = $this->getXpathPage("Soundtrack");
-            if ($cells = $xpath->query("//li[@data-testid=\"list-item\"]")) {
-                foreach ($cells as $cell) {
-                    $title = '';
-                    $credits = '';
-                    if ($button = $cell->getElementsByTagName('span')->item(0)) {
-                        $title = trim($button->textContent);
-                        if ($content = $xpath->query(".//div[contains(@class, 'ipc-html-content-inner-div')]", $cell)) {
-                            $count = count($content);
-                            foreach ($content as $key => $value) {
-                                $credits .= trim(strip_tags($value->textContent));
-                                if ($key < $count -1) {
-                                    $credits .= "\n";
-                                }
-                            }
-                        }
-                    } elseif ($content = $xpath->query(".//div[contains(@class, 'ipc-html-content-inner-div')]", $cell)) {
-                        $count = count($content);
-                        foreach ($content as $key => $value) {
-                            if ($key == 0) {
-                                $title = trim($value->textContent, '\'"');
-                                if (empty($title)) {
-                                    $title = 'Unknown';
-                                }
-                                continue;
-                            }
-                            $credits .= trim(strip_tags($value->textContent));
-                            if ($key < $count -1) {
-                                $credits .= "\n";
-                            }
+            $query = <<<EOF
+query Soundtrack(\$id: ID!) {
+  title(id: \$id) {
+    soundtrack(first: 9999) {
+      edges {
+        node {
+          text
+          comments {
+            plaidHtml
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->soundtrack->edges as $edge) {
+                $credits = '';
+                $title = ucwords(strtolower(trim($edge->node->text)), "(");
+                foreach ($edge->node->comments as $key => $comment) {
+                    if (trim(strip_tags($comment->plaidHtml)) !== '') {
+                        $credits .= trim(strip_tags($comment->plaidHtml));
+                        if ($key !== array_key_last($edge->node->comments)) {
+                            $credits .= '&#10;';
                         }
                     }
-                    $this->soundtracks[] = array(
-                        'soundtrack' => ucwords(strtolower(trim($title))),
+                }
+                $this->soundtracks[] = array(
+                        'soundtrack' => $title,
                         'credits' => $credits
                     );
-                }
             }
         }
         return $this->soundtracks;
