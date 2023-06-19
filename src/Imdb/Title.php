@@ -1292,31 +1292,49 @@ EOF;
     #=======================================================[ /locations page ]===
     /**
      * Filming locations
-     * @return array locations (array[0..n] of arrays[real_loc,movie_loc])
-     * real_loc: Real filming location, movie_loc: location in the movie
+     * @return array locations (array[0..n] of arrays[real,movie])
+     * real: Real filming location, movie: location in the movie
      * @see IMDB page /locations
      */
     public function location()
     {
         if (empty($this->locations)) {
-            $xpath = $this->getXpathPage("Locations");
-            $cells = $xpath->query("//section[@id=\"filming_locations\"]
-                                    //div[@class=\"soda sodavote odd\" or @class=\"soda sodavote even\"]");
-            if ($cells != null) {
-                foreach ($cells as $cell) {
-                    $real = '';
-                    $movie = '';
-                    if ($cell->getElementsByTagName('dt')->item(0)) {
-                        $real = trim($cell->getElementsByTagName('dt')->item(0)->nodeValue);
-                    }
-                    if ($cell->getElementsByTagName('dd')->item(0)) {
-                        $movie = trim($cell->getElementsByTagName('dd')->item(0)->nodeValue);
-                    }
-                    $this->locations[] = array(
-                        'real' => $real,
-                        'movie' => $movie
-                    );
+            $query = <<<EOF
+query FilmingLocations(\$id: ID!) {
+  title(id: \$id) {
+    filmingLocations(first: 9999) {
+      edges {
+        node {
+          displayableProperty {
+            value {
+              markdown
+            }
+            qualifiersInMarkdownList {
+              markdown
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "FilmingLocations", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->filmingLocations->edges as $edge) {
+                $real = '';
+                $movie = '';
+                if (isset($edge->node->displayableProperty->value->markdown)) {
+                    $real = $edge->node->displayableProperty->value->markdown;
                 }
+                if (isset($edge->node->displayableProperty->qualifiersInMarkdownList[0]->markdown)) {
+                    $movie = '(' . $edge->node->displayableProperty->qualifiersInMarkdownList[0]->markdown . ')';
+                }
+                $this->locations[] = array(
+                    'real' => $real,
+                    'movie' => $movie
+                );
+                
             }
         }
         return $this->locations;
