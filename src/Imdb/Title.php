@@ -1349,17 +1349,27 @@ EOF;
     public function keyword()
     {
         if (empty($this->all_keywords)) {
-            $xpath = $this->getXpathPage("Keywords");
-            if ($xpath->evaluate("//article[contains(@data-testid,'empty-message')]")->count()) {
-                return array();
+            $query = <<<EOF
+query Keywords(\$id: ID!) {
+  title(id: \$id) {
+    keywords(first: 9999) {
+      edges {
+        node {
+          keyword {
+            text {
+              text
             }
-            if ($cells = $xpath->query("//li[@data-testid=\"list-summary-item\"]")) {
-                foreach ($cells as $cell) {
-                    if ($cell->nodeValue != "") {
-                        $anchor = $cell->getElementsByTagName('a')->item(0)->nodeValue;
-                        $this->all_keywords[] = trim($anchor);
-                    }
-                }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Keywords", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->keywords->edges as $edge) {
+                $this->all_keywords[] = $edge->node->keyword->text->text;
             }
         }
         return $this->all_keywords;
