@@ -408,11 +408,23 @@ EOF;
     public function genre()
     {
         if (empty($this->moviegenres)) {
-            $xpath = $this->getXpathPage("Title");
-            if ($genresRaw = $xpath->query("//div[@data-testid=\"genres\"]//a")) {
-                foreach ($genresRaw as $genre) {
-                    $this->moviegenres[] = trim($genre->nodeValue);
-                }
+            $query = <<<EOF
+query Genres(\$id: ID!) {
+  title(id: \$id) {
+    titleGenres {
+      genres {
+        genre {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->titleGenres->genres as $edge) {
+                $this->moviegenres[] = $edge->genre->text;
             }
         }
         return $this->moviegenres;
