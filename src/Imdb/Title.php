@@ -1206,32 +1206,35 @@ EOF;
     public function trivia($spoil = false)
     {
         if (empty($this->trivia)) {
-            $xpath = $this->getXpathPage("Trivia");
-            if ($xpath->evaluate("//div[contains(@id,'no_content')]")->count()) {
-                return array(); // no data available
+            $query = <<<EOF
+query Trivia(\$id: ID!) {
+  title(id: \$id) {
+    trivia(first: 9999) {
+      edges {
+        node {
+          displayableArticle {
+            body {
+              plaidHtml
             }
-            if ($triviaContent = $xpath->query("//div[@id='trivia_content']//div[@class='list']")) {
-                foreach ($triviaContent as $value) {
-                    if ($value->getElementsByTagName('a')->item(0)->getAttribute('id') != "spoilers") {
-                        if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
-                            foreach ($cells as $cell) {
-                                if ($cell->nodeValue != "") {
-                                    $this->trivia[] = trim(strip_tags($cell->nodeValue));
-                                }
-                            }
-                        }
-                    } elseif ($spoil == true) {
-                        if ($cells = $xpath->query('.//div[contains(@class, "sodatext")]', $value)) {
-                            foreach ($cells as $cell) {
-                                if ($cell->nodeValue != "") {
-                                    $this->trivia[] = trim(strip_tags($cell->nodeValue));
-                                }
-                            }
-                        }
+          }
+          isSpoiler
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Trivia", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->trivia->edges as $edge) {
+                if ($spoil === false) {
+                    if (isset($edge->node->isSpoiler) && $edge->node->isSpoiler === true) {
+                        continue;
                     }
                 }
+                $this->trivia[] = strip_tags($edge->node->displayableArticle->body->plaidHtml);
             }
         }
+        
         return $this->trivia;
     }
 
