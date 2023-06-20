@@ -305,10 +305,19 @@ EOF;
     public function rating()
     {
         if ($this->main_rating == -1) {
-            $xpath = $this->getXpathPage("Title");
-            $ratingRaw = $xpath->query("//div[@data-testid='hero-rating-bar__aggregate-rating__score']//span[1]");
-            if (!empty($ratingRaw->item(0)->nodeValue)) {
-                $this->main_rating = floatval($ratingRaw->item(0)->nodeValue);
+            $query = <<<EOF
+query Rating(\$id: ID!) {
+  title(id: \$id) {
+    ratingsSummary {
+      aggregateRating
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
+            if (isset($data->title->ratingsSummary->aggregateRating) && !empty($data->title->ratingsSummary->aggregateRating)) {
+                $this->main_rating = $data->title->ratingsSummary->aggregateRating;
             } else {
                 $this->main_rating = 0;
             }
