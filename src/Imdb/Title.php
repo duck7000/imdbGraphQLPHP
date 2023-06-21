@@ -298,7 +298,7 @@ EOF;
 
     /**
      * Rating out of 100 on metacritic
-     * @return int|null
+     * @return int|0
      */
     public function metacritic()
     {
