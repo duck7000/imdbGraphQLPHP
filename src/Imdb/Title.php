@@ -143,55 +143,31 @@ class Title extends MdbBase
      */
     protected function title_year()
     {
-        $xpath = $this->getXpathPage("Title");
-        if ($cells = $xpath->query("//title")) {
-            $title = explode("(", $cells->item(0)->nodeValue);
-            if (!empty($title[0])) {
-                $this->main_title = ucwords(trim(str_replace('"', ':', trim($title[0], '"'))));
-            }
-            if (isset($title[1]) && !empty($title[1])) {
-                $typeYear = explode(")", $title[1]);
-                $posFirstDigit = strcspn($typeYear[0], '0123456789');
-                // Movietype available, year or year span possible
-                if ($posFirstDigit > 2) {
-                    $this->main_movietype = trim(substr($typeYear[0], 0, $posFirstDigit));
-                    $yearRaw = trim(substr($typeYear[0], $posFirstDigit));
-                    // Year only
-                    if (strpos($yearRaw, "–") === false) { // Not a normal dash
-                        $this->main_year = trim($yearRaw);
-                        $this->main_endyear = '';
-                    } else {
-                        // year span
-                        $yearSpan = explode("–", $yearRaw); // Not a normal dash
-                        $this->main_year = trim($yearSpan[0]);
-                        if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
-                            $this->main_endyear = trim($yearSpan[1]);
-                        } else {
-                            $this->main_endyear = '----';
-                        }
-                    }
-                } else {
-                    // No movietype, year or year span possible
-                    $yearRaw = trim(substr($typeYear[0], $posFirstDigit));
-                    // Year only
-                    if (strpos($yearRaw, "–") === false) { // Not a normal dash
-                        $this->main_year = trim($yearRaw);
-                        $this->main_endyear = '';
-                    } else {
-                        //year span
-                        $yearSpan = explode("–", $yearRaw); // Not a normal dash
-                        $this->main_year = trim($yearSpan[0]);
-                        if (isset($yearSpan[1]) && !empty($yearSpan[1]) && is_numeric($yearSpan[1])) {
-                            $this->main_endyear = trim($yearSpan[1]);
-                        } else {
-                            $this->main_endyear = '----';
-                        }
-                    }
-                }
-                if ($this->main_year == "????") {
-                    $this->main_year = "";
-                }
-            }
+        $query = <<<EOF
+query TitleYear(\$id: ID!) {
+  title(id: \$id) {
+    titleText {
+      text
+    }
+    titleType {
+      text
+    }
+    releaseYear {
+      year
+      endYear
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
+
+        $this->main_title = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
+        $this->main_movietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
+        $this->main_year = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
+        $this->main_endyear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
+        if ($this->main_year == "????") {
+            $this->main_year = "";
         }
     }
 
@@ -203,12 +179,7 @@ class Title extends MdbBase
     public function movietype()
     {
         if (empty($this->main_movietype)) {
-            if (empty($this->main_title)) {
-                $this->title_year();
-            } // Most types are shown in the <title> tag
-            if (!empty($this->main_movietype)) {
-                return $this->main_movietype;
-            }
+            $this->title_year();
             if (empty($this->main_movietype)) {
                 $this->main_movietype = 'Movie';
             }
@@ -242,7 +213,7 @@ class Title extends MdbBase
 
     /** Get end-year
      * if production spanned multiple years, usually for series
-     * @return string endyear,  '----' stil running tv series,  '' if no end-year (Movies)
+     * @return int endyear|null
      * @see IMDB page / (TitlePage)
      */
     public function endyear()
