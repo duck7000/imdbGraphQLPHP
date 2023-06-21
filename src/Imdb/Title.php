@@ -569,25 +569,9 @@ EOF;
     }
 
     #------------------------------------------------------------[ Movie AKAs ]---
-
-    /**
-     * Get movie original title
-     * @return string|null original movie title (name), if it differs from the result of title(). null otherwise
-     * @see IMDB page / (TitlePage)
-     */
-    private function orig_title()
-    {
-        $jsonLD = $this->jsonLD();
-        $originalName = $jsonLD->name;
-        if ($originalName) {
-            return $originalName;
-        }
-        return null;
-    }
-
     /**
      * Get movie's alternative names
-     * The first item in the list will be the original title if it is different from your language's title
+     * The first item in the list will be the original title
      * @return array<array{title: string, country: string}>
      * @see IMDB page ReleaseInfo
      */
@@ -597,6 +581,9 @@ EOF;
             $query = <<<EOF
 query AlsoKnow(\$id: ID!) {
   title(id: \$id) {
+    originalTitleText {
+      text
+    }
     akas(first: 9999) {
       edges {
         node {
@@ -619,7 +606,7 @@ query AlsoKnow(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
 
-            $originalTitle = $this->orig_title();
+            $originalTitle = $data->title->originalTitleText->text;
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
                     "title" => $originalTitle,
