@@ -302,12 +302,27 @@ EOF;
      */
     public function metacritic()
     {
-        $xpath = $this->getXpathPage("Title");
-        $extract = $xpath->query("//span[@class='score-meta']");
-        if ($extract && $extract->item(0) != null) {
-            return intval(trim($extract->item(0)->nodeValue));
+        $query = <<<EOF
+query Metacritic(\$id: ID!) {
+  title(id: \$id) {
+    metacritic {
+      metascore {
+        score
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
+        if (isset($data->title->metacritic->metascore->score)) {
+            if ($data->title->metacritic !== null) {
+                return $data->title->metacritic->metascore->score;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     #-------------------------------------------------------[ Recommendations ]---
