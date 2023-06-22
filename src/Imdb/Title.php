@@ -512,11 +512,21 @@ EOF;
      */
     private function populatePoster()
     {
-        $xpath = $this->getXpathPage("Title");
-        $thumb = $xpath->query("//div[contains(@class, 'ipc-poster ipc-poster--baseAlt') and contains(@data-testid, 'hero-media__poster')]//img");
-        if (!empty($thumb) && $thumb->item(0) != null) {
-            $this->main_poster_thumb = $thumb->item(0)->getAttribute('src');
-            if (strpos($this->main_poster_thumb, '._V1')) {
+        $query = <<<EOF
+query Poster(\$id: ID!) {
+  title(id: \$id) {
+    primaryImage {
+      url
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
+
+        if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
+            $this->main_poster_thumb = $data->title->primaryImage->url;
+            if (strpos($data->title->primaryImage->url, '._V1')) {
                 $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
             }
         }
