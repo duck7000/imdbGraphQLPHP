@@ -485,9 +485,21 @@ EOF;
     public function plotoutline()
     {
         if ($this->main_plotoutline == "") {
-            $xpath = $this->getXpathPage("Title");
-            if ($plotoutlineRaw = $xpath->query('//span[@data-testid="plot-xl"]')) {
-                $this->main_plotoutline = htmlspecialchars_decode(trim(strip_tags($plotoutlineRaw->item(0)->nodeValue)), ENT_QUOTES | ENT_HTML5);
+            $query = <<<EOF
+query PlotOutline(\$id: ID!) {
+  title(id: \$id) {
+    plot {
+      plotText {
+        plainText
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "PlotOutline", ["id" => "tt$this->imdbID"]);
+            if (isset($data->title->plot->plotText->plainText)) {
+                $this->main_plotoutline = $data->title->plot->plotText->plainText;
             }
         }
         return $this->main_plotoutline;
