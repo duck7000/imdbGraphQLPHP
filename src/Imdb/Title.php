@@ -1500,28 +1500,35 @@ EOF;
 
     #-------------------------------------------------------[ Main Awards ]---
     /**
-     * Get main awards from yellow block at title page
-     * @return array main_awards (array[string award,string win_nom])
+     * Get main awards (not including total wins and total nominations)
+     * @return array main_awards (array[award|string, nominations|int, wins|int])
      * @see IMDB page / (TitlePage)
      */
     public function mainaward()
     {
         if (empty($this->main_awards)) {
-            $xp = $this->getXpathPage("Title");
-            $awards = $xp->query("//li[contains(@data-testid, 'award_information')]");
-            if ($awards->length > 0) {
-                $this->main_awards['award'] = '';
-                $this->main_awards['win_nom'] = '';
-                if ($anchor = $awards->item(0)->getElementsByTagName('a')) {
-                    if ($anchor->item(0)->nodeValue !== '') {
-                        $this->main_awards['award'] = trim($anchor->item(0)->nodeValue);
-                    }
-                }
-                if ($label = $awards->item(0)->getElementsByTagName('span')) {
-                    if ($label->item(0)->nodeValue !== '') {
-                        $this->main_awards['win_nom'] = trim($label->item(0)->nodeValue); 
-                    }
-                }
+            $query = <<<EOF
+query MainAward(\$id: ID!) {
+  title(id: \$id) {
+    prestigiousAwardSummary {
+      award {
+        text
+      }
+      nominations
+      wins
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "MainAward", ["id" => "tt$this->imdbID"]);
+            $this->main_awards['award'] = '';
+            $this->main_awards['nominations'] = '';
+            $this->main_awards['wins'] = '';
+            if (isset($data->title->prestigiousAwardSummary) && $data->title->prestigiousAwardSummary !== null) {
+                $this->main_awards['award'] = $data->title->prestigiousAwardSummary->award->text;
+                $this->main_awards['nominations'] = $data->title->prestigiousAwardSummary->nominations;
+                $this->main_awards['wins'] = $data->title->prestigiousAwardSummary->wins;
             }
         }
         return $this->main_awards;
