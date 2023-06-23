@@ -1454,44 +1454,86 @@ EOF;
     #-------------------------------------------------[ Trailer ]---
     /**
      * Get video URL's and images from videogallery page (Trailers only)
-     * @return array trailers (array[string url,string img])
-     * Url is a embeded url that is tested to work in iframe (won't work in html5 <video>)
+     * @return array trailers (array[string videoUrl,string videoImageUrl])
+     * videoUrl is a embeded url that is tested to work in iframe (won't work in html5 <video>)
      */
     public function trailer()
     {
         if (empty($this->trailers)) {
-            if ($xpath = $this->getXpathPage("Video")) {
-                if ($cells = $xpath->query('//div[@class="search-results"]//li')) {
-                    if ($cells->length > 0) {
-                        foreach ($cells as $cell) {
-                            $temp = array();
-                            if ($imgRaw = $cell->getElementsByTagName('img')) {
-                                if ($imgSrc = $imgRaw->item(0)->getAttribute('loadlate')) {
-                                    $img = $imgSrc;
-                                } else {
-                                    $img = '';
-                                }
-                            }
-                            if ($anchor = $cell->getElementsByTagName('a')) {
-                                if ($videoId = $anchor->item(0)->getAttribute('data-video')) {
-                                    $urlEmbed = "https://" . $this->imdbsite . "/video/imdb/" . $videoId . "/imdb/embed";
-                                    $headers = get_headers($urlEmbed);
-			                        if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-			                            continue;
-			                        } else {
-			                            $html = file_get_contents($urlEmbed);
-			                            if (stripos($html, 'class="available"') !== false) {
-				                            $temp["url"] = $urlEmbed;
-				                            $temp["img"] = $img;
-			                            }
-			                        }
-                                }
-                            }
-                            if (!empty($temp) && count($this->trailers) <= 2) {
-                                $this->trailers[] = $temp;
-                            }
-                        }
-                    }
+            $query = <<<EOF
+query Video(\$id: ID!) {
+  title(id: \$id) {
+    primaryVideos(first: 9999) {
+      edges {
+        node {
+          playbackURLs {
+            url
+          }
+          thumbnail {
+            url
+          }
+          runtime {
+            value
+          }
+          contentType {
+            displayName {
+              value
+            }
+          }
+          name {
+            value
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->primaryVideos->edges as $edge) {
+                if (!isset($edge->node->playbackURLs[0]->url) ||
+                    !isset($edge->node->contentType->displayName->value) ||
+                    $edge->node->contentType->displayName->value !== "Trailer") {
+                    continue;
+                }
+                $rawVideoId = explode("/", parse_url($edge->node->playbackURLs[0]->url, PHP_URL_PATH));
+                $embedUrl = "https://" . $this->imdbsite . "/video/imdb/" . $rawVideoId[1] . "/imdb/embed";
+                $headers = get_headers($embedUrl);
+                if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+                    continue;
+                }
+                $html = file_get_contents($embedUrl);
+                if (stripos($html, 'class="available"') !== false) {
+                    $videoUrl = $embedUrl;
+                } else {
+                    $videoUrl = '';
+                }
+                if (isset($edge->node->thumbnail->url) && $edge->node->thumbnail->url != '') {
+                    $rawRuntime = $edge->node->runtime->value;
+                    $minutes = sprintf("%02d", ($rawRuntime / 60));
+                    $seconds = sprintf("%02d", $rawRuntime % 60);
+                    $rawTitle = explode(":", $edge->node->name->value);
+                    $titleParts = explode("|", trim($rawTitle[0]));
+                    $titleParts = explode("(", trim($titleParts[0]));
+                    $title = str_replace(' ', '%2520', $titleParts[0]);
+                    $thumbUrl = str_replace('.jpg', '', $edge->node->thumbnail->url);
+                    $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_PIimdb-blackband-204-14,TopLeft,0,0_'
+                                 . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
+                                 . 'PIimdb-bluebutton-big,BottomRight,-1,-1_ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
+                                 . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_ZA' . $minutes . '%253A' . $seconds
+                                 . ',164,1,14,36,verdenab,7,255,255,255,1_ZA' . $title
+                                 . ',4,138,14,176,arialbd,7,255,255,255,1_.jpg';
+                    $videoImageUrl = $thumbUrl;
+
+                } else {
+                    $videoImageUrl = '';
+                }
+                if (count($this->trailers) <= 2) {
+                    $this->trailers[] = array(
+                        'videoUrl' => $videoUrl,
+                        'videoImageUrl' => $videoImageUrl
+                    );
                 }
             }
         }
