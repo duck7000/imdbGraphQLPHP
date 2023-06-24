@@ -1287,7 +1287,7 @@ EOF;
                 $credits = '';
                 $title = '';
                 if (isset($edge->node->text) && $edge->node->text !== '') {
-                    $title = ucwords(strtolower(trim($edge->node->text)), "(");
+                    $title = ucwords(strtolower(trim($edge->node->text)), " (");
                 } else {
                     $title = 'Unknown';
                 }
