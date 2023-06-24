@@ -617,15 +617,15 @@ EOF;
             $originalTitle = $data->title->originalTitleText->text;
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
-                    "title" => $originalTitle,
+                    "title" => ucwords($originalTitle),
                     "country" => "(Original Title)"
                 );
             }
 
             foreach ($data->title->akas->edges as $edge) {
                 $this->akas[] = array(
-                    "title" => $edge->node->displayableProperty->value->plainText,
-                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : ''
+                    "title" => ucwords($edge->node->displayableProperty->value->plainText),
+                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : ''
                 );
             }
         }
