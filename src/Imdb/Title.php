@@ -1428,23 +1428,31 @@ EOF;
 
     #-------------------------------------------------[ Main images on title page ]---
     /**
-     * Get image URLs for the 12 pictures on the title page
+     * Get image URLs for the 6 (or how much you want) pictures on the title page
      * @return array [0..n] of string image source
      */
     public function mainphoto()
     {
         if (empty($this->main_photo)) {
-            $xpath = $this->getXpathPage("Mediaindex");
-            if ($cells = $xpath->query('//div[@id="media_index_thumbnail_grid"]//img')) {
-                if ($cells->length > 0) {
-                    foreach ($cells as $key => $cell) {
-                        if ($src = $cell->getAttribute('src')) {
-                            $this->main_photo[] = $src;
-                        }
-                        if ($key == 5) {
-                            break;
-                        }
-                    }
+            $query = <<<EOF
+query MainPhoto(\$id: ID!) {
+  title(id: \$id) {
+    images(first: 6) {
+      edges {
+        node {
+          url
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "MainPhoto", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->images->edges as $edge) {
+                if (isset($edge->node->url) && $edge->node->url != '') {
+                    $imgUrl = str_replace('._V1_.jpg', '', $edge->node->url);
+                    $this->main_photo[] = $imgUrl . '._V1_UY100_CR25,0,100,100_AL_.jpg';
                 }
             }
         }
