@@ -364,7 +364,7 @@ EOF;
 
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 $this->movierecommendations[] = array(
-                    "title" => $edge->node->titleText->text,
+                    "title" => ucwords($edge->node->titleText->text),
                     "imdbid" => str_replace('tt', '', $edge->node->id),
                     "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
                     "img" => isset($edge->node->primaryImage->url) ? $edge->node->primaryImage->url : '',
