@@ -425,29 +425,6 @@ EOF;
         return $this->moviegenres;
     }
 
-    #---------------------------------------------------------------[ Creator ]---
-
-    /**
-     * Get the creator(s) of a TV Show
-     * @return array creator (array[0..n] of array[name,imdb])
-     * @see IMDB page / (TitlePage)
-     */
-    public function creator()
-    {
-        $result = array();
-        if ($this->jsonLD()->{'@type'} === 'TVSeries' && isset($this->jsonLD()->creator) && is_array($this->jsonLD()->creator)) {
-            foreach ($this->jsonLD()->creator as $creator) {
-                if ($creator->{'@type'} === 'Person') {
-                    $this->creators[] = array(
-                        'name' => $creator->name,
-                        'imdb' => rtrim(str_replace('/name/nm', '', $creator->url), '/')
-                    );
-                }
-            }
-        }
-        return $this->creators;
-    }
-
     #---------------------------------------------------------------[ Seasons ]---
     /** Get the number of seasons or 0 if not a series
      * @return int seasons number of seasons
