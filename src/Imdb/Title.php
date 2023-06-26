@@ -840,55 +840,62 @@ EOF;
         return $this->credits_director;
     }
 
-    #----------------------------------------------------------------[ Actors ]---
+    #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
-    * Get the Star cast members for this title
-    * @return empty array OR array Stars (array[0..n] of array[imdb,name])
+    * Get the PrincipalCredits for this title
+    * @return array principal_credits[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
+    * Not all categories are always available, TV series has Creator instead of writer
     */
-    public function stars()
+    public function principalCredits()
     {
-        if (empty($this->actor_stars)) {
-            $xpath = $this->getXpathPage("Title");
-            if ($actorStarsRaw = $xpath->query("//li[@data-testid=\"title-pc-principal-credit\"]")) {
-                foreach ($actorStarsRaw as $items) {
-                    if ($items->getElementsByTagName('a')->length > 0 &&
-                        stripos($items->getElementsByTagName('a')->item(0)->nodeValue, "stars") !== false) {
-                        if ($listItems = $items->getElementsByTagName('li')) {
-                            foreach ($listItems as $actorStars) {
-                                if ($anchor = $actorStars->getElementsByTagName('a')) {
-                                    $href = $anchor->item(0)->getAttribute('href');
-                                    $this->actor_stars[] = array(
-                                        'name' => trim($anchor->item(0)->nodeValue),
-                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
-                                    );
-                                }
-                            }
-                        }
+        if (empty($this->principal_credits)) {
+            $query = <<<EOF
+query PrincipalCredits(\$id: ID!) {
+  title(id: \$id) {
+    principalCredits {
+      credits {
+        name {
+          nameText {
+            text
+          }
+          id
+        }
+        category {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->principalCredits as $value){
+                $category = '';
+                $cat = $value->credits[0]->category->text;
+                if ($cat == "Actor" || $cat == "Actress") {
+                    $category = "Stars";
+                } else {
+                    $category = $value->credits[0]->category->text;
+                }
+                $temp = array();
+                foreach ($value->credits as $key => $credit) {
+                    $temp[] = array(
+                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : '',
+                        'imdbid' => isset($credit->name->id) ? $credit->name->id : ''
+                    );
+                    if ($key == 2) {
                         break;
-                    } elseif ($items->getElementsByTagName('span')->length > 0 &&
-                        stripos($items->getElementsByTagName('span')->item(0)->nodeValue, "star") !== false) {
-                        if ($listItems = $items->getElementsByTagName('li')) {
-                            foreach ($listItems as $actorStars) {
-                                if ($anchor = $actorStars->getElementsByTagName('a')) {
-                                    $href = $anchor->item(0)->getAttribute('href');
-                                    $this->actor_stars[] = array(
-                                        'name' => trim($anchor->item(0)->nodeValue),
-                                        'imdb' => preg_replace('!.*?/name/nm(\d+)/.*!', '$1', $href)
-                                    );
-                                }
-                            }
-                        }
-                        break;
-                    } else {
-                        continue;
                     }
                 }
+                $this->principal_credits[$category] = $temp;
             }
         }
-        return $this->actor_stars;
+        return $this->principal_credits;
     }
 
-    /**
+    #----------------------------------------------------------------[ Actors]---
+    /*
      * Get the actors/cast members for this title
      * @return array cast (array[0..n] of array[imdb,name,role,thumb])
      * e.g.
