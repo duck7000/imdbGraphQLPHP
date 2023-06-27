@@ -532,22 +532,30 @@ EOF;
         return $this->main_poster;
     }
 
-    #-------------------------------------------------[ Country of Production ]---
+    #-------------------------------------------------[ Country of Origin ]---
     /**
-     * Get country of production
+     * Get country of origin
      * @return array country (array[0..n] of string)
      * @see IMDB page / (TitlePage)
      */
     public function country()
     {
         if (empty($this->countries)) {
-            $xpath = $this->getXpathPage("Title");
-            if ($countrys = $xpath->query("//li[@data-testid=\"title-details-origin\"]//a")) {
-                foreach ($countrys as $country) {
-                    if ($country->nodeValue != "") {
-                        $this->countries[] = trim($country->nodeValue);
-                    }
-                }
+            $query = <<<EOF
+query Countries(\$id: ID!) {
+  title(id: \$id) {
+    countriesOfOrigin {
+      countries {
+        text
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Countries", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->countriesOfOrigin->countries as $country) {
+                $this->countries[] = $country->text;
             }
         }
         return $this->countries;
