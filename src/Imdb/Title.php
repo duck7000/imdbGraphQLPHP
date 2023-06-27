@@ -383,13 +383,21 @@ EOF;
     public function language()
     {
         if (empty($this->langs)) {
-            $xpath = $this->getXpathPage("Title");
-            if ($languages = $xpath->query("//li[@data-testid=\"title-details-languages\"]//a")) {
-                foreach ($languages as $language) {
-                    if ($language->nodeValue != "") {
-                        $this->langs[] = trim($language->nodeValue);
-                    }
-                }
+            $query = <<<EOF
+query Languages(\$id: ID!) {
+  title(id: \$id) {
+    spokenLanguages {
+      spokenLanguages {
+        text
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Languages", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
+                $this->langs[] = $language->text;
             }
             return $this->langs;
         }
