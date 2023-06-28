@@ -629,32 +629,44 @@ EOF;
     #-------------------------------------------------------[ MPAA / PG / FSK ]---
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
-     * @return array array[0..n] of array[country,rating,comment] comment includes brackets
+     * @return array array[0..n] of array[country,rating,comment of array()] comment whithout brackets
      * @see IMDB Parental Guidance page / (parentalguide)
      */
     public function mpaa()
     {
         if (empty($this->mpaas)) {
-            $xpath = $this->getXpathPage("ParentalGuide");
-            $cells = $xpath->query("//section[@id=\"certificates\"]//li[@class=\"ipl-inline-list__item\"]");
-            if ($cells->length > 0) {
-                foreach ($cells as $cell) {
-                    $comment = '';
-                    $rating = '';
-                    $mpaa = explode(':', $cell->nodeValue, 2);
-                    if (isset($mpaa[1])) {
-                        $ratingComment = explode('(', $mpaa[1]);
-                        $rating = trim($ratingComment[0]);
-                        if (isset($ratingComment[1])) {
-                            $comment = '(' . trim($ratingComment[1]);
-                        }
+            $query = <<<EOF
+query Mpaa(\$id: ID!) {
+  title(id: \$id) {
+    certificates(first: 9999) {
+      edges {
+        node {
+          country {
+            text
+          }
+          rating
+          attributes {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Mpaa", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->certificates->edges as $edge) {
+                $comments = array();
+                foreach ($edge->node->attributes as $key => $attribute) {
+                    if (isset($attribute->text) && $attribute->text != '') {
+                        $comments[] = $attribute->text;
                     }
-                    $this->mpaas[] = array(
-                    "country" => trim($mpaa[0]),
-                    "rating" => $rating,
-                    "comment" => $comment
-                );
                 }
+                $this->mpaas[] = array(
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : '',
+                    "rating" => isset($edge->node->rating) ? $edge->node->rating : '',
+                    "comment" => $comments
+                );
             }
         }
         return $this->mpaas;
