@@ -887,7 +887,7 @@ EOF;
                 foreach ($value->credits as $key => $credit) {
                     $temp[] = array(
                         'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : '',
-                        'imdbid' => isset($credit->name->id) ? $credit->name->id : ''
+                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : ''
                     );
                     if ($key == 2) {
                         break;
