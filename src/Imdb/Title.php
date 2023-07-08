@@ -49,7 +49,6 @@ class Title extends MdbBase
     protected $mpaas = array();
     protected $plot = array();
     protected $creators = array();
-    protected $seasoncount = -1;
     protected $season_episodes = array();
     protected $soundtracks = array();
     protected $taglines = array();
@@ -431,35 +430,6 @@ EOF;
             }
         }
         return $this->moviegenres;
-    }
-
-    #---------------------------------------------------------------[ Seasons ]---
-    /** Get the number of seasons or 0 if not a series
-     * @return int seasons number of seasons
-     * @see IMDB page / (TitlePage)
-     */
-    public function season()
-    {
-        if ($this->seasoncount == -1) {
-            $xpath = $this->getXpathPage("Title");
-            $dom_xpath_result = $xpath->query('//select[@id="browse-episodes-season"]//option');
-            $this->seasoncount = 0;
-            foreach ($dom_xpath_result as $xnode) {
-                if (!empty($xnode->getAttribute('value')) && intval($xnode->getAttribute('value')) > $this->seasoncount) {
-                    $this->seasoncount = intval($xnode->getAttribute('value'));
-                }
-            }
-            if ($this->seasoncount === 0) {
-                // Single season shows have a link rather than a select box
-                $singleSeason = $xpath->query('//div[@data-testid="episodes-browse-episodes"]//a');
-                foreach ($singleSeason as $value) {
-                    if (stripos($value->getAttribute('href'), "?season=1") !== false) {
-                        $this->seasoncount = 1;
-                    }
-                }
-            }
-        }
-        return $this->seasoncount;
     }
 
     #--------------------------------------------------------[ Plot (Outline) ]---
