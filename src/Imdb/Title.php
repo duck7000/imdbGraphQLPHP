@@ -23,7 +23,7 @@ class Title extends MdbBase
     protected $akas = array();
     protected $countries = array();
     protected $credits_cast = array();
-    protected $actor_stars = array();
+    protected $principal_credits = array();
     protected $credits_composer = array();
     protected $credits_director = array();
     protected $credits_producer = array();
@@ -48,7 +48,6 @@ class Title extends MdbBase
     protected $movieruntimes = array();
     protected $mpaas = array();
     protected $plot = array();
-    protected $creators = array();
     protected $season_episodes = array();
     protected $soundtracks = array();
     protected $taglines = array();
