@@ -1079,107 +1079,224 @@ EOF;
     }
 
     #========================================================[ /episodes page ]===
+    #--------------------------------------------------------[ Season/Year check ]---
+    /** Check if TV Series season or year based
+     * @return string $fieldName
+     */
+    private function seasonYearCheck()
+{
+    $querySeasons = <<<EOF
+query Seasons(\$id: ID!) {
+  title(id: \$id) {
+    episodes {
+      displayableSeasons(first: 9999) {
+        edges {
+          node {
+            text
+          }
+        }
+      }
+      displayableYears(first: 9999) {
+        edges {
+          node {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+    $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
+    $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
+    $byYear = count($seasonsData->title->episodes->displayableYears->edges);
+    if ($byYear - $bySeason > 4) {
+        $fieldName = 'displayableYears';
+    } else {
+        $fieldName = 'displayableSeasons';
+    }
+    return $fieldName;
+
+}
+
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,episode,image_url])
+     * array(1) {
+        [1]=>
+        array(13) {
+            [1]=> //can be unknown, unknown_(number), seasonnumber or year
+            array(6) {
+            ["imdbid"]=>
+            string(7) "1495166"
+            ["title"]=>
+            string(5) "Pilot"
+            ["airdate"]=>
+            string(11) "7 jun. 2010"
+            ["plot"]=>
+            string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
+            ["episode"]=>
+            string(1) "1" //can be unknown, unknown_(number) or seasonnumber
+            ["image_url"]=>
+            string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
+            }
+        }
      * @see IMDB page /episodes
-     * @version Attention: Starting with revision 506 (version 2.1.3), the outer array no longer starts at 0 but reflects the real season number!
+     * @version The outer and inner array keys reflects the real season and episodenumbers! Episodes can start at 0 (pilot episode)
      */
     public function episode()
     {
-        if (empty($this->season_episodes)) {
-
-            if ($this->season() === 0) {
-                return $this->season_episodes;
-            }
-
-            $xpath = $this->getXpathPage("Episodes");
-            /*
-             * There are (sometimes) two select boxes: one per season and one per year.
-             * IMDb picks one select to use by default and the other starts with an empty option.
-             * The one which starts with a numeric option is the one we need to loop over sometimes the other doesn't work
-             * (e.g. a show without seasons might have 100s of episodes in season 1 and its page won't load)
-             *
-             * default to year based
-             */
-             $selectId = "byYear";
-             if ($bySeason = $xpath->query("//select[@id='bySeason']//option")) {
-                if (is_numeric(trim($bySeason->item(0)->nodeValue))) {
-                    $selectId = "bySeason";
-                }
-             }
-             if ($select = $xpath->query("//select[@id='" . $selectId . "']//option")) {
-                $total = count($select);
-                for ($i = 0; $i < $total; ++$i) {
-                    $value = $select->item($i)->getAttribute('value');
-                    $s = (int) $value;
-                    $xpathEpisodes = $this->getXpathPage("Episodes-$s");
-                    if (empty($xpathEpisodes)) {
-                        return $this->season_episodes; // no episode page
-                    }
-                    $cells = $xpathEpisodes->query("//div[@class=\"list_item odd\" or @class=\"list_item even\"]");
-                    foreach ($cells as $cell) {
-                        //image
-                        $imgUrl = '';
-                        $imageDiv = $xpathEpisodes->query(".//div[contains(@class, 'image')]", $cell);
-                        if ($imageDiv->length !== null) {
-                            if ($imageDiv->item(0)->getElementsByTagName('img')->item(0) !== null) {
-                                $imgUrl = $imageDiv->item(0)->getElementsByTagName('img')->item(0)->getAttribute('src');
-                            }
+        if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
+            if (empty($this->season_episodes)) {
+                // Check if season or year based
+                $fieldName = $this->seasonYearCheck();
+//Season Query
+                $querySeasons = <<<EOF
+query Seasons(\$id: ID!) {
+  title(id: \$id) {
+    episodes {
+      $fieldName(first: 9999) {
+        edges {
+          node {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+                $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
+                $unknownSeasonCounter = 0;
+                foreach ($seasonsData->title->episodes->$fieldName->edges as $edge) {
+                    $season = $edge->node->text;
+                    // To fetch data from unknown seasons/years
+                    if ($edge->node->text == "Unknown") { //this is intended capitol
+                        $SeasonUnknown = "unknown"; //this is intended no capitol
+                        $SeasonYear = "";
+                        // second or more Unknown season get number to keep them seperate.
+                        if ($unknownSeasonCounter > 0) {
+                            $season = $season . '_' . $unknownSeasonCounter;
                         }
-                        // ImdbId and Title
+                        $unknownSeasonCounter++;
+                    } else {
+                        $SeasonYear = $edge->node->text;
+                        $SeasonUnknown = "";
+                    }
+//Episode Query
+                    $queryEpisodes = <<<EOF
+query Episodes(\$id: ID!) {
+  title(id: \$id) {
+    primaryImage {
+      url
+    }
+    episodes {
+      episodes(first: 9999, filter: { includeSeasons: ["$SeasonYear", "$SeasonUnknown"] }) {
+        edges {
+          node {
+            id
+            titleText {
+              text
+            }
+            plot {
+              plotText {
+                plainText
+              }
+            }
+            primaryImage {
+              url
+            }
+            releaseDate {
+              day
+              month
+              year
+            }
+            series {
+              displayableEpisodeNumber {
+                episodeNumber {
+                  episodeNumber
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+                    $episodesData = $this->graphql->query($queryEpisodes, "Episodes", ["id" => "tt$this->imdbID"]);
+                    $episodes = array();
+                    $unknownEpisodeCounter = 0;
+                    foreach ($episodesData->title->episodes->episodes->edges as $keyEp => $edge) {
+                        // vars
                         $imdbId = '';
                         $title = '';
-                        if ($cell->getElementsByTagName('a')->item(0)) {
-                           $imdbRaw = $cell->getElementsByTagName('a')->item(0)->getAttribute('href');
-                           preg_match('!tt(\d+)!', $imdbRaw, $imdb);
-                            $imdbId = $imdb[1];
-                            $title = trim($cell->getElementsByTagName('a')->item(0)->getAttribute('title'));
+                        $airDate = '';
+                        $plot = '';
+                        $epNumber = '';
+                        $imgUrl = '';
+                        // Episode ImdbId
+                        $imdbId = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : '';
+                        // Episode Title
+                        $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : '';
+                        // Episode Airdate
+                        $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : '';
+                        $month = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month : '';
+                        $year = isset($edge->node->releaseDate->year) ? $edge->node->releaseDate->year : '';
+                        // return airdate like shown on episode as string.
+                        if (!empty($day)) {
+                            $airDate .= $day;
+                            if (!empty($month)) {
+                                $airDate .= ' ';
+                            }
                         }
-                        //Episodenumber
-                        if ($cell->getElementsByTagName('meta')->item(0)) {
-                            $epNumberRaw = $cell->getElementsByTagName('meta')->item(0)->getAttribute('content');
-                            $epNumber = (int) $epNumberRaw;
+                        if (!empty($month)) {
+                            $airDate .= date('M', mktime(0, 0, 0, $month, 10)) . '.';
+                            if (!empty($year)) {
+                                $airDate .= ' ';
+                            }
                         }
-                        //Airdate and plot
-                        $airdatePlot = array();
-                        if ($divs = $cell->getElementsByTagName('div')) {
-                            foreach ($divs as $div) {
-                                $t = $div->getAttribute('class');
-                                //Airdate
-                                if ($t == 'airdate') {
-                                    $airdatePlot[] = trim($div->nodeValue);
-                                }
-                                //Plot
-                                if ($t == 'item_description') {
-                                    if (stripos($div->nodeValue, 'add a plot') === false) {
-                                        $airdatePlot[] = trim(strip_tags($div->nodeValue));
-                                    } else {
-                                        $airdatePlot[] = '';
-                                    }
+                        if (!empty($year)) {
+                            $airDate .= $year;
+                        }
+                        // Episode Plot
+                        $plot = isset($edge->node->plot->plotText->plainText) ? $edge->node->plot->plotText->plainText : '';
+                        // Episode Number
+                        if (isset($edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber)) {
+                            $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
+                            // Unknown episodes get a number to keep them seperate.
+                            if ($epNumber == "unknown") {
+                                $epNumber = $epNumber . '_' . $keyEp + 1;
+                            }
+                        }
+                        // Episode Image
+                        if (isset($edge->node->primaryImage->url)) {
+                            $epImageUrl = $edge->node->primaryImage->url;
+                            $titleImageUrl = $episodesData->title->primaryImage->url;
+                            // filter out placeholder image, in that case image = ''
+                            if (stripos($edge->node->primaryImage->url, 'MV5BYjVmMjFhZmMtNjk5Ni00MTc1LWJiNjQtMTA3ZTFhNTA2NTE3XkEyXkFqcGdeQXVyMTkxNjUyNQ') == false) {
+                                // Check if found episode image not equal to the title image
+                                if ($epImageUrl !== $titleImageUrl) {
+                                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg';
                                 }
                             }
                         }
                         $episode = array(
-                            'imdbid' => $imdbId,
-                            'title' => $title,
-                            'airdate' => $airdatePlot[0],
-                            'plot' => $airdatePlot[1],
-                            'season' => $s,
-                            'episode' => $epNumber,
-                            'image_url' => $imgUrl
-                        );
-
-                        if ($epNumber == -1) {
-                            $this->season_episodes[$s][] = $episode;
-                        } else {
-                            $this->season_episodes[$s][$epNumber] = $episode;
-                        }
+                                'imdbid' => $imdbId,
+                                'title' => $title,
+                                'airdate' => $airDate,
+                                'plot' => $plot,
+                                'episode' => $epNumber,
+                                'image_url' => $imgUrl
+                            );
+                        $episodes[$epNumber] = $episode;
                     }
+                    $this->season_episodes[$season] = $episodes;
                 }
-                
-             }
+            }
         }
         return $this->season_episodes;
     }
