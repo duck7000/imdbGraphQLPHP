@@ -1613,7 +1613,7 @@ EOF;
                 if (stripos($html, 'class="available"') !== false) {
                     $videoUrl = $embedUrl;
                 } else {
-                    $videoUrl = '';
+                    continue;
                 }
                 if (isset($edge->node->thumbnail->url) && $edge->node->thumbnail->url != '') {
                     $rawRuntime = $edge->node->runtime->value;
