@@ -646,15 +646,26 @@ EOF;
      * Find the position of a movie or tv show in the top 250 ranked movies or tv shows
      * @return int position a number between 1..250 if ranked, 0 otherwise
      * @author abe
+     * @author Ed
      * @see http://projects.izzysoft.de/trac/imdbphp/ticket/117
      */
     public function top250()
     {
         if ($this->main_top250 == -1) {
-            $xpath = $this->getXpathPage("Title");
-            $topRated = $xpath->query("//a[@data-testid='award_top-rated']")->item(0);
-            if ($topRated && preg_match('/#(\d+)/', $topRated->nodeValue, $match)) {
-                $this->main_top250 = (int)$match[1];
+            $query = <<<EOF
+query TopRated(\$id: ID!) {
+  title(id: \$id) {
+    ratingsSummary {
+      topRanking {
+        rank
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
+            if (isset($data->title->ratingsSummary->topRanking->rank) && $data->title->ratingsSummary->topRanking->rank <= 250) {
+                $this->main_top250 = $data->title->ratingsSummary->topRanking->rank;
             } else {
                 $this->main_top250 = 0;
             }
