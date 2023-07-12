@@ -1090,11 +1090,11 @@ EOF;
     $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
     $byYear = count($seasonsData->title->episodes->displayableYears->edges);
     if ($byYear - $bySeason > 4) {
-        $fieldName = 'displayableYears';
+        $data = $seasonsData->title->episodes->displayableYears->edges;
     } else {
-        $fieldName = 'displayableSeasons';
+        $data = $seasonsData->title->episodes->displayableSeasons->edges;
     }
-    return $fieldName;
+    return $data;
 
 }
 
@@ -1129,26 +1129,9 @@ EOF;
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
             if (empty($this->season_episodes)) {
                 // Check if season or year based
-                $fieldName = $this->seasonYearCheck();
-//Season Query
-                $querySeasons = <<<EOF
-query Seasons(\$id: ID!) {
-  title(id: \$id) {
-    episodes {
-      $fieldName(first: 9999) {
-        edges {
-          node {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-                $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
+                $seasonsData = $this->seasonYearCheck();
                 $unknownSeasonCounter = 0;
-                foreach ($seasonsData->title->episodes->$fieldName->edges as $edge) {
+                foreach ($seasonsData as $edge) {
                     $season = $edge->node->text;
                     // To fetch data from unknown seasons/years
                     if ($edge->node->text == "Unknown") { //this is intended capitol
