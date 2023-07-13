@@ -912,6 +912,41 @@ EOF;
         return $this->credits_cast;
     }
 
+    #------------------------------------------------------[ Helper: Crew Category ]---
+    /** create query and fetch data from category
+     * @param string $crewCategory (producer, writer, composer or director)
+     * @return array data (array[0..n] of objects)
+     * @see used by the methods director, writer, producer, composer
+     */
+    public function creditsQuery($crewCategory)
+    {
+$query = <<<EOF
+query CreditCrew(\$id: ID!) {
+  title(id: \$id) {
+    credits(first: 9999, filter: { categories: ["$crewCategory"] }) {
+      edges {
+        node {
+          name {
+            nameText {
+              text
+            }
+            id
+          }
+          ... on Crew {
+            jobs {
+              text
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "CreditCrew", ["id" => "tt$this->imdbID"]);
+        return $data;
+    }
+
     #-------------------------------------------------------------[ Directors ]---
     /**
      * Get the director(s) of the movie
