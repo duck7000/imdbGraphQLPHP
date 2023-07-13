@@ -787,43 +787,6 @@ EOF;
         return array();
     }
 
-    #-------------------------------------------------------------[ Directors ]---
-    /**
-     * Get the director(s) of the movie
-     * @return array director (array[0..n] of arrays[imdb,name,role])
-     * @see IMDB page /fullcredits
-     */
-    public function director()
-    {
-        if (!empty($this->credits_director)) {
-            return $this->credits_director;
-        }
-        $directorRows = $this->get_table_rows("director");
-        foreach ($directorRows as $directorRow) {
-            $directorTds = $this->get_row_cels($directorRow);
-            $imdb = '';
-            $name = '';
-            $role = null;
-            if (!empty(preg_replace('/[\s]+/mu', '', $directorTds->item(0)->nodeValue))) {
-                if ($directorTds->item(2)) {
-                    $role = trim(strip_tags($directorTds->item(2)->nodeValue));
-                }
-                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')->item(0)) {
-                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
-                    $name = trim(strip_tags($anchor->nodeValue));
-                } elseif (!empty($directorTds->item(0)->nodeValue)) {
-                        $name = trim($directorTds->item(0)->nodeValue);
-                }
-                $this->credits_director[] = array(
-                    'imdb' => $imdb,
-                    'name' => $name,
-                    'role' => $role
-                );
-            }
-        }
-        return $this->credits_director;
-    }
-
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
     * Get the PrincipalCredits for this title
@@ -947,6 +910,43 @@ EOF;
             }
         }
         return $this->credits_cast;
+    }
+
+    #-------------------------------------------------------------[ Directors ]---
+    /**
+     * Get the director(s) of the movie
+     * @return array director (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function director()
+    {
+        if (!empty($this->credits_director)) {
+            return $this->credits_director;
+        }
+        $directorRows = $this->get_table_rows("director");
+        foreach ($directorRows as $directorRow) {
+            $directorTds = $this->get_row_cels($directorRow);
+            $imdb = '';
+            $name = '';
+            $role = null;
+            if (!empty(preg_replace('/[\s]+/mu', '', $directorTds->item(0)->nodeValue))) {
+                if ($directorTds->item(2)) {
+                    $role = trim(strip_tags($directorTds->item(2)->nodeValue));
+                }
+                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')->item(0)) {
+                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
+                    $name = trim(strip_tags($anchor->nodeValue));
+                } elseif (!empty($directorTds->item(0)->nodeValue)) {
+                        $name = trim($directorTds->item(0)->nodeValue);
+                }
+                $this->credits_director[] = array(
+                    'imdb' => $imdb,
+                    'name' => $name,
+                    'role' => $role
+                );
+            }
+        }
+        return $this->credits_director;
     }
 
     #---------------------------------------------------------------[ Writers ]---
