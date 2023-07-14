@@ -940,6 +940,19 @@ query CreditCrew(\$id: ID!) {
               text
             }
             episodeCredits(first: 9999) {
+              edges {
+                node {
+                  title {
+                    series {
+                      displayableEpisodeNumber {
+                        episodeNumber {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+              }
               yearRange {
                 year
                 endYear
