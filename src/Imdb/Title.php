@@ -967,28 +967,24 @@ EOF;
         if (!empty($this->credits_director)) {
             return $this->credits_director;
         }
-        $directorRows = $this->get_table_rows("director");
-        foreach ($directorRows as $directorRow) {
-            $directorTds = $this->get_row_cels($directorRow);
-            $imdb = '';
-            $name = '';
-            $role = null;
-            if (!empty(preg_replace('/[\s]+/mu', '', $directorTds->item(0)->nodeValue))) {
-                if ($directorTds->item(2)) {
-                    $role = trim(strip_tags($directorTds->item(2)->nodeValue));
+        $data = $this->creditsQuery("director");
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    $role .= '(' . $attribute->text . ')';
+                    if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                        $role .= ' ';
+                    }
                 }
-                if ($anchor = $directorTds->item(0)->getElementsByTagName('a')->item(0)) {
-                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
-                    $name = trim(strip_tags($anchor->nodeValue));
-                } elseif (!empty($directorTds->item(0)->nodeValue)) {
-                        $name = trim($directorTds->item(0)->nodeValue);
-                }
-                $this->credits_director[] = array(
-                    'imdb' => $imdb,
-                    'name' => $name,
-                    'role' => $role
-                );
             }
+            $this->credits_director[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role
+            );
         }
         return $this->credits_director;
     }
