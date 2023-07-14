@@ -918,7 +918,7 @@ EOF;
      * @return array data (array[0..n] of objects)
      * @see used by the methods director, writer, producer, composer
      */
-    public function creditsQuery($crewCategory)
+    private function creditsQuery($crewCategory)
     {
 $query = <<<EOF
 query CreditCrew(\$id: ID!) {
@@ -935,6 +935,15 @@ query CreditCrew(\$id: ID!) {
           ... on Crew {
             jobs {
               text
+            }
+            attributes {
+              text
+            }
+            episodeCredits(first: 9999) {
+              yearRange {
+                year
+                endYear
+              }
             }
           }
         }
