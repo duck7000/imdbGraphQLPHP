@@ -992,11 +992,15 @@ EOF;
                         $role .= ' ';
                     }
                 }
-            } elseif ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+            }
+            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
                 $totalEpisodes = count($edge->node->episodeCredits->edges);
                 $episodeText = ' episode';
                 if ($totalEpisodes > 1) {
                     $episodeText .= 's';
+                }
+                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                    $role .= ' ';
                 }
                 $role .= '(' . $totalEpisodes . $episodeText;
                 if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
