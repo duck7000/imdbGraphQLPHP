@@ -1121,30 +1121,8 @@ EOF;
         if (!empty($this->credits_composer)) {
             return $this->credits_composer;
         }
-        $composerRows = $this->get_table_rows("composer");
-        foreach ($composerRows as $composerRow) {
-            $composerTds = $this->get_row_cels($composerRow);
-            $imdb = '';
-            $name = '';
-            $role = null;
-            if (!empty(preg_replace('/[\s]+/mu', '', $composerTds->item(0)->nodeValue))) {
-                if ($composerTds->item(2)) {
-                    $role = trim(strip_tags($composerTds->item(2)->nodeValue));
-                }
-                if ($anchor = $composerTds->item(0)->getElementsByTagName('a')->item(0)) {
-                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
-                    $name = trim(strip_tags($anchor->nodeValue));
-                } elseif (!empty($composerTds->item(0)->nodeValue)) {
-                        $name = trim($composerTds->item(0)->nodeValue);
-                }
-                $this->credits_composer[] = array(
-                    'imdb' => $imdb,
-                    'name' => $name,
-                    'role' => $role
-                );
-            }
-        }
-        return $this->credits_composer;
+        $composerData = $this->directorComposer($this->creditsQuery("composer"));
+        return $this->credits_composer = $composerData;
     }
 
     #========================================================[ /episodes page ]===
