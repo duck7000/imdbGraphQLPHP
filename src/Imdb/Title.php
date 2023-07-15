@@ -992,6 +992,20 @@ EOF;
                         $role .= ' ';
                     }
                 }
+            } elseif ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+                $totalEpisodes = count($edge->node->episodeCredits->edges);
+                $episodeText = ' episode';
+                if ($totalEpisodes > 1) {
+                    $episodeText .= 's';
+                }
+                $role .= '(' . $totalEpisodes . $episodeText;
+                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
+                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
+                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                    }
+                }
+                $role .= ')';
             }
             $this->credits_director[] = array(
                 'imdb' => $imdb,
