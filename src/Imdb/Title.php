@@ -969,6 +969,60 @@ EOF;
         return $data;
     }
 
+    #-------------------------------------------------------------[ Helper: Director / Composer ]---
+    /**
+     * process data for Director and Composer
+     * @return array director/composer (array[0..n] of arrays[imdb,name,role])
+     * @see used by the methods director and composer
+     */
+    private function directorComposer($data)
+    {
+        $output = array();
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    $role .= '(' . $attribute->text . ')';
+                    if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                        $role .= ' ';
+                    }
+                }
+            }
+            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+                $totalEpisodes = count($edge->node->episodeCredits->edges);
+                if ($totalEpisodes == 1) {
+                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
+                    if ($value == "unknown") {
+                        $totalEpisodes = 'unknown';
+                    }
+                }
+                $episodeText = ' episode';
+                if ($totalEpisodes > 1) {
+                    $episodeText .= 's';
+                }
+                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                    $role .= ' ';
+                }
+                $role .= '(' . $totalEpisodes . $episodeText;
+                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
+                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
+                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                    }
+                }
+                $role .= ')';
+            }
+            $output[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role
+            );
+        }
+        return $output;
+    }
+
     #-------------------------------------------------------------[ Directors ]---
     /**
      * Get the director(s) of the movie
