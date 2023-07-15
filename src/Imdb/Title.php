@@ -995,6 +995,12 @@ EOF;
             }
             if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
                 $totalEpisodes = count($edge->node->episodeCredits->edges);
+                if ($totalEpisodes == 1) {
+                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
+                    if ($value == "unknown") {
+                        $totalEpisodes = 'unknown';
+                    }
+                }
                 $episodeText = ' episode';
                 if ($totalEpisodes > 1) {
                     $episodeText .= 's';
