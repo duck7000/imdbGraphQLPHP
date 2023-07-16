@@ -1428,7 +1428,7 @@ query Trivia(\$id: ID!) {
         node {
           displayableArticle {
             body {
-              plaidHtml
+              plainText
             }
           }
           isSpoiler
@@ -1445,10 +1445,9 @@ EOF;
                         continue;
                     }
                 }
-                $this->trivia[] = strip_tags($edge->node->displayableArticle->body->plaidHtml);
+                $this->trivia[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
             }
         }
-        
         return $this->trivia;
     }
 
