@@ -27,7 +27,7 @@ class Title extends MdbBase
     protected $credits_composer = array();
     protected $credits_director = array();
     protected $credits_producer = array();
-    protected $credits_writing = array();
+    protected $credits_writer = array();
     protected $langs = array();
     protected $all_keywords = array();
     protected $main_poster = "";
