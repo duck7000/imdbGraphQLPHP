@@ -1103,6 +1103,12 @@ EOF;
                         'role' => $role
                     );
                 }
+            } else {
+                $this->credits_writer[] = array(
+                        'imdb' => $imdb,
+                        'name' => $name,
+                        'role' => $role
+                    );
             }
         }
         return $this->credits_writer;
