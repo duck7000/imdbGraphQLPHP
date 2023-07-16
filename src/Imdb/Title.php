@@ -588,7 +588,7 @@ EOF;
             foreach ($data->title->akas->edges as $edge) {
                 $this->akas[] = array(
                     "title" => ucwords($edge->node->displayableProperty->value->plainText),
-                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : ''
+                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown'
                 );
             }
         }
