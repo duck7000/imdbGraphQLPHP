@@ -1471,7 +1471,7 @@ query Soundtrack(\$id: ID!) {
         node {
           text
           comments {
-            plaidHtml
+            plainText
           }
         }
       }
@@ -1489,8 +1489,8 @@ EOF;
                     $title = 'Unknown';
                 }
                 foreach ($edge->node->comments as $key => $comment) {
-                    if (trim(strip_tags($comment->plaidHtml)) !== '') {
-                        $credits .= trim(strip_tags($comment->plaidHtml));
+                    if (trim(strip_tags($comment->plainText)) !== '') {
+                        $credits .= $comment->plainText;
                         if ($key !== array_key_last($edge->node->comments)) {
                             $credits .= '&#10;';
                         }
