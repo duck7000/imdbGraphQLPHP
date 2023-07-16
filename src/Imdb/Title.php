@@ -393,8 +393,10 @@ query Languages(\$id: ID!) {
 EOF;
 
             $data = $this->graphql->query($query, "Languages", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
-                $this->langs[] = $language->text;
+            if (isset($data->title->spokenLanguages->spokenLanguages) && count($data->title->spokenLanguages) > 0) {
+                foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
+                    $this->langs[] = $language->text;
+                }
             }
             return $this->langs;
         }
