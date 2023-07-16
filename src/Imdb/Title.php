@@ -746,49 +746,6 @@ EOF;
     }
 
     #=====================================================[ /fullcredits page ]===
-    
-    #-------------------------------------------[ Helper: Get IMDBID from URL ]---
-    /** Get the IMDB ID from a names URL
-     * @param string href url to the staff members IMDB page
-     * @return string IMDBID of the staff member
-     * @see used by the methods director, cast, writing, producer, composer
-     */
-    protected function get_imdbname($href)
-    {
-        return preg_replace('!^.*nm(\d+).*$!ims', '$1', $href);
-    }
-    
-    #-----------------------------------------------------[ Helper: TableRows ]---
-    /**
-     * Get rows for a given table on the page
-     * @param string html
-     * @param string table_start
-     * @return string[] Contents of each row of the table
-     * @see used by the methods director, writing, producer, composer
-     */
-    protected function get_table_rows($id)
-    {
-        $xpath = $this->getXpathPage("Credits");
-        if ($cells = $xpath->query("//h4[@id='$id']/following-sibling::table[1]/tbody/tr")) {
-            return $cells;
-        
-        }
-    }
-
-    #------------------------------------------------------[ Helper: RowCells ]---
-    /** Get content of table row cells
-     * @param string row (as returned by imdb::get_table_rows)
-     * @return array cells (array[0..n] of strings)
-     * @see used by the methods director, writing, producer, composer
-     */
-    protected function get_row_cels($row)
-    {
-        if ($rowTds = $row->getElementsByTagName('td')) {
-            return $rowTds;
-        }
-        return array();
-    }
-
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
     * Get the PrincipalCredits for this title
