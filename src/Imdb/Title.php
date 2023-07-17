@@ -815,53 +815,69 @@ EOF;
         if (!empty($this->credits_cast)) {
             return $this->credits_cast;
         }
-        $xpath = $this->getXpathPage("Credits");
-        if ($castRows = $xpath->query("//table[@class='cast_list']/tr[@class=\"odd\" or @class=\"even\"]")) {
-            foreach ($castRows as $castRow) {
-                $castTds = $castRow->getElementsByTagName('td');
-                if (4 !== count($castTds)) {
-                    continue;
-                }
-                $dir = array(
-                    'imdb' => null,
-                    'name' => null,
-                    'role' => null,
-                    'thumb' => null
-                );
-                //Actor name and imdbId
-                if ($actorAnchor = $castTds->item(1)->getElementsByTagName('a')->item(0)) {
-                    $actorHref = $actorAnchor->getAttribute('href');
-                    $dir["imdb"] = preg_replace('!.*/name/nm(\d+)/.*!ims', '$1', $actorHref);
-                    $dir["name"] = trim($actorAnchor->nodeValue);
-                } else {
-                    if (!empty(trim($castTds->item(1)->nodeValue))) {
-                       $dir["name"] = trim($castTds->item(1)->nodeValue);
-                    } else {
-                        continue;
-                    }
-                }
-                // actor thumb image
-                if ($imgUrl = $castTds->item(0)->getElementsByTagName('img')->item(0)->getAttribute('loadlate')) {
-                    $dir["thumb"] = $imgUrl;
-                } else {
-                    $dir["thumb"] = '';
-                }
-                //Role including all comments in brackets
-                if ($roleCell = $castTds->item(3)->nodeValue) {
-                    $roleLines = explode("\n", $roleCell);
-                    $role = '';
-                    foreach ($roleLines as $key => $roleLine) {
-                        //get rid of not needed episode info
-                        if (strpos($roleLine, 'episode') !== false || strpos($roleLine, '/ ...') !== false || empty(trim($roleLine))) {
-                            continue;
-                        } else {
-                            $role .=  trim(preg_replace('#[\xC2\xA0]#', '', $roleLine)) . ' ';
-                        }
-                    }
-                }
-                $dir['role'] = trim($role);
-                $this->credits_cast[] = $dir;
+$query = <<<EOF
+query CreditQuery(\$id: ID!) {
+  title(id: \$id) {
+    credits(first: 9999, filter: { categories: ["cast"] }) {
+      edges {
+        node {
+          name {
+            nameText {
+              text
             }
+            id
+            primaryImage {
+              url
+            }
+          }
+          ... on Cast {
+            characters {
+              name
+            }
+            attributes {
+              text
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "CreditQuery", ["id" => "tt$this->imdbID"]);
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            $imgUrl = '';
+            if ($edge->node->characters != null) {
+                foreach ($edge->node->characters as $keyCharacters => $character) {
+                    $role .= $character->name;
+                    if ($keyCharacters !== array_key_last($edge->node->characters)) {
+                        $role .= ' / ';
+                    }
+                }
+            }
+            if ($edge->node->attributes != null) {
+                $role .= ' ';
+                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    $role .= '(' .$attribute->text . ')';
+                    if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                        $role .= ' ';
+                    }
+                }
+            }
+            if (isset($edge->node->name->primaryImage->url) && $edge->node->name->primaryImage->url != null) {
+                $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
+                $imgUrl = $img . 'UY44_CR1,0,32,44_AL_.jpg';
+            }
+            $this->credits_cast[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role,
+                'thumb' => $imgUrl
+            );
         }
         return $this->credits_cast;
     }
