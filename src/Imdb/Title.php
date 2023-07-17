@@ -555,7 +555,7 @@ query AlsoKnow(\$id: ID!) {
     originalTitleText {
       text
     }
-    akas(first: 9999) {
+    akas(first: 9999, sort: {order: ASC by: COUNTRY}) {
       edges {
         node {
           country {
@@ -592,7 +592,6 @@ EOF;
                 );
             }
         }
-        usort($this->akas, fn($a, $b) => $a['country'] <=> $b['country']);
         return $this->akas;
     }
 
