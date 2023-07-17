@@ -561,9 +561,6 @@ query AlsoKnow(\$id: ID!) {
           country {
             text
           }
-          language {
-            text
-          }
           displayableProperty {
             value {
               plainText
@@ -576,7 +573,6 @@ query AlsoKnow(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
-
             $originalTitle = $data->title->originalTitleText->text;
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
