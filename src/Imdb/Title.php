@@ -1477,10 +1477,8 @@ query FilmingLocations(\$id: ID!) {
     filmingLocations(first: 9999) {
       edges {
         node {
+          text
           displayableProperty {
-            value {
-              markdown
-            }
             qualifiersInMarkdownList {
               markdown
             }
@@ -1494,13 +1492,15 @@ EOF;
 
             $data = $this->graphql->query($query, "FilmingLocations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->filmingLocations->edges as $edge) {
-                $real = '';
+                $real = isset($edge->node->text) ? $edge->node->text : '';
                 $movie = '';
-                if (isset($edge->node->displayableProperty->value->markdown)) {
-                    $real = $edge->node->displayableProperty->value->markdown;
-                }
-                if (isset($edge->node->displayableProperty->qualifiersInMarkdownList[0]->markdown)) {
-                    $movie = '(' . $edge->node->displayableProperty->qualifiersInMarkdownList[0]->markdown . ')';
+                if ($edge->node->displayableProperty->qualifiersInMarkdownList != null) {
+                    foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $key => $attribute) {
+                        $movie .= '(' . $attribute->markdown . ')';
+                        if ($key !== array_key_last($edge->node->displayableProperty->qualifiersInMarkdownList)) {
+                            $movie .= ' ';
+                        }
+                    }
                 }
                 $this->locations[] = array(
                     'real' => $real,
