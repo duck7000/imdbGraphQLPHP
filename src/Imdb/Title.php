@@ -1725,18 +1725,6 @@ EOF;
     }
 
     #========================================================[ Helper functions ]===  
-
-    protected function getPage($page = null)
-    {
-        if (!empty($this->page[$page])) {
-            return $this->page[$page];
-        }
-
-        $this->page[$page] = parent::getPage($page);
-
-        return $this->page[$page];
-    }
-
     /**
      * Get all edges of a field in the title type
      * @param string $queryName The cached query name
