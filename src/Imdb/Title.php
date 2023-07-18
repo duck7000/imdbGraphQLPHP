@@ -55,25 +55,6 @@ class Title extends MdbBase
     protected $locations = array();
     protected $moviealternateversions = array();
 
-    protected $pageUrls = array(
-        "AlternateVersions" => '/alternateversions',
-        "Credits" => "/fullcredits",
-        "Episodes" => "/episodes",
-        "Keywords" => "/keywords",
-        "Locations" => "/locations",
-        "ParentalGuide" => "/parentalguide",
-        "Plot" => "/plotsummary",
-        "Quotes" => "/quotes",
-        "ReleaseInfo" => "/releaseinfo",
-        "Soundtrack" => "/soundtrack",
-        "Taglines" => "/taglines",
-        "Technical" => "/technical",
-        "Video" => "/videogallery/content_type-trailer",
-        "Mediaindex" => "/mediaindex",
-        "Title" => "/",
-        "Trivia" => "/trivia",
-    );
-
     /**
      * Create an imdb object populated with id, title, year, and movie type
      * @param string $id imdb ID
