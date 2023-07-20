@@ -733,7 +733,7 @@ EOF;
                 $category = '';
                 $cat = $value->credits[0]->category->text;
                 if ($cat == "Actor" || $cat == "Actress") {
-                    $category = "Stars";
+                    $category = "Star";
                 } else {
                     $category = $value->credits[0]->category->text;
                 }
