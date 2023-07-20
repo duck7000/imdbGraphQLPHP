@@ -1263,7 +1263,7 @@ EOF;
                             $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
                             // Unknown episodes get a number to keep them seperate.
                             if ($epNumber == "unknown") {
-                                $epNumber = $epNumber . '_' . $keyEp + 1;
+                                $epNumber = ucwords($epNumber) . '_' . $keyEp + 1;
                             }
                         }
                         // Episode Image
