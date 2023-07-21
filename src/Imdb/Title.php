@@ -1096,8 +1096,8 @@ EOF;
      * @return string $fieldName
      */
     private function seasonYearCheck()
-{
-    $querySeasons = <<<EOF
+    {
+        $querySeasons = <<<EOF
 query Seasons(\$id: ID!) {
   title(id: \$id) {
     episodes {
@@ -1119,17 +1119,21 @@ query Seasons(\$id: ID!) {
   }
 }
 EOF;
-    $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
-    $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
-    $byYear = count($seasonsData->title->episodes->displayableYears->edges);
-    if ($byYear - $bySeason > 4) {
-        $data = $seasonsData->title->episodes->displayableYears->edges;
-    } else {
-        $data = $seasonsData->title->episodes->displayableSeasons->edges;
-    }
-    return $data;
+        $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
+        if ($seasonsData->title->episodes != null) {
+            $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
+            $byYear = count($seasonsData->title->episodes->displayableYears->edges);
+            if ($byYear - $bySeason > 4) {
+                $data = null;
+            } else {
+                $data = $seasonsData->title->episodes->displayableSeasons->edges;
+            }
+        } else {
+            $data = null;
+        }
+        return $data;
 
-}
+    }
 
     #--------------------------------------------------------[ Episodes Array ]---
     /**
