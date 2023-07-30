@@ -1124,7 +1124,7 @@ EOF;
             $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
             $byYear = count($seasonsData->title->episodes->displayableYears->edges);
             if ($byYear - $bySeason > 4) {
-                $data = null;
+                $data = $seasonsData->title->episodes->displayableYears->edges;
             } else {
                 $data = $seasonsData->title->episodes->displayableSeasons->edges;
             }
