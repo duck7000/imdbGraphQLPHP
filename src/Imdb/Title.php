@@ -1167,21 +1167,31 @@ EOF;
             if (empty($this->season_episodes)) {
                 // Check if season or year based
                 $seasonsData = $this->seasonYearCheck();
+                if ($seasonsData == null) {
+                    return $this->season_episodes;
+                }
                 $unknownSeasonCounter = 0;
                 foreach ($seasonsData as $edge) {
-                    $season = $edge->node->text;
-                    // To fetch data from unknown seasons/years
-                    if ($edge->node->text == "Unknown") { //this is intended capitol
-                        $SeasonUnknown = "unknown"; //this is intended no capitol
-                        $SeasonYear = "";
-                        // second or more Unknown season get number to keep them seperate.
-                        if ($unknownSeasonCounter > 0) {
-                            $season = $season . '_' . $unknownSeasonCounter;
-                        }
-                        $unknownSeasonCounter++;
+                    if (strlen((string)$edge->node->text) === 4) {
+                        // year based Tv Series
+                        $seasonYear = $edge->node->text;
+                        $filter = 'filter: { releasedOnOrAfter: { day: 1, month: 1, year: ' . $seasonYear . '}, releasedOnOrBefore: { day: 31, month: 12, year: ' . $seasonYear . '}}';
                     } else {
-                        $SeasonYear = $edge->node->text;
-                        $SeasonUnknown = "";
+                        $seasonYear = $edge->node->text;
+                        // To fetch data from unknown seasons/years
+                        if ($edge->node->text == "Unknown") { //this is intended capitol
+                            $SeasonUnknown = "unknown"; //this is intended not capitol
+                            $seasonFilter = "";
+                            // second or more Unknown season get number
+                            if ($unknownSeasonCounter > 0) {
+                                $seasonYear = $seasonYear . '_' . $unknownSeasonCounter;
+                            }
+                            $unknownSeasonCounter++;
+                        } else {
+                            $seasonFilter = $edge->node->text;
+                            $SeasonUnknown = "";
+                        }
+                        $filter = 'filter: { includeSeasons: ["' . $seasonFilter . '", "' . $SeasonUnknown . '"] }';
                     }
 //Episode Query
                     $queryEpisodes = <<<EOF
@@ -1191,7 +1201,7 @@ query Episodes(\$id: ID!) {
       url
     }
     episodes {
-      episodes(first: 9999, filter: { includeSeasons: ["$SeasonYear", "$SeasonUnknown"] }) {
+      episodes(first: 9999, $filter) {
         edges {
           node {
             id
@@ -1279,7 +1289,7 @@ EOF;
                                 // Check if found episode image not equal to the title image
                                 if ($epImageUrl !== $titleImageUrl) {
                                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg';
+                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg'; // UX224_CR0,0,224,126_AL_.jpg
                                 }
                             }
                         }
@@ -1293,7 +1303,7 @@ EOF;
                             );
                         $episodes[$epNumber] = $episode;
                     }
-                    $this->season_episodes[$season] = $episodes;
+                    $this->season_episodes[$seasonYear] = $episodes;
                 }
             }
         }
