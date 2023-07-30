@@ -38,7 +38,7 @@ query Search {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "Search", ["id" => "tt$this->imdbID"]);
+        $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
             $imdbId = isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : '';
             $title = isset($edge->node->entity->titleText->text) ? $edge->node->entity->titleText->text : '';
