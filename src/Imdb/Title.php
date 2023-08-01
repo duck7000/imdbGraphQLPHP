@@ -1298,6 +1298,7 @@ EOF;
                                 'title' => $title,
                                 'airdate' => $airDate,
                                 'plot' => $plot,
+                                'season' => $seasonYear,
                                 'episode' => $epNumber,
                                 'image_url' => $imgUrl
                             );
