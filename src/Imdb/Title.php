@@ -1289,7 +1289,7 @@ EOF;
                                 // Check if found episode image not equal to the title image
                                 if ($epImageUrl !== $titleImageUrl) {
                                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg'; // UX224_CR0,0,224,126_AL_.jpg
+                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg';
                                 }
                             }
                         }
