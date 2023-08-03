@@ -1050,28 +1050,64 @@ EOF;
         if (!empty($this->credits_producer)) {
             return $this->credits_producer;
         }
-        $producerRows = $this->get_table_rows("producer");
-        foreach ($producerRows as $producerRow) {
-            $producerTds = $this->get_row_cels($producerRow);
-            $imdb = '';
-            $name = '';
-            $role = null;
-            if (!empty(preg_replace('/[\s]+/mu', '', $producerTds->item(0)->nodeValue))) {
-                if ($producerTds->item(2)) {
-                    $role = trim(strip_tags($producerTds->item(2)->nodeValue));
+        $data = $this->creditsQuery("producer");
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
+                foreach ($edge->node->jobs as $keyJobs => $job) {
+                    $role .= $job->text;
+                    if ($keyJobs !== array_key_last($edge->node->jobs)) {
+                        $role .= ' / ';
+                    }
                 }
-                if ($anchor = $producerTds->item(0)->getElementsByTagName('a')->item(0)) {
-                    $imdb = $this->get_imdbname($anchor->getAttribute('href'));
-                    $name = trim(strip_tags($anchor->nodeValue));
-                } elseif (!empty($producerTds->item(0)->nodeValue)) {
-                        $name = trim($producerTds->item(0)->nodeValue);
-                }
-                $this->credits_producer[] = array(
-                    'imdb' => $imdb,
-                    'name' => $name,
-                    'role' => $role
-                );
             }
+            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                $countAttributes = count($edge->node->attributes);
+                $countJobs = count($edge->node->jobs);
+                if ($countAttributes > $countJobs) {
+                    $key = ($countJobs);
+                    $role .= ' ';
+                    foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                        if ($keyAttributes >= $key) {
+                            $role .= '(' . $attribute->text . ')';
+                            if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                                $role .= ' ';
+                            }
+                        }
+                    }
+                }
+            }
+            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+                $totalEpisodes = count($edge->node->episodeCredits->edges);
+                if ($totalEpisodes == 1) {
+                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
+                    if ($value == "unknown") {
+                        $totalEpisodes = 'unknown';
+                    }
+                }
+                $episodeText = ' episode';
+                if ($totalEpisodes > 1) {
+                    $episodeText .= 's';
+                }
+                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                    $role .= ' ';
+                }
+                $role .= '(' . $totalEpisodes . $episodeText;
+                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
+                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
+                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                    }
+                }
+                $role .= ')';
+            }
+            $this->credits_producer[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role
+            );
         }
         return $this->credits_producer;
     }
