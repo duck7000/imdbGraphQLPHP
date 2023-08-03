@@ -53,6 +53,10 @@ class Title extends MdbBase
     protected $taglines = array();
     protected $trivia = array();
     protected $locations = array();
+    protected $compcred_prod = array();
+    protected $compcred_dist = array();
+    protected $compcred_special = array();
+    protected $compcred_other = array();
     protected $moviealternateversions = array();
 
     /**
@@ -1531,6 +1535,132 @@ EOF;
             }
         }
         return $this->locations;
+    }
+
+    #==================================================[ /companycredits page ]===
+    /**
+     * Fetch all company credits
+     * @param string $category e.g. distribution, production
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     */
+    protected function companyCredits($category)
+    {
+        $query = <<<EOF
+query CompanyCredits(\$id: ID!) {
+  title(id: \$id) {
+    companyCredits(first: 9999, filter: {categories: ["$category"]}) {
+      edges {
+        node {
+          company {
+            id
+          }
+          displayableProperty {
+            value {
+              plainText
+            }
+          }
+          countries {
+            text
+          }
+          attributes {
+            text
+          }
+          yearsInvolved {
+            year
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "CompanyCredits", ["id" => "tt$this->imdbID"]);
+        $results = array();
+        foreach ($data->title->companyCredits->edges as $edge) {
+            $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
+            $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
+            $companyCountry = '';
+            if ($edge->node->countries != null && isset($edge->node->countries[0]->text)) {
+                $companyCountry = $edge->node->countries[0]->text;
+            }
+            $companyAttribute = '';
+            if ($edge->node->attributes != null) {
+                foreach ($edge->node->attributes as $key => $attribute) {
+                    $companyAttribute .= $attribute->text;
+                    if ($key !== array_key_last($edge->node->attributes)) {
+                        $companyAttribute .= ', ';
+                    }
+                }
+            }
+            $companyYear = '';
+            if ($edge->node->yearsInvolved != null && isset($edge->node->yearsInvolved->year)) {
+                $companyYear = $edge->node->yearsInvolved->year;
+            }
+            $results[] = array(
+                "name" => $companyName,
+                "id" => $companyId,
+                "country" => $companyCountry,
+                "attribute" => $companyAttribute,
+                "year" => $companyYear,
+            );
+        }
+        return $results;
+    }
+
+    #---------------------------------------------------[ Producing Companies ]---
+
+    /** Info about Production Companies
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @see IMDB page /companycredits
+     */
+    public function prodCompany()
+    {
+        if (empty($this->compcred_prod)) {
+            $this->compcred_prod = $this->companyCredits("production");
+        }
+        return $this->compcred_prod;
+    }
+
+    #------------------------------------------------[ Distributing Companies ]---
+
+    /** Info about distributors
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @see IMDB page /companycredits
+     */
+    public function distCompany()
+    {
+        if (empty($this->compcred_dist)) {
+            $this->compcred_dist = $this->companyCredits("distribution");
+        }
+        return $this->compcred_dist;
+    }
+
+    #---------------------------------------------[ Special Effects Companies ]---
+
+    /** Info about Special Effects companies
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @see IMDB page /companycredits
+     */
+    public function specialCompany()
+    {
+        if (empty($this->compcred_special)) {
+            $this->compcred_special = $this->companyCredits("specialEffects");
+        }
+        return $this->compcred_special;
+    }
+
+    #-------------------------------------------------------[ Other Companies ]---
+
+    /** Info about other companies
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @see IMDB page /companycredits
+     */
+    public function otherCompany()
+    {
+        if (empty($this->compcred_other)) {
+            $this->compcred_other = $this->companyCredits("miscellaneous");
+        }
+        return $this->compcred_other;
     }
 
     #========================================================[ /keywords page ]===
