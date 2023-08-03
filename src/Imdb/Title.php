@@ -253,6 +253,31 @@ EOF;
         return $this->main_rating;
     }
 
+     /**
+     * Return number of votes for this movie
+     * @return int
+     * @see IMDB page / (TitlePage)
+     */
+    public function votes()
+    {
+        $query = <<<EOF
+query RatingVotes(\$id: ID!) {
+  title(id: \$id) {
+    ratingsSummary {
+      voteCount
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
+        if (isset($data->title->ratingsSummary->voteCount) && !empty($data->title->ratingsSummary->voteCount)) {
+            return $data->title->ratingsSummary->voteCount;
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Rating out of 100 on metacritic
      * @return int|0
