@@ -487,7 +487,7 @@ query Data(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
-        if ($data != null) {
+        if ($data != null && $data->name->$name != null) {
             foreach ($data->name->$name->edges as $edge) {
                 if (isset($edge->node->text->plainText)) {
                     $arrayName[] = $edge->node->text->plainText;
