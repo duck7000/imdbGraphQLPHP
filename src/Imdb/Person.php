@@ -348,7 +348,7 @@ query Spouses(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
-            if ($data != null) {
+            if ($data != null && $data->name->spouses != null) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
                     $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
