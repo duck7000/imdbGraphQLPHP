@@ -298,6 +298,8 @@ EOF;
                 } else {
                     $this->bodyheight["metric"] = '';
                 }
+            } else {
+                return $this->bodyheight;
             }
         }
         return $this->bodyheight;
