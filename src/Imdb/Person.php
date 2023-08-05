@@ -303,12 +303,10 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Spouse ]---
-
     /** Get spouse(s)
      * @return array [0..n] of array spouses [string imdb, string name, array from,
-     *         array to, array comments (includes children)], where from/to are array
+     *         array to, string commentjs, int children where from/to are array
      *         [day,month,mon,year] (MonthName is the name, MonthInt the number of the month),
-     *         comment usually is "divorced" (ouch) and or children
      * @see IMDB person page /bio
      */
     public function spouse()
@@ -395,9 +393,14 @@ EOF;
                     
                     // Comments (includes children)
                     if ($spouse->attributes != null) {
-                        $comments = array();
-                        foreach ($spouse->attributes as $attribute) {
-                            $comments[] = $attribute->text;
+                        $comment = '';
+                        $children = 0;
+                        foreach ($spouse->attributes as $key => $attribute) {
+                            if (stripos($attribute->text, "child") !== false) {
+                                $children = (int) preg_replace('/[^0-9]/', '', $attribute->text);
+                            } else {
+                                $comment .= $attribute->text;
+                            }
                         }
                     }
                     $this->spouses[] = array(
@@ -405,7 +408,8 @@ EOF;
                         'name' => $name,
                         'from' => $fromDate,
                         'to' => $toDate,
-                        'comment' => $comments
+                        'comment' => $comment,
+                        'children' => $children
                     );
                 }
             }
