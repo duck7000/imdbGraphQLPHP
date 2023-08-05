@@ -716,7 +716,7 @@ query PubFilm(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "PubFilm", ["id" => "nm$this->imdbID"]);
-            if ($data != null) {
+            if ($data != null && $data->name->publicityListings != null) {
                 foreach ($data->name->publicityListings->edges as $edge) {
                     $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
                     $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
@@ -740,6 +740,8 @@ EOF;
                         "seriesEpisode" => $filmSeriesEpisode,
                     );
                 }
+            } else {
+                return $this->pub_movies;
             }
         }
         return $this->pub_movies;
