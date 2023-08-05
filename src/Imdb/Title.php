@@ -785,13 +785,15 @@ EOF;
     #----------------------------------------------------------------[ Actors]---
     /*
      * Get the actors/cast members for this title
-     * @return array cast (array[0..n] of array[imdb,name,role, role_other,thumb])
+     * @return array cast (array[0..n] of array[imdb,name,name_alias,credited,role,role_other,thumb])
      * e.g.
      * <pre>
      * array (
      *  'imdb' => '0922035',
-     *  'name' => 'Dominic West', // Actor's name on imdb
-     *  'role' => "Det. James 'Jimmy' McNulty" including all comments in brackets,
+     *  'name' => 'Dominic West', // Actor's name on imdb,
+     *  'name_alias' => alias name (as D west),
+     *  'credited' => true\false False if stated (uncredited),
+     *  'role' => "Det. James 'Jimmy' McNulty",
      *  'role_other' => comments in brackets (archive) etc,
      *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
      * )
@@ -837,6 +839,8 @@ EOF;
         foreach ($data->title->credits->edges as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            
+            // character/role
             $role = '';
             if ($edge->node->characters != null) {
                 foreach ($edge->node->characters as $keyCharacters => $character) {
@@ -846,23 +850,38 @@ EOF;
                     }
                 }
             }
+            
+            // role_other, name_alias and credited
             $role_other = '';
+            $name_alias = null;
+            $credited = true;
             if ($edge->node->attributes != null) {
                 foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                    $role_other .= '(' .$attribute->text . ')';
+                    if (strpos($attribute->text, "as ") !== false) {
+                        $name_alias = trim($attribute->text, "as ");
+                    } elseif (stripos($attribute->text, "uncredited") !== false) {
+                        $credited = false;
+                    } else {
+                        $role_other .= '(' . $attribute->text . ')';
+                    }
                     if ($keyAttributes !== array_key_last($edge->node->attributes)) {
                         $role_other .= ' ';
                     }
                 }
             }
+            
+            // image url
             $imgUrl = '';
             if (isset($edge->node->name->primaryImage->url) && $edge->node->name->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
                 $imgUrl = $img . 'UY44_CR1,0,32,44_AL_.jpg';
             }
+            
             $this->credits_cast[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
+                'name_alias' => $name_alias,
+                'credited' => $credited,
                 'role' => $role,
                 'role_other' => $role_other,
                 'thumb' => $imgUrl
