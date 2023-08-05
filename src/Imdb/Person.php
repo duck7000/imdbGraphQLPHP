@@ -641,7 +641,7 @@ query PubPrint(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "PubPrint", ["id" => "nm$this->imdbID"]);
-            if ($data != null) {
+            if ($data != null && $data->name->publicityListings != null) {
                 foreach ($data->name->publicityListings->edges as $edge) {
                     $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
                     $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
@@ -661,6 +661,8 @@ EOF;
                         "isbn" => $isbn
                     );
                 }
+            } else {
+                return $this->pub_prints;
             }
         }
         return $this->pub_prints;
