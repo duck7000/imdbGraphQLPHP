@@ -396,9 +396,9 @@ EOF;
                     );
                     
                     // Comments and children
+                    $comment = '';
+                    $children = 0;
                     if ($spouse->attributes != null) {
-                        $comment = '';
-                        $children = 0;
                         foreach ($spouse->attributes as $key => $attribute) {
                             if (stripos($attribute->text, "child") !== false) {
                                 $children = (int) preg_replace('/[^0-9]/', '', $attribute->text);
