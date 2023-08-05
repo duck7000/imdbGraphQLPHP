@@ -107,9 +107,10 @@ EOF;
                 } else {
                     $this->main_photo = $data->name->primaryImage->url;
                 }
+            } else {
+                return $this->main_photo;
             }
         }
-
         return $this->main_photo;
     }
 
