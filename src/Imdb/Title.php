@@ -785,13 +785,14 @@ EOF;
     #----------------------------------------------------------------[ Actors]---
     /*
      * Get the actors/cast members for this title
-     * @return array cast (array[0..n] of array[imdb,name,role,thumb])
+     * @return array cast (array[0..n] of array[imdb,name,role, role_other,thumb])
      * e.g.
      * <pre>
      * array (
      *  'imdb' => '0922035',
      *  'name' => 'Dominic West', // Actor's name on imdb
      *  'role' => "Det. James 'Jimmy' McNulty" including all comments in brackets,
+     *  'role_other' => comments in brackets (archive) etc,
      *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
      * )
      * </pre>
@@ -837,7 +838,6 @@ EOF;
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             $role = '';
-            $imgUrl = '';
             if ($edge->node->characters != null) {
                 foreach ($edge->node->characters as $keyCharacters => $character) {
                     $role .= $character->name;
@@ -846,15 +846,16 @@ EOF;
                     }
                 }
             }
+            $role_other = '';
             if ($edge->node->attributes != null) {
-                $role .= ' ';
                 foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                    $role .= '(' .$attribute->text . ')';
+                    $role_other .= '(' .$attribute->text . ')';
                     if ($keyAttributes !== array_key_last($edge->node->attributes)) {
-                        $role .= ' ';
+                        $role_other .= ' ';
                     }
                 }
             }
+            $imgUrl = '';
             if (isset($edge->node->name->primaryImage->url) && $edge->node->name->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
                 $imgUrl = $img . 'UY44_CR1,0,32,44_AL_.jpg';
@@ -863,6 +864,7 @@ EOF;
                 'imdb' => $imdb,
                 'name' => $name,
                 'role' => $role,
+                'role_other' => $role_other,
                 'thumb' => $imgUrl
             );
         }
