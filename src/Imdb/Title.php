@@ -858,7 +858,7 @@ EOF;
             if ($edge->node->attributes != null) {
                 foreach ($edge->node->attributes as $keyAttributes => $attribute) {
                     if (strpos($attribute->text, "as ") !== false) {
-                        $name_alias = trim($attribute->text, "as ");
+                        $name_alias = trim(ltrim($attribute->text, "as"));
                     } elseif (stripos($attribute->text, "uncredited") !== false) {
                         $credited = false;
                     } else {
