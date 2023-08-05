@@ -303,6 +303,7 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Spouse ]---
+
     /** Get spouse(s)
      * @return array [0..n] of array spouses [string imdb, string name, array from,
      *         array to, string commentjs, int children where from/to are array
@@ -391,7 +392,7 @@ EOF;
                         "year" => $toDateYear
                     );
                     
-                    // Comments (includes children)
+                    // Comments and children
                     if ($spouse->attributes != null) {
                         $comment = '';
                         $children = 0;
@@ -412,6 +413,8 @@ EOF;
                         'children' => $children
                     );
                 }
+            } else {
+                return $this->spouses;
             }
         }
         return $this->spouses;
