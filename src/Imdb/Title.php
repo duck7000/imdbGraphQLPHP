@@ -667,11 +667,10 @@ EOF;
                     $query = <<<EOF
 query Plots(\$id: ID!) {
   title(id: \$id) {
-    plots(first: 9999) {
+    plots(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
       edges {
         node {
           author
-          plotType
           plotText {
             plainText
           }
@@ -682,11 +681,7 @@ query Plots(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
-
             foreach ($data->title->plots->edges as $key => $edge) {
-                if ($edge->node->plotType == 'SYNOPSIS') {
-                    continue;
-                }
                 $this->plot[] = array(
                     'plot' => $edge->node->plotText->plainText,
                     'author' => isset($edge->node->author) ? $edge->node->author : ''
