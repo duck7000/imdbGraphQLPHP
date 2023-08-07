@@ -1176,7 +1176,7 @@ EOF;
     /** Check if TV Series season or year based
      * @return string $fieldName
      */
-    private function seasonYearCheck()
+    private function seasonYearCheck($yearbased)
     {
         $querySeasons = <<<EOF
 query Seasons(\$id: ID!) {
@@ -1204,10 +1204,14 @@ EOF;
         if ($seasonsData->title->episodes != null) {
             $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
             $byYear = count($seasonsData->title->episodes->displayableYears->edges);
-            if ($byYear - $bySeason > 4) {
-                $data = $seasonsData->title->episodes->displayableYears->edges;
+            if ($yearbased == 0) {
+                if ($byYear - $bySeason > 4) {
+                    $data = $seasonsData->title->episodes->displayableYears->edges;
+                } else {
+                    $data = $seasonsData->title->episodes->displayableSeasons->edges;
+                }
             } else {
-                $data = $seasonsData->title->episodes->displayableSeasons->edges;
+                $data = $seasonsData->title->episodes->displayableYears->edges;
             }
         } else {
             $data = null;
@@ -1242,12 +1246,12 @@ EOF;
      * @see IMDB page /episodes
      * @version The outer and inner array keys reflects the real season and episodenumbers! Episodes can start at 0 (pilot episode)
      */
-    public function episode()
+    public function episode($yearbased = 0)
     {
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
             if (empty($this->season_episodes)) {
                 // Check if season or year based
-                $seasonsData = $this->seasonYearCheck();
+                $seasonsData = $this->seasonYearCheck($yearbased);
                 if ($seasonsData == null) {
                     return $this->season_episodes;
                 }
