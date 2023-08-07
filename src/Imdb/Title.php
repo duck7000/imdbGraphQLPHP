@@ -53,6 +53,7 @@ class Title extends MdbBase
     protected $taglines = array();
     protected $trivia = array();
     protected $goofs = array();
+    protected $crazy_credits = array();
     protected $locations = array();
     protected $compcred_prod = array();
     protected $compcred_dist = array();
@@ -1170,6 +1171,42 @@ EOF;
         }
         $composerData = $this->directorComposer($this->creditsQuery("composer"));
         return $this->credits_composer = $composerData;
+    }
+
+    #====================================================[ /crazycredits page ]===
+    #----------------------------------------------------[ CrazyCredits Array ]---
+    /**
+     * Get the Crazy Credits
+     * @return string[]
+     * @see IMDB page /crazycredits
+     */
+    public function crazyCredit()
+    {
+        if (empty($this->crazy_credits)) {
+            $query = <<<EOF
+query CrazyCredits(\$id: ID!) {
+  title(id: \$id) {
+    crazyCredits(first: 9999) {
+      edges {
+        node {
+          displayableArticle {
+            body {
+              plainText
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "CrazyCredits", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->crazyCredits->edges as $edge) {
+                $crazyCredit = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
+                $this->crazy_credits[] = $crazyCredit;
+            }
+        }
+        return $this->crazy_credits;
     }
 
     #========================================================[ /episodes page ]===
