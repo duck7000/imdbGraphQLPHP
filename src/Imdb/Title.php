@@ -52,6 +52,7 @@ class Title extends MdbBase
     protected $soundtracks = array();
     protected $taglines = array();
     protected $trivia = array();
+    protected $goofs = array();
     protected $locations = array();
     protected $compcred_prod = array();
     protected $compcred_dist = array();
@@ -1394,6 +1395,50 @@ EOF;
             }
         }
         return $this->season_episodes;
+    }
+
+    #===========================================================[ /goofs page ]===
+    #-----------------------------------------------------------[ Goofs Array ]---
+    /** Get the goofs
+     * @return array goofs (array[0..n] of array[type,content]
+     * @see IMDB page /goofs
+     * @version Spoilers are currently skipped (differently formatted)
+     */
+    public function goof()
+    {
+        if (empty($this->goofs)) {
+            $query = <<<EOF
+query Goofs(\$id: ID!) {
+  title(id: \$id) {
+    goofs(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
+      edges {
+        node {
+          category {
+            text
+          }
+          displayableArticle {
+            body {
+              plainText
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Goofs", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->goofs->edges as $edge) {
+                $type = isset($edge->node->category->text) ? $edge->node->category->text : '';
+                $content = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
+                $this->goofs[] = array(
+                    "type" => $type,
+                    "content" => $content
+                );
+            }
+        }
+        usort($this->goofs, fn($a, $b) => $a['type'] <=> $b['type']);
+        return $this->goofs;
     }
 
     #==========================================================[ /quotes page ]===
