@@ -1474,7 +1474,6 @@ EOF;
                 );
             }
         }
-        usort($this->goofs, fn($a, $b) => $a['type'] <=> $b['type']);
         return $this->goofs;
     }
 
