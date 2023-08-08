@@ -859,10 +859,10 @@ EOF;
                     } elseif (stripos($attribute->text, "uncredited") !== false) {
                         $credited = false;
                     } else {
-                        $role_other .= '(' . $attribute->text . ')';
+                        $role_other .= $attribute->text;
                     }
                     if ($keyAttributes !== array_key_last($edge->node->attributes)) {
-                        $role_other .= ' ';
+                        $role_other .= ', ';
                     }
                 }
             }
