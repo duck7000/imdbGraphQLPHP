@@ -1262,7 +1262,7 @@ EOF;
      * array(1) {
         [1]=>
         array(13) {
-            [1]=> //can be unknown, unknown_(number), seasonnumber or year
+            [1]=> //can be seasonnumber, year or -1 (Unknown)
             array(6) {
             ["imdbid"]=>
             string(7) "1495166"
@@ -1273,13 +1273,13 @@ EOF;
             ["plot"]=>
             string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
             ["episode"]=>
-            string(1) "1" //can be unknown, unknown_(number) or seasonnumber
+            string(1) "1" //can be seasonnumber or -1 (Unknown)
             ["image_url"]=>
             string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
             }
         }
      * @see IMDB page /episodes
-     * @version The outer and inner array keys reflects the real season and episodenumbers! Episodes can start at 0 (pilot episode)
+     * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
      */
     public function episode($yearbased = 0)
     {
@@ -1290,7 +1290,6 @@ EOF;
                 if ($seasonsData == null) {
                     return $this->season_episodes;
                 }
-                $unknownSeasonCounter = 0;
                 foreach ($seasonsData as $edge) {
                     if (strlen((string)$edge->node->text) === 4) {
                         // year based Tv Series
@@ -1302,11 +1301,7 @@ EOF;
                         if ($edge->node->text == "Unknown") { //this is intended capitol
                             $SeasonUnknown = "unknown"; //this is intended not capitol
                             $seasonFilter = "";
-                            // second or more Unknown season get number
-                            if ($unknownSeasonCounter > 0) {
-                                $seasonYear = $seasonYear . '_' . $unknownSeasonCounter;
-                            }
-                            $unknownSeasonCounter++;
+                            $seasonYear = -1;
                         } else {
                             $seasonFilter = $edge->node->text;
                             $SeasonUnknown = "";
@@ -1357,7 +1352,6 @@ query Episodes(\$id: ID!) {
 EOF;
                     $episodesData = $this->graphql->query($queryEpisodes, "Episodes", ["id" => "tt$this->imdbID"]);
                     $episodes = array();
-                    $unknownEpisodeCounter = 0;
                     foreach ($episodesData->title->episodes->episodes->edges as $keyEp => $edge) {
                         // vars
                         $imdbId = '';
@@ -1397,7 +1391,7 @@ EOF;
                             $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
                             // Unknown episodes get a number to keep them seperate.
                             if ($epNumber == "unknown") {
-                                $epNumber = ucwords($epNumber) . '_' . $keyEp + 1;
+                                $epNumber = -1;
                             }
                         }
                         // Episode Image
@@ -1422,7 +1416,7 @@ EOF;
                                 'episode' => $epNumber,
                                 'image_url' => $imgUrl
                             );
-                        $episodes[$epNumber] = $episode;
+                        $episodes[] = $episode;
                     }
                     $this->season_episodes[$seasonYear] = $episodes;
                 }
