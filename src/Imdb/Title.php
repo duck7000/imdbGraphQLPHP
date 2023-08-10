@@ -60,6 +60,7 @@ class Title extends MdbBase
     protected $compcred_special = array();
     protected $compcred_other = array();
     protected $production_budget = array();
+    protected $grosses = array();
     protected $moviealternateversions = array();
 
     /**
@@ -1812,6 +1813,53 @@ EOF;
             }
         }
         return $this->production_budget;
+    }
+
+    #-------------------------------------------------------[ rankedLifetimeGrosses ]---
+    /** Info about Grosses, ranked by amount
+     * @return array[] array[areatype, amount, currency]>
+     * @see IMDB page /title
+     */
+    public function gross()
+    {
+        if (empty($this->grosses)) {
+            $query = <<<EOF
+query RankedLifetimeGrosses(\$id: ID!) {
+  title(id: \$id) {
+    rankedLifetimeGrosses(first: 9999) {
+      edges {
+        node {
+          boxOfficeAreaType {
+            text
+          }
+          total {
+            amount
+            currency
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "RankedLifetimeGrosses", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
+                if (isset($edge->node->boxOfficeAreaType->text) && $edge->node->boxOfficeAreaType->text != '') {
+                    $areatype = $edge->node->boxOfficeAreaType->text;
+                    $amount = isset($edge->node->total->amount) ? $edge->node->total->amount : '';
+                    $currency = isset($edge->node->total->currency) ? $edge->node->total->currency : '';
+                } else {
+                    continue;
+                }
+                $this->grosses[] = array(
+                    "areatype" => $areatype,
+                    "amount" => $amount,
+                    "currency" => $currency
+                );
+            }
+        }
+        return $this->grosses;
     }
 
     #========================================================[ /keywords page ]===
