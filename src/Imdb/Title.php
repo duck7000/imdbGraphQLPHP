@@ -59,6 +59,7 @@ class Title extends MdbBase
     protected $compcred_dist = array();
     protected $compcred_special = array();
     protected $compcred_other = array();
+    protected $production_budget = array();
     protected $moviealternateversions = array();
 
     /**
@@ -1778,6 +1779,39 @@ EOF;
             $this->compcred_other = $this->companyCredits("miscellaneous");
         }
         return $this->compcred_other;
+    }
+
+    #========================================================[ /Box Office page ]===
+    #-------------------------------------------------------[ productionBudget ]---
+    /** Info about productionBudget
+     * @return production_budget: array[amount, currency]>
+     * @see IMDB page /title
+     */
+    public function budget()
+    {
+        if (empty($this->production_budget)) {
+            $query = <<<EOF
+query ProductionBudget(\$id: ID!) {
+  title(id: \$id) {
+    productionBudget {
+      budget {
+        amount
+        currency
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "ProductionBudget", ["id" => "tt$this->imdbID"]);
+            if ($data->title->productionBudget != null && isset($data->title->productionBudget->budget->amount)) {
+                $this->production_budget["amount"] = $data->title->productionBudget->budget->amount;
+                $this->production_budget["currency"] = $data->title->productionBudget->budget->currency;
+            } else {
+                return $this->production_budget;
+            }
+        }
+        return $this->production_budget;
     }
 
     #========================================================[ /keywords page ]===
