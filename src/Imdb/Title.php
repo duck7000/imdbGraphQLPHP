@@ -1581,7 +1581,7 @@ EOF;
      * Get the soundtrack listing
      * @return array soundtracks
      * [ soundtrack : name of the soundtrack
-     *   credits : Full text only description of the credits. Contains newline characters
+     *   array credits : every credit line about writer, performer, etc
      * ]
      * @see IMDB page /soundtrack
      */
@@ -1613,12 +1613,10 @@ EOF;
                 } else {
                     $title = 'Unknown';
                 }
+                $credits = array();
                 foreach ($edge->node->comments as $key => $comment) {
                     if (trim(strip_tags($comment->plainText)) !== '') {
-                        $credits .= $comment->plainText;
-                        if ($key !== key(array_slice($edge->node->comments, -1, 1, true))) {
-                            $credits .= '&#10;';
-                        }
+                        $credits[] = $comment->plainText;
                     }
                 }
                 $this->soundtracks[] = array(
