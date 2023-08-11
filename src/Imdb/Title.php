@@ -785,7 +785,7 @@ EOF;
     #----------------------------------------------------------------[ Actors]---
     /*
      * Get the actors/cast members for this title
-     * @return array cast (array[0..n] of array[imdb,name,name_alias,credited,character,array comments,thumb])
+     * @return array cast (array[0..n] of array[imdb,name,name_alias,credited,array character,array comments,thumb])
      * e.g.
      * <pre>
      * array (
@@ -793,7 +793,7 @@ EOF;
      *  'name' => 'Dominic West', // Actor's name on imdb,
      *  'name_alias' => alias name (as D west),
      *  'credited' => true\false False if stated (uncredited),
-     *  'character' => "Det. James 'Jimmy' McNulty",
+     *  'character' => array "Det. James 'Jimmy' McNulty",
      *  'comment' => array comments like archive voice etc,
      *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
      * )
