@@ -845,7 +845,7 @@ EOF;
             if ($edge->node->characters != null) {
                 foreach ($edge->node->characters as $keyCharacters => $character) {
                     $castCharacters .= $character->name;
-                    if ($keyCharacters !== array_key_last($edge->node->characters)) {
+                    if ($keyCharacters !== key(array_slice($edge->node->characters, -1, 1, true))) {
                         $castCharacters .= ' / ';
                     }
                 }
@@ -960,7 +960,7 @@ EOF;
             if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
                 foreach ($edge->node->attributes as $keyAttributes => $attribute) {
                     $role .= '(' . $attribute->text . ')';
-                    if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                    if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
                         $role .= ' ';
                     }
                 }
@@ -1105,7 +1105,7 @@ EOF;
             if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
                 foreach ($edge->node->jobs as $keyJobs => $job) {
                     $role .= $job->text;
-                    if ($keyJobs !== array_key_last($edge->node->jobs)) {
+                    if ($keyJobs !== key(array_slice($edge->node->jobs, -1, 1, true))) {
                         $role .= ' / ';
                     }
                 }
@@ -1119,7 +1119,7 @@ EOF;
                     foreach ($edge->node->attributes as $keyAttributes => $attribute) {
                         if ($keyAttributes >= $key) {
                             $role .= '(' . $attribute->text . ')';
-                            if ($keyAttributes !== array_key_last($edge->node->attributes)) {
+                            if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
                                 $role .= ' ';
                             }
                         }
@@ -1616,7 +1616,7 @@ EOF;
                 foreach ($edge->node->comments as $key => $comment) {
                     if (trim(strip_tags($comment->plainText)) !== '') {
                         $credits .= $comment->plainText;
-                        if ($key !== array_key_last($edge->node->comments)) {
+                        if ($key !== key(array_slice($edge->node->comments, -1, 1, true))) {
                             $credits .= '&#10;';
                         }
                     }
@@ -1666,7 +1666,7 @@ EOF;
                 if ($edge->node->displayableProperty->qualifiersInMarkdownList != null) {
                     foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $key => $attribute) {
                         $movie .= '(' . $attribute->markdown . ')';
-                        if ($key !== array_key_last($edge->node->displayableProperty->qualifiersInMarkdownList)) {
+                        if ($key !== key(array_slice($edge->node->displayableProperty->qualifiersInMarkdownList, -1, 1, true))) {
                             $movie .= ' ';
                         }
                     }
@@ -1731,7 +1731,7 @@ EOF;
             if ($edge->node->attributes != null) {
                 foreach ($edge->node->attributes as $key => $attribute) {
                     $companyAttribute .= $attribute->text;
-                    if ($key !== array_key_last($edge->node->attributes)) {
+                    if ($key !== key(array_slice($edge->node->attributes, -1, 1, true))) {
                         $companyAttribute .= ', ';
                     }
                 }
