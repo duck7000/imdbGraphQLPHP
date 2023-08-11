@@ -841,13 +841,10 @@ EOF;
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             
             // character
-            $castCharacters = '';
+            $castCharacters = array();
             if ($edge->node->characters != null) {
                 foreach ($edge->node->characters as $keyCharacters => $character) {
-                    $castCharacters .= $character->name;
-                    if ($keyCharacters !== key(array_slice($edge->node->characters, -1, 1, true))) {
-                        $castCharacters .= ' / ';
-                    }
+                    $castCharacters[] = $character->name;
                 }
             }
             
