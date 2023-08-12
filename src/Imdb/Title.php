@@ -1628,7 +1628,7 @@ EOF;
     #=======================================================[ /locations page ]===
     /**
      * Filming locations
-     * @return array locations (array[0..n] of arrays[real,movie])
+     * @return array locations (array[0..n] of arrays[real,array movie])
      * real: Real filming location, movie: location in the movie
      * @see IMDB page /locations
      */
@@ -1657,13 +1657,10 @@ EOF;
             $data = $this->graphql->query($query, "FilmingLocations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->filmingLocations->edges as $edge) {
                 $real = isset($edge->node->text) ? $edge->node->text : '';
-                $movie = '';
+                $movie = array();
                 if ($edge->node->displayableProperty->qualifiersInMarkdownList != null) {
                     foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $key => $attribute) {
-                        $movie .= '(' . $attribute->markdown . ')';
-                        if ($key !== key(array_slice($edge->node->displayableProperty->qualifiersInMarkdownList, -1, 1, true))) {
-                            $movie .= ' ';
-                        }
+                        $movie[] = $attribute->markdown;
                     }
                 }
                 $this->locations[] = array(
