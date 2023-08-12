@@ -1719,13 +1719,10 @@ EOF;
             if ($edge->node->countries != null && isset($edge->node->countries[0]->text)) {
                 $companyCountry = $edge->node->countries[0]->text;
             }
-            $companyAttribute = '';
+            $companyAttribute = array();
             if ($edge->node->attributes != null) {
                 foreach ($edge->node->attributes as $key => $attribute) {
-                    $companyAttribute .= $attribute->text;
-                    if ($key !== key(array_slice($edge->node->attributes, -1, 1, true))) {
-                        $companyAttribute .= ', ';
-                    }
+                    $companyAttribute[] = $attribute->text;
                 }
             }
             $companyYear = '';
