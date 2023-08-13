@@ -1542,10 +1542,15 @@ EOF;
     public function trivia($spoil = false)
     {
         if (empty($this->trivia)) {
+            if ($spoil === false) {
+                $filter = 'first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}';
+            } else {
+                $filter = 'first: 9999';
+            }
             $query = <<<EOF
 query Trivia(\$id: ID!) {
   title(id: \$id) {
-    trivia(first: 9999) {
+    trivia($filter) {
       edges {
         node {
           displayableArticle {
@@ -1553,7 +1558,6 @@ query Trivia(\$id: ID!) {
               plainText
             }
           }
-          isSpoiler
         }
       }
     }
@@ -1562,11 +1566,6 @@ query Trivia(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Trivia", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->trivia->edges as $edge) {
-                if ($spoil === false) {
-                    if (isset($edge->node->isSpoiler) && $edge->node->isSpoiler === true) {
-                        continue;
-                    }
-                }
                 $this->trivia[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
             }
         }
