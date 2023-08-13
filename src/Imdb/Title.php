@@ -1942,18 +1942,19 @@ EOF;
         return $this->moviealternateversions;
     }
 
-    #-------------------------------------------------[ Main images on title page ]---
+    #-------------------------------------------------[ Main images ]---
     /**
-     * Get image URLs for the 6 (or how much you want) pictures on the title page
+     * Get image URLs for (default 6) pictures from photo page
+     * @param $amount, int for how many images, max = 9999
      * @return array [0..n] of string image source
      */
-    public function mainphoto()
+    public function mainphoto($amount = 6)
     {
         if (empty($this->main_photo)) {
             $query = <<<EOF
 query MainPhoto(\$id: ID!) {
   title(id: \$id) {
-    images(first: 6) {
+    images(first: $amount) {
       edges {
         node {
           url
@@ -1963,7 +1964,6 @@ query MainPhoto(\$id: ID!) {
   }
 }
 EOF;
-
             $data = $this->graphql->query($query, "MainPhoto", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->images->edges as $edge) {
                 if (isset($edge->node->url) && $edge->node->url != '') {
