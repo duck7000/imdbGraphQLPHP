@@ -1,5 +1,13 @@
 <?php
 
+#############################################################################
+# IMDBPHP6                             (c) Ed                               #
+# written extended & maintained by Ed                                       #
+# ------------------------------------------------------------------------- #
+# This program is free software; you can redistribute and/or modify it      #
+# under the terms of the GNU General Public License (see doc/LICENSE)       #
+#############################################################################
+
 namespace Imdb;
 
 
