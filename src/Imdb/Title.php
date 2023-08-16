@@ -2,6 +2,7 @@
 #############################################################################
 # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
+# written by Ed                                                             #
 # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #
@@ -15,6 +16,7 @@ namespace Imdb;
  * A title on IMDb
  * @author Georgos Giagas
  * @author Izzy (izzysoft AT qumran DOT org)
+ * @author Ed 
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class Title extends MdbBase
