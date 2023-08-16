@@ -1,4 +1,4 @@
-imdbphp
+imdbphp6
 =======
 
 PHP library for retrieving film and TV information from IMDb.
@@ -10,35 +10,41 @@ Download film posters and actor images.
 Quick Start
 ===========
 
-* Include [imdbphp/imdbphp](https://packagist.org/packages/imdbphp/imdbphp) using [composer](https://www.getcomposer.org), clone this repo or download the latest [release zip](https://github.com/tboothman/imdbphp/releases).
+* Clone this repo or download the latest [release zip].
 * Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
 ```php
+For titles:
 $title = new \Imdb\Title(335266);
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
+
+For persons:
+$name = new \Imdb\Name(0000154);
+$name = $name->name();
+$nickname = $name->nickname();
 
 
 Installation
 ============
 
-This library scrapes imdb.com so changes their site can cause parts of this library to fail. You will probably need to update a few times a year. Keep this in mind when choosing how to install/configure.
+This library usses GraphQL api from imdb.com to get the data So changes are not very often te expected.
 
 Get the files with one of:
 * [Composer](https://www.getcomposer.org)
-* Git clone. Checkout the latest release tag.
+* Git clone. Checkout the latest release tag (under construction).
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= 7.4
+* PHP >= recommended 8.1 (it works from 5.6 -8.1) < 8.0 is EOL
 * PHP cURL extension
 
 
 Configuration
 =============
 
-imdbphp needs no configuration by default but can change languages if configured.
+imdbphp6 needs no configuration by default but can change languages if configured.
 
 Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
@@ -47,21 +53,7 @@ $config = new \Imdb\Config();
 $config->language = 'de-DE,de,en';
 $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
-$imdb->orig_title(); // Lost in Translation
 ```
-```
-
-Searching for a film
-====================
-
-```php
-// include "bootstrap.php"; // Load the class in if you're not using an autoloader
-$search = new \Imdb\TitleSearch(); // Optional $config parameter
-$results = $search->search('The Matrix');
-
-// $results is an array of Titles
-// The array will have title, imdbid, year and movietype available
-// immediately, but any other data will have to be fetched from IMDb
 ```
 
 
