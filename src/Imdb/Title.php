@@ -65,29 +65,6 @@ class Title extends MdbBase
     protected $moviealternateversions = array();
 
     /**
-     * Create an imdb object populated with id, title, year, and movie type
-     * @param string $id imdb ID
-     * @param string $title film title
-     * @param int $year
-     * @param string $type
-     * @param Config $config
-     * @return Title
-     */
-    public static function fromSearchResult(
-        $id,
-        $title,
-        $year,
-        $type,
-        Config $config = null
-    ) {
-        $imdb = new Title($id, $config);
-        $imdb->main_title = $title;
-        $imdb->main_year = (int)$year;
-        $imdb->main_movietype = $type;
-        return $imdb;
-    }
-
-    /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
      * @param Config $config OPTIONAL override default config
      */
