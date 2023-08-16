@@ -1,8 +1,8 @@
 <?php
 #############################################################################
-# IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
+# IMDBPHP6                             (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
-# written by Ed                                                             #
+# written extended & maintained by Ed                                       #
 # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #
