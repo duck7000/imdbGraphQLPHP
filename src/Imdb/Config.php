@@ -1,9 +1,10 @@
 <?php
 
 #############################################################################
-# IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
+# IMDBPHP6                             (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
 # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+# written extended & maintained by Ed                                       #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -16,6 +17,7 @@ namespace Imdb;
  * Configuration class for imdbphp
  * You should override the settings in here by creating an ini file in the conf folder.
  * @author Izzy (izzysoft AT qumran DOT org)
+ * @author Ed
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
  */
 class Config
