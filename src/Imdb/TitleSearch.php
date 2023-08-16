@@ -1,5 +1,16 @@
 <?php
 
+#############################################################################
+# IMDBPHP6                             (c) Giorgos Giagas & Itzchak Rehberg #
+# written by Giorgos Giagas                                                 #
+# extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+# written extended & maintained by Ed                                       #
+# http://www.izzysoft.de/                                                   #
+# ------------------------------------------------------------------------- #
+# This program is free software; you can redistribute and/or modify it      #
+# under the terms of the GNU General Public License (see doc/LICENSE)       #
+#############################################################################
+
 namespace Imdb;
 
 class TitleSearch extends MdbBase
