@@ -500,6 +500,66 @@ EOF;
         return $this->main_poster;
     }
 
+        /**
+     * Save the poster/cover image to disk
+     * @param string $path where to store the file
+     * @param boolean $thumb get the thumbnail (100x140, default) or the
+     *        bigger variant (400x600 - FALSE)
+     * @return boolean success
+     * @see IMDB page / (TitlePage)
+     */
+    public function savephoto($path, $thumb = true)
+    {
+        $photo_url = $this->photo($thumb);
+        if (!$photo_url) {
+            return false;
+        }
+        $req = new Request($photo_url, $this->config);
+        $req->sendRequest();
+        if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
+            $image = $req->getResponseBody();
+        } else {
+            return false;
+        }
+        $fp2 = fopen($path, "w");
+        if (!$fp2) {
+            return false;
+        }
+        fputs($fp2, $image);
+        return true;
+    }
+
+    /** Get the URL for the movies cover image
+     * @param boolean $thumb get the thumbnail (182x268, default) or the
+     *        bigger variant (400x600 - FALSE)
+     * @return mixed url (string URL or FALSE if none)
+     * @see IMDB page / (TitlePage)
+     */
+    public function photo_localurl($thumb = true)
+    {
+        if ($thumb) {
+            $ext = "";
+        } else {
+            $ext = "_big";
+        }
+        if (!is_dir($this->photodir)) {
+            return false;
+        }
+        $path = $this->photodir . $this->imdbID . "{$ext}.jpg";
+        if (file_exists($path)) {
+            return $this->photoroot . $this->imdbID . "{$ext}.jpg";
+        }
+        if (!is_writable($this->photodir)) {
+            return false;
+        }
+        if ($this->savephoto($path, $thumb)) {
+            return $this->photoroot . $this->imdbid() . "{$ext}.jpg";
+        }
+        return false;
+    }
+
     #-------------------------------------------------[ Country of Origin ]---
     /**
      * Get country of origin
