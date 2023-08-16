@@ -1,7 +1,9 @@
 <?php
 #############################################################################
-# PHP MovieAPI                                          (c) Itzchak Rehberg #
-# written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
+# IMDBPHP6                             (c) Giorgos Giagas & Itzchak Rehberg #
+# written by Giorgos Giagas                                                 #
+# extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
+# written extended & maintained by Ed                                       #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -14,6 +16,7 @@ namespace Imdb;
  * Accessing Movie information
  * @author Georgos Giagas
  * @author Izzy (izzysoft AT qumran DOT org)
+ * @author Ed
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class MdbBase extends Config
