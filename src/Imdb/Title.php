@@ -239,7 +239,7 @@ EOF;
 
      /**
      * Return number of votes for this movie
-     * @return int
+     * @return int or 0
      * @see IMDB page / (TitlePage)
      */
     public function votes()
