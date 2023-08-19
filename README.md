@@ -29,7 +29,7 @@ $nickname = $name->nickname();
 Installation
 ============
 
-This library usses GraphQL api from imdb.com to get the data So changes are not very often te expected.
+This library uses GraphQL api from imdb.com to get the data So changes are not very often te expected.
 
 Get the files with one of:
 * [Composer](https://www.getcomposer.org)
