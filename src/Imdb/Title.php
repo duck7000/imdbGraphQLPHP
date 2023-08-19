@@ -295,7 +295,7 @@ EOF;
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array<array{title: string, imdbid: numberic string, rating: string| null, img: string|'', year: number|null}>
+     * @return array of array(title: string, imdbid: numberic string, rating: int| null, img: string|'', year: int|null)
      * @see IMDB page / (TitlePage)
      */
     public function recommendation()
