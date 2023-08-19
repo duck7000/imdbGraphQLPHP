@@ -168,8 +168,8 @@ EOF;
     #---------------------------------------------------------------[ Runtime ]---
     /**
      * Retrieve all runtimes and their descriptions
-     * @return array<array{time: integer, country: string|null, annotations: string[]}>
-     * time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments meant to describe this cut
+     * @return array<array{time: integer, country: string|null, annotations: array()}>
+     * time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments
      */
     public function runtime()
     {
