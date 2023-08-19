@@ -457,8 +457,8 @@ EOF;
     }
 
     /**
-     * Get the poster/cover image URL
-     * @param boolean $thumb get the thumbnail (182x268) or the full sized image
+     * Get the main photo image url for thumbnail or full size
+     * @param boolean $thumb get the thumbnail or the full version
      * @return string|false photo (string URL if found, FALSE otherwise)
      * @see IMDB page / (TitlePage)
      */
