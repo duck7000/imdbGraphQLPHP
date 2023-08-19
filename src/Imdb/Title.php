@@ -211,7 +211,7 @@ EOF;
     #----------------------------------------------------------[ Movie Rating ]---
     /**
      * Get movie rating
-     * @return float rating current rating as given by IMDB site
+     * @return int/float or 0
      * @see IMDB page / (TitlePage)
      */
     public function rating()
