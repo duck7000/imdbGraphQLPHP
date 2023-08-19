@@ -113,7 +113,7 @@ EOF;
     }
 
     /** Get movie type
-     * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini-Series, Video Game, TV Short, Video)
+     * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini Series, Video Game, TV Short, Video)
      * @see IMDB page / (TitlePage)
      * If no movietype has been defined explicitly, it returns 'Movie' -- so this is always set.
      */
