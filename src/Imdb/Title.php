@@ -402,7 +402,7 @@ EOF;
     }
 
     #--------------------------------------------------------[ Plot (Outline) ]---
-    /** Get the main Plot outline for the movie
+    /** Get the main Plot outline for the movie as displayed on top of title page
      * @return string plotoutline
      * @see IMDB page / (TitlePage)
      */
