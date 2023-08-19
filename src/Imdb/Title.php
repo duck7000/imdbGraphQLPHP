@@ -342,7 +342,7 @@ EOF;
     }
 
     #--------------------------------------------------------[ Language Stuff ]---
-    /** Get all languages this movie is available in
+    /** Get all spoken languages spoken in this title
      * @return array languages (array[0..n] of strings)
      * @see IMDB page / (TitlePage)
      */
