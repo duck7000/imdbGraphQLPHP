@@ -702,7 +702,7 @@ EOF;
     }
 
     #=====================================================[ /plotsummary page ]===
-    /** Get movie plots without Synopsis
+    /** Get movie plots without Spoilers
      * @return array array[0..n] string plot, string author]
      * @see IMDB page /plotsummary
      */
