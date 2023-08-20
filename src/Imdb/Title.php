@@ -575,6 +575,7 @@ EOF;
      * Get movie's alternative names
      * The first item in the list will be the original title
      * @return array<array{title: string, country: string}>
+     * Orderd Ascending by Country
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
