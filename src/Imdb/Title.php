@@ -1248,7 +1248,7 @@ EOF;
     #========================================================[ /episodes page ]===
     #--------------------------------------------------------[ Season/Year check ]---
     /** Check if TV Series season or year based
-     * @return string $fieldName
+     * @return array $data based on years or seasons
      */
     private function seasonYearCheck($yearbased)
     {
@@ -1279,11 +1279,7 @@ EOF;
             $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
             $byYear = count($seasonsData->title->episodes->displayableYears->edges);
             if ($yearbased == 0) {
-                if ($byYear - $bySeason > 4) {
-                    $data = $seasonsData->title->episodes->displayableYears->edges;
-                } else {
-                    $data = $seasonsData->title->episodes->displayableSeasons->edges;
-                }
+                $data = $seasonsData->title->episodes->displayableSeasons->edges;
             } else {
                 $data = $seasonsData->title->episodes->displayableYears->edges;
             }
@@ -1318,6 +1314,7 @@ EOF;
             }
         }
      * @see IMDB page /episodes
+     * @param $yearbased This gives user control if episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
      */
     public function episode($yearbased = 0)
