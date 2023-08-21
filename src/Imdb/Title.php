@@ -1294,7 +1294,7 @@ EOF;
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,episode,image_url])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
      * array(1) {
         [1]=>
         array(13) {
