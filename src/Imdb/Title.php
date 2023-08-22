@@ -1779,7 +1779,7 @@ EOF;
     #---------------------------------------------------[ Producing Companies ]---
 
     /** Info about Production Companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
      * @see IMDB page /companycredits
      */
     public function prodCompany()
@@ -1793,7 +1793,7 @@ EOF;
     #------------------------------------------------[ Distributing Companies ]---
 
     /** Info about distributors
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
      * @see IMDB page /companycredits
      */
     public function distCompany()
@@ -1807,7 +1807,7 @@ EOF;
     #---------------------------------------------[ Special Effects Companies ]---
 
     /** Info about Special Effects companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
      * @see IMDB page /companycredits
      */
     public function specialCompany()
@@ -1821,7 +1821,7 @@ EOF;
     #-------------------------------------------------------[ Other Companies ]---
 
     /** Info about other companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
      * @see IMDB page /companycredits
      */
     public function otherCompany()
