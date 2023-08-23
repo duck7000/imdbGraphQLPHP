@@ -2,7 +2,7 @@
 History for IMDBPHP6
 ====================
 
-v1.1.5 (Not Released jet!)
+v1.0.5
 -------------------
 * Remove Logger
 * Remove Cache
