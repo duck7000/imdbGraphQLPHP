@@ -546,7 +546,7 @@ EOF;
     #----------------------------------------------------------------[ Salary ]---
 
     /** Get the salary list
-     * @return array salary array[0..n] of array [strings imdb, titel, year, amount, currency, array comments[]]
+     * @return array salary array[0..n] of array [strings imdb, name, year, amount, currency, array comments[]]
      * @see IMDB person page /bio
      */
     public function salary()
