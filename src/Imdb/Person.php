@@ -84,7 +84,7 @@ EOF;
     /** Get cover photo
      * @param boolean $thumb (optional) thumb get the thumbnail (140x207, default)
      *                or the bigger variant with a maximum size of (1363x2048)
-     * @return mixed photo (string url if found, FALSE otherwise)
+     * @return mixed photo (string url if found, null otherwise)
      * @see IMDB person page / (Main page)
      */
     public function photo($thumb = true)
