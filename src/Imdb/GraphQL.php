@@ -1,4 +1,12 @@
 <?php
+#############################################################################
+# GraphQL class                                           (c) tboothman     #
+# written by Tom Boothman                                                   #
+# Adjusted by Ed                                                            #
+# ------------------------------------------------------------------------- #
+# This program is free software; you can redistribute and/or modify it      #
+# under the terms of the GNU General Public License (see doc/LICENSE)       #
+#############################################################################
 
 namespace Imdb;
 
