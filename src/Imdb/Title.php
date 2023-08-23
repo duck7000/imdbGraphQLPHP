@@ -1317,6 +1317,8 @@ EOF;
      * @see IMDB page /episodes
      * @param $yearbased This gives user control if episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
+     * @see there seems to be a limit on max episodes per season of 250!
+     *      This may also be true for year based tv series, so max 250 per year!
      */
     public function episode($yearbased = 0)
     {
