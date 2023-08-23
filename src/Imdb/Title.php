@@ -534,7 +534,7 @@ EOF;
             return false;
         }
         if ($this->savephoto($path, $thumb)) {
-            return $this->photoroot . $this->imdbid() . "{$ext}.jpg";
+            return $this->photoroot . $this->imdbID . "{$ext}.jpg";
         }
         return false;
     }
