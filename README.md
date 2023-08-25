@@ -4,8 +4,8 @@ imdbphp6
 PHP library for retrieving film and TV information from IMDb.
 Retrieve most of the information you can see on IMDb including films, TV series, TV episodes, people.
 Search for titles on IMDb.
-Download film posters and actor images.
-There is a full list of all methods in the wiki
+Download film posters, actor and episode images.
+There is a full list of all methods in the wiki.
 https://github.com/duck7000/imdbphp6/wiki
 
 
@@ -13,7 +13,7 @@ Quick Start
 ===========
 
 * Clone this repo or download the latest [release zip] (No release jet)
-* Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
+* Find a film you want the data for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
 ```php
@@ -32,6 +32,7 @@ Installation
 ============
 
 This library uses GraphQL api from imdb.com to get the data So changes are not very often to be expected.
+Thanks to @tBoothman for his groundwork to make this possible.
 
 Get the files with one of:
 * [Composer](https://www.getcomposer.org)
@@ -39,7 +40,7 @@ Get the files with one of:
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= recommended 8.1 (it works from 5.6 -8.1) < 8.0 is EOL
+* PHP >= recommended 8.1 (it works from 5.6 -8.1) Remember < 8.0 is EOL!
 * PHP cURL extension
 
 
