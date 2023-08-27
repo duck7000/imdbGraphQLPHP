@@ -13,7 +13,7 @@ Quick Start
 ===========
 
 * Clone this repo or download the latest [release zip] (No release jet)
-* Find a film you want the data for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
+* Find a film you want the data for e.g. A clockwork orange https://www.imdb.com/title/tt0066921/
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
 ```php
@@ -40,7 +40,7 @@ Get the files with one of:
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= recommended 8.1 (it works from 5.6 -8.1) Remember < 8.0 is EOL!
+* PHP >= recommended 8.1 (it works from 5.6 - 8.1) Remember all versions < 8.0 are EOL!
 * PHP cURL extension
 
 
