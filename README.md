@@ -35,7 +35,7 @@ $nickname = $name->nickname();
 Installation
 ============
 
-This library uses GraphQL API from imdb to get the data So changes are not very often to be expected.<br>
+This library uses GraphQL API from imdb to get the data, so changes are not very often to be expected.<br>
 The data received from imdb GraphQL API could however be different as this data is in the purest form compared to previous methods.<br>
 There seems to be a limit on maximum episodes per season of 250, this may also be true for year based tv series.<br>
 Thanks to @tBoothman for his groundwork to make this possible.
