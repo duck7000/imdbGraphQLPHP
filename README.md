@@ -1,11 +1,12 @@
 imdbphp6
 =======
 
-PHP library for retrieving film and TV information from IMDb.
-Retrieve most of the information you can see on IMDb including films, TV series, TV episodes, people.
-Search for titles on IMDb.
-Download film posters and actor images.
-There is a full list of all methods in the wiki
+PHP library for retrieving film and TV information from IMDb.<br>
+Retrieve most of the information you can see on IMDb including films, TV series, TV episodes, people.<br>
+Search for titles on IMDb.<br>
+Download film posters, actor and episode images.<br>
+imdbphp6 is not a fork of imdbphp although there are things the same. It is a stripped down version adjusted for my personal needs.<br>
+There is a full list of all methods, descriptions and outputs in the wiki.
 https://github.com/duck7000/imdbphp6/wiki
 
 
@@ -13,25 +14,31 @@ Quick Start
 ===========
 
 * Clone this repo or download the latest [release zip] (No release jet)
-* Find a film you want the metadata for e.g. Lost in translation http://www.imdb.com/title/tt0335266/
+* Find a film you want the data for e.g. A clockwork orange https://www.imdb.com/title/tt0066921/
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
-```php
+
 For titles:
+```php
 $title = new \Imdb\Title(335266);
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
+```
 
 For persons:
+```php
 $name = new \Imdb\Name(0000154);
 $name = $name->name();
 $nickname = $name->nickname();
-
+```
 
 Installation
 ============
 
-This library uses GraphQL api from imdb.com to get the data So changes are not very often to be expected.
+This library uses GraphQL API from imdb to get the data, so changes are not very often to be expected.<br>
+The data received from imdb GraphQL API could however be different as this data is in the purest form compared to previous methods.<br>
+There seems to be a limit on maximum episodes per season of 250, this may also be true for year based tv series.<br>
+Thanks to @tBoothman for his groundwork to make this possible.
 
 Get the files with one of:
 * [Composer](https://www.getcomposer.org)
@@ -39,14 +46,14 @@ Get the files with one of:
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= recommended 8.1 (it works from 5.6 -8.1) < 8.0 is EOL
+* PHP >= recommended 8.1 (it works from 5.6 - 8.1) Remember all versions < 8.0 are EOL!
 * PHP cURL extension
 
 
 Configuration
 =============
 
-imdbphp6 needs no configuration by default but can change languages if configured.
+imdbphp6 needs no configuration by default but you can change languages if configured.
 
 Configuration is done by the `\Imdb\Config` class in `src/Imdb/Config.php` which has detailed explanations of all the config options available.
 You can alter the config by creating the object, modifying its properties then passing it to the constructor for imdb.
@@ -55,7 +62,6 @@ $config = new \Imdb\Config();
 $config->language = 'de-DE,de,en';
 $imdb = new \Imdb\Title(335266, $config);
 $imdb->title(); // Lost in Translation - Zwischen den Welten
-```
 ```
 
 
