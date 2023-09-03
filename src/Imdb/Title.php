@@ -624,9 +624,7 @@ EOF;
     /**
      * Find the position of a movie or tv show in the top 250 ranked movies or tv shows
      * @return int position a number between 1..250 if ranked, 0 otherwise
-     * @author abe
      * @author Ed
-     * @see http://projects.izzysoft.de/trac/imdbphp/ticket/117
      */
     public function top250()
     {
