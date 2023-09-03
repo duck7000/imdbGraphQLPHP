@@ -514,8 +514,8 @@ EOF;
     /**
      * Get movie's alternative names
      * The first item in the list will be the original title
-     * @return array<array{title: string, country: string}>
-     * Orderd Ascending by Country
+     * @return array<array{title: string, country: string, comment: array()}>
+     * Ordered Ascending by Country
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
@@ -538,6 +538,9 @@ query AlsoKnow(\$id: ID!) {
               plainText
             }
           }
+          attributes {
+            text
+          }
         }
       }
     }
@@ -546,17 +549,25 @@ query AlsoKnow(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
             $originalTitle = $data->title->originalTitleText->text;
+            $comments = array();
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
                     "title" => ucwords($originalTitle),
-                    "country" => "(Original Title)"
+                    "country" => "(Original Title)",
+                    "comment" => $comments
                 );
             }
 
             foreach ($data->title->akas->edges as $edge) {
+                foreach ($edge->node->attributes as $attribute) {
+                    if (isset($attribute->text) && $attribute->text != '') {
+                        $comments[] = $attribute->text;
+                    }
+                }
                 $this->akas[] = array(
                     "title" => ucwords($edge->node->displayableProperty->value->plainText),
-                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown'
+                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown',
+                    "comment" => $comments
                 );
             }
         }
