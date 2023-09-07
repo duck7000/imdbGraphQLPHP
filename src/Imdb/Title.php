@@ -447,7 +447,6 @@ query Poster(\$id: ID!) {
 EOF;
 
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
-
         if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
             $this->main_poster_thumb = $img . 'UY268_CR1,0,182,268_AL_.jpg';
