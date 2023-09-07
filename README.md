@@ -41,7 +41,6 @@ There seems to be a limit on maximum episodes per season of 250, this may also b
 Thanks to @tBoothman for his groundwork to make this possible.
 
 Get the files with one of:
-* [Composer](https://www.getcomposer.org)
 * Git clone. Checkout the latest release tag (No release jet).
 * [Zip/Tar download]
 
