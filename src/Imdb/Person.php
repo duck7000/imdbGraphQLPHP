@@ -82,12 +82,13 @@ EOF;
     #--------------------------------------------------------[ Photo specific ]---
 
     /** Get cover photo
-     * @param boolean $thumb (optional) thumb get the thumbnail (140x207, default)
-     *                or the bigger variant with a maximum size of (1363x2048)
-     * @return mixed photo (string url if found, null otherwise)
+     * @param boolean $size (optional) small:  thumbnail (67x98, default)
+     *                                 medium: image size (621x931)
+     *                                 large:  image maximum size
+     * @return mixed photo (string url if found, empty string otherwise)
      * @see IMDB person page / (Main page)
      */
-    public function photo($thumb = true)
+    public function photo($size = "small")
     {
     $query = <<<EOF
 query PrimaryImage(\$id: ID!) {
@@ -101,11 +102,14 @@ EOF;
         if ($this->main_photo === null) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if ($data->name->primaryImage->url != null) {
-                if ($thumb) {
-                    $img = str_replace('.jpg', '', $data->name->primaryImage->url);
-                    $imgUrl = $img . 'UY98_CR15,0,67,98_AL_.jpg';
-                    $this->main_photo = $imgUrl;
-                } else {
+                $img = str_replace('.jpg', '', $data->name->primaryImage->url);
+                if ($size == "small") {
+                    $this->main_photo = $img . 'UY98_CR1,0,98_AL_.jpg';
+                }
+                if ($size == "medium") {
+                    $this->main_photo = $img . 'SY931_.jpg';
+                }
+                if ($size == "large") {
                     $this->main_photo = $data->name->primaryImage->url;
                 }
             } else {
