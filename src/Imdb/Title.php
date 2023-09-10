@@ -327,7 +327,7 @@ query Recommendations(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
-
+            $thumb = '';
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
