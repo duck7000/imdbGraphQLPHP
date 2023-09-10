@@ -295,7 +295,7 @@ EOF;
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array of array(title: string, imdbid: numberic string, rating: int| null, img: string|'', year: int|null)
+     * @return array<array{title: string, imdbid: number, rating: string| null, img: string|'', year: number|null}>
      * @see IMDB page / (TitlePage)
      */
     public function recommendation()
@@ -329,11 +329,15 @@ EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
 
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
+                if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
+                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                    $thumb = $img . 'QL100_SY207_.jpg';
+                }
                 $this->movierecommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
                     "imdbid" => str_replace('tt', '', $edge->node->id),
                     "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
-                    "img" => isset($edge->node->primaryImage->url) ? $edge->node->primaryImage->url : '',
+                    "img" => $thumb,
                     "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
                 );
             }
