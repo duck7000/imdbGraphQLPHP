@@ -2,6 +2,15 @@
 History for IMDBPHP6
 ====================
 
+v1.1.1
+-------------------
+* First public release!
+
+v1.0.6
+-------------------
+* Fixed bug in Title photo() no thumbnail
+* Added Person photo() medium image size (3 sizes available)
+
 v1.0.5
 -------------------
 * Remove Logger
