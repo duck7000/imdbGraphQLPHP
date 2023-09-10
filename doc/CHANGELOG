@@ -1,6 +1,9 @@
 
 History for IMDBPHP6
 ====================
+v1.1.2
+-------------------
+* Recommendations: changed image url to get thumbnail size of 140x207 otherwise some images are huge  like 15mb 9000 pixels!
 
 v1.1.1
 -------------------
