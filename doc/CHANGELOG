@@ -2,6 +2,10 @@
 History for IMDBPHP6
 ====================
 
+v1.1.4
+-------------------
+* Recommendations: fixed bug $thumb not always set again, hopefully good now
+
 v1.1.3
 -------------------
 * Recommendations: fixed bug $thumb not set

@@ -13,7 +13,7 @@ https://github.com/duck7000/imdbphp6/wiki
 Quick Start
 ===========
 
-* Clone this repo or download the latest [release zip] (No release jet)
+* Clone this repo or download the latest [release zip]
 * Find a film you want the data for e.g. A clockwork orange https://www.imdb.com/title/tt0066921/
 * If you're not using composer or an autoloader include `bootstrap.php`.
 * Get some data
@@ -41,7 +41,7 @@ There seems to be a limit on maximum episodes per season of 250, this may also b
 Thanks to @tBoothman for his groundwork to make this possible.
 
 Get the files with one of:
-* Git clone. Checkout the latest release tag (No release jet).
+* Git clone. Checkout the latest release tag
 * [Zip/Tar download]
 
 ### Requirements
