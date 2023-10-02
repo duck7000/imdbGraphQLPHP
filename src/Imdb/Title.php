@@ -331,7 +331,7 @@ EOF;
                 $thumb = '';
                 if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                    $thumb = $img . 'QL75_UY207_CR0,0,140,207_.jpg';
+                    $thumb = $img . 'QL100_UY207_CR0,0,140,207_.jpg';
                 }
                 $this->movierecommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
