@@ -84,6 +84,9 @@ EOF;
         $data = $this->graphql->query($query);
         foreach ($data->comingSoon->edges as $edge) {
             $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : '';
+            if ($title == '') {
+                continue;
+            }
             $imdbid = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : '';
             
             //release date
