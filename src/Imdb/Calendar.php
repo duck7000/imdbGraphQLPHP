@@ -24,7 +24,7 @@ class Calendar extends MdbBase
      * @parameter $startDateOverride This defines the startDate override like +3 or -5 of default todays day
      * @parameter $filter This defines if disablePopularityFilter is set or not, set to false shows all releases,
      * true only returns populair releases so less results within the given date span
-     * @parameter $thumb This defines if imgUrl contains thumb or full image, full image is large in size!
+     * @parameter $thumb This defines if imgUrl contains thumb or full image, full image is large in size! (Thumb is 50x74)
      * there seems to be a limit of 100 titles but i did get more titles so i really don't know
      * @return array of array(title| string, imdbid|string, releaseDate|array, genres|array, cast|array, imgUrl|string)
      */
