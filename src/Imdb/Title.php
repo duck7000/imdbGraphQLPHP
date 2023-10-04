@@ -798,38 +798,28 @@ EOF;
         if (!empty($this->credits_cast)) {
             return $this->credits_cast;
         }
-$query = <<<EOF
-query CreditQuery(\$id: ID!) {
-  title(id: \$id) {
-    credits(first: 9999, filter: { categories: ["cast"] }) {
-      edges {
-        node {
-          name {
-            nameText {
-              text
-            }
-            id
-            primaryImage {
-              url
-            }
-          }
-          ... on Cast {
-            characters {
-              name
-            }
-            attributes {
-              text
-            }
-          }
-        }
-      }
-    }
+        $filter = ', filter: { categories: ["cast"] }';
+$queryNode = <<<EOF
+name {
+  nameText {
+    text
+  }
+  id
+  primaryImage {
+    url
+  }
+}
+... on Cast {
+  characters {
+    name
+  }
+  attributes {
+    text
   }
 }
 EOF;
-
-        $data = $this->graphql->query($query, "CreditQuery", ["id" => "tt$this->imdbID"]);
-        foreach ($data->title->credits->edges as $edge) {
+        $data = $this->graphQlGetAll("CreditQuery", "credits", $queryNode, $filter);
+        foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             
