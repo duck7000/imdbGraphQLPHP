@@ -2098,14 +2098,16 @@ EOF;
      * @param string $queryName The cached query name
      * @param string $fieldName The field on title you want to get
      * @param string $nodeQuery Graphql query that fits inside node { }
+     * @param string $filter Add's extra Graphql query filters like categories
      * @return \stdClass[]
      */
-    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery)
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
+    
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
   title(id: \$id) {
-    $fieldName(first: 9999, after: \$after) {
+    $fieldName(first: 9999, after: \$after$filter) {
       edges {
         node {
           $nodeQuery
@@ -2130,7 +2132,6 @@ EOF;
             $hasNextPage = $data->title->{$fieldName}->pageInfo->hasNextPage;
             $endCursor = $data->title->{$fieldName}->pageInfo->endCursor;
         }
-
         return $edges;
     }
 }
