@@ -2,6 +2,12 @@
 History for IMDBPHP6
 ====================
 
+v1.1.5
+-------------------
+* Cast: fixed 250 items limit bug, all cast members are returned now
+* Added Calendar class, with this class you can use method comingSoon() to get coming soon releases like at imdb.com/calendar
+Please read the wiki page for explanation of all method parameters!
+
 v1.1.4
 -------------------
 * Recommendations: fixed bug $thumb not always set again, hopefully good now

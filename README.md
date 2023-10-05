@@ -20,16 +20,22 @@ Quick Start
 
 For titles:
 ```php
-$title = new \Imdb\Title(335266);
+$title = new \Imdb\Title("335266");
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
 ```
 
 For persons:
 ```php
-$name = new \Imdb\Name(0000154);
+$name = new \Imdb\Name("0000154");
 $name = $name->name();
 $nickname = $name->nickname();
+```
+
+For Calendar:
+```php
+$calendar = new \Imdb\Calendar();
+$releases = $calendar->comingSoon();
 ```
 
 Installation
@@ -38,7 +44,7 @@ Installation
 This library uses GraphQL API from imdb to get the data, so changes are not very often to be expected.<br>
 The data received from imdb GraphQL API could however be different as this data is in the purest form compared to previous methods.<br>
 There seems to be a limit on maximum episodes per season of 250, this may also be true for year based tv series.<br>
-Thanks to @tBoothman for his groundwork to make this possible.
+Thanks to @tBoothman for his groundwork to make this possible!
 
 Get the files with one of:
 * Git clone. Checkout the latest release tag
