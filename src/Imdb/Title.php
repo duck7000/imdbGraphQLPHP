@@ -453,7 +453,7 @@ EOF;
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $this->main_poster_thumb = $img . 'QL100_SY268_.jpg';
+            $this->main_poster_thumb = $img . 'QL100_SY281_.jpg';
             if (strpos($data->title->primaryImage->url, '._V1')) {
                 $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
             }
@@ -462,7 +462,7 @@ EOF;
 
     /**
      * Get the main photo image url for thumbnail or full size
-     * @param boolean $thumb get the thumbnail or the full version
+     * @param boolean $thumb get the thumbnail (height: 281) or the full version
      * @return string|false photo (string URL if found, FALSE otherwise)
      * @see IMDB page / (TitlePage)
      */
