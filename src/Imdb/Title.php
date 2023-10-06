@@ -340,7 +340,6 @@ EOF;
 
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
                     $thumb = $img . 'QL100_SY207_CR' . $cropParameter . ',0,140,207_.jpg';
-                    var_dump($thumb);
                 }
                 $this->movierecommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
