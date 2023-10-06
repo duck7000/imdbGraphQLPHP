@@ -1975,6 +1975,8 @@ query MainPhoto(\$id: ID!) {
       edges {
         node {
           url
+          width
+          height
         }
       }
     }
@@ -1984,8 +1986,13 @@ EOF;
             $data = $this->graphql->query($query, "MainPhoto", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->images->edges as $edge) {
                 if (isset($edge->node->url) && $edge->node->url != '') {
-                    $imgUrl = str_replace('._V1_.jpg', '', $edge->node->url);
-                    $this->main_photo[] = $imgUrl . '._V1_UY100_CR25,0,100,100_AL_.jpg';
+                    $fullImageWidth = $edge->node->width;
+                    $fullImageHeight = $edge->node->height;
+                    // calculate crop value
+                    $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
+
+                    $imgUrl = str_replace('.jpg', '', $edge->node->url);
+                    $this->main_photo[] = $imgUrl . 'QL75_SY100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
                 }
             }
         }
