@@ -316,6 +316,8 @@ query Recommendations(\$id: ID!) {
           }
           primaryImage {
             url
+            width
+            height
           }
           releaseYear {
             year
@@ -330,8 +332,15 @@ EOF;
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 $thumb = '';
                 if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
+                    $fullImageWidth = $edge->node->primaryImage->width;
+                    $fullImageHeight = $edge->node->primaryImage->height;
+
+                    // calculate crop value
+                    $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 140, 207);
+
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                    $thumb = $img . 'QL100_UY207_CR0,0,140,207_.jpg';
+                    $thumb = $img . 'QL100_SY207_CR' . $cropParameter . ',0,140,207_.jpg';
+                    var_dump($thumb);
                 }
                 $this->movierecommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
@@ -480,7 +489,10 @@ EOF;
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $scaledWidth = round($fullImageWidth / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
         $totalPixelCropSize = round($scaledWidth - $newImageWidth, 0, PHP_ROUND_HALF_EVEN);
-        $cropValue = $totalPixelCropSize / 2;
+        $cropValue = round($totalPixelCropSize / 2, 0, PHP_ROUND_HALF_EVEN);
+        if ($cropValue < 0) {
+            $cropValue = 0;
+        }
         return $cropValue;
     }
 
