@@ -1992,7 +1992,7 @@ EOF;
                     $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
 
                     $imgUrl = str_replace('.jpg', '', $edge->node->url);
-                    $this->main_photo[] = $imgUrl . 'QL75_SY100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+                    $this->main_photo[] = $imgUrl . 'QL100_SY100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
                 }
             }
         }
