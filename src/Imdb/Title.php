@@ -445,6 +445,8 @@ query Poster(\$id: ID!) {
   title(id: \$id) {
     primaryImage {
       url
+      width
+      height
     }
   }
 }
@@ -452,12 +454,34 @@ EOF;
 
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
+            $fullImageWidth = $data->title->primaryImage->width;
+            $fullImageHeight = $data->title->primaryImage->height;
+            // calculate crop value
+            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 190, 281);
+
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $this->main_poster_thumb = $img . 'QL100_SY281_.jpg';
+            $this->main_poster_thumb = $img . 'QL100_SY281_CR' . $cropParameter . ',0,190,281_.jpg';
             if (strpos($data->title->primaryImage->url, '._V1')) {
                 $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
             }
         }
+    }
+
+    /**
+     * Calculate crop value to get the image as they appear on imdb for primary and recommendations images
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @see IMDB page / (TitlePage)
+     */
+    private function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        $newScalefactor = $fullImageHeight / $newImageHeight;
+        $scaledWidth = round($fullImageWidth / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
+        $totalPixelCropSize = round($scaledWidth - $newImageWidth, 0, PHP_ROUND_HALF_EVEN);
+        $cropValue = $totalPixelCropSize / 2;
+        return $cropValue;
     }
 
     /**
