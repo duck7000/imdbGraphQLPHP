@@ -1434,23 +1434,16 @@ EOF;
                             }
                         }
                         // Episode Image
-                        if (isset($edge->node->primaryImage->url)) {
+                        if (isset($edge->node->primaryImage->url) && !empty($edge->node->primaryImage->url)) {
                             $epImageUrl = $edge->node->primaryImage->url;
-                            $titleImageUrl = $episodesData->title->primaryImage->url;
-                            // filter out placeholder image, in that case image = ''
-                            if (stripos($edge->node->primaryImage->url, 'MV5BYjVmMjFhZmMtNjk5Ni00MTc1LWJiNjQtMTA3ZTFhNTA2NTE3XkEyXkFqcGdeQXVyMTkxNjUyNQ') == false) {
-                                // Check if found episode image not equal to the title image
-                                if ($epImageUrl !== $titleImageUrl) {
-                                    $fullImageWidth = $edge->node->primaryImage->width;
-                                    $fullImageHeight = $edge->node->primaryImage->height;
+                            $fullImageWidth = $edge->node->primaryImage->width;
+                            $fullImageHeight = $edge->node->primaryImage->height;
 
-                                    // calculate crop value
-                                    $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 224, 126);
+                            // calculate crop value
+                            $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 224, 126);
 
-                                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                    $imgUrl = $img . 'QL100_SX224_CR0,' . $cropParameter . ',224,126_.jpg';
-                                }
-                            }
+                            $img = str_replace('.jpg', '', $epImageUrl);
+                            $imgUrl = $img . 'QL100_SX224_CR0,' . $cropParameter . ',224,126_.jpg';
                         }
                         $episode = array(
                                 'imdbid' => $imdbId,
