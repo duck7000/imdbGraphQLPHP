@@ -2020,7 +2020,14 @@ EOF;
                     $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
 
                     $imgUrl = str_replace('.jpg', '', $edge->node->url);
-                    $this->main_photo[] = $imgUrl . 'QL100_SY100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+                    if ($fullImageWidth > $fullImageHeight) {
+                        // Landscape (Y)
+                        $orientation = 'Y';
+                    } else {
+                        // portrait (X)
+                        $orientation = 'X';
+                    }
+                    $this->main_photo[] = $imgUrl . 'QL100_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
                 }
             }
         }
