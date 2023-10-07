@@ -1369,6 +1369,8 @@ query Episodes(\$id: ID!) {
             }
             primaryImage {
               url
+              width
+              height
             }
             releaseDate {
               day
