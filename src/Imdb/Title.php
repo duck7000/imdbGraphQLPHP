@@ -1441,8 +1441,14 @@ EOF;
                             if (stripos($edge->node->primaryImage->url, 'MV5BYjVmMjFhZmMtNjk5Ni00MTc1LWJiNjQtMTA3ZTFhNTA2NTE3XkEyXkFqcGdeQXVyMTkxNjUyNQ') == false) {
                                 // Check if found episode image not equal to the title image
                                 if ($epImageUrl !== $titleImageUrl) {
+                                    $fullImageWidth = $edge->node->primaryImage->width;
+                                    $fullImageHeight = $edge->node->primaryImage->height;
+
+                                    // calculate crop value
+                                    $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 224, 126);
+
                                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                    $imgUrl = $img . 'UY126_UX224_AL_.jpg';
+                                    $imgUrl = $img . 'QL100_SX224_CR0,' . $cropParameter . ',224,126_.jpg';
                                 }
                             }
                         }
