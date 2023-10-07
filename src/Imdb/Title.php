@@ -864,6 +864,8 @@ name {
   id
   primaryImage {
     url
+    width
+    height
   }
 }
 ... on Cast {
@@ -907,8 +909,19 @@ EOF;
             // image url
             $imgUrl = '';
             if (isset($edge->node->name->primaryImage->url) && $edge->node->name->primaryImage->url != null) {
+                $fullImageWidth = $edge->node->name->primaryImage->width;
+                $fullImageHeight = $edge->node->name->primaryImage->height;
+                // calculate crop value
+                $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 32, 44);
+                if ($fullImageWidth > $fullImageHeight) {
+                    // Landscape (Y)
+                    $orientation = 'SY44';
+                } else {
+                    // portrait (X)
+                    $orientation = 'SX32';
+                }
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
-                $imgUrl = $img . 'UY44_CR1,0,32,44_AL_.jpg';
+                $imgUrl = $img . 'QL100_' . $orientation . '_CR' . $cropParameter . ',0,32,44_AL_.jpg';
             }
             
             $this->credits_cast[] = array(
