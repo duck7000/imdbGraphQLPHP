@@ -913,7 +913,7 @@ EOF;
                 $fullImageHeight = $edge->node->name->primaryImage->height;
                 // calculate crop value
                 $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 32, 44);
-                if ($fullImageWidth > $fullImageHeight) {
+                if ($fullImageWidth >= $fullImageHeight) {
                     // Landscape (Y)
                     $orientation = 'SY44';
                 } else {
