@@ -476,7 +476,8 @@ EOF;
     }
 
     /**
-     * Calculate crop value to get the image as they appear on imdb for primary and recommendations images
+     * Calculate HORIZONTAL crop value to get the image as they appear on imdb for primary, recommendations and mainphoto images
+     * Output is portrait image!
      * @parameter $fullImageWidth the width in pixels of the large original image
      * @parameter $fullImageHeight the height in pixels of the large original image
      * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
@@ -488,6 +489,27 @@ EOF;
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $scaledWidth = round($fullImageWidth / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
         $totalPixelCropSize = round($scaledWidth - $newImageWidth, 0, PHP_ROUND_HALF_EVEN);
+        $cropValue = round($totalPixelCropSize / 2, 0, PHP_ROUND_HALF_EVEN);
+        if ($cropValue < 0) {
+            $cropValue = 0;
+        }
+        return $cropValue;
+    }
+
+    /**
+     * Calculate VERTICAL crop value to get the image as they appear on imdb for episode images
+     * Output is for landscape images
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @see IMDB page / (TitlePage)
+     */
+    private function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        $newScalefactor = $fullImageWidth / $newImageWidth;
+        $scaledHeight = round($fullImageHeight / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
+        $totalPixelCropSize = round($scaledHeight - $newImageHeight, 0, PHP_ROUND_HALF_EVEN);
         $cropValue = round($totalPixelCropSize / 2, 0, PHP_ROUND_HALF_EVEN);
         if ($cropValue < 0) {
             $cropValue = 0;
