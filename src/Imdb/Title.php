@@ -2028,7 +2028,7 @@ EOF;
                     $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
 
                     $imgUrl = str_replace('.jpg', '', $edge->node->url);
-                    if ($fullImageWidth > $fullImageHeight) {
+                    if ($fullImageWidth >= $fullImageHeight) {
                         // Landscape (Y)
                         $orientation = 'Y';
                     } else {
