@@ -913,7 +913,8 @@ EOF;
                 $fullImageHeight = $edge->node->name->primaryImage->height;
                 // calculate crop value
                 $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 32, 44);
-                if ($fullImageWidth >= $fullImageHeight) {
+                $ratio = $fullImageWidth / $fullImageHeight;
+                if ($ratio >= 0.9) {
                     // Landscape (Y)
                     $orientation = 'SY44';
                 } else {
@@ -922,6 +923,7 @@ EOF;
                 }
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
                 $imgUrl = $img . 'QL100_' . $orientation . '_CR' . $cropParameter . ',0,32,44_AL_.jpg';
+                var_dump($cropParameter);
             }
             
             $this->credits_cast[] = array(
