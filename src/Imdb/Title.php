@@ -923,7 +923,6 @@ EOF;
                 }
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
                 $imgUrl = $img . 'QL100_' . $orientation . '_CR' . $cropParameter . ',0,32,44_AL_.jpg';
-                var_dump($cropParameter);
             }
             
             $this->credits_cast[] = array(
