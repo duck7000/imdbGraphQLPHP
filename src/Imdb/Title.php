@@ -339,7 +339,15 @@ EOF;
                     $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 140, 207);
 
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                    $thumb = $img . 'QL100_SY207_CR' . $cropParameter . ',0,140,207_.jpg';
+
+                    if ($fullImageWidth >= $fullImageHeight) {
+                        // Landscape (Y)
+                        $orientation = 'SY207';
+                    } else {
+                        // portrait (X)
+                        $orientation = 'SX140';
+                    }
+                    $thumb = $img . 'QL100_' . $orientation . '_CR' . $cropParameter . ',0,140,207_.jpg';
                 }
                 $this->movierecommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
