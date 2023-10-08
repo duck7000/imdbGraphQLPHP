@@ -2061,6 +2061,8 @@ query Video(\$id: ID!) {
           }
           thumbnail {
             url
+            width
+            height
           }
           runtime {
             value
@@ -2070,8 +2072,10 @@ query Video(\$id: ID!) {
               value
             }
           }
-          name {
-            value
+          primaryTitle {
+            titleText {
+              text
+            }
           }
         }
       }
@@ -2082,47 +2086,70 @@ EOF;
 
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->primaryVideos->edges as $edge) {
+                // check if url and contentType is set and contentType = Trailer
                 if (!isset($edge->node->playbackURLs[0]->url) ||
                     !isset($edge->node->contentType->displayName->value) ||
                     $edge->node->contentType->displayName->value !== "Trailer") {
                     continue;
                 }
-                $rawVideoId = explode("/", parse_url($edge->node->playbackURLs[0]->url, PHP_URL_PATH));
-                $embedUrl = "https://" . $this->imdbsite . "/video/imdb/" . $rawVideoId[1] . "/imdb/embed";
+
+                // Video ID
+                $videoId = explode("/", parse_url($edge->node->playbackURLs[0]->url, PHP_URL_PATH));
+
+                // Embed URL
+                $embedUrl = "https://" . $this->imdbsite . "/video/imdb/" . $videoId[1] . "/imdb/embed";
+
+                // Check if embed URL not == 404 or 401
                 $headers = get_headers($embedUrl);
                 if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                     continue;
                 }
-                $html = file_get_contents($embedUrl);
-                if (stripos($html, 'class="available"') !== false) {
-                    $videoUrl = $embedUrl;
-                } else {
-                    continue;
-                }
+                $thumbUrl = '';
                 if (isset($edge->node->thumbnail->url) && $edge->node->thumbnail->url != '') {
-                    $rawRuntime = $edge->node->runtime->value;
-                    $minutes = sprintf("%02d", ($rawRuntime / 60));
-                    $seconds = sprintf("%02d", $rawRuntime % 60);
-                    $rawTitle = explode(":", $edge->node->name->value);
-                    $titleParts = explode("|", trim($rawTitle[0]));
-                    $titleParts = explode("(", trim($titleParts[0]));
-                    $title = str_replace(' ', '%2520', $titleParts[0]);
-                    $thumbUrl = str_replace('.jpg', '', $edge->node->thumbnail->url);
-                    $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_PIimdb-blackband-204-14,TopLeft,0,0_'
-                                 . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
-                                 . 'PIimdb-bluebutton-big,BottomRight,-1,-1_ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
-                                 . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_ZA' . $minutes . '%253A' . $seconds
-                                 . ',164,1,14,36,verdenab,7,255,255,255,1_ZA' . $title
-                                 . ',4,138,14,176,arialbd,7,255,255,255,1_.jpg';
-                    $videoImageUrl = $thumbUrl;
+                    // Runtime
+                    $runtime = $edge->node->runtime->value;
+                    $minutes = sprintf("%02d", ($runtime / 60));
+                    $seconds = sprintf("%02d", $runtime % 60);
 
-                } else {
-                    $videoImageUrl = '';
+                    // Title
+                    $searchTerms = array(",", " ", "_");
+                    $replaceTerms = array("", "%2520", "%2520");
+                    $title = str_replace($searchTerms, $replaceTerms, $edge->node->primaryTitle->titleText->text);
+
+                    // calculate if the source image is HD aspect ratio or not
+                    $fullImageWidth = $edge->node->thumbnail->width;
+                    $fullImageHeight = $edge->node->thumbnail->height;
+                    $HDicon = 'PIimdb-HDIconMiniWhite,BottomLeft,4,-2_';
+                    $margin = '24';
+                    $aspectRatio = $fullImageWidth / $fullImageHeight;
+                    if ($aspectRatio < 1.77) {
+                        $HDicon = '';
+                        $margin = '4';
+                    } elseif ($fullImageWidth < 1280) {
+                        $HDicon = '';
+                        $margin = '4';
+                    } elseif ($fullImageHeight < 720) {
+                        $HDicon = '';
+                        $margin = '4';
+                    }
+
+                    // Thumbnail URL
+                    $thumbUrl = str_replace('.jpg', '', $edge->node->thumbnail->url);
+                    $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_'
+                                 . 'PIimdb-blackband-204-14,TopLeft,0,0_'
+                                 . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
+                                 . 'PIimdb-bluebutton-big,BottomRight,-1,-1_'
+                                 . 'ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
+                                 . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_'
+                                 . 'ZA' . $minutes . '%253A' . $seconds .',164,1,14,36,verdenab,7,255,255,255,1_'
+                                 . $HDicon
+                                 . 'ZA' . $title . ',' . $margin . ',138,14,176,arialbd,7,255,255,255,1_.jpg';
+
                 }
                 if (count($this->trailers) <= 2) {
                     $this->trailers[] = array(
-                        'videoUrl' => $videoUrl,
-                        'videoImageUrl' => $videoImageUrl
+                        'videoUrl' => $embedUrl,
+                        'videoImageUrl' => $thumbUrl
                     );
                 }
             }
