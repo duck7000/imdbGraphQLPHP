@@ -1,6 +1,15 @@
 
 History for IMDBPHP6
 ====================
+v1.1.6
+-------------------
+* Cast: fixed thumbnail creation, previous did not get the right crop/resize
+* Complete overhaul of trailer method, added HD icon to thumbnail if apliable, fixed forbidden characters in thumbnail url
+* mainphoto fixed thumbnail creation, previous did not get the right crop/resize
+* recommendations fixed thumbnail creation, previous did not get the right crop/resize
+* episodes fixed thumbnail creation, previous did not get the right crop/resize
+* Added 2 private method's to calculate thumbnail crop value for landscape and portrait images
+* photo fixed thumbnail creation, previous did not get the right crop/resize (this is very hard so it may not always completely accurate
 
 v1.1.5
 -------------------
