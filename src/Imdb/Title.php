@@ -2112,8 +2112,8 @@ EOF;
                     $seconds = sprintf("%02d", $runtime % 60);
 
                     // Title
-                    $searchTerms = array(",", " ", "_");
-                    $replaceTerms = array("", "%2520", "%2520");
+                    $searchTerms = array(",", " ", "_", "#");
+                    $replaceTerms = array("", "%2520", "%2520", "%2520");
                     $title = str_replace($searchTerms, $replaceTerms, $edge->node->primaryTitle->titleText->text);
 
                     // calculate if the source image is HD aspect ratio or not
