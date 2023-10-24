@@ -37,6 +37,7 @@ class Title extends MdbBase
     protected $main_plotoutline = "";
     protected $main_movietype = "";
     protected $main_title = "";
+    protected $main_original_title = "";
     protected $main_year = -1;
     protected $main_endyear = -1;
     protected $main_top250 = -1;
@@ -90,6 +91,9 @@ query TitleYear(\$id: ID!) {
     titleText {
       text
     }
+    originalTitleText {
+      text
+    }
     titleType {
       text
     }
@@ -104,6 +108,7 @@ EOF;
         $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
 
         $this->main_title = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
+        $this->main_original_title = ucwords(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
         $this->main_movietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
         $this->main_year = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
         $this->main_endyear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
@@ -138,6 +143,18 @@ EOF;
             $this->title_year();
         }
         return $this->main_title;
+    }
+
+    /** Get movie original title
+     * @return string main_original_title movie original title
+     * @see IMDB page / (TitlePage)
+     */
+    public function originalTitle()
+    {
+        if ($this->main_original_title == "") {
+            $this->title_year();
+        }
+        return $this->main_original_title;
     }
 
     /** Get year
