@@ -1,6 +1,9 @@
 
 History for IMDBPHP6
 ====================
+v1.1.8
+-------------------
+* Added orginalTitle method, now there is a choice between localized title and original title
 
 v1.1.7
 -------------------
