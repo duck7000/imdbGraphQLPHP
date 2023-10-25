@@ -504,9 +504,9 @@ EOF;
     private function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
     {
         $newScalefactor = $fullImageHeight / $newImageHeight;
-        $scaledWidth = round($fullImageWidth / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
-        $totalPixelCropSize = round($scaledWidth - $newImageWidth, 0, PHP_ROUND_HALF_EVEN);
-        $cropValue = round($totalPixelCropSize / 2, 0, PHP_ROUND_HALF_EVEN);
+        $scaledWidth = $fullImageWidth / $newScalefactor;
+        $totalPixelCropSize = $scaledWidth - $newImageWidth;
+        $cropValue = round($totalPixelCropSize / 2, 0);
         if ($cropValue < 0) {
             $cropValue = 0;
         }
@@ -525,9 +525,9 @@ EOF;
     private function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
     {
         $newScalefactor = $fullImageWidth / $newImageWidth;
-        $scaledHeight = round($fullImageHeight / $newScalefactor, 0, PHP_ROUND_HALF_EVEN);
-        $totalPixelCropSize = round($scaledHeight - $newImageHeight, 0, PHP_ROUND_HALF_EVEN);
-        $cropValue = round($totalPixelCropSize / 2, 0, PHP_ROUND_HALF_EVEN);
+        $scaledHeight = $fullImageHeight / $newScalefactor;
+        $totalPixelCropSize = $scaledHeight - $newImageHeight;
+        $cropValue = round($totalPixelCropSize / 2, 0);
         if ($cropValue < 0) {
             $cropValue = 0;
         }
