@@ -481,11 +481,19 @@ EOF;
         if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
             $fullImageWidth = $data->title->primaryImage->width;
             $fullImageHeight = $data->title->primaryImage->height;
-            // calculate crop value
-            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 190, 281);
 
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $this->main_poster_thumb = $img . 'QL100_SY281_CR' . $cropParameter . ',0,190,281_.jpg';
+
+            // original source aspect ratio
+            $ratio_orig = $fullImageWidth / $fullImageHeight;
+            if (190/281 < $ratio_orig) {
+                $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 190, 281);
+                $this->main_poster_thumb = $img . 'QL100_SY281_CR' . $cropParameter . ',0,190,281_.jpg';
+            } else {
+                $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 190, 281);
+                $this->main_poster_thumb = $img . 'QL100_SX190_CR0,' . $cropParameter . ',190,281_.jpg';
+            }
+
             if (strpos($data->title->primaryImage->url, '._V1')) {
                 $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
             }
