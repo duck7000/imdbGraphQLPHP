@@ -2078,7 +2078,13 @@ EOF;
                     $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
 
                     $imgUrl = str_replace('.jpg', '', $edge->node->url);
-                    if ($fullImageWidth >= $fullImageHeight) {
+
+                    // original source aspect ratio
+                    $ratio_orig = $fullImageWidth / $fullImageHeight;
+                    // new aspect ratio
+                    $ratio_new = 100 / 100;
+
+                    if ($ratio_new < $ratio_orig) {
                         // Landscape (Y)
                         $orientation = 'Y';
                     } else {
@@ -2086,6 +2092,7 @@ EOF;
                         $orientation = 'X';
                     }
                     $this->main_photo[] = $imgUrl . 'QL75_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+
                 }
             }
         }
