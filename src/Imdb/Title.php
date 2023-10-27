@@ -1501,18 +1501,13 @@ EOF;
                             $epImageUrl = $edge->node->primaryImage->url;
                             $fullImageWidth = $edge->node->primaryImage->width;
                             $fullImageHeight = $edge->node->primaryImage->height;
+                            $newImageWidth = 224;
+                            $newImageHeight = 126;
 
                             $img = str_replace('.jpg', '', $epImageUrl);
 
-                            // original source aspect ratio
-                            $ratio_orig = $fullImageWidth / $fullImageHeight;
-                            if (224/126 < $ratio_orig) {
-                                $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 224, 126);
-                                $imgUrl = $img . 'QL100_SY126_CR' . $cropParameter . ',0,224,126_.jpg';
-                            } else {
-                                $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 224, 126);
-                                $imgUrl = $img . 'QL100_SX224_CR0,' . $cropParameter . ',224,126_.jpg';
-                            }
+                            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                            $imgUrl = $img . $parameter;
 
                         }
                         $episode = array(
