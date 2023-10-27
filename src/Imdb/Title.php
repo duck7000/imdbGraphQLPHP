@@ -508,6 +508,36 @@ EOF;
     }
 
     /**
+     * Calculate The total result parameter and determine if SX or SY is used
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @return string example 'QL100_SX190_CR0,15,190,281_.jpg'
+     * QL100 = Quality Level, 100 the highest, 0 the lowest quality
+     * SX190 = S (scale) X190 desired width
+     * CR = Crop (crop left and right, crop top and bottom, New width, New Height)
+     * @see IMDB page / (TitlePage)
+     */
+    private function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        // original source aspect ratio
+        $ratio_orig = $fullImageWidth / $fullImageHeight;
+
+        // new aspect ratio
+        $ratio_new = $newImageWidth / $newImageHeight;
+
+        // check if the image must be treated as SX or SY
+        if ($ratio_new < $ratio_orig) {
+            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            return 'QL100_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
+        } else {
+            $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            return 'QL100_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
+        }
+    }
+
+    /**
      * Calculate HORIZONTAL crop value to get the image as they appear on imdb for primary, recommendations and mainphoto images
      * Output is portrait image!
      * @parameter $fullImageWidth the width in pixels of the large original image
