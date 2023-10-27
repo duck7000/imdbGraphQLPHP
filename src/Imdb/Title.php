@@ -963,16 +963,13 @@ EOF;
             if (isset($edge->node->name->primaryImage->url) && $edge->node->name->primaryImage->url != null) {
                 $fullImageWidth = $edge->node->name->primaryImage->width;
                 $fullImageHeight = $edge->node->name->primaryImage->height;
-                // calculate crop value
-                $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 32, 44);
+                $newImageWidth = 32;
+                $newImageHeight = 44;
+
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
-                $asFactor = $fullImageWidth / $fullImageHeight;
-                if ($asFactor <= 0.7) {
-                    $orientation = 'SX32';
-                } else {
-                    $orientation = 'SY44';
-                }
-                $imgUrl = $img . 'QL100_' . $orientation . '_CR' . $cropParameter . ',0,32,44_AL_.jpg';
+
+                $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                $imgUrl = $img . $parameter;
             }
             
             $this->credits_cast[] = array(
