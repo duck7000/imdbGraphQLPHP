@@ -351,18 +351,13 @@ EOF;
                 if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
                     $fullImageWidth = $edge->node->primaryImage->width;
                     $fullImageHeight = $edge->node->primaryImage->height;
+                    $newImageWidth = 140;
+                    $newImageHeight = 207;
 
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
 
-                    // original source aspect ratio
-                    $ratio_orig = $fullImageWidth / $fullImageHeight;
-                    if (140/207 < $ratio_orig) {
-                        $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 140, 207);
-                        $thumb = $img . 'QL100_SY207_CR' . $cropParameter . ',0,140,207_.jpg';
-                    } else {
-                        $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, 140, 207);
-                        $thumb = $img . 'QL100_SX140_CR0,' . $cropParameter . ',140,207_.jpg';
-                    }
+                    $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                    $thumb = $img . $parameter;
 
                 }
                 $this->movierecommendations[] = array(
