@@ -520,10 +520,10 @@ EOF;
         // check if the image must be treated as SX or SY
         if ($ratio_new < $ratio_orig) {
             $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL100_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
+            return 'QL75_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
         } else {
             $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL100_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
+            return 'QL75_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
         }
     }
 
@@ -2085,7 +2085,7 @@ EOF;
                         // portrait (X)
                         $orientation = 'X';
                     }
-                    $this->main_photo[] = $imgUrl . 'QL100_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+                    $this->main_photo[] = $imgUrl . 'QL75_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
                 }
             }
         }
