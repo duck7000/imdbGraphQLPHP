@@ -528,8 +528,25 @@ EOF;
     }
 
     /**
-     * Calculate HORIZONTAL crop value to get the image as they appear on imdb for primary, recommendations and mainphoto images
-     * Output is portrait image!
+     * Calculate if cropValue has to be round to previous or next even integer
+     * @parameter $totalPixelCropSize how much pixels in total need to be cropped
+     */
+    private function roundInteger($totalPixelCropSize)
+    {
+        if ((($totalPixelCropSize - floor($totalPixelCropSize)) < 0.5)) {
+            // Previous even integer
+            $num = 2 * round($totalPixelCropSize / 2.0);
+        } else {
+            // Next even integer
+            $num = ceil($totalPixelCropSize);
+            $num += $num % 2;
+        }
+        return $num;
+    }
+
+    /**
+     * Calculate HORIZONTAL (left and right) crop value for primary, cast, episode, recommendations and mainphoto images
+     * Output is for portrait images!
      * @parameter $fullImageWidth the width in pixels of the large original image
      * @parameter $fullImageHeight the height in pixels of the large original image
      * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
@@ -541,16 +558,13 @@ EOF;
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $scaledWidth = $fullImageWidth / $newScalefactor;
         $totalPixelCropSize = $scaledWidth - $newImageWidth;
-        $cropValue = round($totalPixelCropSize / 2, 0);
-        if ($cropValue < 0) {
-            $cropValue = 0;
-        }
+        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
         return $cropValue;
     }
 
     /**
-     * Calculate VERTICAL crop value to get the image as they appear on imdb for episode images
-     * Output is for landscape images
+     * Calculate VERTICAL (Top and bottom)crop value for primary, cast, episode and recommendations images
+     * Output is for landscape images!
      * @parameter $fullImageWidth the width in pixels of the large original image
      * @parameter $fullImageHeight the height in pixels of the large original image
      * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
@@ -562,10 +576,7 @@ EOF;
         $newScalefactor = $fullImageWidth / $newImageWidth;
         $scaledHeight = $fullImageHeight / $newScalefactor;
         $totalPixelCropSize = $scaledHeight - $newImageHeight;
-        $cropValue = round($totalPixelCropSize / 2, 0);
-        if ($cropValue < 0) {
-            $cropValue = 0;
-        }
+        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
         return $cropValue;
     }
 
