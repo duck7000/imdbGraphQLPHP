@@ -1,6 +1,10 @@
 
 History for IMDBPHP6
 ====================
+v1.2.0
+-------------------
+* Added new private method roundInteger this method takes care of the calculated crop is rounded to previous or next even integer, crop is now correctly calculated
+* changed thumbUrlCropParameter and thumbUrlCropParameterVertical to use the new roundInteger method.
 
 v1.1.9
 -------------------
