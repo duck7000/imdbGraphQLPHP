@@ -2213,7 +2213,7 @@ EOF;
                                  . 'ZA' . $title . ',' . $margin . ',138,14,176,arialbd,7,255,255,255,1_.jpg';
 
                 }
-                if (count($this->trailers) <= 2) {
+                if (count($this->trailers) <= 1) {
                     $this->trailers[] = array(
                         'videoUrl' => $embedUrl,
                         'videoImageUrl' => $thumbUrl
