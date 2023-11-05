@@ -105,14 +105,14 @@ EOF;
             if ($data->name->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
                 if ($size == "small") {
-                    $this->main_photo = $img . 'UY98_CR1,0,67,98_AL_.jpg';
+                    $this->main_photo = $img . 'QL100_SY98_.jpg';
                     $headers = get_headers($this->main_photo);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                         $this->main_photo = $data->name->primaryImage->url;
                     }
                 }
                 if ($size == "medium") {
-                    $this->main_photo = $img . 'SY931_.jpg';
+                    $this->main_photo = $img . 'QL100_SY931_.jpg';
                     $headers = get_headers($this->main_photo);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                         $this->main_photo = $data->name->primaryImage->url;
