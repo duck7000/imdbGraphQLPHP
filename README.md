@@ -15,7 +15,7 @@ Quick Start
 
 * Clone this repo or download the latest [release zip]
 * Find a film you want the data for e.g. A clockwork orange https://www.imdb.com/title/tt0066921/
-* If you're not using composer or an autoloader include `bootstrap.php`.
+* Include `bootstrap.php`.
 * Get some data
 
 For titles:
