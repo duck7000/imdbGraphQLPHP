@@ -2166,7 +2166,7 @@ EOF;
                 $videoId = explode("/", parse_url($edge->node->playbackURLs[0]->url, PHP_URL_PATH));
 
                 // Embed URL
-                $embedUrl = "https://" . $this->imdbsite . "/video/imdb/" . $videoId[1] . "/imdb/embed";
+                $embedUrl = "https://www.imdb.com/video/imdb/" . $videoId[1] . "/imdb/embed";
 
                 // Check if embed URL not == 404 or 401
                 $headers = get_headers($embedUrl);
