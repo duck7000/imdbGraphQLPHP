@@ -69,13 +69,10 @@ class Title extends MdbBase
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
-     * @param Config $config OPTIONAL override default config
      */
-    public function __construct(
-        $id,
-        Config $config = null
-    ) {
-        parent::__construct($config);
+    public function __construct($id)
+    {
+        parent::__construct();
         $this->setid($id);
     }
 
