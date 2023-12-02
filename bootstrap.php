@@ -1,6 +1,5 @@
 <?php
 
-require_once __DIR__ . '/src/Imdb/Config.php';
 require_once __DIR__ . '/src/Imdb/Request.php';
 require_once __DIR__ . '/src/Imdb/GraphQL.php';
 require_once __DIR__ . '/src/Imdb/Pages.php';
