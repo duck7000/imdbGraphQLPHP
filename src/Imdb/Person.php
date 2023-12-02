@@ -46,13 +46,10 @@ class Person extends MdbBase
 
     /**
      * @param string $id IMDBID to use for data retrieval
-     * @param Config $config OPTIONAL override default config
      */
-    public function __construct(
-        $id,
-        Config $config = null
-    ) {
-        parent::__construct($config);
+    public function __construct($id)
+    {
+        parent::__construct();
         $this->setid($id);
     }
 
