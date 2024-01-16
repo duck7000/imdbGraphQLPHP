@@ -1713,7 +1713,6 @@ query Soundtrack(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->soundtrack->edges as $edge) {
-                $credits = '';
                 $title = '';
                 if (isset($edge->node->text) && $edge->node->text !== '') {
                     $title = ucwords(strtolower(trim($edge->node->text)), " (");
@@ -1721,9 +1720,11 @@ EOF;
                     $title = 'Unknown';
                 }
                 $credits = array();
-                foreach ($edge->node->comments as $key => $comment) {
-                    if (trim(strip_tags($comment->plainText)) !== '') {
-                        $credits[] = $comment->plainText;
+                if (isset($edge->node->comments) && $edge->node->comments !== '') {
+                    foreach ($edge->node->comments as $key => $comment) {
+                        if (trim(strip_tags($comment->plainText)) !== '') {
+                            $credits[] = $comment->plainText;
+                        }
                     }
                 }
                 $this->soundtracks[] = array(
