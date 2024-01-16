@@ -1,6 +1,10 @@
 
 History for IMDBPHP6
 ====================
+v1.3.0
+-------------------
+* Removed config totally so there are no more config options or ini override possible.
+
 v1.2.0
 -------------------
 * Added new private method roundInteger this method takes care of the calculated crop is rounded to previous or next even integer, crop is now correctly calculated
