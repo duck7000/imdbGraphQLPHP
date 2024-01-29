@@ -70,4 +70,3 @@ The cURL library either hasn't come bundled with the root SSL certificates or th
 ### Linux
 cURL uses the certificate authority file that's part of linux by default, which must be out of date. 
 Look for instructions for your OS to update the CA file or update your distro.
-credits
