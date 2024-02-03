@@ -5,7 +5,7 @@ PHP library for retrieving film and TV information from IMDb.<br>
 Retrieve most of the information you can see on IMDb including films, TV series, TV episodes, people and coming soon releases.<br>
 Search for titles on IMDb.<br>
 Download film posters, actor, recommendations, foto's and episode images.<br>
-The results are English only, other languages are not supported.
+The results are English only, other languages are not supported.<br>
 imdbphp6 is not a fork of imdbphp although there are things simular. It is a stripped down version supplemented with user requests.<br>
 There is a full list of all methods, descriptions and outputs in the wiki.
 https://github.com/duck7000/imdbphp6/wiki
