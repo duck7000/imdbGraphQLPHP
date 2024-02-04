@@ -1,6 +1,12 @@
 
 History for IMDBPHP6
 ====================
+
+v1.3.1
+-------------------
+* Fixed bug where there are no soundtrack comments/credits.
+* Added localization, only a few languages are supported and it effects only title, plotoutline and moreLikeThis (titles only) Check the title wiki to enable (default: disable)
+
 v1.3.0
 -------------------
 * Removed config totally so there are no more config options or ini override possible.
