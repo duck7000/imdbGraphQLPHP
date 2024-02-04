@@ -13,7 +13,7 @@ namespace Imdb;
 /**
  * Accessing Movie information through GraphQL
  * @author Tom Boothman
- * @copyright (c) 2002-2023 by Tom Boothman
+ * @copyright (c) 2002-2024 by Tom Boothman
  */
 class GraphQL
 {
