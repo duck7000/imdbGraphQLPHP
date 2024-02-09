@@ -6,7 +6,7 @@ Retrieve most of the information you can see on IMDb including films, TV series,
 Search for titles on IMDb.<br>
 Download film posters, actor, recommendations, foto's and episode images.<br>
 The results can be localized although it only seems to effect title, plotoutline and recommendations (titles only). Check wiki homepage to enable.<br>
-imdbphp6 is not a fork of imdbphp although there are things simular. It is a stripped down version supplemented with user requests.<br>
+imdbphp6 is not a complete fork of imdbphp although there are things simular.<br>
 There is a full list of all methods, descriptions and outputs in the wiki.
 https://github.com/duck7000/imdbphp6/wiki
 
