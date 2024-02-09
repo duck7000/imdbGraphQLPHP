@@ -10,15 +10,28 @@
 
 namespace Imdb;
 
+use Psr\SimpleCache\CacheInterface;
+
 /**
  * Accessing Movie information
  * @author Georgos Giagas
+ * @author Ed
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
-class MdbBase
+class MdbBase extends Config
 {
-    public $version = '1.3.1';
+    public $version = '1.2.0';
+
+    /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
+    /**
+     * @var Config
+     */
+    protected $config;
 
     /**
      * @var GraphQL
@@ -31,10 +44,14 @@ class MdbBase
     protected $imdbID;
 
     /**
+     * @param Config $config OPTIONAL override default config
+     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
-    public function __construct()
+    public function __construct(Config $config = null, CacheInterface $cache = null)
     {
-        $this->graphql = new GraphQL();
+        $this->config = $config ?: $this;        
+        $this->cache = empty($cache) ? new Cache($this->config) : $cache;
+        $this->graphql = new GraphQL($this->cache, $this->config);
     }
 
     /**

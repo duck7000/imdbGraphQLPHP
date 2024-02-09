@@ -13,12 +13,13 @@
 
 namespace Imdb;
 
+use Psr\SimpleCache\CacheInterface;
+
 /**
  * A person on IMDb
  * @author Izzy (izzysoft AT qumran DOT org)
  * @author Ed
  * @copyright 2008 by Itzchak Rehberg and IzzySoft
- * @copyright 2023 by Ed
  */
 class Person extends MdbBase
 {
@@ -46,10 +47,12 @@ class Person extends MdbBase
 
     /**
      * @param string $id IMDBID to use for data retrieval
+     * @param Config $config OPTIONAL override default config
+     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
-    public function __construct($id)
+    public function __construct($id, Config $config = null, CacheInterface $cache = null)
     {
-        parent::__construct();
+        parent::__construct($config, $cache);
         $this->setid($id);
     }
 
