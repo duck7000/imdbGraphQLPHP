@@ -23,10 +23,11 @@ class TitleSearch extends MdbBase
      */
     public function search($searchTerms)
     {
+        $amount = $this->config->titleSearchAmount;
         $results = array();
         $query = <<<EOF
 query Search {
-  mainSearch(first: 10, options: {searchTerm: "$searchTerms", type: TITLE, includeAdult: true}) {
+  mainSearch(first: $amount, options: {searchTerm: "$searchTerms", type: TITLE, includeAdult: true}) {
     edges {
       node {
         entity {
