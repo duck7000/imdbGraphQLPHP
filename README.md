@@ -19,6 +19,19 @@ Quick Start
 * Include `bootstrap.php`.
 * Get some data
 
+For title search:
+```php
+$imdb = new \Imdb\TitleSearch();
+$results = $imdb->search("1408");
+```
+
+For Advanced title search:
+```php
+$imdb = new \Imdb\TitleSearchAdvanced();
+$results = $imdb->advancedSearch($genres, $types, $creditId, $startDate, $endDate);
+All info is in the wiki page
+```
+
 For titles:
 ```php
 $title = new \Imdb\Title("335266");
