@@ -139,6 +139,10 @@ class TitleSearchAdvanced extends MdbBase
                                   )
     {
 
+        $amount = $this->config->titleSearchAdvancedAmount;
+        $sortBy = $this->config->sortBy;
+        $sortOrder = $this->config->sortOrder;
+
         $results = array();
 
         // check and validate input parameters
@@ -160,7 +164,7 @@ class TitleSearchAdvanced extends MdbBase
         $query = <<<EOF
 query advancedSearch{
   advancedTitleSearch(
-    first: 250, sort: {sortBy: POPULARITY sortOrder: ASC}
+    first: $amount, sort: {sortBy: $sortBy sortOrder: $sortOrder}
     constraints: {
       genreConstraint: {allGenreIds: [$inputGenres]}
       titleTypeConstraint: {anyTitleTypeIds: [$inputTypes]}
