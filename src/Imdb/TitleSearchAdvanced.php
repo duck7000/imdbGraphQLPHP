@@ -111,7 +111,7 @@ class TitleSearchAdvanced extends MdbBase
      *
      * @param string $types if multiple types separate by , (movie,tvSeries etc)
      * TitleTypeIDs: movie, tvSeries, short, tvEpisode, tvMiniSeries, tvMovie, tvSpecial,
-                     tvShort, videoGame, video, musicVideo, podcastSeries, podcastEpisode
+     *               tvShort, videoGame, video, musicVideo, podcastSeries, podcastEpisode
      *
      * @param string $creditId works only with nameID (incl single quotes) like 'nm0001228' (Peter Fonda)
      *
