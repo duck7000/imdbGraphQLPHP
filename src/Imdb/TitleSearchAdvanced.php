@@ -222,7 +222,13 @@ EOF;
             $currentRank = isset($edge->node->title->meterRanking->currentRank) ? $edge->node->title->meterRanking->currentRank : '';
             $rating = isset($edge->node->title->ratingsSummary->aggregateRating) ? $edge->node->title->ratingsSummary->aggregateRating : '';
             $plot = isset($edge->node->title->plot->plotText->plainText) ? $edge->node->title->plot->plotText->plainText : '';
-            $imgUrl = isset($edge->node->title->primaryImage->url) ? $edge->node->title->primaryImage->url : '';
+
+            // image url
+            $imgUrl = '';
+            if (isset($edge->node->title->primaryImage->url) && $edge->node->title->primaryImage->url != null) {
+                $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
+                $imgUrl = $img . 'QL75_UX140_CR0,0,140,207_.jpg';
+            }
             
             $results[] = array(
                 'imdbid' => $imdbId,
