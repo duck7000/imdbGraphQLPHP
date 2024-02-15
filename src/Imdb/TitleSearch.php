@@ -25,6 +25,12 @@ class TitleSearch extends MdbBase
     {
         $amount = $this->config->titleSearchAmount;
         $results = array();
+
+        // check if $searchTerm not is empty, return empty array otherwise
+        if (empty(trim($searchTerms))) {
+            return $results;
+        }
+
         $query = <<<EOF
 query Search {
   mainSearch(first: $amount, options: {searchTerm: "$searchTerms", type: TITLE, includeAdult: true}) {
