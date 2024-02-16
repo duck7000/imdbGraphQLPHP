@@ -64,8 +64,8 @@ class TitleSearchAdvanced extends MdbBase
 {
     if (empty(trim($startDate)) && empty(trim($endDate))) {
         return array(
-            'startDate' => '"0001-01-01"',
-            'endDate' => '"' . date('Y-m-d') . '"'
+            'startDate' => "null",
+            'endDate' => "null"
             );
     }
     if (!empty(trim($startDate)) && !empty(trim($endDate))) {
@@ -75,26 +75,26 @@ class TitleSearchAdvanced extends MdbBase
                 'endDate' => '"' . trim($endDate) . '"'
                 );
         } else {
-            return null;
+            return false;
         }
     } else {
         if (!empty(trim($startDate))) {
             if ($this->validateDate($startDate) !== false) {
                 return array(
                     'startDate' => '"' . trim($startDate) . '"',
-                    'endDate' => '"' . date('Y-m-d') . '"'
+                    'endDate' => "null"
                     );
             } else {
-                return null;
+                return false;
             }
         } else {
             if ($this->validateDate($endDate) !== false) {
                 return array(
-                    'startDate' => '"0001-01-01"',
+                    'startDate' => "null",
                     'endDate' => '"' . trim($endDate) . '"'
                     );
             } else {
-                return null;
+                return false;
             }
         }
     }
@@ -155,7 +155,7 @@ class TitleSearchAdvanced extends MdbBase
         if (empty($inputGenres) &&
             empty($inputTypes) &&
             empty($inputCreditId) &&
-            $inputReleaseDates === null
+            $inputReleaseDates === false
             )
         {
             return $results;
