@@ -151,11 +151,17 @@ class TitleSearchAdvanced extends MdbBase
         $inputCreditId = $this->checkItems($creditId);
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
 
+        // check releasedate valid or not, array() otherwise
+        if ($inputReleaseDates === false) {
+            return $results;
+        }
+
         // check if there is at least one valid input parameter, array() otherwise
         if (empty($inputGenres) &&
             empty($inputTypes) &&
             empty($inputCreditId) &&
-            $inputReleaseDates === false
+            $inputReleaseDates["startDate"] == "null" &&
+            $inputReleaseDates["endDate"] == "null"
             )
         {
             return $results;
