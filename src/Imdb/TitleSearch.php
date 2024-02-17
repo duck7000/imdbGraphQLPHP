@@ -19,9 +19,19 @@ class TitleSearch extends MdbBase
     /**
      * Search IMDb for titles matching $searchTerms
      * @param string $searchTerms
+     * @param string $types input search types like MOVIE or MOVIE,TV (separate by comma if more then one)
+     * Default for $types: null (search within all types)
+     * Possible values for $types:
+     *  MOVIE
+     *  MUSIC_VIDEO
+     *  PODCAST_EPISODE
+     *  PODCAST_SERIES
+     *  TV
+     *  TV_EPISODE
+     *  VIDEO_GAME
      * @return Title[] array of Titles
      */
-    public function search($searchTerms)
+    public function search($searchTerms, $types = null)
     {
         $amount = $this->config->titleSearchAmount;
         $results = array();
@@ -32,10 +42,18 @@ class TitleSearch extends MdbBase
         }
 
         $query = <<<EOF
-query Search {
-  mainSearch(first: $amount, options: {searchTerm: "$searchTerms", type: TITLE, includeAdult: true}) {
+query Search{
+  mainSearch(
+    first: $amount
+    options: {
+      searchTerm: "$searchTerms"
+      type: TITLE
+      titleSearchOptions: {type: [$types]}
+      includeAdult: true
+    }
+  ) {
     edges {
-      node {
+      node{
         entity {
           ... on Title {
             id
