@@ -22,7 +22,7 @@ Quick Start
 For title search:
 ```php
 $imdb = new \Imdb\TitleSearch();
-$results = $imdb->search("1408");
+$results = $imdb->search("1408", "MOVIE,TV");
 ```
 
 For Advanced title search:
