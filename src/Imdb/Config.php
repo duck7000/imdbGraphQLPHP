@@ -1,10 +1,8 @@
 <?php
 
 #############################################################################
-# IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
-# written by Giorgos Giagas                                                 #
-# written, extended & maintained by Ed                                      #
-# http://www.izzysoft.de/                                                   #
+# IMDBPHP6                                       ed (github user: duck7000) #
+# written by ed (github user: duck7000)                                     #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
 # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -13,9 +11,8 @@
 namespace Imdb;
 
 /**
- * Configuration class for imdbphp
- * @author Izzy (izzysoft AT qumran DOT org)
- * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2008 by Itzchak Rehberg and IzzySoft
+ * Configuration class for imdbphp6
+ * @author ed (github user: duck7000)
  */
 class Config
 {
