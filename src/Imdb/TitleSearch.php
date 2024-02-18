@@ -33,7 +33,7 @@ class TitleSearch extends MdbBase
         $amount = $this->config->titleSearchAmount;
         $results = array();
 
-        // check if $searchTerm not is empty, return empty array otherwise
+        // check if $searchTerm is empty, return empty array
         if (empty(trim($searchTerms))) {
             return $results;
         }
