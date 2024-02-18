@@ -1,7 +1,7 @@
 <?php
 #############################################################################
-# PHP MovieAPI                                          (c) Itzchak Rehberg #
-# written by Itzchak Rehberg <izzysoft AT qumran DOT org>                   #
+# IMDBPHP6                                       ed (github user: duck7000) #
+# written by ed (github user: duck7000)                                     #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -49,7 +49,7 @@ class MdbBase extends Config
      */
     public function __construct(Config $config = null, CacheInterface $cache = null)
     {
-        $this->config = $config ?: $this;        
+        $this->config = $config ?: $this;
         $this->cache = empty($cache) ? new Cache($this->config) : $cache;
         $this->graphql = new GraphQL($this->cache, $this->config);
     }
