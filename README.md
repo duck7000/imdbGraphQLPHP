@@ -28,7 +28,7 @@ $results = $imdb->search("1408", "MOVIE,TV");
 For Advanced title search:
 ```php
 $imdb = new \Imdb\TitleSearchAdvanced();
-$results = $imdb->advancedSearch($genres, $types, $creditId, $startDate, $endDate);
+$results = $imdb->advancedSearch($searchTerm, $genres, $types, $creditId, $startDate, $endDate);
 All info is in the wiki page
 ```
 
