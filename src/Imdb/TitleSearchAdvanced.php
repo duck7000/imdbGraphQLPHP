@@ -44,6 +44,20 @@ class TitleSearchAdvanced extends MdbBase
 }
 
     /**
+     * Check searchTerm
+     * @param string $searchTerm
+     * @return $searchTerm or null double quoted
+     */
+    private function checkSearchTerm($searchTerm)
+{
+    if (empty(trim($searchTerm))) {
+        return "null";
+    } else {
+        return '"' . trim($searchTerm) . '"';
+    }
+}
+
+    /**
      * Check if provided date is valid
      * @param string $date input date
      * @return boolean true or false
@@ -102,6 +116,8 @@ class TitleSearchAdvanced extends MdbBase
 
     /**
      * Advanced Search IMDb on genres, titleTypes, creditId, startDate, endDate
+     * 
+     * @param string $searchTerm input searchTerm to search for specific titleText
      *
      * @param string $genres if multiple genres separate by , (Horror,Action etc)
      * GenreIDs: Action, Adult, Adventure, Animation, Biography, Comedy, Crime,
@@ -113,7 +129,7 @@ class TitleSearchAdvanced extends MdbBase
      * TitleTypeIDs: movie, tvSeries, short, tvEpisode, tvMiniSeries, tvMovie, tvSpecial,
      *               tvShort, videoGame, video, musicVideo, podcastSeries, podcastEpisode
      *
-     * @param string $creditId works only with nameID (incl single quotes) like 'nm0001228' (Peter Fonda)
+     * @param string $creditId works only with nameID like "nm0001228" (Peter Fonda)
      *
      * @param string $startDate search from startDate til present date, iso date ('1975-01-01')
      * @param string $endDate search from endDate and earlier, iso date ('1975-01-01')
@@ -131,7 +147,8 @@ class TitleSearchAdvanced extends MdbBase
      *      ['plot']            string      plot from the found title
      *      ['imgUrl']          string      image url from the found title (thumb 140x207)
      */
-    public function advancedSearch($genres = '',
+    public function advancedSearch($searchTerm = '',
+                                   $genres = '',
                                    $types = '',
                                    $creditId = '',
                                    $startDate = '',
@@ -146,6 +163,7 @@ class TitleSearchAdvanced extends MdbBase
         $results = array();
 
         // check and validate input parameters
+        $inputSearchTerm = $this->checkSearchTerm($searchTerm);
         $inputGenres = $this->checkItems($genres);
         $inputTypes = $this->checkItems($types);
         $inputCreditId = $this->checkItems($creditId);
@@ -157,7 +175,8 @@ class TitleSearchAdvanced extends MdbBase
         }
 
         // check if there is at least one valid input parameter, array() otherwise
-        if (empty($inputGenres) &&
+        if ($inputSearchTerm == "null" &&
+            empty($inputGenres) &&
             empty($inputTypes) &&
             empty($inputCreditId) &&
             $inputReleaseDates["startDate"] == "null" &&
@@ -172,6 +191,7 @@ query advancedSearch{
   advancedTitleSearch(
     first: $amount, sort: {sortBy: $sortBy sortOrder: $sortOrder}
     constraints: {
+      titleTextConstraint: {searchTerm: $inputSearchTerm}
       genreConstraint: {allGenreIds: [$inputGenres]}
       titleTypeConstraint: {anyTitleTypeIds: [$inputTypes]}
       releaseDateConstraint: {releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}}
