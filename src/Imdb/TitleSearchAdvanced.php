@@ -129,7 +129,7 @@ class TitleSearchAdvanced extends MdbBase
      *      ['rank']            int         rank number from the found title
      *      ['rating']          float/int   rating from the found title
      *      ['plot']            string      plot from the found title
-     *      ['imgUrl']          string      image url from the found title (full image)
+     *      ['imgUrl']          string      image url from the found title (thumb 140x207)
      */
     public function advancedSearch($genres = '',
                                    $types = '',
@@ -237,7 +237,7 @@ EOF;
             $imgUrl = '';
             if (isset($edge->node->title->primaryImage->url) && $edge->node->title->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
-                $imgUrl = $img . 'QL75_UX140_CR0,0,140,207_.jpg';
+                $imgUrl = $img . 'QL75_SY207_.jpg';
             }
             
             $results[] = array(
