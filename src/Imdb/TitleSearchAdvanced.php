@@ -36,6 +36,10 @@ class TitleSearchAdvanced extends MdbBase
      * @param string $endDate search from endDate and earlier, iso date ("1975-01-01")
      * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      *
+     * @param string $countryId iso 3166 country code like "US" or "US,DE" (separate by comma)
+     * 
+     * @param string $languageId iso 639 Language code like "en" or "en,de" (separate by comma)
+     *
      * @return Title[] array of Titles
      * array[]
      *      ['imdbid']          string      imdbid from the found title
@@ -53,7 +57,9 @@ class TitleSearchAdvanced extends MdbBase
                                    $types = '',
                                    $creditId = '',
                                    $startDate = '',
-                                   $endDate = ''
+                                   $endDate = '',
+                                   $countryId = '',
+                                   $languageId = ''
                                   )
     {
 
@@ -69,6 +75,8 @@ class TitleSearchAdvanced extends MdbBase
         $inputTypes = $this->checkItems($types);
         $inputCreditId = $this->checkItems($creditId);
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
+        $inputCountryId = $this->checkItems($countryId);
+        $inputLanguageId = $this->checkItems($languageId);
 
         // check releasedate valid or not, array() otherwise
         if ($inputReleaseDates === false) {
@@ -81,7 +89,9 @@ class TitleSearchAdvanced extends MdbBase
             empty($inputTypes) &&
             empty($inputCreditId) &&
             $inputReleaseDates["startDate"] == "null" &&
-            $inputReleaseDates["endDate"] == "null"
+            $inputReleaseDates["endDate"] == "null" &&
+            empty($inputCountryId) &&
+            empty($inputLanguageId)
             )
         {
             return $results;
@@ -97,6 +107,8 @@ query advancedSearch{
       titleTypeConstraint: {anyTitleTypeIds: [$inputTypes]}
       releaseDateConstraint: {releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}}
       creditedNameConstraint: {anyNameIds: [$inputCreditId]}
+      originCountryConstraint: {anyCountries: [$inputCountryId]}
+      languageConstraint: {anyLanguages: [$inputLanguageId]}
       explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
     }
   ) {
