@@ -23,6 +23,7 @@ For title search:
 ```php
 $imdb = new \Imdb\TitleSearch();
 $results = $imdb->search("1408", "MOVIE,TV");
+All info is in the wiki page
 ```
 
 For Advanced title search:
@@ -55,9 +56,9 @@ $releases = $calendar->comingSoon();
 Installation
 ============
 
-This library uses GraphQL API from imdb to get the data, so changes are not very often to be expected.<br>
-The data received from imdb GraphQL API could however be different as this data is in the purest form compared to previous methods.<br>
-There seems to be a limit on maximum episodes per season of 250, this may also be true for year based tv series.<br>
+This library uses GraphQL API from imdb to get the data.<br>
+The data received from imdb GraphQL API could however be different compared to previous scraper methods.<br>
+There seems to be a 250 limit on episodes per season, this may also be true for year based tv series.<br>
 Thanks to @tBoothman for his groundwork to make this possible!
 
 Get the files with one of:
@@ -67,20 +68,3 @@ Get the files with one of:
 ### Requirements
 * PHP >= recommended 8.1 (it works from 5.6 - 8.1) Remember all versions < 8.0 are EOL!
 * PHP cURL extension
-
-
-Gotchas / Help
-==============
-SSL certificate problem: unable to get local issuer certificate
----------------------------------------------------------------
-### Windows
-The cURL library either hasn't come bundled with the root SSL certificates or they're out of date. You'll need to set them up:
-1. [Download cacert.pem](https://curl.haxx.se/docs/caextract.html)  
-2. Store it somewhere in your computer.  
-`C:\php\extras\ssl\cacert.pem`  
-3. Open your php.ini and add the following under `[curl]`  
-`curl.cainfo = "C:\php\extras\ssl\cacert.pem"`  
-4. Restart your webserver.  
-### Linux
-cURL uses the certificate authority file that's part of linux by default, which must be out of date. 
-Look for instructions for your OS to update the CA file or update your distro.
