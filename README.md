@@ -2,11 +2,13 @@ imdbphp6
 =======
 
 PHP library for retrieving film and TV information from IMDb.<br>
-Retrieve most of the information you can see on IMDb including films, TV series, TV episodes, people and coming soon releases.<br>
+imdbphp6 is NOT a fork, it is based on imdbphp<br>
+This library uses GraphQL API from imdb to get the data. (Thanks to @tboothman)<br>
+Retrieve all information from IMDb including films, TV series, TV episodes, people and coming soon releases.<br>
 Search for titles on IMDb.<br>
 Download film posters, actor, recommendations, foto's and episode images.<br>
-The results can be localized and now also cached! Localization only seems to effect title, photo, plotoutline and recommendations (titles only). Check wiki homepage to enable.<br>
-imdbphp6 is not a fork, it is based on imdbphp<br>
+The results can be localized and cached.<br>
+Localization only seems to effect title, photo, plotoutline and recommendations (titles only). Check wiki homepage to enable.<br>
 There is a full list of all methods, descriptions and outputs in the wiki.
 https://github.com/duck7000/imdbphp6/wiki
 
@@ -19,7 +21,7 @@ Quick Start
 * Include `bootstrap.php`.
 * Get some data
 
-For title search:
+For Title search:
 ```php
 $imdb = new \Imdb\TitleSearch();
 $results = $imdb->search("1408", "MOVIE,TV");
@@ -33,11 +35,16 @@ $results = $imdb->advancedSearch($searchTerm, $genres, $types, $creditId, $start
 All info is in the wiki page
 ```
 
-For titles:
+For Titles:
 ```php
 $title = new \Imdb\Title("335266");
 $rating = $title->rating();
 $plotOutline = $title->plotoutline();
+```
+For Name search:
+```php
+$imdb = new \Imdb\NameSearch();
+$results = $imdb->search("Peter Fonda");
 ```
 
 For Names:
