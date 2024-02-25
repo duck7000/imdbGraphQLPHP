@@ -40,7 +40,7 @@ $rating = $title->rating();
 $plotOutline = $title->plotoutline();
 ```
 
-For persons:
+For Names:
 ```php
 $name = new \Imdb\Name("0000154");
 $name = $name->name();
