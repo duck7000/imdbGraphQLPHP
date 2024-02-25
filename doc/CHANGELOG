@@ -2,7 +2,17 @@
 History for IMDBPHP6
 ====================
 
-v1.2.0
+v1.3.4
+-------------------
+* Changed Person and PersonSearch to Name and NameSearch to better follow imdb
+
+v1.3.3
+-------------------
+* Added Advanced title search class
+* Added titleType to TitleSearch class, search on type is possible now
+* Added originalTitle to TitleSearch output array
+
+v1.3.2
 -------------------
 * Added back the caching system, cache options are in config (check wiki for options)
 * Added back config file, localization options are now in config (check wiki for options)
