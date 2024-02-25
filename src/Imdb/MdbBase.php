@@ -21,7 +21,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class MdbBase extends Config
 {
-    public $version = '1.3.3';
+    public $version = '1.3.4';
 
     /**
      * @var CacheInterface
