@@ -21,7 +21,7 @@ use Psr\SimpleCache\CacheInterface;
  * @author Ed
  * @copyright 2008 by Itzchak Rehberg and IzzySoft
  */
-class Person extends MdbBase
+class Name extends MdbBase
 {
 
     // "Name" page:

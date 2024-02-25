@@ -16,7 +16,7 @@ namespace Imdb;
  * @author Izzy (izzysoft AT qumran DOT org)
  * @copyright 2008-2009 by Itzchak Rehberg and IzzySoft
  */
-class PersonSearch extends MdbBase
+class NameSearch extends MdbBase
 
 {
     /**
