@@ -31,14 +31,14 @@ class Cache implements CacheInterface
     {
         $this->config = $config;
 
-        if (($this->config->useCache || $this->config->storeCache) && !is_dir($this->config->cacheDir)) {
+        if (($this->config->cacheUse|| $this->config->cacheStore) && !is_dir($this->config->cacheDir)) {
             @mkdir($this->config->cacheDir, 0700, true);
             if (!is_dir($this->config->cacheDir)) {
                 echo 'Configured cache directory does not exist!';
                 return null;
             }
         }
-        if ($this->config->storeCache && !is_writable($this->config->cacheDir)) {
+        if ($this->config->cacheStore && !is_writable($this->config->cacheDir)) {
             echo 'Configured cache directory lacks write permission!';
             return null;
         }
@@ -52,7 +52,7 @@ class Cache implements CacheInterface
      */
     public function get($key, $default = null)
     {
-        if (!$this->config->useCache) {
+        if (!$this->config->cacheUse) {
             return $default;
         }
 
@@ -87,7 +87,7 @@ class Cache implements CacheInterface
      */
     public function set($key, $value, $ttl = null)
     {
-        if (!$this->config->storeCache) {
+        if (!$this->config->cacheStore) {
             return false;
         }
 
@@ -111,7 +111,7 @@ class Cache implements CacheInterface
      */
     public function purge()
     {
-        if (!$this->config->storeCache || $this->config->cacheExpire == 0) {
+        if (!$this->config->cacheStore || $this->config->cacheExpire == 0) {
             return;
         }
 

@@ -32,13 +32,13 @@ class Config
      * Use cached pages if available?
      * @var boolean
      */
-    public $useCache = false;
+    public $cacheUse = false;
 
     /**
      * Store the pages retrieved for later use?
      * @var boolean
      */
-    public $storeCache = false;
+    public $cacheStore = false;
 
     /**
      * Use zip compression for caching the retrieved html-files?
