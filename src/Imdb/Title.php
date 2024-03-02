@@ -1717,9 +1717,12 @@ query Soundtrack(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->soundtrack->edges as $edge) {
-                $title = '';
                 if (isset($edge->node->text) && $edge->node->text !== '') {
-                    $title = ucwords(strtolower(trim($edge->node->text)), " (");
+                    if (trim($edge->node->text) === strtoupper(trim($edge->node->text))) {
+                        $title = ucwords(strtolower(trim($edge->node->text)), " (");
+                    } else {
+                        $title = trim($edge->node->text);
+                    }
                 } else {
                     $title = 'Unknown';
                 }
