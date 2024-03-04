@@ -1718,11 +1718,7 @@ EOF;
             $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->soundtrack->edges as $edge) {
                 if (isset($edge->node->text) && $edge->node->text !== '') {
-                    if (trim($edge->node->text) === strtoupper(trim($edge->node->text))) {
-                        $title = ucwords(strtolower(trim($edge->node->text)), " (");
-                    } else {
-                        $title = trim($edge->node->text);
-                    }
+                    $title = $this->titleCase(trim($edge->node->text));
                 } else {
                     $title = 'Unknown';
                 }
@@ -2307,4 +2303,40 @@ EOF;
         }
         return $edges;
     }
+
+    /**
+     * Convert string to upper class words
+     * @param string $inputString Input test string
+     * Exceptions in lower case are words you don't want converted
+     * Exceptions all in upper case are any words you don't want converted to title case
+         *   but should be converted to upper case, e.g.:
+         *   king henry viii or king henry Viii should be King Henry VIII
+     * @return string: upper class words
+     */
+    protected function titleCase($inputString)
+    {
+        $delimiters = array(" ", "-", ".", "'", "O'", "Mc", "(");
+        $exceptions = array("I", "II", "III", "IV", "V", "VI");
+        $string = mb_convert_case($inputString, MB_CASE_TITLE, "UTF-8");
+        foreach ($delimiters as $dlnr => $delimiter) {
+            $words = explode($delimiter, $string);
+            $newwords = array();
+            foreach ($words as $wordnr => $word) {
+                if (in_array(mb_strtoupper($word, "UTF-8"), $exceptions)) {
+                    // check exceptions list for any words that should be in upper case
+                    $word = mb_strtoupper($word, "UTF-8");
+                } elseif (in_array(mb_strtolower($word, "UTF-8"), $exceptions)) {
+                    // check exceptions list for any words that should be in upper case
+                    $word = mb_strtolower($word, "UTF-8");
+                } elseif (!in_array($word, $exceptions)) {
+                    // convert to uppercase (non-utf8 only)
+                    $word = ucfirst($word);
+                }
+                array_push($newwords, $word);
+            }
+            $string = join($delimiter, $newwords);
+       }
+       return $string;
+    }
+
 }
