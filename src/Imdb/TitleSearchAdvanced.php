@@ -47,20 +47,17 @@ class TitleSearchAdvanced extends MdbBase
      *      ['title']           string      title from the found title
      *      ['year']            string      year or year span from the found title
      *      ['movietype']       string      titleType from the found title
-     *      ['rank']            int         rank number from the found title
-     *      ['rating']          float/int   rating from the found title
-     *      ['plot']            string      plot from the found title
-     *      ['imgUrl']          string      image url from the found title (thumb 140x207)
      */
-    public function advancedSearch($searchTerm = '',
-                                   $genres = '',
-                                   $types = '',
-                                   $creditId = '',
-                                   $startDate = '',
-                                   $endDate = '',
-                                   $countryId = '',
-                                   $languageId = ''
-                                  )
+    public function advancedSearch(
+        $searchTerm = '',
+        $genres = '',
+        $types = '',
+        $creditId = '',
+        $startDate = '',
+        $endDate = '',
+        $countryId = '',
+        $languageId = ''
+    )
     {
 
         $amount = $this->config->titleSearchAdvancedAmount;
@@ -77,7 +74,6 @@ class TitleSearchAdvanced extends MdbBase
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
         $inputCountryId = $this->checkItems($countryId);
         $inputLanguageId = $this->checkItems($languageId);
-
         // check releasedate valid or not, array() otherwise
         if ($inputReleaseDates === false) {
             return $results;
@@ -112,40 +108,26 @@ query advancedSearch{
       explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
     }
   ) {
-    edges {
-      node{
-        title {
-          id
-          originalTitleText {
-            text
-          }
-          titleText {
-            text
-          }
-          titleType {
-            text
-          }
-          releaseYear {
-            year
-            endYear
-          }
-          meterRanking {
-            currentRank
-          }
-          ratingsSummary {
-            aggregateRating
-          }
-          plot {
-            plotText {
-              plainText
-            }
-          }
-          primaryImage {
-            url
-          }
-        }
+edges {
+  node{
+    title {
+      id
+      originalTitleText {
+        text
+      }
+      titleText {
+        text
+      }
+      titleType {
+        text
+      }
+      releaseYear {
+        year
+        endYear
       }
     }
+  }
+}
   }
 }
 EOF;
@@ -162,27 +144,12 @@ EOF;
                     $yearRange .= '-' . $edge->node->title->releaseYear->endYear;
                 }
             }
-            $currentRank = isset($edge->node->title->meterRanking->currentRank) ? $edge->node->title->meterRanking->currentRank : '';
-            $rating = isset($edge->node->title->ratingsSummary->aggregateRating) ? $edge->node->title->ratingsSummary->aggregateRating : '';
-            $plot = isset($edge->node->title->plot->plotText->plainText) ? $edge->node->title->plot->plotText->plainText : '';
-
-            // image url
-            $imgUrl = '';
-            if (isset($edge->node->title->primaryImage->url) && $edge->node->title->primaryImage->url != null) {
-                $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
-                $imgUrl = $img . 'QL75_SY207_.jpg';
-            }
-            
             $results[] = array(
                 'imdbid' => $imdbId,
                 'originalTitle' => $originalTitle,
                 'title' => $title,
                 'year' => $yearRange,
-                'movietype' => $movietype,
-                'rank' => $currentRank,
-                'rating' => $rating,
-                'plot' => $plot,
-                'imgUrl' => $imgUrl
+                'movietype' => $movietype
             );
         }
         return $results;
@@ -196,28 +163,28 @@ EOF;
      * @return $items double quoted and separated by comma if more then one
      */
     private function checkItems($items)
-{
-    if (empty(trim($items))) {
-        return '';
-    }
-    if (stripos($items, ',') !== false) {
-        $itemsParts = explode(",", $items);
-        $itemsOutput = '"';
-        foreach ($itemsParts as $key => $value) {
-            $itemsOutput .= trim($value);
-            end($itemsParts);
-            if ($key !== key($itemsParts)) {
-                $itemsOutput .= '","';
-            } else {
-                $itemsOutput .= '"';
-            }
-            
+    {
+        if (empty(trim($items))) {
+            return '';
         }
-        return $itemsOutput;
-    } else {
-        return '"' . trim($items) . '"';
+        if (stripos($items, ',') !== false) {
+            $itemsParts = explode(",", $items);
+            $itemsOutput = '"';
+            foreach ($itemsParts as $key => $value) {
+                $itemsOutput .= trim($value);
+                end($itemsParts);
+                if ($key !== key($itemsParts)) {
+                    $itemsOutput .= '","';
+                } else {
+                    $itemsOutput .= '"';
+                }
+                
+            }
+            return $itemsOutput;
+        } else {
+            return '"' . trim($items) . '"';
+        }
     }
-}
 
     /**
      * Check searchTerm
@@ -225,13 +192,13 @@ EOF;
      * @return $searchTerm or null double quoted
      */
     private function checkSearchTerm($searchTerm)
-{
-    if (empty(trim($searchTerm))) {
-        return "null";
-    } else {
-        return '"' . trim($searchTerm) . '"';
+    {
+        if (empty(trim($searchTerm))) {
+            return "null";
+        } else {
+            return '"' . trim($searchTerm) . '"';
+        }
     }
-}
 
     /**
      * Check if provided date is valid
@@ -251,43 +218,42 @@ EOF;
      * @return array startDate|string, endDate|string or null
      */
     private function checkReleaseDates($startDate, $endDate)
-{
-    if (empty(trim($startDate)) && empty(trim($endDate))) {
-        return array(
-            'startDate' => "null",
-            'endDate' => "null"
-            );
-    }
-    if (!empty(trim($startDate)) && !empty(trim($endDate))) {
-        if ($this->validateDate($startDate) !== false && $this->validateDate($endDate) !== false) {
+    {
+        if (empty(trim($startDate)) && empty(trim($endDate))) {
             return array(
-                'startDate' => '"' . trim($startDate) . '"',
-                'endDate' => '"' . trim($endDate) . '"'
+                'startDate' => "null",
+                'endDate' => "null"
                 );
-        } else {
-            return false;
         }
-    } else {
-        if (!empty(trim($startDate))) {
-            if ($this->validateDate($startDate) !== false) {
+        if (!empty(trim($startDate)) && !empty(trim($endDate))) {
+            if ($this->validateDate($startDate) !== false && $this->validateDate($endDate) !== false) {
                 return array(
                     'startDate' => '"' . trim($startDate) . '"',
-                    'endDate' => "null"
-                    );
-            } else {
-                return false;
-            }
-        } else {
-            if ($this->validateDate($endDate) !== false) {
-                return array(
-                    'startDate' => "null",
                     'endDate' => '"' . trim($endDate) . '"'
                     );
             } else {
                 return false;
             }
+        } else {
+            if (!empty(trim($startDate))) {
+                if ($this->validateDate($startDate) !== false) {
+                    return array(
+                        'startDate' => '"' . trim($startDate) . '"',
+                        'endDate' => "null"
+                        );
+                } else {
+                    return false;
+                }
+            } else {
+                if ($this->validateDate($endDate) !== false) {
+                    return array(
+                        'startDate' => "null",
+                        'endDate' => '"' . trim($endDate) . '"'
+                        );
+                } else {
+                    return false;
+                }
+            }
         }
     }
-}
-
 }
