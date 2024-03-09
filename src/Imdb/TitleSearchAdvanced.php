@@ -108,30 +108,31 @@ query advancedSearch{
       explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
     }
   ) {
-edges {
-  node{
-    title {
-      id
-      originalTitleText {
-        text
-      }
-      titleText {
-        text
-      }
-      titleType {
-        text
-      }
-      releaseYear {
-        year
-        endYear
+    edges {
+      node{
+        title {
+          id
+          originalTitleText {
+            text
+          }
+          titleText {
+            text
+          }
+          titleType {
+            text
+          }
+          releaseYear {
+            year
+            endYear
+          }
+        }
       }
     }
   }
 }
-  }
-}
 EOF;
-        $data = $this->graphql->query($query, "advancedSearch");
+        $queryStripped = implode("\n", array_map('trim', explode("\n", $query)));
+        $data = $this->graphql->query($queryStripped, "advancedSearch");
         foreach ($data->advancedTitleSearch->edges as $edge) {
             $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
             $originalTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
