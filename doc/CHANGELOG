@@ -2,6 +2,12 @@
 History for IMDBPHP6
 ====================
 
+v1.3.5
+-------------------
+* Added awards method (Get all awards for a title)
+* Improved TitleSearchAdvanced
+* Improved soundtrack to better deal with all upper class titles
+
 v1.3.4
 -------------------
 * Changed Person and PersonSearch to Name and NameSearch to better follow imdb
