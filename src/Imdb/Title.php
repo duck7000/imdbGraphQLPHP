@@ -47,6 +47,7 @@ class Title extends MdbBase
     protected $main_photo = array();
     protected $trailers = array();
     protected $main_awards = array();
+    protected $awards = array();
     protected $moviegenres = array();
     protected $moviequotes = array();
     protected $movierecommendations = array();
@@ -2259,6 +2260,137 @@ EOF;
             }
         }
         return $this->main_awards;
+    }
+
+    #-------------------------------------------------------[ Awards ]---
+    /**
+     * Get all awards for a title
+     * @param $winsOnly Default: false, set to true to only get won awards
+     * @param $event Default: "" add eventId Example " ev0000003" to only get Oscars
+     *  Possible values for $event:
+     *  ev0000003 (Oscar)
+     *  ev0000223 (Emmy)
+     *  ev0000292 (Golden Globe)
+     * @return array[festivalName][0..n] of 
+     *      array[awardYear,awardWinner(bool),awardCategory,awardName,awardNotes
+     *      array awardPerons[creditId,creditName,creditNote],awardOutcome]
+     *  Array
+     *      (
+     *          [Academy Awards, USA] => Array
+     *               (
+     *                  [0] => Array
+     *                      (
+     *                  [awardYear] => 1972
+     *                  [awardWinner] => 
+     *                  [awardCategory] => Best Picture
+     *                  [awardName] => Oscar
+     *                  [awardPerons] => Array
+     *                       (
+     *                          [0] => Array
+     *                              (
+     *                                   [creditId] => nm0000040
+     *                                   [creditName] => Stanley Kubrick
+     *                                   [creditNote] => screenplay/director
+     *                               )
+     *
+     *                       )
+     *                   [awardNotes] => Based on the novel
+     *                   [awardOutcome] => Nominee
+     *               )
+     *               )
+     *      )
+     * @see IMDB page / (TitlePage)
+     */
+    public function award($winsOnly = false, $event = "")
+    {
+        $winsOnly = $winsOnly === true ? "WINS_ONLY" : "null";
+        $event = !empty($event) ? "events: " . '"' . trim($event) . '"' : "";
+        
+        if (empty($this->awards)) {
+            $query = <<<EOF
+query Award(\$id: ID!) {
+  title(id: \$id) {
+    awardNominations(
+      first: 9999
+      sort: {by: PRESTIGIOUS, order: DESC}
+      filter: {wins: $winsOnly $event}
+    ) {
+      edges {
+        node {
+          award {
+            event {
+              text
+            }
+            text
+            category {
+              text
+            }
+            eventEdition {
+              year
+            }
+            notes {
+              plainText
+            }
+          }
+          isWinner
+          awardedEntities {
+            ... on AwardedTitles {
+              secondaryAwardNames {
+                name {
+                  id
+                  nameText {
+                    text
+                  }
+                }
+                note {
+                  plainText
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Award", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->awardNominations->edges as $edge) {
+                $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
+                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : '';
+                $awardName = isset($edge->node->award->text) ? $edge->node->award->text : '';
+                $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : '';
+                $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : '';
+                $awardIsWinner = $edge->node->isWinner;
+                $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
+                
+                //credited persons
+                $persons = array();
+                if ($edge->node->awardedEntities->secondaryAwardNames !== null) {
+                    foreach ($edge->node->awardedEntities->secondaryAwardNames as $creditor) {
+                        $creditName = isset($creditor->name->nameText->text) ? $creditor->name->nameText->text : '';
+                        $creditId = isset($creditor->name->id) ? $creditor->name->id : '';
+                        $creditNote = isset($creditor->note->plainText) ? $creditor->note->plainText : '';
+                        $persons[] = array(
+                            'creditId' => str_replace('nm', '', $creditId),
+                            'creditName' => $creditName,
+                            'creditNote' => trim($creditNote, " ()")
+                        );
+                    }
+                }
+                
+                $this->awards[$eventName][] = array(
+                    'awardYear' => $eventEditionYear,
+                    'awardWinner' => $awardIsWinner,
+                    'awardCategory' => $awardCategory,
+                    'awardName' => $awardName,
+                    'awardNotes' => $awardNotes,
+                    'awardPerons' => $persons,
+                    'awardOutcome' => $conclusion
+                );
+            }
+        }
+        return $this->awards;
     }
 
     #========================================================[ Helper functions ]===  
