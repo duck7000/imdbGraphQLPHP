@@ -26,15 +26,21 @@ class TitleSearch extends MdbBase
      *  TV
      *  TV_EPISODE
      *  VIDEO_GAME
+     * 
+     * @param string $startDate search from startDate til present date, iso date ("1975-01-01")
+     * @param string $endDate search from endDate and earlier, iso date ("1975-01-01")
+     * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
+     * 
      * @return Title[] array of Titles
      */
-    public function search($searchTerms, $types = null)
+    public function search($searchTerms, $types = null, $startDate = '', $endDate = '')
     {
         $amount = $this->config->titleSearchAmount;
         $results = array();
+        $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
 
-        // check if $searchTerm is empty, return empty array
-        if (empty(trim($searchTerms))) {
+        // check if $searchTerm is empty or releaseDates === false, return empty array
+        if (empty(trim($searchTerms)) || $inputReleaseDates === false) {
             return $results;
         }
 
@@ -45,8 +51,11 @@ query Search{
     options: {
       searchTerm: "$searchTerms"
       type: TITLE
-      titleSearchOptions: {type: [$types]}
       includeAdult: true
+      titleSearchOptions: {
+        type: [$types]
+        releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}
+        }
     }
   ) {
     edges {
@@ -96,5 +105,62 @@ EOF;
             );
         }
         return $results;
+    }
+    
+    /**
+     * Check if provided date is valid
+     * @param string $date input date
+     * @return boolean true or false
+     */
+    private function validateDate($date)
+    {
+        $d = \DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') === $date;
+    }
+
+    /**
+     * Check if input date is not empty and valid
+     * @param string $startDate (searches between startDate and present date) iso date string ('1975-01-01')
+     * @param $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
+     * @return array startDate|string, endDate|string or null
+     */
+    private function checkReleaseDates($startDate, $endDate)
+    {
+        if (empty(trim($startDate)) && empty(trim($endDate))) {
+            return array(
+                'startDate' => "null",
+                'endDate' => "null"
+                );
+        }
+        if (!empty(trim($startDate)) && !empty(trim($endDate))) {
+            if ($this->validateDate($startDate) !== false && $this->validateDate($endDate) !== false) {
+                return array(
+                    'startDate' => '"' . trim($startDate) . '"',
+                    'endDate' => '"' . trim($endDate) . '"'
+                    );
+            } else {
+                return false;
+            }
+        } else {
+            if (!empty(trim($startDate))) {
+                if ($this->validateDate($startDate) !== false) {
+                    return array(
+                        'startDate' => '"' . trim($startDate) . '"',
+                        'endDate' => "null"
+                        );
+                } else {
+                    return false;
+                }
+            } else {
+                if ($this->validateDate($endDate) !== false) {
+                    return array(
+                        'startDate' => "null",
+                        'endDate' => '"' . trim($endDate) . '"'
+                        );
+                } else {
+                    return false;
+                }
+            }
+        }
     }
 }
