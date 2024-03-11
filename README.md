@@ -24,7 +24,7 @@ Quick Start
 For Title search:
 ```php
 $imdb = new \Imdb\TitleSearch();
-$results = $imdb->search("1408", "MOVIE,TV");
+$results = $imdb->search("1408", "MOVIE,TV", "1955-01-01", "2000-01-01");
 All info is in the wiki page
 ```
 

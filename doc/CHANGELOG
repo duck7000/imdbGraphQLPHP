@@ -2,6 +2,11 @@
 History for IMDBPHP6
 ====================
 
+v1.3.6
+-------------------
+* Fixed bug in TitleSearchAdvanced with DateTime
+* TitleSearch added search by releaseDates
+
 v1.3.5
 -------------------
 * Added awards method (Get all awards for a title)
