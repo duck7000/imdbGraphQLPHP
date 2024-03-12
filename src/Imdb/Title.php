@@ -2266,39 +2266,46 @@ EOF;
     /**
      * Get all awards for a title
      * @param $winsOnly Default: false, set to true to only get won awards
-     * @param $event Default: "" add eventId Example " ev0000003" to only get Oscars
+     * @param $event Default: "" fill eventId Example " ev0000003" to only get Oscars
      *  Possible values for $event:
      *  ev0000003 (Oscar)
      *  ev0000223 (Emmy)
      *  ev0000292 (Golden Globe)
      * @return array[festivalName][0..n] of 
      *      array[awardYear,awardWinner(bool),awardCategory,awardName,awardNotes
-     *      array awardPerons[creditId,creditName,creditNote],awardOutcome]
+     *      array awardPerons[creditId,creditName,creditNote],awardOutcome] array total(win, nom)
      *  Array
-     *      (
-     *          [Academy Awards, USA] => Array
-     *               (
-     *                  [0] => Array
-     *                      (
-     *                  [awardYear] => 1972
-     *                  [awardWinner] => 
-     *                  [awardCategory] => Best Picture
-     *                  [awardName] => Oscar
-     *                  [awardPerons] => Array
-     *                       (
-     *                          [0] => Array
-     *                              (
-     *                                   [creditId] => nm0000040
-     *                                   [creditName] => Stanley Kubrick
-     *                                   [creditNote] => screenplay/director
-     *                               )
-     *
-     *                       )
-     *                   [awardNotes] => Based on the novel
-     *                   [awardOutcome] => Nominee
-     *               )
-     *               )
-     *      )
+            (
+                [Academy Awards, USA] => Array
+                    (
+                        [0] => Array
+                        (
+                        [awardYear] => 1972
+                        [awardWinner] => 
+                        [awardCategory] => Best Picture
+                        [awardName] => Oscar
+                        [awardPerons] => Array
+                            (
+                                [0] => Array
+                                    (
+                                        [creditId] => nm0000040
+                                        [creditName] => Stanley Kubrick
+                                        [creditNote] => screenplay/director
+                                    )
+
+                            )
+                        [awardNotes] => Based on the novel
+                        [awardOutcome] => Nominee
+                        )
+                    )
+                )
+                [total] => Array
+                (
+                    [win] => 12
+                    [nom] => 26
+                )
+
+            )
      * @see IMDB page / (TitlePage)
      */
     public function award($winsOnly = false, $event = "")
@@ -2355,6 +2362,8 @@ query Award(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Award", ["id" => "tt$this->imdbID"]);
+            $winnerCount = 0;
+            $nomineeCount = 0;
             foreach ($data->title->awardNominations->edges as $edge) {
                 $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
                 $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : '';
@@ -2363,6 +2372,7 @@ EOF;
                 $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : '';
                 $awardIsWinner = $edge->node->isWinner;
                 $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
+                $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
                 
                 //credited persons
                 $persons = array();
@@ -2387,6 +2397,12 @@ EOF;
                     'awardNotes' => $awardNotes,
                     'awardPerons' => $persons,
                     'awardOutcome' => $conclusion
+                );
+            }
+            if ($winnerCount > 0 || $nomineeCount > 0) {
+                $this->awards['total'] = array(
+                    'win' => $winnerCount,
+                    'nom' => $nomineeCount
                 );
             }
         }
