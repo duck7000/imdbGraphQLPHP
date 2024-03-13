@@ -2275,37 +2275,37 @@ EOF;
      *      array[awardYear,awardWinner(bool),awardCategory,awardName,awardNotes
      *      array awardPerons[creditId,creditName,creditNote],awardOutcome] array total(win, nom)
      *  Array
-            (
-                [Academy Awards, USA] => Array
-                    (
-                        [0] => Array
-                        (
-                        [awardYear] => 1972
-                        [awardWinner] => 
-                        [awardCategory] => Best Picture
-                        [awardName] => Oscar
-                        [awardPerons] => Array
-                            (
-                                [0] => Array
-                                    (
-                                        [creditId] => nm0000040
-                                        [creditName] => Stanley Kubrick
-                                        [creditNote] => screenplay/director
-                                    )
-
-                            )
-                        [awardNotes] => Based on the novel
-                        [awardOutcome] => Nominee
-                        )
-                    )
-                )
-                [total] => Array
-                (
-                    [win] => 12
-                    [nom] => 26
-                )
-
-            )
+     *       (
+     *           [Academy Awards, USA] => Array
+     *               (
+     *                   [0] => Array
+     *                   (
+     *                   [awardYear] => 1972
+     *                   [awardWinner] => 
+     *                   [awardCategory] => Best Picture
+     *                   [awardName] => Oscar
+     *                   [awardPerons] => Array
+     *                       (
+     *                           [0] => Array
+     *                               (
+     *                                   [creditId] => 0000040
+     *                                   [creditName] => Stanley Kubrick
+     *                                   [creditNote] => screenplay/director
+     *                               )
+     *
+     *                       )
+     *                   [awardNotes] => Based on the novel
+     *                   [awardOutcome] => Nominee
+     *                   )
+     *               )
+     *           )
+     *           [total] => Array
+     *           (
+     *               [win] => 12
+     *               [nom] => 26
+     *           )
+     *
+     *       )
      * @see IMDB page / (TitlePage)
      */
     public function award($winsOnly = false, $event = "")
