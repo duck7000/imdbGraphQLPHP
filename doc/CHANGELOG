@@ -2,6 +2,10 @@
 History for IMDBPHP6
 ====================
 
+v1.3.7
+-------------------
+* Added award to Title and Name class (all info is in the wiki)
+
 v1.3.6
 -------------------
 * Fixed bug in TitleSearchAdvanced with DateTime
