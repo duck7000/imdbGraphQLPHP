@@ -32,6 +32,7 @@ class Title extends MdbBase
     protected $credits_director = array();
     protected $credits_producer = array();
     protected $credits_writer = array();
+    protected $credits_cinematographer = array();
     protected $langs = array();
     protected $all_keywords = array();
     protected $main_poster = "";
@@ -1123,6 +1124,22 @@ EOF;
         $directorData = $this->directorComposer($this->creditsQuery("director"));
         
         return $this->credits_director = $directorData;
+    }
+
+    #-------------------------------------------------------------[ Cinematographers ]---
+    /**
+     * Get the cinematographer of the title
+     * @return array credits_cinematographer (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function cinematographer()
+    {
+        if (!empty($this->credits_cinematographer)) {
+            return $this->credits_cinematographer;
+        }
+        $cinematographerData = $this->directorComposer($this->creditsQuery("cinematographer"));
+        
+        return $this->credits_cinematographer = $cinematographerData;
     }
 
     #---------------------------------------------------------------[ Writers ]---
