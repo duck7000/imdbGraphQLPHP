@@ -35,6 +35,9 @@ class Name extends MdbBase
     protected $nick_name = array();
     protected $bodyheight = array();
     protected $spouses = array();
+    protected $children = array();
+    protected $parents = array();
+    protected $relatives = array();
     protected $bio_bio = array();
     protected $bio_trivia = array();
     protected $bio_tm = array();
@@ -437,6 +440,100 @@ EOF;
             }
         }
         return $this->spouses;
+    }
+
+    #-----------------------------------------[ Helper for children, parents, relatives ]---
+    /** Parse children, parents, relatives
+     * @param string $name
+     *     possible values for $name: CHILDREN, PARENTS, OTHERS
+     * @param array $arrayName
+     * @return array
+     */
+    protected function nameDetailsParse($name, $arrayName)
+    {
+        $query = <<<EOF
+query Data(\$id: ID!) {
+  name(id: \$id) {
+    relations(first: 9999, filter: {relationshipTypes: $name}) {
+      edges {
+        node {
+          relationName {
+            name {
+              id
+              nameText {
+                text
+              }
+              
+            }
+            nameText
+          }
+          relationshipType {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
+        if ($data != null) {
+            foreach ($data->name->relations->edges as $edge) {
+                if (isset($edge->node->relationName->name->id)) {
+                    $relName = $edge->node->relationName->name->nameText->text;
+                    $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
+                } else {
+                    $relName = $edge->node->relationName->nameText;
+                    $relNameId = '';
+                }
+                $relType = isset($edge->node->relationshipType->text) ? $edge->node->relationshipType->text : '';
+                $arrayName[] = array(
+                    'imdb' => $relNameId,
+                    'name' => $relName,
+                    'relType' => $relType
+                );
+            }
+        }
+        return $arrayName;
+    }
+    
+    #----------------------------------------------------------------[ Children ]---
+    /** Get the Children
+     * @return array children array[0..n] of array(imdb, name, relType)
+     * @see IMDB person page /bio
+     */
+    public function children()
+    {
+        if (empty($this->children)) {
+            return $this->nameDetailsParse("CHILDREN", $this->children);
+        }
+        return $this->children;
+    }
+    
+    #----------------------------------------------------------------[ Parents ]---
+    /** Get the Parents
+     * @return array parents array[0..n] of array(imdb, name, relType)
+     * @see IMDB person page /bio
+     */
+    public function parents()
+    {
+        if (empty($this->parents)) {
+            return $this->nameDetailsParse("PARENTS", $this->parents);
+        }
+        return $this->parents;
+    }
+    
+    #----------------------------------------------------------------[ Relatives ]---
+    /** Get the relatives
+     * @return array relatives array[0..n] of array(imdb, name, relType)
+     * @see IMDB person page /bio
+     */
+    public function relatives()
+    {
+        if (empty($this->relatives)) {
+            return $this->nameDetailsParse("OTHERS", $this->relatives);
+        }
+        return $this->relatives;
     }
 
     #---------------------------------------------------------------[ MiniBio ]---
