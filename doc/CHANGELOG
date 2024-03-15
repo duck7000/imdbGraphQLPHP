@@ -2,6 +2,11 @@
 History for IMDBPHP6
 ====================
 
+v1.3.8
+-------------------
+* Added children, parents and relatives methods to Name class (all info is in the wiki)
+* Added cinematographer method to Title Class (all info is in the wiki)
+
 v1.3.7
 -------------------
 * Added award to Title and Name class (all info is in the wiki)
