@@ -48,7 +48,9 @@ class Name extends MdbBase
     protected $pub_prints = array();
     protected $pub_movies = array();
 
+    // "Credits" page:    
     protected $awards = array();
+    protected $creditKnownFor = array();
 
     /**
      * @param string $id IMDBID to use for data retrieval
@@ -1007,5 +1009,78 @@ EOF;
             }
         }
         return $this->awards;
+    }
+
+    #============================================================[ /creditKnownFor ]===
+    /** All prestigious title credits for this person
+     * @return array creditKnownFor array[0..n] of array[title, titleId, titleYear, titleEndYear, array titleCharacters]
+     * @see IMDB person page /credits
+     */
+    public function creditKnownFor()
+    {
+        if (empty($this->creditKnownFor)) {
+            $query = <<<EOF
+query KnownFor(\$id: ID!) {
+  name(id: \$id) {
+    knownFor(first: 9999) {
+      edges {
+        node{
+          credit {
+            title {
+              id
+              titleText {
+                text
+              }
+              releaseYear {
+                year
+                endYear
+              }
+            }
+            ... on Cast {
+              characters {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
+            if ($data != null) {
+                foreach ($data->name->knownFor->edges as $edge) {
+                    $title = isset($edge->node->credit->title->titleText->text) ?
+                                   $edge->node->credit->title->titleText->text : '';
+                                   
+                    $titleId = isset($edge->node->credit->title->id) ?
+                                     str_replace('tt', '', $edge->node->credit->title->id) : '';
+                                     
+                    $titleYear = isset($edge->node->credit->title->releaseYear->year) ?
+                                       $edge->node->credit->title->releaseYear->year : null;
+                                       
+                    $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
+                                          $edge->node->credit->title->releaseYear->endYear : null;
+                                        
+                    $characters = array();
+                    if ($edge->node->credit->characters != null) {
+                        foreach ($edge->node->credit->characters as $character) {
+                            $characters[] = $character->name;
+                        }
+                    }
+                    $this->creditKnownFor[] = array(
+                        'title' => $title,
+                        'titleId' => $titleId,
+                        'titleYear' => $titleYear,
+                        'titleEndYear' => $titleEndYear,
+                        'titleCharacters' => $characters
+                    );
+                }
+            } else {
+                return $this->creditKnownFor;
+            }
+        }
+        return $this->creditKnownFor;
     }
 }
