@@ -2,15 +2,12 @@
 History for IMDBPHP6
 ====================
 
-v1.3.9
--------------------
-* Added creditKnownFor to the Name class (all info is in the wiki)
-* Added releaseDate method to Title Class (all info is in the wiki)
-
 v1.3.8
 -------------------
 * Added children, parents and relatives methods to Name class (all info is in the wiki)
 * Added cinematographer method to Title Class (all info is in the wiki)
+* Added creditKnownFor to the Name class (all info is in the wiki)
+* Added releaseDate method to Title Class (all info is in the wiki)
 
 v1.3.7
 -------------------
