@@ -1767,9 +1767,49 @@ EOF;
     /**
      * Get the soundtrack listing
      * @return array soundtracks
-     * [ soundtrack : name of the soundtrack
-     *   array credits : every credit line about writer, performer, etc
-     * ]
+     * [credits]: all credit lines as text, each in one element
+     * [creditSplit]: credits split by type, name and nameId
+     * [comments]: if not a credited person, it is considered comment as plain text
+     * Array(
+     *  [0] => Array
+     *   (
+     *       [soundtrack] => We've Only Just Begun
+     *       [credits] => Array
+     *           (
+     *               [0] => Written by Roger Nichols (as Roger S. Nichols) and Paul Williams (as Paul H. Williams)
+     *               [1] => Performed by The Carpenters
+     *               [2] => Courtesy of A&M Records
+     *               [3] => Under license from Universal Music Enterprises
+     *           )
+     *       [creditSplit] => Array
+     *           (
+     *               [0] => Array
+     *                   (
+     *                       [creditType] => Writer
+     *                       [name] => Roger Nichols
+     *                       [nameId] => 0629720
+     *                   )
+     *               [1] => Array
+     *                   (
+     *                       [creditType] => Writer
+     *                       [name] => Paul Williams
+     *                       [nameId] => 0931437
+     *                   )
+     *               [2] => Array
+     *                   (
+     *                       [creditType] => Performer
+     *                       [name] => The Carpenters
+     *                       [nameId] => 1135559
+     *                   )
+     *
+     *           )
+     *       [comment] => Array
+     *           (
+     *               [0] => Courtesy of A&M Records
+     *               [1] => Under license from Universal Music Enterprises
+     *           )
+     *   )
+     * )
      * @see IMDB page /soundtrack
      */
     public function soundtrack()
@@ -1783,7 +1823,7 @@ query Soundtrack(\$id: ID!) {
         node {
           text
           comments {
-            plainText
+            plaidHtml
           }
         }
       }
@@ -1799,17 +1839,88 @@ EOF;
                     $title = 'Unknown';
                 }
                 $credits = array();
+                $creditComments = array();
+                $crediters = array();
                 if (isset($edge->node->comments) && $edge->node->comments !== '') {
                     foreach ($edge->node->comments as $key => $comment) {
-                        if (trim(strip_tags($comment->plainText)) !== '') {
-                            $credits[] = $comment->plainText;
+                        if (stripos($comment->plaidHtml, "arrangement with") === FALSE) {
+                            
+                            // check and replace :?
+                            $pos2 = strpos($comment->plaidHtml, ":");
+                            if ($pos2 !== false) {
+                                $comment->plaidHtml = substr_replace($comment->plaidHtml, " by", $pos2, strlen(":"));
+                            }
+                            
+                            if (($pos = stripos($comment->plaidHtml, "by")) !== FALSE) {
+                                
+                                // split at "by"
+                                $creditRaw = substr($comment->plaidHtml, $pos + 2);
+                                $creditType = trim(substr($comment->plaidHtml, 0, $pos + 2), "[] ");
+
+                                // replace some elements (& and), explode it in array
+                                $patterns = array('/^.*?\K&amp;(?![^>]*\/\s*a\s*>)/',
+                                                  '/^.*?\Kand(?![^>]*\/\s*a\s*>)/');
+                                $creditRaw = preg_replace($patterns, ',', $creditRaw);
+                                $creditRawParts = explode(",", $creditRaw);
+                                $creditRawParts = array_values(array_filter($creditRawParts));
+                                
+                                // loop $creditRawParts array 
+                                foreach ($creditRawParts as $value) {
+                                    // get anchor links
+                                    libxml_use_internal_errors(true);
+                                    $doc = new \DOMDocument();
+                                    $doc->loadHTML('<?xml encoding="UTF-8">' . $value);
+                                    $anchors = $doc->getElementsByTagName('a');
+                                    
+                                    // check what $anchors contains
+                                    if (count($anchors) > 0) {
+                                        $href = $anchors->item(0)->attributes->getNamedItem('href')->nodeValue;
+                                        $id = preg_replace('/[^0-9]+/', '', $href);
+                                        $crediters[] = array(
+                                            'creditType' => $creditType,
+                                            'name' => $this->titleCase(trim($anchors->item(0)->nodeValue)),
+                                            'nameId' => $id
+                                        );
+                                    } else {
+                                        // no anchor, text only, check if id is present in text form
+                                        if (preg_match('/(nm?\d+)/', $value, $match)) {
+                                            $nameId = preg_replace('/[^0-9]+/', '', $match[0]);
+                                            $name = '';
+                                        } else {
+                                            $nameId = '';
+                                            $name = $this->titleCase(trim($value, "[] "));
+                                        }
+                                        $crediters[] = array(
+                                            'creditType' => $creditType,
+                                            'name' => $name,
+                                            'nameId' => $nameId
+                                        );
+                                    }
+                                }
+                            } else {
+                                // no by, treat as comment in plain text
+                                if (!empty(trim(strip_tags($comment->plaidHtml)))) {
+                                    $creditComments[] = trim(strip_tags($comment->plaidHtml));
+                                }
+                            }
+                        } else {
+                            // no arrangement with, treat as comment in plain text
+                            if (!empty(trim(strip_tags($comment->plaidHtml)))) {
+                                $creditComments[] = trim(strip_tags($comment->plaidHtml));
+                            }
+                        }
+                        // add data to $credits as plain text
+                        if (!empty(trim(strip_tags($comment->plaidHtml)))) {
+                            $credits[] = trim(strip_tags($comment->plaidHtml));
                         }
                     }
                 }
                 $this->soundtracks[] = array(
-                        'soundtrack' => $title,
-                        'credits' => $credits
-                    );
+                    'soundtrack' => $title,
+                    'credits' => $credits,
+                    'creditSplit' => $crediters,
+                    'comment' => $creditComments
+                );
             }
         }
         return $this->soundtracks;
