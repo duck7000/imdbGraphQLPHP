@@ -71,6 +71,10 @@ class Title extends MdbBase
     protected $production_budget = array();
     protected $grosses = array();
     protected $moviealternateversions = array();
+    protected $soundMix = array();
+    protected $colors = array();
+    protected $aspectRatio = array();
+    protected $cameras = array();
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
@@ -2492,6 +2496,111 @@ EOF;
             }
         }
         return $this->awards;
+    }
+
+    #========================================================[ Technical specifications ]===
+
+    #----------------------------------------------------------[ Technical specifications helper ]---
+    /**
+     * Get movie tech specs
+     * @param $type input techspec type like soundMixes or aspectRatios
+     * @param $valueType input type like text or soundMix
+     * @param $arrayName output array name
+     * @return array of array[0..n] of array[type, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    protected function techSpec($type, $valueType, $arrayName)
+    {
+            $query = <<<EOF
+query TechSpec(\$id: ID!) {
+  title(id: \$id) {
+    technicalSpecifications {
+      $type {
+        items {
+          $valueType
+          attributes {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
+        if ($data->title->technicalSpecifications->$type->items != null) {
+            foreach ($data->title->technicalSpecifications->$type->items as $item) {
+                $type = isset($item->$valueType) ? $item->$valueType : '';
+                $attributes = array();
+                if ($item->attributes != null) {
+                    foreach ($item->attributes as $attribute) {
+                        $attributes[] = $attribute->text;
+                    }
+                }
+                $arrayName[] = array(
+                    'type' => $type,
+                    'attributes' => $attributes
+                );
+            }
+        }
+        return $arrayName;
+    }
+    
+    #----------------------------------------------------------[ Sound mix ]---
+    /**
+     * Get movie sound mixes
+     * @return soundMix of array[0..n] of array[type, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    public function sound()
+    {
+        if (empty($this->soundMix)) {
+            return $this->techSpec("soundMixes", "text", $this->soundMix);
+        }
+        return $this->soundMix;
+    }
+    
+    #----------------------------------------------------------[ Colorations ]---
+    /**
+     * Get movie colorations like color or Black and white
+     * @return colors of array[0..n] of array[type, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    public function color()
+    {
+        if (empty($this->colors)) {
+            return $this->techSpec("colorations", "text", $this->colors);
+        }
+        return $this->colors;
+    }
+    
+    #----------------------------------------------------------[ Aspect ratio ]---
+    /**
+     * Get movie aspect ratio like 1.66:1 or 16:9
+     * @return aspectRatio of array[0..n] of array[aspectRatio, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    public function aspectRatio()
+    {
+        if (empty($this->aspectRatio)) {
+            return $this->techSpec("aspectRatios", "aspectRatio", $this->aspectRatio);
+        }
+        return $this->aspectRatio;
+    }
+    
+    #----------------------------------------------------------[ Cameras ]---
+    /**
+     * Get cameras used in this title
+     * @return camerars of array[0..n] of array[cameras, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    public function camera()
+    {
+        if (empty($this->cameras)) {
+            return $this->techSpec("cameras", "camera", $this->cameras);
+        }
+        return $this->cameras;
     }
 
     #========================================================[ Helper functions ]===  
