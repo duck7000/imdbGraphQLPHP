@@ -2,6 +2,11 @@
 History for IMDBPHP6
 ====================
 
+v1.3.10
+-------------------
+* Added popRank method to Title class, Gets the popularity rank of a title (all info is in the wiki)
+* Added faq method to Title Class, Gets all frequent asked questions of this title (all info is in the wiki)
+
 v1.3.9
 -------------------
 * Added sound method to Title class (all info is in the wiki)

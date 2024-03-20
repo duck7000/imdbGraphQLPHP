@@ -316,6 +316,97 @@ EOF;
         }
     }
 
+    #----------------------------------------------------------[ Popularity ]---
+    /**
+     * Get movie popularity rank
+     * @return array(currentRank: int, changeDirection: enum (string?), difference: int)
+     * @see IMDB page / (TitlePage)
+     */
+    public function popRank()
+    {
+        if (empty($this->main_rank)) {
+            $query = <<<EOF
+query Rank(\$id: ID!) {
+  title(id: \$id) {
+    meterRanking {
+      currentRank
+      rankChange {
+        changeDirection
+        difference
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Rank", ["id" => "tt$this->imdbID"]);
+            if (isset($data->title->meterRanking)) {
+                $this->main_rank['currentRank'] = isset($data->title->meterRanking->currentRank) ?
+                                                        $data->title->meterRanking->currentRank : null;
+                                                        
+                $this->main_rank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
+                                                            $data->title->meterRanking->rankChange->changeDirection : null;
+                                                            
+                $this->main_rank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
+                                                       $data->title->meterRanking->rankChange->difference : null;
+            } else {
+                return $this->main_rank;
+            }
+        }
+        return $this->main_rank;
+    }
+    
+    #----------------------------------------------------------[ FAQ ]---
+    /**
+     * Get movie frequently asked questions, it includes questions with and without answer
+     * @param $spoiler boolean (true or false) to include spoilers or not, isSpoiler indicates if this question is spoiler or not
+     * @return array of array(question: string, answer: string, isSpoiler: boolean)
+     * @see IMDB page / (Faq)
+     */
+    public function faq($spoiler = false)
+    {
+        if (empty($this->faqs)) {
+            $spoiler = $spoiler === true ? "null" : "EXCLUDE_SPOILERS";
+            $query = <<<EOF
+query Faq(\$id: ID!) {
+  title(id: \$id) {
+    faqs(
+      first: 9999
+      filter: {
+        spoilers: $spoiler
+      }
+    ) {
+      edges {
+        node {
+          question {
+            plainText
+          }
+          answer {
+            plainText
+          }
+          isSpoiler
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Faq", ["id" => "tt$this->imdbID"]);
+            if ($data->title->faqs->edges != null) {
+                foreach ($data->title->faqs->edges as $edge) {
+                    $this->faqs[] = array(
+                        'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : '',
+                        'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : '',
+                        'isSpoiler' => $edge->node->isSpoiler
+                    );
+                }
+            } else {
+                return $this->faqs;
+            }
+        }
+        return $this->faqs;
+    }
+
     #-------------------------------------------------------[ Recommendations ]---
 
     /**
