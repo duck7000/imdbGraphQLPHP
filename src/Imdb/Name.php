@@ -33,6 +33,7 @@ class Name extends MdbBase
     // "Bio" page:
     protected $birth_name = "";
     protected $nick_name = array();
+    protected $akaName = array();
     protected $bodyheight = array();
     protected $spouses = array();
     protected $children = array();
@@ -48,7 +49,7 @@ class Name extends MdbBase
     protected $pub_prints = array();
     protected $pub_movies = array();
 
-    // "Credits" page:    
+    // "Credits" page:
     protected $awards = array();
     protected $creditKnownFor = array();
 
@@ -185,6 +186,40 @@ EOF;
             }
         }
         return $this->nick_name;
+    }
+
+    #-------------------------------------------------------------[ Alternative Names ]---
+    /** Get alternative names for a person
+     * @return array[0..n] of alternative names
+     * @see IMDB person page /bio
+     */
+    public function akaName()
+    {
+        if (empty($this->akaName)) {
+            $query = <<<EOF
+query AkaName(\$id: ID!) {
+  name(id: \$id) {
+    akas(first: 9999) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
+            if ($data->name->akas->edges != null) {
+                foreach ($data->name->akas->edges as $edge) {
+                    $this->akaName[] = isset($edge->node->text) ? $edge->node->text : '';
+                }
+            } else {
+                return $this->akaName;
+            }
+        }
+        return $this->akaName;
     }
 
     #------------------------------------------------------------------[ Born ]---

@@ -2,6 +2,11 @@
 History for IMDBPHP6
 ====================
 
+v1.3.11
+-------------------
+* Added connections method to Title class, Gets all connections a title (all info is in the wiki)
+* Added akaName method to Name Class, Gets all alternative names for a person (all info is in the wiki)
+
 v1.3.10
 -------------------
 * Added popRank method to Title class, Gets the popularity rank of a title (all info is in the wiki)
