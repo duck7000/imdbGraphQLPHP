@@ -68,6 +68,7 @@ class Title extends MdbBase
     protected $compcred_dist = array();
     protected $compcred_special = array();
     protected $compcred_other = array();
+    protected $connections = array();
     protected $production_budget = array();
     protected $grosses = array();
     protected $moviealternateversions = array();
@@ -2186,6 +2187,89 @@ EOF;
             $this->compcred_other = $this->companyCredits("miscellaneous");
         }
         return $this->compcred_other;
+    }
+
+    #-------------------------------------------------------[ Connections ]---
+    /** Info about connections or references with other titles
+     * @return array of array('titleId: string, 'titleName: string, titleType: string, year: int, endYear: int, seriesName: string, description: string)
+     * @see IMDB page /companycredits
+     */
+    public function connection()
+    {
+        // imdb connection category ids to camelCase
+        $categoryIds = array(
+            'alternate_language_version_of' => 'alternateLanguageVersionOf',
+            'edited_from' => 'editedFrom',
+            'edited_into' => 'editedInto',
+            'featured_in' => 'featured',
+            'features' => 'features',
+            'followed_by' => 'followedBy',
+            'follows' => 'follows',
+            'referenced_in' => 'referenced',
+            'references' => 'references',
+            'remade_as' => 'remadeAs',
+            'remake_of' => 'remakeOf',
+            'same_franchise' => 'sameFranchise',
+            'spin_off' => 'spinOff',
+            'spin_off_from' => 'spinOffFrom',
+            'spoofed_in' => 'spoofed',
+            'spoofs' => 'spoofs',
+            'version_of' => 'versionOf'
+        );
+        
+        if (empty($this->connections)) {
+            
+            foreach ($categoryIds as $categoryId) {
+                $this->connections[$categoryId] = array();
+            }
+            
+            $query = <<<EOF
+          associatedTitle {
+            id
+            titleText {
+              text
+            }
+            titleType {
+              text
+            }
+            releaseYear {
+              year
+              endYear
+            }
+            series {
+              series {
+                titleText {
+                  text
+                }
+              }
+            }
+          }
+          category {
+            id
+          }
+          description {
+            plainText
+          }
+EOF;
+            $edges = $this->graphQlGetAll("Connections", "connections", $query);
+            foreach ($edges as $edge) {
+                $this->connections[$categoryIds[$edge->node->category->id]][] = array(
+                    'titleId' => str_replace('tt', '', $edge->node->associatedTitle->id),
+                    'titleName' => $edge->node->associatedTitle->titleText->text,
+                    'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
+                                         $edge->node->associatedTitle->titleType->text : '',
+                    'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
+                                    $edge->node->associatedTitle->releaseYear->year : null,
+                    'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
+                                       $edge->node->associatedTitle->releaseYear->endYear : null,
+                    'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
+                                          $edge->node->associatedTitle->series->series->titleText->text : '',
+                    'description' => isset($edge->node->description->plainText) ?
+                                           $edge->node->description->plainText : ''
+                );
+            }
+        }
+        return $this->connections;
     }
 
     #========================================================[ /Box Office page ]===
