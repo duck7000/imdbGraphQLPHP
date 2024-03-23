@@ -474,61 +474,6 @@ EOF;
         return $this->spouses;
     }
 
-    #-----------------------------------------[ Helper for children, parents, relatives ]---
-    /** Parse children, parents, relatives
-     * @param string $name
-     *     possible values for $name: CHILDREN, PARENTS, OTHERS
-     * @param array $arrayName
-     * @return array
-     */
-    protected function nameDetailsParse($name, $arrayName)
-    {
-        $query = <<<EOF
-query Data(\$id: ID!) {
-  name(id: \$id) {
-    relations(first: 9999, filter: {relationshipTypes: $name}) {
-      edges {
-        node {
-          relationName {
-            name {
-              id
-              nameText {
-                text
-              }
-              
-            }
-            nameText
-          }
-          relationshipType {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
-        if ($data != null) {
-            foreach ($data->name->relations->edges as $edge) {
-                if (isset($edge->node->relationName->name->id)) {
-                    $relName = $edge->node->relationName->name->nameText->text;
-                    $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
-                } else {
-                    $relName = $edge->node->relationName->nameText;
-                    $relNameId = '';
-                }
-                $relType = isset($edge->node->relationshipType->text) ? $edge->node->relationshipType->text : '';
-                $arrayName[] = array(
-                    'imdb' => $relNameId,
-                    'name' => $relName,
-                    'relType' => $relType
-                );
-            }
-        }
-        return $arrayName;
-    }
-    
     #----------------------------------------------------------------[ Children ]---
     /** Get the Children
      * @return array children array[0..n] of array(imdb, name, relType)
@@ -1239,6 +1184,61 @@ EOF;
                 if (isset($edge->node->text->plainText)) {
                     $arrayName[] = $edge->node->text->plainText;
                 }
+            }
+        }
+        return $arrayName;
+    }
+
+    #-----------------------------------------[ Helper for children, parents, relatives ]---
+    /** Parse children, parents, relatives
+     * @param string $name
+     *     possible values for $name: CHILDREN, PARENTS, OTHERS
+     * @param array $arrayName
+     * @return array
+     */
+    protected function nameDetailsParse($name, $arrayName)
+    {
+        $query = <<<EOF
+query Data(\$id: ID!) {
+  name(id: \$id) {
+    relations(first: 9999, filter: {relationshipTypes: $name}) {
+      edges {
+        node {
+          relationName {
+            name {
+              id
+              nameText {
+                text
+              }
+              
+            }
+            nameText
+          }
+          relationshipType {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
+        if ($data != null) {
+            foreach ($data->name->relations->edges as $edge) {
+                if (isset($edge->node->relationName->name->id)) {
+                    $relName = $edge->node->relationName->name->nameText->text;
+                    $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
+                } else {
+                    $relName = $edge->node->relationName->nameText;
+                    $relNameId = '';
+                }
+                $relType = isset($edge->node->relationshipType->text) ? $edge->node->relationshipType->text : '';
+                $arrayName[] = array(
+                    'imdb' => $relNameId,
+                    'name' => $relName,
+                    'relType' => $relType
+                );
             }
         }
         return $arrayName;
