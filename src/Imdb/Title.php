@@ -325,7 +325,7 @@ EOF;
      * @return array(currentRank: int, changeDirection: enum (string?), difference: int)
      * @see IMDB page / (TitlePage)
      */
-    public function popRank()
+    public function rank()
     {
         if (empty($this->main_rank)) {
             $query = <<<EOF
