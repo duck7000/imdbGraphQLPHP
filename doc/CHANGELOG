@@ -2,6 +2,11 @@
 History for IMDBPHP6
 ====================
 
+v1.3.12
+-------------------
+* Added helper method for GraphQL paginated (to get paginated content just like in Title class)
+* Added credit method to Name Class, Gets all credits for a person (all info is in the wiki)
+
 v1.3.11
 -------------------
 * Added connections method to Title class, Gets all connections a title (all info is in the wiki)

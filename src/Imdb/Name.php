@@ -52,6 +52,7 @@ class Name extends MdbBase
     // "Credits" page:
     protected $awards = array();
     protected $creditKnownFor = array();
+    protected $credits = array();
 
     /**
      * @param string $id IMDBID to use for data retrieval
@@ -88,7 +89,6 @@ EOF;
     }
 
     #--------------------------------------------------------[ Photo specific ]---
-
     /** Get cover photo
      * @param boolean $size (optional) small:  thumbnail (67x98, default)
      *                                 medium: image size (621x931)
@@ -160,7 +160,6 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Nick Name ]---
-
     /** Get the nick name
      * @return array nicknames array[0..n] of strings
      * @see IMDB person page /bio
@@ -223,7 +222,6 @@ EOF;
     }
 
     #------------------------------------------------------------------[ Born ]---
-
     /** Get Birthday
      * @return array|null birthday [day,month,mon,year,place]
      *         where $monthName is the month name, and $monthInt the month number
@@ -269,7 +267,6 @@ EOF;
     }
 
     #------------------------------------------------------------------[ Died ]---
-
     /**
      * Get date of death with place and cause
      * @return array [day,monthName,monthInt,year,place,cause,status]
@@ -324,7 +321,6 @@ EOF;
     }
     
     #-----------------------------------------------------------[ Body Height ]---
-
     /** Get the body height
      * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
      * @see IMDB person page /bio
@@ -362,7 +358,6 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Spouse ]---
-
     /** Get spouse(s)
      * @return array [0..n] of array spouses [string imdb, string name, array from,
      *         array to, string comment, int children] where from/to are array
@@ -574,7 +569,6 @@ EOF;
     }
 
     #---------------------------------------------------------------[ MiniBio ]---
-
     /** Get the person's mini bio
      * @return array bio array [0..n] of array[string desc, string author]
      * @see IMDB person page /bio
@@ -616,42 +610,7 @@ EOF;
         return $this->bio_bio;
     }
 
-    #-----------------------------------------[ Helper to Trivia, Quotes and Trademarks ]---
-
-    /** Parse Trivia, Quotes and Trademarks
-     * @param string $name
-     * @param array $arrayName
-     */
-    protected function dataParse($name, $arrayName)
-    {
-        $query = <<<EOF
-query Data(\$id: ID!) {
-  name(id: \$id) {
-    $name(first: 9999) {
-      edges {
-        node {
-          text {
-            plainText
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
-        if ($data != null && $data->name->$name != null) {
-            foreach ($data->name->$name->edges as $edge) {
-                if (isset($edge->node->text->plainText)) {
-                    $arrayName[] = $edge->node->text->plainText;
-                }
-            }
-        }
-        return $arrayName;
-    }
-
     #----------------------------------------------------------------[ Trivia ]---
-
     /** Get the Trivia
      * @return array trivia array[0..n] of string
      * @see IMDB person page /bio
@@ -665,7 +624,6 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Quotes ]---
-
     /** Get the Personal Quotes
      * @return array quotes array[0..n] of string
      * @see IMDB person page /bio
@@ -679,7 +637,6 @@ EOF;
     }
 
     #------------------------------------------------------------[ Trademarks ]---
-
     /** Get the "trademarks" of the person
      * @return array trademarks array[0..n] of strings
      * @see IMDB person page /bio
@@ -693,7 +650,6 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Salary ]---
-
     /** Get the salary list
      * @return array salary array[0..n] of array [strings imdb, name, year, amount, currency, array comments[]]
      * @see IMDB person page /bio
@@ -762,6 +718,7 @@ EOF;
     }
 
     #============================================================[ /publicity ]===
+
     #-----------------------------------------------------------[ Print media ]---
     /** Print media about this person
      * @return array prints array[0..n] of array[title, author, place, publisher, isbn],
@@ -822,7 +779,6 @@ EOF;
     }
 
     #----------------------------------------------------[ Biographical movies ]---
-
     /** Biographical Movies
      * @return array pubmovies array[0..n] of array[title, id, year, seriesTitle, seriesSeason, seriesEpisode]
      * @see IMDB person page /publicity
@@ -1117,5 +1073,217 @@ EOF;
             }
         }
         return $this->creditKnownFor;
+    }
+
+    #-------------------------------------------------------[ Credits ]---
+    /** Get all credits for a person
+     * @return array[categoryId] of array('titleId: string, 'titleName: string, titleType: string,
+     *      year: int, endYear: int, characters: array(),jobs: array())
+     * @see IMDB page /credits
+     */
+    public function credit()
+    {
+        // imdb credits category ids to camelCase names
+        $categoryIds = array(
+            'director' => 'Director',
+            'writer' => 'Writer',
+            'actress' => 'Actress',
+            'actor' => 'Actor',
+            'producer' => 'Producer',
+            'composer' => 'Composer',
+            'cinematographer' => 'Cinematographer',
+            'editor' => 'Editor',
+            'casting_director' => 'castingDirector',
+            'production_designer' => 'productionDesigner',
+            'art_director' => 'artDirector',
+            'set_decorator' => 'setDecorator',
+            'costume_designer' => 'costumeDesigner',
+            'make_up_department' => 'makeUpDepartment',
+            'production_manager' => 'productionManager',
+            'assistant_director' => 'assistantDirector',
+            'art_department' => 'artDepartment',
+            'sound_department' => 'soundDepartment',
+            'special_effects' => 'specialEffects',
+            'visual_effects' => 'visualEffects',
+            'stunts' => 'Stunts',
+            'choreographer' => 'Choreographer',
+            'camera_department' => 'cameraDepartment',
+            'animation_department' => 'animationDepartment',
+            'casting_department' => 'castingDepartment',
+            'costume_department' => 'costumeDepartment',
+            'editorial_department' => 'editorialDepartment',
+            'electrical_department' => 'electricalDepartment',
+            'location_management' => 'locationManagement',
+            'music_department' => 'musicDepartment',
+            'production_department' => 'productionDepartment',
+            'script_department' => 'scriptDepartment',
+            'transportation_department' => 'transportationDepartment',
+            'miscellaneous' => 'Miscellaneous',
+            'thanks' => 'Thanks',
+            'executive' => 'Executive',
+            'legal' => 'Legal',
+            'soundtrack' => 'Soundtrack',
+            'manager' => 'Manager',
+            'assistant' => 'Assistant',
+            'talent_agent' => 'talentAgent',
+            'self' => 'Self',
+            'publicist' => 'Publicist',
+            'music_artist' => 'musicArtist',
+            'podcaster' => 'Podcaster',
+            'archive_footage' => 'archiveFootage',
+            'archive_sound' => 'archiveSound',
+            'costume_supervisor' => 'costumeSupervisor',
+            'hair_stylist' => 'hairStylist',
+            'intimacy_coordinator' => 'intimacyCoordinator',
+            'make_up_artist' => 'makeUpArtist',
+            'music_supervisor' => 'musicSupervisor',
+            'property_master' => 'propertyMaster',
+            'script_supervisor' => 'scriptSupervisor',
+            'showrunner' => 'Showrunner',
+            'stunt_coordinator' => 'stuntCoordinator',
+            'accountant' => 'Accountant'
+        );
+        
+        if (empty($this->credits)) {
+            
+            foreach ($categoryIds as $categoryId) {
+                $this->credits[$categoryId] = array();
+            }
+            
+            $query = <<<EOF
+          category {
+            id
+          }
+          title {
+            id
+            titleText {
+              text
+            }
+            titleType {
+              text
+            }
+            releaseYear {
+              year
+              endYear
+            }
+          }
+          ... on Cast {
+            characters {
+              name
+            }
+          }
+          ... on Crew {
+            jobs {
+              text
+            }
+          }
+EOF;
+            $edges = $this->graphQlGetAll("Credits", "credits", $query);
+            foreach ($edges as $edge) {
+                $characters = array();
+                if (isset($edge->node->characters) && $edge->node->characters != null) {
+                    foreach ($edge->node->characters as $character) {
+                        $characters[] = $character->name;
+                    }
+                }
+                $jobs = array();
+                if (isset($edge->node->jobs) && $edge->node->jobs != null) {
+                    foreach ($edge->node->jobs as $job) {
+                        $jobs[] = $job->text;
+                    }
+                }
+                $this->credits[$categoryIds[$edge->node->category->id]][] = array(
+                    'titleId' => str_replace('tt', '', $edge->node->title->id),
+                    'titleName' => $edge->node->title->titleText->text,
+                    'titleType' => isset($edge->node->title->titleType->text) ?
+                                         $edge->node->title->titleType->text : '',
+                    'year' => isset($edge->node->title->releaseYear->year) ?
+                                    $edge->node->title->releaseYear->year : null,
+                    'endYear' => isset($edge->node->title->releaseYear->endYear) ?
+                                       $edge->node->title->releaseYear->endYear : null,
+                    'characters' => $characters,
+                    'jobs' => $jobs
+                );
+            }
+        }
+        return $this->credits;
+    }
+    
+    #========================================================[ Helper functions ]===
+
+    #-----------------------------------------[ Helper for Trivia, Quotes and Trademarks ]---
+    /** Parse Trivia, Quotes and Trademarks
+     * @param string $name
+     * @param array $arrayName
+     */
+    protected function dataParse($name, $arrayName)
+    {
+        $query = <<<EOF
+query Data(\$id: ID!) {
+  name(id: \$id) {
+    $name(first: 9999) {
+      edges {
+        node {
+          text {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
+        if ($data != null && $data->name->$name != null) {
+            foreach ($data->name->$name->edges as $edge) {
+                if (isset($edge->node->text->plainText)) {
+                    $arrayName[] = $edge->node->text->plainText;
+                }
+            }
+        }
+        return $arrayName;
+    }
+
+    #-----------------------------------------[ Helper GraphQL Paginated ]---
+    /**
+     * Get all edges of a field in the name type
+     * @param string $queryName The cached query name
+     * @param string $fieldName The field on name you want to get
+     * @param string $nodeQuery Graphql query that fits inside node { }
+     * @param string $filter Add's extra Graphql query filters like categories
+     * @return \stdClass[]
+     */
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
+    {
+    
+        $query = <<<EOF
+query $queryName(\$id: ID!, \$after: ID) {
+  name(id: \$id) {
+    $fieldName(first: 9999, after: \$after$filter) {
+      edges {
+        node {
+          $nodeQuery
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+EOF;
+
+        // Results are paginated, so loop until we've got all the data
+        $endCursor = null;
+        $hasNextPage = true;
+        $edges = array();
+        while ($hasNextPage) {
+            $data = $this->graphql->query($query, $queryName, ["id" => "nm$this->imdbID", "after" => $endCursor]);
+            $edges = array_merge($edges, $data->name->{$fieldName}->edges);
+            $hasNextPage = $data->name->{$fieldName}->pageInfo->hasNextPage;
+            $endCursor = $data->name->{$fieldName}->pageInfo->endCursor;
+        }
+        return $edges;
     }
 }
