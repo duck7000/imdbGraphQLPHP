@@ -29,6 +29,7 @@ class Name extends MdbBase
     protected $fullname = "";
     protected $birthday = array();
     protected $deathday = array();
+    protected $professions = array();
 
     // "Bio" page:
     protected $birth_name = "";
@@ -319,7 +320,38 @@ EOF;
         }
         return $this->deathday;
     }
-    
+
+    #-----------------------------------------------------------[ Primary Professions ]---
+    /** Get primary professions of this person
+     * @return array() all professions
+     * @see IMDB person page
+     */
+    public function profession()
+    {
+        if (empty($this->professions)) {
+            $query = <<<EOF
+query Professions(\$id: ID!) {
+  name(id: \$id) {
+    primaryProfessions {
+      category {
+        text
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Professions", ["id" => "nm$this->imdbID"]);
+            if (isset($data->name->primaryProfessions) && $data->name->primaryProfessions != null) {
+                foreach ($data->name->primaryProfessions as $primaryProfession) {
+                    $this->professions[] = isset($primaryProfession->category->text) ? $primaryProfession->category->text : '';
+                }
+            } else {
+                return $this->professions;
+            }
+        }
+        return $this->professions;
+    }
+
     #-----------------------------------------------------------[ Body Height ]---
     /** Get the body height
      * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
