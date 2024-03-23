@@ -106,7 +106,9 @@ EOF;
         }
         return $results;
     }
-    
+
+
+    #========================================================[ Helper functions]===
     /**
      * Check if provided date is valid
      * @param string $date input date
