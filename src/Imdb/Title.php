@@ -27,52 +27,52 @@ class Title extends MdbBase
     protected $akas = array();
     protected $releaseDates = array();
     protected $countries = array();
-    protected $credits_cast = array();
-    protected $principal_credits = array();
-    protected $credits_composer = array();
-    protected $credits_director = array();
-    protected $credits_producer = array();
-    protected $credits_writer = array();
-    protected $credits_cinematographer = array();
+    protected $creditsCast = array();
+    protected $creditsPrincipal = array();
+    protected $creditsComposer = array();
+    protected $creditsDirector = array();
+    protected $creditsProducer = array();
+    protected $creditsWriter = array();
+    protected $creditsCinematographer = array();
     protected $langs = array();
-    protected $all_keywords = array();
-    protected $main_poster = "";
-    protected $main_poster_thumb = "";
-    protected $main_plotoutline = "";
-    protected $main_movietype = "";
-    protected $main_title = "";
-    protected $main_original_title = "";
-    protected $main_year = -1;
-    protected $main_endyear = -1;
-    protected $main_top250 = -1;
-    protected $main_rating = -1;
-    protected $main_rank = array();
-    protected $main_photo = array();
+    protected $keywords = array();
+    protected $mainPoster = "";
+    protected $mainPosterThumb = "";
+    protected $mainPlotoutline = "";
+    protected $mainMovietype = "";
+    protected $mainTitle = "";
+    protected $mainOriginalTitle = "";
+    protected $mainYear = -1;
+    protected $mainEndYear = -1;
+    protected $mainTop250 = -1;
+    protected $mainRating = -1;
+    protected $mainRank = array();
+    protected $mainPhoto = array();
     protected $trailers = array();
-    protected $main_awards = array();
+    protected $mainAwards = array();
     protected $awards = array();
-    protected $moviegenres = array();
-    protected $moviequotes = array();
-    protected $movierecommendations = array();
-    protected $movieruntimes = array();
+    protected $genres = array();
+    protected $quotes = array();
+    protected $recommendations = array();
+    protected $runtimes = array();
     protected $mpaas = array();
     protected $plot = array();
-    protected $season_episodes = array();
+    protected $seasonEpisodes = array();
     protected $isOngoing = null;
     protected $soundtracks = array();
     protected $taglines = array();
-    protected $trivia = array();
+    protected $trivias = array();
     protected $goofs = array();
-    protected $crazy_credits = array();
+    protected $crazyCredits = array();
     protected $locations = array();
-    protected $compcred_prod = array();
-    protected $compcred_dist = array();
-    protected $compcred_special = array();
-    protected $compcred_other = array();
+    protected $compCreditsProd = array();
+    protected $compCreditsDist = array();
+    protected $compCreditsSpecial = array();
+    protected $compCreditsOther = array();
     protected $connections = array();
-    protected $production_budget = array();
+    protected $productionBudget = array();
     protected $grosses = array();
-    protected $moviealternateversions = array();
+    protected $alternateversions = array();
     protected $soundMix = array();
     protected $colors = array();
     protected $aspectRatio = array();
@@ -94,7 +94,7 @@ class Title extends MdbBase
     /**
      * Setup title and year properties
      */
-    protected function title_year()
+    protected function titleYear()
     {
         $query = <<<EOF
 query TitleYear(\$id: ID!) {
@@ -118,13 +118,13 @@ EOF;
 
         $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
 
-        $this->main_title = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
-        $this->main_original_title = ucwords(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
-        $this->main_movietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
-        $this->main_year = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
-        $this->main_endyear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
-        if ($this->main_year == "????") {
-            $this->main_year = "";
+        $this->mainTitle = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
+        $this->mainOriginalTitle  = ucwords(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
+        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
+        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
+        $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
+        if ($this->mainYear == "????") {
+            $this->mainYear = "";
         }
     }
 
@@ -135,13 +135,13 @@ EOF;
      */
     public function movietype()
     {
-        if (empty($this->main_movietype)) {
-            $this->title_year();
-            if (empty($this->main_movietype)) {
-                $this->main_movietype = 'Movie';
+        if (empty($this->mainMovietype)) {
+            $this->titleYear();
+            if (empty($this->mainMovietype)) {
+                $this->mainMovietype = 'Movie';
             }
         }
-        return $this->main_movietype;
+        return $this->mainMovietype;
     }
 
     /** Get movie title
@@ -150,22 +150,22 @@ EOF;
      */
     public function title()
     {
-        if ($this->main_title == "") {
-            $this->title_year();
+        if ($this->mainTitle == "") {
+            $this->titleYear();
         }
-        return $this->main_title;
+        return $this->mainTitle;
     }
 
     /** Get movie original title
-     * @return string main_original_title movie original title
+     * @return string mainOriginalTitle  movie original title
      * @see IMDB page / (TitlePage)
      */
     public function originalTitle()
     {
-        if ($this->main_original_title == "") {
-            $this->title_year();
+        if ($this->mainOriginalTitle  == "") {
+            $this->titleYear();
         }
-        return $this->main_original_title;
+        return $this->mainOriginalTitle ;
     }
 
     /** Get year
@@ -174,10 +174,10 @@ EOF;
      */
     public function year()
     {
-        if ($this->main_year == -1) {
-            $this->title_year();
+        if ($this->mainYear == -1) {
+            $this->titleYear();
         }
-        return $this->main_year;
+        return $this->mainYear;
     }
 
     /** Get end-year
@@ -187,10 +187,10 @@ EOF;
      */
     public function endyear()
     {
-        if ($this->main_endyear == -1) {
-            $this->title_year();
+        if ($this->mainEndYear == -1) {
+            $this->titleYear();
         }
-        return $this->main_endyear;
+        return $this->mainEndYear;
     }
 
     #---------------------------------------------------------------[ Runtime ]---
@@ -201,7 +201,7 @@ EOF;
      */
     public function runtime()
     {
-        if (empty($this->movieruntimes)) {
+        if (empty($this->runtimes)) {
             $query = <<<EOF
 query Runtimes(\$id: ID!) {
   title(id: \$id) {
@@ -224,7 +224,7 @@ EOF;
             $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
 
             foreach ($data->title->runtimes->edges as $edge) {
-                $this->movieruntimes[] = array(
+                $this->runtimes[] = array(
                     "time" => $edge->node->seconds / 60,
                     "annotations" => array_map(function ($attribute) {
                         return $attribute->text;
@@ -233,7 +233,7 @@ EOF;
                 );
             }
         }
-        return $this->movieruntimes;
+        return $this->runtimes;
     }
 
     #----------------------------------------------------------[ Movie Rating ]---
@@ -244,7 +244,7 @@ EOF;
      */
     public function rating()
     {
-        if ($this->main_rating == -1) {
+        if ($this->mainRating == -1) {
             $query = <<<EOF
 query Rating(\$id: ID!) {
   title(id: \$id) {
@@ -257,12 +257,12 @@ EOF;
 
             $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->ratingsSummary->aggregateRating) && !empty($data->title->ratingsSummary->aggregateRating)) {
-                $this->main_rating = $data->title->ratingsSummary->aggregateRating;
+                $this->mainRating = $data->title->ratingsSummary->aggregateRating;
             } else {
-                $this->main_rating = 0;
+                $this->mainRating = 0;
             }
         }
-        return $this->main_rating;
+        return $this->mainRating;
     }
 
      /**
@@ -327,7 +327,7 @@ EOF;
      */
     public function rank()
     {
-        if (empty($this->main_rank)) {
+        if (empty($this->mainRank)) {
             $query = <<<EOF
 query Rank(\$id: ID!) {
   title(id: \$id) {
@@ -344,19 +344,19 @@ EOF;
 
             $data = $this->graphql->query($query, "Rank", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->meterRanking)) {
-                $this->main_rank['currentRank'] = isset($data->title->meterRanking->currentRank) ?
+                $this->mainRank['currentRank'] = isset($data->title->meterRanking->currentRank) ?
                                                         $data->title->meterRanking->currentRank : null;
                                                         
-                $this->main_rank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
+                $this->mainRank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
                                                             $data->title->meterRanking->rankChange->changeDirection : null;
                                                             
-                $this->main_rank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
+                $this->mainRank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
                                                        $data->title->meterRanking->rankChange->difference : null;
             } else {
-                return $this->main_rank;
+                return $this->mainRank;
             }
         }
-        return $this->main_rank;
+        return $this->mainRank;
     }
     
     #----------------------------------------------------------[ FAQ ]---
@@ -419,7 +419,7 @@ EOF;
      */
     public function recommendation()
     {
-        if (empty($this->movierecommendations)) {
+        if (empty($this->recommendations)) {
             $query = <<<EOF
 query Recommendations(\$id: ID!) {
   title(id: \$id) {
@@ -462,7 +462,7 @@ EOF;
                     $thumb = $img . $parameter;
 
                 }
-                $this->movierecommendations[] = array(
+                $this->recommendations[] = array(
                     "title" => ucwords($edge->node->titleText->text),
                     "imdbid" => str_replace('tt', '', $edge->node->id),
                     "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
@@ -471,7 +471,7 @@ EOF;
                 );
             }
         }
-        return $this->movierecommendations;
+        return $this->recommendations;
     }
 
     #--------------------------------------------------------[ Language Stuff ]---
@@ -511,7 +511,7 @@ EOF;
      */
     public function genre()
     {
-        if (empty($this->moviegenres)) {
+        if (empty($this->genres)) {
             $query = <<<EOF
 query Genres(\$id: ID!) {
   title(id: \$id) {
@@ -528,10 +528,10 @@ EOF;
 
             $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->titleGenres->genres as $edge) {
-                $this->moviegenres[] = $edge->genre->text;
+                $this->genres[] = $edge->genre->text;
             }
         }
-        return $this->moviegenres;
+        return $this->genres;
     }
 
     #--------------------------------------------------------[ Plot (Outline) ]---
@@ -541,7 +541,7 @@ EOF;
      */
     public function plotoutline()
     {
-        if ($this->main_plotoutline == "") {
+        if ($this->mainPlotoutline == "") {
             $query = <<<EOF
 query PlotOutline(\$id: ID!) {
   title(id: \$id) {
@@ -556,10 +556,10 @@ EOF;
 
             $data = $this->graphql->query($query, "PlotOutline", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->plot->plotText->plainText)) {
-                $this->main_plotoutline = $data->title->plot->plotText->plainText;
+                $this->mainPlotoutline = $data->title->plot->plotText->plainText;
             }
         }
-        return $this->main_plotoutline;
+        return $this->mainPlotoutline;
     }
 
     #--------------------------------------------------------[ Photo specific ]---
@@ -591,10 +591,10 @@ EOF;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
 
             $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            $this->main_poster_thumb = $img . $parameter;
+            $this->mainPosterThumb = $img . $parameter;
 
             if (strpos($data->title->primaryImage->url, '._V1')) {
-                $this->main_poster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->main_poster_thumb);
+                $this->mainPoster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->mainPosterThumb);
             }
         }
     }
@@ -690,19 +690,19 @@ EOF;
      */
     public function photo($thumb = true)
     {
-        if (empty($this->main_poster)) {
+        if (empty($this->mainPoster)) {
             $this->populatePoster();
         }
-        if (!$thumb && empty($this->main_poster)) {
+        if (!$thumb && empty($this->mainPoster)) {
             return false;
         }
-        if ($thumb && empty($this->main_poster_thumb)) {
+        if ($thumb && empty($this->mainPosterThumb)) {
             return false;
         }
         if ($thumb) {
-            return $this->main_poster_thumb;
+            return $this->mainPosterThumb;
         }
-        return $this->main_poster;
+        return $this->mainPoster;
     }
 
     #-------------------------------------------------[ Country of Origin ]---
@@ -907,7 +907,7 @@ EOF;
      */
     public function top250()
     {
-        if ($this->main_top250 == -1) {
+        if ($this->mainTop250 == -1) {
             $query = <<<EOF
 query TopRated(\$id: ID!) {
   title(id: \$id) {
@@ -921,12 +921,12 @@ query TopRated(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->ratingsSummary->topRanking->rank) && $data->title->ratingsSummary->topRanking->rank <= 250) {
-                $this->main_top250 = $data->title->ratingsSummary->topRanking->rank;
+                $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
             } else {
-                $this->main_top250 = 0;
+                $this->mainTop250 = 0;
             }
         }
-        return $this->main_top250;
+        return $this->mainTop250;
     }
 
     #=====================================================[ /plotsummary page ]===
@@ -999,12 +999,12 @@ EOF;
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
     * Get the PrincipalCredits for this title
-    * @return array principal_credits[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
+    * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
     * Not all categories are always available, TV series has Creator instead of writer
     */
     public function principalCredits()
     {
-        if (empty($this->principal_credits)) {
+        if (empty($this->creditsPrincipal)) {
             $query = <<<EOF
 query PrincipalCredits(\$id: ID!) {
   title(id: \$id) {
@@ -1044,10 +1044,10 @@ EOF;
                         break;
                     }
                 }
-                $this->principal_credits[$category] = $temp;
+                $this->creditsPrincipal[$category] = $temp;
             }
         }
-        return $this->principal_credits;
+        return $this->creditsPrincipal;
     }
 
     #----------------------------------------------------------------[ Actors]---
@@ -1070,8 +1070,8 @@ EOF;
      */
     public function cast()
     {
-        if (!empty($this->credits_cast)) {
-            return $this->credits_cast;
+        if (!empty($this->creditsCast)) {
+            return $this->creditsCast;
         }
         $filter = ', filter: { categories: ["cast"] }';
 $queryNode = <<<EOF
@@ -1138,7 +1138,7 @@ EOF;
                 $imgUrl = $img . $parameter;
             }
             
-            $this->credits_cast[] = array(
+            $this->creditsCast[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
                 'name_alias' => $name_alias,
@@ -1148,7 +1148,7 @@ EOF;
                 'thumb' => $imgUrl
             );
         }
-        return $this->credits_cast;
+        return $this->creditsCast;
     }
 
     #------------------------------------------------------[ Helper: Crew Category ]---
@@ -1270,28 +1270,28 @@ EOF;
      */
     public function director()
     {
-        if (!empty($this->credits_director)) {
-            return $this->credits_director;
+        if (!empty($this->creditsDirector)) {
+            return $this->creditsDirector;
         }
         $directorData = $this->directorComposer($this->creditsQuery("director"));
         
-        return $this->credits_director = $directorData;
+        return $this->creditsDirector = $directorData;
     }
 
     #-------------------------------------------------------------[ Cinematographers ]---
     /**
      * Get the cinematographer of the title
-     * @return array credits_cinematographer (array[0..n] of arrays[imdb,name,role])
+     * @return array creditsCinematographer (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
      */
     public function cinematographer()
     {
-        if (!empty($this->credits_cinematographer)) {
-            return $this->credits_cinematographer;
+        if (!empty($this->creditsCinematographer)) {
+            return $this->creditsCinematographer;
         }
         $cinematographerData = $this->directorComposer($this->creditsQuery("cinematographer"));
         
-        return $this->credits_cinematographer = $cinematographerData;
+        return $this->creditsCinematographer = $cinematographerData;
     }
 
     #---------------------------------------------------------------[ Writers ]---
@@ -1301,8 +1301,8 @@ EOF;
      */
     public function writer()
     {
-        if (!empty($this->credits_writer)) {
-            return $this->credits_writer;
+        if (!empty($this->creditsWriter)) {
+            return $this->creditsWriter;
         }
         $data = $this->creditsQuery("writer");
         foreach ($data->title->credits->edges as $edge) {
@@ -1350,21 +1350,21 @@ EOF;
                             $role .= ')';
                         }
                     }
-                    $this->credits_writer[] = array(
+                    $this->creditsWriter[] = array(
                         'imdb' => $imdb,
                         'name' => $name,
                         'role' => $role
                     );
                 }
             } else {
-                $this->credits_writer[] = array(
+                $this->creditsWriter[] = array(
                         'imdb' => $imdb,
                         'name' => $name,
                         'role' => $role
                     );
             }
         }
-        return $this->credits_writer;
+        return $this->creditsWriter;
     }
 
     #---------------------------------------------------------------[ Producers ]---
@@ -1374,8 +1374,8 @@ EOF;
      */
     public function producer()
     {
-        if (!empty($this->credits_producer)) {
-            return $this->credits_producer;
+        if (!empty($this->creditsProducer)) {
+            return $this->creditsProducer;
         }
         $data = $this->creditsQuery("producer");
         foreach ($data->title->credits->edges as $edge) {
@@ -1430,13 +1430,13 @@ EOF;
                 }
                 $role .= ')';
             }
-            $this->credits_producer[] = array(
+            $this->creditsProducer[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
                 'role' => $role
             );
         }
-        return $this->credits_producer;
+        return $this->creditsProducer;
     }
 
     #-------------------------------------------------------------[ Composers ]---
@@ -1446,11 +1446,11 @@ EOF;
      */
     public function composer()
     {
-        if (!empty($this->credits_composer)) {
-            return $this->credits_composer;
+        if (!empty($this->creditsComposer)) {
+            return $this->creditsComposer;
         }
         $composerData = $this->directorComposer($this->creditsQuery("composer"));
-        return $this->credits_composer = $composerData;
+        return $this->creditsComposer = $composerData;
     }
 
     #====================================================[ /crazycredits page ]===
@@ -1462,7 +1462,7 @@ EOF;
      */
     public function crazyCredit()
     {
-        if (empty($this->crazy_credits)) {
+        if (empty($this->crazyCredits)) {
             $query = <<<EOF
 query CrazyCredits(\$id: ID!) {
   title(id: \$id) {
@@ -1483,10 +1483,10 @@ EOF;
             $data = $this->graphql->query($query, "CrazyCredits", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->crazyCredits->edges as $edge) {
                 $crazyCredit = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
-                $this->crazy_credits[] = $crazyCredit;
+                $this->crazyCredits[] = $crazyCredit;
             }
         }
-        return $this->crazy_credits;
+        return $this->crazyCredits;
     }
 
     #========================================================[ /episodes page ]===
@@ -1566,11 +1566,11 @@ EOF;
     public function episode($yearbased = 0)
     {
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
-            if (empty($this->season_episodes)) {
+            if (empty($this->seasonEpisodes)) {
                 // Check if season or year based
                 $seasonsData = $this->seasonYearCheck($yearbased);
                 if ($seasonsData == null) {
-                    return $this->season_episodes;
+                    return $this->seasonEpisodes;
                 }
                 foreach ($seasonsData as $edge) {
                     if (strlen((string)$edge->node->text) === 4) {
@@ -1703,11 +1703,11 @@ EOF;
                             );
                         $episodes[] = $episode;
                     }
-                    $this->season_episodes[$seasonYear] = $episodes;
+                    $this->seasonEpisodes[$seasonYear] = $episodes;
                 }
             }
         }
-        return $this->season_episodes;
+        return $this->seasonEpisodes;
     }
 
     #-----------------------------------------------------------[ IsOngoing TV Series ]---
@@ -1784,7 +1784,7 @@ EOF;
      */
     public function quote()
     {
-        if (empty($this->moviequotes)) {
+        if (empty($this->quotes)) {
             $query = <<<EOF
 query Quotes(\$id: ID!) {
   title(id: \$id) {
@@ -1809,12 +1809,12 @@ EOF;
                     if (trim(strip_tags($quoteItem)) == '') {
                         continue;
                     }
-                    $this->moviequotes[$key][] = trim(strip_tags($quoteItem));
+                    $this->quotes[$key][] = trim(strip_tags($quoteItem));
                 }
             }
             
         }
-        return $this->moviequotes;
+        return $this->quotes;
     }
 
     #==========================================================[ /trivia page ]===
@@ -1826,7 +1826,7 @@ EOF;
      */
     public function trivia($spoil = false)
     {
-        if (empty($this->trivia)) {
+        if (empty($this->trivias)) {
             if ($spoil === false) {
                 $filter = 'first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}';
             } else {
@@ -1851,10 +1851,10 @@ query Trivia(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Trivia", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->trivia->edges as $edge) {
-                $this->trivia[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
+                $this->trivias[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
             }
         }
-        return $this->trivia;
+        return $this->trivias;
     }
 
     #======================================================[ Soundtrack ]===
@@ -2143,10 +2143,10 @@ EOF;
      */
     public function prodCompany()
     {
-        if (empty($this->compcred_prod)) {
-            $this->compcred_prod = $this->companyCredits("production");
+        if (empty($this->compCreditsProd)) {
+            $this->compCreditsProd = $this->companyCredits("production");
         }
-        return $this->compcred_prod;
+        return $this->compCreditsProd;
     }
 
     #------------------------------------------------[ Distributing Companies ]---
@@ -2157,10 +2157,10 @@ EOF;
      */
     public function distCompany()
     {
-        if (empty($this->compcred_dist)) {
-            $this->compcred_dist = $this->companyCredits("distribution");
+        if (empty($this->compCreditsDist)) {
+            $this->compCreditsDist = $this->companyCredits("distribution");
         }
-        return $this->compcred_dist;
+        return $this->compCreditsDist;
     }
 
     #---------------------------------------------[ Special Effects Companies ]---
@@ -2171,10 +2171,10 @@ EOF;
      */
     public function specialCompany()
     {
-        if (empty($this->compcred_special)) {
-            $this->compcred_special = $this->companyCredits("specialEffects");
+        if (empty($this->compCreditsSpecial)) {
+            $this->compCreditsSpecial = $this->companyCredits("specialEffects");
         }
-        return $this->compcred_special;
+        return $this->compCreditsSpecial;
     }
 
     #-------------------------------------------------------[ Other Companies ]---
@@ -2185,10 +2185,10 @@ EOF;
      */
     public function otherCompany()
     {
-        if (empty($this->compcred_other)) {
-            $this->compcred_other = $this->companyCredits("miscellaneous");
+        if (empty($this->ccompCreditsOther)) {
+            $this->compCreditsOther = $this->companyCredits("miscellaneous");
         }
-        return $this->compcred_other;
+        return $this->compCreditsOther;
     }
 
     #-------------------------------------------------------[ Connections ]---
@@ -2277,12 +2277,12 @@ EOF;
     #========================================================[ /Box Office page ]===
     #-------------------------------------------------------[ productionBudget ]---
     /** Info about productionBudget
-     * @return production_budget: array[amount, currency]>
+     * @return productionBudget: array[amount, currency]>
      * @see IMDB page /title
      */
     public function budget()
     {
-        if (empty($this->production_budget)) {
+        if (empty($this->productionBudget)) {
             $query = <<<EOF
 query ProductionBudget(\$id: ID!) {
   title(id: \$id) {
@@ -2298,13 +2298,13 @@ EOF;
 
             $data = $this->graphql->query($query, "ProductionBudget", ["id" => "tt$this->imdbID"]);
             if ($data->title->productionBudget != null && isset($data->title->productionBudget->budget->amount)) {
-                $this->production_budget["amount"] = $data->title->productionBudget->budget->amount;
-                $this->production_budget["currency"] = $data->title->productionBudget->budget->currency;
+                $this->productionBudget["amount"] = $data->title->productionBudget->budget->amount;
+                $this->productionBudget["currency"] = $data->title->productionBudget->budget->currency;
             } else {
-                return $this->production_budget;
+                return $this->productionBudget;
             }
         }
-        return $this->production_budget;
+        return $this->productionBudget;
     }
 
     #-------------------------------------------------------[ rankedLifetimeGrosses ]---
@@ -2362,7 +2362,7 @@ EOF;
      */
     public function keyword()
     {
-        if (empty($this->all_keywords)) {
+        if (empty($this->keywords)) {
             $query = <<<EOF
 query Keywords(\$id: ID!) {
   title(id: \$id) {
@@ -2383,10 +2383,10 @@ EOF;
 
             $data = $this->graphql->query($query, "Keywords", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->keywords->edges as $edge) {
-                $this->all_keywords[] = $edge->node->keyword->text->text;
+                $this->keywords[] = $edge->node->keyword->text->text;
             }
         }
-        return $this->all_keywords;
+        return $this->keywords;
     }
 
     #========================================================[ /Alternate versions page ]===
@@ -2397,7 +2397,7 @@ EOF;
      */
     public function alternateVersion()
     {
-        if (empty($this->moviealternateversions)) {
+        if (empty($this->alternateversions)) {
             $query = <<<EOF
 query AlternateVersions(\$id: ID!) {
   title(id: \$id) {
@@ -2415,10 +2415,10 @@ query AlternateVersions(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "AlternateVersions", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->alternateVersions->edges as $edge) {
-                $this->moviealternateversions[] = $edge->node->text->plainText;
+                $this->alternateversions[] = $edge->node->text->plainText;
             }
         }
-        return $this->moviealternateversions;
+        return $this->alternateversions;
     }
 
     #-------------------------------------------------[ Main images ]---
@@ -2429,7 +2429,7 @@ EOF;
      */
     public function mainphoto($amount = 6)
     {
-        if (empty($this->main_photo)) {
+        if (empty($this->mainPhoto)) {
             $query = <<<EOF
 query MainPhoto(\$id: ID!) {
   title(id: \$id) {
@@ -2467,12 +2467,12 @@ EOF;
                         // portrait (X)
                         $orientation = 'X';
                     }
-                    $this->main_photo[] = $imgUrl . 'QL75_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+                    $this->mainPhoto[] = $imgUrl . 'QL75_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
 
                 }
             }
         }
-        return $this->main_photo;
+        return $this->mainPhoto;
     }
     
     #-------------------------------------------------[ Trailer ]---
@@ -2592,12 +2592,12 @@ EOF;
     #-------------------------------------------------------[ Main Awards ]---
     /**
      * Get main awards (not including total wins and total nominations)
-     * @return array main_awards (array[award|string, nominations|int, wins|int])
+     * @return array mainAwards (array[award|string, nominations|int, wins|int])
      * @see IMDB page / (TitlePage)
      */
     public function mainaward()
     {
-        if (empty($this->main_awards)) {
+        if (empty($this->mainAwards)) {
             $query = <<<EOF
 query MainAward(\$id: ID!) {
   title(id: \$id) {
@@ -2613,16 +2613,16 @@ query MainAward(\$id: ID!) {
 EOF;
 
             $data = $this->graphql->query($query, "MainAward", ["id" => "tt$this->imdbID"]);
-            $this->main_awards['award'] = '';
-            $this->main_awards['nominations'] = '';
-            $this->main_awards['wins'] = '';
+            $this->mainAwards['award'] = '';
+            $this->mainAwards['nominations'] = '';
+            $this->mainAwards['wins'] = '';
             if (isset($data->title->prestigiousAwardSummary) && $data->title->prestigiousAwardSummary !== null) {
-                $this->main_awards['award'] = $data->title->prestigiousAwardSummary->award->text;
-                $this->main_awards['nominations'] = $data->title->prestigiousAwardSummary->nominations;
-                $this->main_awards['wins'] = $data->title->prestigiousAwardSummary->wins;
+                $this->mainAwards['award'] = $data->title->prestigiousAwardSummary->award->text;
+                $this->mainAwards['nominations'] = $data->title->prestigiousAwardSummary->nominations;
+                $this->mainAwards['wins'] = $data->title->prestigiousAwardSummary->wins;
             }
         }
-        return $this->main_awards;
+        return $this->mainAwards;
     }
 
     #-------------------------------------------------------[ Awards ]---
