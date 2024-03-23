@@ -30,6 +30,7 @@ class Name extends MdbBase
     protected $birthday = array();
     protected $deathday = array();
     protected $professions = array();
+    protected $popRank = array();
 
     // "Bio" page:
     protected $birth_name = "";
@@ -350,6 +351,46 @@ EOF;
             }
         }
         return $this->professions;
+    }
+
+    #----------------------------------------------------------[ Popularity ]---
+    /**
+     * Get current popularity rank of a person
+     * @return array(currentRank: int, changeDirection: enum (string?), difference: int)
+     * @see IMDB page / (NamePage)
+     */
+    public function rank()
+    {
+        if (empty($this->popRank)) {
+            $query = <<<EOF
+query Rank(\$id: ID!) {
+  name(id: \$id) {
+    meterRanking {
+      currentRank
+      rankChange {
+        changeDirection
+        difference
+      }
+    }
+  }
+}
+EOF;
+
+            $data = $this->graphql->query($query, "Rank", ["id" => "nm$this->imdbID"]);
+            if (isset($data->name->meterRanking)) {
+                $this->popRank['currentRank'] = isset($data->name->meterRanking->currentRank) ?
+                                                        $data->name->meterRanking->currentRank : null;
+                                                        
+                $this->popRank['changeDirection'] = isset($data->name->meterRanking->rankChange->changeDirection) ?
+                                                            $data->name->meterRanking->rankChange->changeDirection : null;
+                                                            
+                $this->popRank['difference'] = isset($data->name->meterRanking->rankChange->difference) ?
+                                                       $data->name->meterRanking->rankChange->difference : null;
+            } else {
+                return $this->popRank;
+            }
+        }
+        return $this->popRank;
     }
 
     #-----------------------------------------------------------[ Body Height ]---
