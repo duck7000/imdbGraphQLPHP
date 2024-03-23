@@ -564,125 +564,6 @@ EOF;
 
     #--------------------------------------------------------[ Photo specific ]---
     /**
-     * Setup cover photo (thumbnail and big variant)
-     * @see IMDB page / (TitlePage)
-     */
-    private function populatePoster()
-    {
-        $query = <<<EOF
-query Poster(\$id: ID!) {
-  title(id: \$id) {
-    primaryImage {
-      url
-      width
-      height
-    }
-  }
-}
-EOF;
-
-        $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
-        if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
-            $fullImageWidth = $data->title->primaryImage->width;
-            $fullImageHeight = $data->title->primaryImage->height;
-            $newImageWidth = 190;
-            $newImageHeight = 281;
-
-            $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-
-            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            $this->mainPosterThumb = $img . $parameter;
-
-            if (strpos($data->title->primaryImage->url, '._V1')) {
-                $this->mainPoster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->mainPosterThumb);
-            }
-        }
-    }
-
-    /**
-     * Calculate The total result parameter and determine if SX or SY is used
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @return string example 'QL100_SX190_CR0,15,190,281_.jpg'
-     * QL100 = Quality Level, 100 the highest, 0 the lowest quality
-     * SX190 = S (scale) X190 desired width
-     * CR = Crop (crop left and right, crop top and bottom, New width, New Height)
-     * @see IMDB page / (TitlePage)
-     */
-    private function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        // original source aspect ratio
-        $ratio_orig = $fullImageWidth / $fullImageHeight;
-
-        // new aspect ratio
-        $ratio_new = $newImageWidth / $newImageHeight;
-
-        // check if the image must be treated as SX or SY
-        if ($ratio_new < $ratio_orig) {
-            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL75_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
-        } else {
-            $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL75_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
-        }
-    }
-
-    /**
-     * Calculate if cropValue has to be round to previous or next even integer
-     * @parameter $totalPixelCropSize how much pixels in total need to be cropped
-     */
-    private function roundInteger($totalPixelCropSize)
-    {
-        if ((($totalPixelCropSize - floor($totalPixelCropSize)) < 0.5)) {
-            // Previous even integer
-            $num = 2 * round($totalPixelCropSize / 2.0);
-        } else {
-            // Next even integer
-            $num = ceil($totalPixelCropSize);
-            $num += $num % 2;
-        }
-        return $num;
-    }
-
-    /**
-     * Calculate HORIZONTAL (left and right) crop value for primary, cast, episode, recommendations and mainphoto images
-     * Output is for portrait images!
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @see IMDB page / (TitlePage)
-     */
-    private function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        $newScalefactor = $fullImageHeight / $newImageHeight;
-        $scaledWidth = $fullImageWidth / $newScalefactor;
-        $totalPixelCropSize = $scaledWidth - $newImageWidth;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
-        return $cropValue;
-    }
-
-    /**
-     * Calculate VERTICAL (Top and bottom)crop value for primary, cast, episode and recommendations images
-     * Output is for landscape images!
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @see IMDB page / (TitlePage)
-     */
-    private function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        $newScalefactor = $fullImageWidth / $newImageWidth;
-        $scaledHeight = $fullImageHeight / $newScalefactor;
-        $totalPixelCropSize = $scaledHeight - $newImageHeight;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
-        return $cropValue;
-    }
-
-    /**
      * Get the main photo image url for thumbnail or full size
      * @param boolean $thumb get the thumbnail (height: 281) or the full version
      * @return string|false photo (string URL if found, FALSE otherwise)
@@ -1151,117 +1032,6 @@ EOF;
         return $this->creditsCast;
     }
 
-    #------------------------------------------------------[ Helper: Crew Category ]---
-    /** create query and fetch data from category
-     * @param string $crewCategory (producer, writer, composer or director)
-     * @return array data (array[0..n] of objects)
-     * @see used by the methods director, writer, producer, composer
-     */
-    private function creditsQuery($crewCategory)
-    {
-$query = <<<EOF
-query CreditCrew(\$id: ID!) {
-  title(id: \$id) {
-    credits(first: 9999, filter: { categories: ["$crewCategory"] }) {
-      edges {
-        node {
-          name {
-            nameText {
-              text
-            }
-            id
-          }
-          ... on Crew {
-            jobs {
-              text
-            }
-            attributes {
-              text
-            }
-            episodeCredits(first: 9999) {
-              edges {
-                node {
-                  title {
-                    series {
-                      displayableEpisodeNumber {
-                        episodeNumber {
-                          text
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              yearRange {
-                year
-                endYear
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "CreditCrew", ["id" => "tt$this->imdbID"]);
-        return $data;
-    }
-
-    #-------------------------------------------------------------[ Helper: Director / Composer ]---
-    /**
-     * process data for Director and Composer
-     * @return array director/composer (array[0..n] of arrays[imdb,name,role])
-     * @see used by the methods director and composer
-     */
-    private function directorComposer($data)
-    {
-        $output = array();
-        foreach ($data->title->credits->edges as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $role = '';
-            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                    $role .= '(' . $attribute->text . ')';
-                    if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
-                        $role .= ' ';
-                    }
-                }
-            }
-            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
-                $totalEpisodes = count($edge->node->episodeCredits->edges);
-                if ($totalEpisodes == 1) {
-                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
-                    if ($value == "unknown") {
-                        $totalEpisodes = 'unknown';
-                    }
-                }
-                $episodeText = ' episode';
-                if ($totalEpisodes > 1) {
-                    $episodeText .= 's';
-                }
-                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                    $role .= ' ';
-                }
-                $role .= '(' . $totalEpisodes . $episodeText;
-                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
-                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
-                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
-                    }
-                }
-                $role .= ')';
-            }
-            $output[] = array(
-                'imdb' => $imdb,
-                'name' => $name,
-                'role' => $role
-            );
-        }
-        return $output;
-    }
-
     #-------------------------------------------------------------[ Directors ]---
     /**
      * Get the director(s) of the movie
@@ -1490,50 +1260,6 @@ EOF;
     }
 
     #========================================================[ /episodes page ]===
-    #--------------------------------------------------------[ Season/Year check ]---
-    /** Check if TV Series season or year based
-     * @return array $data based on years or seasons
-     */
-    private function seasonYearCheck($yearbased)
-    {
-        $querySeasons = <<<EOF
-query Seasons(\$id: ID!) {
-  title(id: \$id) {
-    episodes {
-      displayableSeasons(first: 9999) {
-        edges {
-          node {
-            text
-          }
-        }
-      }
-      displayableYears(first: 9999) {
-        edges {
-          node {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-        $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
-        if ($seasonsData->title->episodes != null) {
-            $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
-            $byYear = count($seasonsData->title->episodes->displayableYears->edges);
-            if ($yearbased == 0) {
-                $data = $seasonsData->title->episodes->displayableSeasons->edges;
-            } else {
-                $data = $seasonsData->title->episodes->displayableYears->edges;
-            }
-        } else {
-            $data = null;
-        }
-        return $data;
-
-    }
-
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
@@ -2891,7 +2617,286 @@ EOF;
         return $this->cameras;
     }
 
-    #========================================================[ Helper functions ]===  
+
+    #========================================================[ Helper functions ]===
+    #===============================================================================
+
+    #========================================================[ photo/poster ]===
+    /**
+     * Setup cover photo (thumbnail and big variant)
+     * @see IMDB page / (TitlePage)
+     */
+    private function populatePoster()
+    {
+        $query = <<<EOF
+query Poster(\$id: ID!) {
+  title(id: \$id) {
+    primaryImage {
+      url
+      width
+      height
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
+        if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
+            $fullImageWidth = $data->title->primaryImage->width;
+            $fullImageHeight = $data->title->primaryImage->height;
+            $newImageWidth = 190;
+            $newImageHeight = 281;
+
+            $img = str_replace('.jpg', '', $data->title->primaryImage->url);
+
+            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            $this->mainPosterThumb = $img . $parameter;
+
+            if (strpos($data->title->primaryImage->url, '._V1')) {
+                $this->mainPoster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->mainPosterThumb);
+            }
+        }
+    }
+
+    /**
+     * Calculate The total result parameter and determine if SX or SY is used
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @return string example 'QL100_SX190_CR0,15,190,281_.jpg'
+     * QL100 = Quality Level, 100 the highest, 0 the lowest quality
+     * SX190 = S (scale) X190 desired width
+     * CR = Crop (crop left and right, crop top and bottom, New width, New Height)
+     * @see IMDB page / (TitlePage)
+     */
+    private function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        // original source aspect ratio
+        $ratio_orig = $fullImageWidth / $fullImageHeight;
+
+        // new aspect ratio
+        $ratio_new = $newImageWidth / $newImageHeight;
+
+        // check if the image must be treated as SX or SY
+        if ($ratio_new < $ratio_orig) {
+            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            return 'QL75_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
+        } else {
+            $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            return 'QL75_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
+        }
+    }
+
+    /**
+     * Calculate if cropValue has to be round to previous or next even integer
+     * @parameter $totalPixelCropSize how much pixels in total need to be cropped
+     */
+    private function roundInteger($totalPixelCropSize)
+    {
+        if ((($totalPixelCropSize - floor($totalPixelCropSize)) < 0.5)) {
+            // Previous even integer
+            $num = 2 * round($totalPixelCropSize / 2.0);
+        } else {
+            // Next even integer
+            $num = ceil($totalPixelCropSize);
+            $num += $num % 2;
+        }
+        return $num;
+    }
+
+    /**
+     * Calculate HORIZONTAL (left and right) crop value for primary, cast, episode, recommendations and mainphoto images
+     * Output is for portrait images!
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @see IMDB page / (TitlePage)
+     */
+    private function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        $newScalefactor = $fullImageHeight / $newImageHeight;
+        $scaledWidth = $fullImageWidth / $newScalefactor;
+        $totalPixelCropSize = $scaledWidth - $newImageWidth;
+        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
+        return $cropValue;
+    }
+
+    /**
+     * Calculate VERTICAL (Top and bottom)crop value for primary, cast, episode and recommendations images
+     * Output is for landscape images!
+     * @parameter $fullImageWidth the width in pixels of the large original image
+     * @parameter $fullImageHeight the height in pixels of the large original image
+     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
+     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
+     * @see IMDB page / (TitlePage)
+     */
+    private function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    {
+        $newScalefactor = $fullImageWidth / $newImageWidth;
+        $scaledHeight = $fullImageHeight / $newScalefactor;
+        $totalPixelCropSize = $scaledHeight - $newImageHeight;
+        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
+        return $cropValue;
+    }
+
+    #========================================================[ Crew Category ]===
+    /** create query and fetch data from category
+     * @param string $crewCategory (producer, writer, composer or director)
+     * @return array data (array[0..n] of objects)
+     * @see used by the methods director, writer, producer, composer
+     */
+    private function creditsQuery($crewCategory)
+    {
+$query = <<<EOF
+query CreditCrew(\$id: ID!) {
+  title(id: \$id) {
+    credits(first: 9999, filter: { categories: ["$crewCategory"] }) {
+      edges {
+        node {
+          name {
+            nameText {
+              text
+            }
+            id
+          }
+          ... on Crew {
+            jobs {
+              text
+            }
+            attributes {
+              text
+            }
+            episodeCredits(first: 9999) {
+              edges {
+                node {
+                  title {
+                    series {
+                      displayableEpisodeNumber {
+                        episodeNumber {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              yearRange {
+                year
+                endYear
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "CreditCrew", ["id" => "tt$this->imdbID"]);
+        return $data;
+    }
+
+    #========================================================[ Director/Composer ]===
+    /**
+     * process data for Director and Composer
+     * @return array director/composer (array[0..n] of arrays[imdb,name,role])
+     * @see used by the methods director and composer
+     */
+    private function directorComposer($data)
+    {
+        $output = array();
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    $role .= '(' . $attribute->text . ')';
+                    if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
+                        $role .= ' ';
+                    }
+                }
+            }
+            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+                $totalEpisodes = count($edge->node->episodeCredits->edges);
+                if ($totalEpisodes == 1) {
+                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
+                    if ($value == "unknown") {
+                        $totalEpisodes = 'unknown';
+                    }
+                }
+                $episodeText = ' episode';
+                if ($totalEpisodes > 1) {
+                    $episodeText .= 's';
+                }
+                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                    $role .= ' ';
+                }
+                $role .= '(' . $totalEpisodes . $episodeText;
+                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
+                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
+                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                    }
+                }
+                $role .= ')';
+            }
+            $output[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role
+            );
+        }
+        return $output;
+    }
+
+    #========================================================[ Season Year check ]===
+    /** Check if TV Series season or year based
+     * @return array $data based on years or seasons
+     */
+    private function seasonYearCheck($yearbased)
+    {
+        $querySeasons = <<<EOF
+query Seasons(\$id: ID!) {
+  title(id: \$id) {
+    episodes {
+      displayableSeasons(first: 9999) {
+        edges {
+          node {
+            text
+          }
+        }
+      }
+      displayableYears(first: 9999) {
+        edges {
+          node {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
+        if ($seasonsData->title->episodes != null) {
+            $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
+            $byYear = count($seasonsData->title->episodes->displayableYears->edges);
+            if ($yearbased == 0) {
+                $data = $seasonsData->title->episodes->displayableSeasons->edges;
+            } else {
+                $data = $seasonsData->title->episodes->displayableYears->edges;
+            }
+        } else {
+            $data = null;
+        }
+        return $data;
+
+    }
+
+    #========================================================[ GraphQL Get All]===
     /**
      * Get all edges of a field in the title type
      * @param string $queryName The cached query name
