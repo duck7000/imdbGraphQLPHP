@@ -154,7 +154,7 @@ EOF;
         return $results;
     }
 
-    #-------------------------------------------------------------[ Helper methods ]---
+    #========================================================[ Helper functions]===
 
     /**
      * Check if there is at least one, possible more input items
