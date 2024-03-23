@@ -46,6 +46,7 @@ class Title extends MdbBase
     protected $main_endyear = -1;
     protected $main_top250 = -1;
     protected $main_rating = -1;
+    protected $main_rank = array();
     protected $main_photo = array();
     protected $trailers = array();
     protected $main_awards = array();
