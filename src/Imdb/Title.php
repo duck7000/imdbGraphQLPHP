@@ -77,6 +77,7 @@ class Title extends MdbBase
     protected $colors = array();
     protected $aspectRatio = array();
     protected $cameras = array();
+    protected $faqs = array();
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
