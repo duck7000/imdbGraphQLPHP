@@ -17,10 +17,7 @@ namespace Imdb;
 class Config
 {
 
-    /**
-     * Caching options
-     */
-
+    #========================================================[ Cache options]===
     /**
      * Directory to store cached pages. This must be writable by the web
      * server. It doesn't need to be under documentroot.
@@ -63,10 +60,7 @@ class Config
     public $cacheExpire = 604800;
 
 
-    /**
-     * Localization options
-     */
-
+    #========================================================[ Localization options ]===
      /**
      * @var boolean useLocalization set true to use localization
      * leave this to false if you want US American English
@@ -105,10 +99,7 @@ class Config
     public $titleSearchAmount = 10;
 
 
-    /**
-     * TitleSearchAdvanced options
-     */
-
+    #========================================================[ TitleSearchAdvanced options ]===
     /**
      * amount of search results
      * @var int (should be 250 or less, more is not very useful)
