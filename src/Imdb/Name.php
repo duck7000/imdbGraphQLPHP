@@ -25,31 +25,31 @@ class Name extends MdbBase
 {
 
     // "Name" page:
-    protected $main_photo = null;
-    protected $fullname = "";
+    protected $mainPhoto = null;
+    protected $fullName = "";
     protected $birthday = array();
     protected $deathday = array();
     protected $professions = array();
     protected $popRank = array();
 
     // "Bio" page:
-    protected $birth_name = "";
-    protected $nick_name = array();
+    protected $birthName = "";
+    protected $nickName = array();
     protected $akaName = array();
     protected $bodyheight = array();
     protected $spouses = array();
     protected $children = array();
     protected $parents = array();
     protected $relatives = array();
-    protected $bio_bio = array();
-    protected $bio_trivia = array();
-    protected $bio_tm = array();
-    protected $bio_salary = array();
-    protected $bio_quotes = array();
+    protected $bioBio = array();
+    protected $bioTrivia = array();
+    protected $bioQuotes = array();
+    protected $bioTrademark = array();
+    protected $bioSalary = array();
 
     // "Publicity" page:
-    protected $pub_prints = array();
-    protected $pub_movies = array();
+    protected $pubPrints = array();
+    protected $pubMovies = array();
 
     // "Credits" page:
     protected $awards = array();
@@ -68,6 +68,7 @@ class Name extends MdbBase
     }
 
     #=============================================================[ Main Page ]===
+
     #------------------------------------------------------------------[ Name ]---
     /** Get the name of the person
      * @return string name full name of the person
@@ -86,8 +87,8 @@ query Name(\$id: ID!) {
 EOF;
 
         $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
-        $this->fullname = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
-        return $this->fullname;
+        $this->fullName = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
+        return $this->fullName;
     }
 
     #--------------------------------------------------------[ Photo specific ]---
@@ -110,32 +111,32 @@ query PrimaryImage(\$id: ID!) {
   }
 }
 EOF;
-        if ($this->main_photo === null) {
+        if ($this->mainPhoto === null) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if ($data->name->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
                 if ($size == "small") {
-                    $this->main_photo = $img . 'QL100_SY98_.jpg';
-                    $headers = get_headers($this->main_photo);
+                    $this->mainPhoto = $img . 'QL100_SY98_.jpg';
+                    $headers = get_headers($this->mainPhoto);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-                        $this->main_photo = $data->name->primaryImage->url;
+                        $this->mainPhoto = $data->name->primaryImage->url;
                     }
                 }
                 if ($size == "medium") {
-                    $this->main_photo = $img . 'QL100_SY931_.jpg';
-                    $headers = get_headers($this->main_photo);
+                    $this->mainPhoto = $img . 'QL100_SY931_.jpg';
+                    $headers = get_headers($this->mainPhoto);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-                        $this->main_photo = $data->name->primaryImage->url;
+                        $this->mainPhoto = $data->name->primaryImage->url;
                     }
                 }
                 if ($size == "large") {
-                    $this->main_photo = $data->name->primaryImage->url;
+                    $this->mainPhoto = $data->name->primaryImage->url;
                 }
             } else {
-                return $this->main_photo;
+                return $this->mainPhoto;
             }
         }
-        return $this->main_photo;
+        return $this->mainPhoto;
     }
 
     #==================================================================[ /bio ]===
@@ -157,8 +158,8 @@ query BirthName(\$id: ID!) {
 EOF;
 
         $data = $this->graphql->query($query, "BirthName", ["id" => "nm$this->imdbID"]);
-        $this->birth_name = isset($data->name->birthName->text) ? $data->name->birthName->text : '';
-        return $this->birth_name;
+        $this->birthName = isset($data->name->birthName->text) ? $data->name->birthName->text : '';
+        return $this->birthName;
     }
 
     #-------------------------------------------------------------[ Nick Name ]---
@@ -168,7 +169,7 @@ EOF;
      */
     public function nickname()
     {
-        if (empty($this->nick_name)) {
+        if (empty($this->nickName)) {
             $query = <<<EOF
 query NickName(\$id: ID!) {
   name(id: \$id) {
@@ -182,11 +183,11 @@ EOF;
             $data = $this->graphql->query($query, "NickName", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->nickNames as $nickName) {
                 if (!empty($nickName->text)) {
-                    $this->nick_name[] = $nickName->text;
+                    $this->nickName[] = $nickName->text;
                 }
             }
         }
-        return $this->nick_name;
+        return $this->nickName;
     }
 
     #-------------------------------------------------------------[ Alternative Names ]---
@@ -593,7 +594,7 @@ EOF;
      */
     public function bio()
     {
-        if (empty($this->bio_bio)) {
+        if (empty($this->bioBio)) {
             $query = <<<EOF
 query MiniBio(\$id: ID!) {
   name(id: \$id) {
@@ -622,10 +623,10 @@ EOF;
                     }
                 }
                 $bio_bio["author"] = $bioAuthor;
-                $this->bio_bio[] = $bio_bio;
+                $this->bioBio[] = $bio_bio;
             }
         }
-        return $this->bio_bio;
+        return $this->bioBio;
     }
 
     #----------------------------------------------------------------[ Trivia ]---
@@ -635,10 +636,10 @@ EOF;
      */
     public function trivia()
     {
-        if (empty($this->bio_trivia)) {
-            return $this->dataParse("trivia", $this->bio_trivia);
+        if (empty($this->bioTrivia)) {
+            return $this->dataParse("trivia", $this->bioTrivia);
         }
-        return $this->bio_trivia;
+        return $this->bioTrivia;
     }
 
     #----------------------------------------------------------------[ Quotes ]---
@@ -648,10 +649,10 @@ EOF;
      */
     public function quotes()
     {
-        if (empty($this->bio_quotes)) {
-            return $this->dataParse("quotes", $this->bio_quotes);
+        if (empty($this->bioQuotes)) {
+            return $this->dataParse("quotes", $this->bioQuotes);
         }
-        return $this->bio_quotes;
+        return $this->bioQuotes;
     }
 
     #------------------------------------------------------------[ Trademarks ]---
@@ -661,10 +662,10 @@ EOF;
      */
     public function trademark()
     {
-        if (empty($this->bio_tm)) {
-            return $this->dataParse("trademarks", $this->bio_tm);
+        if (empty($this->bioTrademark)) {
+            return $this->dataParse("trademarks", $this->bioTrademark);
         }
-        return $this->bio_tm;
+        return $this->bioTrademark;
     }
 
     #----------------------------------------------------------------[ Salary ]---
@@ -674,7 +675,7 @@ EOF;
      */
     public function salary()
     {
-        if (empty($this->bio_salary)) {
+        if (empty($this->bioSalary)) {
             $query = <<<EOF
 query Salaries(\$id: ID!) {
   name(id: \$id) {
@@ -719,7 +720,7 @@ EOF;
                             }
                         }
                     }
-                    $this->bio_salary[] = array(
+                    $this->bioSalary[] = array(
                         'imdb' => $imdbId,
                         'name' => $title,
                         'year' => $year,
@@ -729,10 +730,10 @@ EOF;
                     );
                 }
             } else {
-                return $this->bio_salary;
+                return $this->bioSalary;
             }
         }
-        return $this->bio_salary;
+        return $this->bioSalary;
     }
 
     #============================================================[ /publicity ]===
@@ -745,7 +746,7 @@ EOF;
      */
     public function pubprints()
     {
-        if (empty($this->pub_prints)) {
+        if (empty($this->pubPrints)) {
             $query = <<<EOF
 query PubPrint(\$id: ID!) {
   name(id: \$id) {
@@ -782,7 +783,7 @@ EOF;
                             }
                         }
                     }
-                    $this->pub_prints[] = array(
+                    $this->pubPrints[] = array(
                         "title" => $title,
                         "author" => $authors,
                         "publisher" => $publisher,
@@ -790,10 +791,10 @@ EOF;
                     );
                 }
             } else {
-                return $this->pub_prints;
+                return $this->pubPrints;
             }
         }
-        return $this->pub_prints;
+        return $this->pubPrints;
     }
 
     #----------------------------------------------------[ Biographical movies ]---
@@ -803,7 +804,7 @@ EOF;
      */
     public function pubmovies()
     {
-        if (empty($this->pub_movies)) {
+        if (empty($this->pubMovies)) {
             $query = <<<EOF
 query PubFilm(\$id: ID!) {
   name(id: \$id) {
@@ -858,7 +859,7 @@ EOF;
                         $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
                                                    $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : '';
                     }
-                    $this->pub_movies[] = array(
+                    $this->pubMovies[] = array(
                         "title" => $filmTitle,
                         "id" => $filmId,
                         "year" => $filmYear,
@@ -868,10 +869,10 @@ EOF;
                     );
                 }
             } else {
-                return $this->pub_movies;
+                return $this->pubMovies;
             }
         }
-        return $this->pub_movies;
+        return $this->pubMovies;
     }
 
     #-------------------------------------------------------[ Awards ]---
