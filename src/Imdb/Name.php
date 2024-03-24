@@ -50,6 +50,7 @@ class Name extends MdbBase
     // "Publicity" page:
     protected $pubPrints = array();
     protected $pubMovies = array();
+    protected $pubOtherWorks = array();
 
     // "Credits" page:
     protected $awards = array();
@@ -873,6 +874,75 @@ EOF;
             }
         }
         return $this->pubMovies;
+    }
+
+    #----------------------------------------------------[ Other Works ]---
+    /** Other works of this person
+     * @return array pubOtherWorks array[0..n] of array[category, fromDate array(day, month,year), toDate array(day, month,year), text]
+     * @see IMDB person page /otherworks
+     */
+    public function pubother()
+    {
+        if (empty($this->pubOtherWorks)) {
+            $query = <<<EOF
+query PubOther(\$id: ID!) {
+  name(id: \$id) {
+    otherWorks(first: 9999) {
+      edges {
+        node {
+          category {
+            text
+          }
+          fromDate
+          toDate
+          text {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "PubOther", ["id" => "nm$this->imdbID"]);
+            if ($data->name->otherWorks->edges != null) {
+                foreach ($data->name->otherWorks->edges as $edge) {
+                    $category = isset($edge->node->category) ? $edge->node->category->text : null;
+                    
+                    // From date
+                    $fromDateDay = isset($edge->node->fromDate->day) ? $edge->node->fromDate->day : null;
+                    $fromDateMonth = isset($edge->node->fromDate->month) ? $edge->node->fromDate->month : null;
+                    $fromDateYear = isset($edge->node->fromDate->year) ? $edge->node->fromDate->year : null;
+                    $fromDate = array(
+                        "day" => $fromDateDay,
+                        "month" => $fromDateMonth,
+                        "year" => $fromDateYear
+                    );
+
+                    // To date
+                    $toDateDay = isset($edge->node->toDate->day) ? $edge->node->toDate->day : null;
+                    $toDateMonth = isset($edge->node->toDate->month) ? $edge->node->toDate->month : null;
+                    $toDateYear = isset($edge->node->toDate->year) ? $edge->node->toDate->year : null;
+                    $toDate = array(
+                        "day" => $toDateDay,
+                        "month" => $toDateMonth,
+                        "year" => $toDateYear
+                    );
+
+                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
+
+                    $this->pubOtherWorks[] = array(
+                        "category" => $category,
+                        "fromDate" => $fromDate,
+                        "toDate" => $toDate,
+                        "text" => $text
+                    );
+                }
+            } else {
+                return $this->pubOtherWorks;
+            }
+        }
+        return $this->pubOtherWorks;
     }
 
     #-------------------------------------------------------[ Awards ]---
