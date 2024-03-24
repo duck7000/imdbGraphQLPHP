@@ -91,42 +91,6 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------------[ Title ]---
-    /**
-     * Setup title and year properties
-     */
-    protected function titleYear()
-    {
-        $query = <<<EOF
-query TitleYear(\$id: ID!) {
-  title(id: \$id) {
-    titleText {
-      text
-    }
-    originalTitleText {
-      text
-    }
-    titleType {
-      text
-    }
-    releaseYear {
-      year
-      endYear
-    }
-  }
-}
-EOF;
-
-        $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
-
-        $this->mainTitle = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
-        $this->mainOriginalTitle  = ucwords(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
-        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
-        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
-        $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
-        if ($this->mainYear == "????") {
-            $this->mainYear = "";
-        }
-    }
 
     /** Get movie type
      * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini Series, Video Game, TV Short, Video)
@@ -1795,71 +1759,6 @@ EOF;
     }
 
     #==================================================[ /companycredits page ]===
-    /**
-     * Fetch all company credits
-     * @param string $category e.g. distribution, production
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
-     */
-    protected function companyCredits($category)
-    {
-        $query = <<<EOF
-query CompanyCredits(\$id: ID!) {
-  title(id: \$id) {
-    companyCredits(first: 9999, filter: {categories: ["$category"]}) {
-      edges {
-        node {
-          company {
-            id
-          }
-          displayableProperty {
-            value {
-              plainText
-            }
-          }
-          countries {
-            text
-          }
-          attributes {
-            text
-          }
-          yearsInvolved {
-            year
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "CompanyCredits", ["id" => "tt$this->imdbID"]);
-        $results = array();
-        foreach ($data->title->companyCredits->edges as $edge) {
-            $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
-            $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
-            $companyCountry = '';
-            if ($edge->node->countries != null && isset($edge->node->countries[0]->text)) {
-                $companyCountry = $edge->node->countries[0]->text;
-            }
-            $companyAttribute = array();
-            if ($edge->node->attributes != null) {
-                foreach ($edge->node->attributes as $key => $attribute) {
-                    $companyAttribute[] = $attribute->text;
-                }
-            }
-            $companyYear = '';
-            if ($edge->node->yearsInvolved != null && isset($edge->node->yearsInvolved->year)) {
-                $companyYear = $edge->node->yearsInvolved->year;
-            }
-            $results[] = array(
-                "name" => $companyName,
-                "id" => $companyId,
-                "country" => $companyCountry,
-                "attribute" => $companyAttribute,
-                "year" => $companyYear,
-            );
-        }
-        return $results;
-    }
 
     #---------------------------------------------------[ Producing Companies ]---
 
@@ -2512,55 +2411,6 @@ EOF;
         return $this->awards;
     }
 
-    #========================================================[ Technical specifications ]===
-
-    #----------------------------------------------------------[ Technical specifications helper ]---
-    /**
-     * Get movie tech specs
-     * @param $type input techspec type like soundMixes or aspectRatios
-     * @param $valueType input type like text or soundMix
-     * @param $arrayName output array name
-     * @return array of array[0..n] of array[type, array attributes]
-     * @see IMDB page / (specifications)
-     */
-    protected function techSpec($type, $valueType, $arrayName)
-    {
-            $query = <<<EOF
-query TechSpec(\$id: ID!) {
-  title(id: \$id) {
-    technicalSpecifications {
-      $type {
-        items {
-          $valueType
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-
-        $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
-        if ($data->title->technicalSpecifications->$type->items != null) {
-            foreach ($data->title->technicalSpecifications->$type->items as $item) {
-                $type = isset($item->$valueType) ? $item->$valueType : '';
-                $attributes = array();
-                if ($item->attributes != null) {
-                    foreach ($item->attributes as $attribute) {
-                        $attributes[] = $attribute->text;
-                    }
-                }
-                $arrayName[] = array(
-                    'type' => $type,
-                    'attributes' => $attributes
-                );
-            }
-        }
-        return $arrayName;
-    }
-    
     #----------------------------------------------------------[ Sound mix ]---
     /**
      * Get movie sound mixes
@@ -2620,6 +2470,43 @@ EOF;
 
     #========================================================[ Helper functions ]===
     #===============================================================================
+
+    /**
+     * Setup title and year properties
+     */
+    protected function titleYear()
+    {
+        $query = <<<EOF
+query TitleYear(\$id: ID!) {
+  title(id: \$id) {
+    titleText {
+      text
+    }
+    originalTitleText {
+      text
+    }
+    titleType {
+      text
+    }
+    releaseYear {
+      year
+      endYear
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
+
+        $this->mainTitle = ucwords(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
+        $this->mainOriginalTitle  = ucwords(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
+        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
+        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
+        $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
+        if ($this->mainYear == "????") {
+            $this->mainYear = "";
+        }
+    }
 
     #========================================================[ photo/poster ]===
     /**
@@ -2739,6 +2626,72 @@ EOF;
         $totalPixelCropSize = $scaledHeight - $newImageHeight;
         $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
         return $cropValue;
+    }
+
+    /**
+     * Fetch all company credits
+     * @param string $category e.g. distribution, production
+     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     */
+    protected function companyCredits($category)
+    {
+        $query = <<<EOF
+query CompanyCredits(\$id: ID!) {
+  title(id: \$id) {
+    companyCredits(first: 9999, filter: {categories: ["$category"]}) {
+      edges {
+        node {
+          company {
+            id
+          }
+          displayableProperty {
+            value {
+              plainText
+            }
+          }
+          countries {
+            text
+          }
+          attributes {
+            text
+          }
+          yearsInvolved {
+            year
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "CompanyCredits", ["id" => "tt$this->imdbID"]);
+        $results = array();
+        foreach ($data->title->companyCredits->edges as $edge) {
+            $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
+            $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
+            $companyCountry = '';
+            if ($edge->node->countries != null && isset($edge->node->countries[0]->text)) {
+                $companyCountry = $edge->node->countries[0]->text;
+            }
+            $companyAttribute = array();
+            if ($edge->node->attributes != null) {
+                foreach ($edge->node->attributes as $key => $attribute) {
+                    $companyAttribute[] = $attribute->text;
+                }
+            }
+            $companyYear = '';
+            if ($edge->node->yearsInvolved != null && isset($edge->node->yearsInvolved->year)) {
+                $companyYear = $edge->node->yearsInvolved->year;
+            }
+            $results[] = array(
+                "name" => $companyName,
+                "id" => $companyId,
+                "country" => $companyCountry,
+                "attribute" => $companyAttribute,
+                "year" => $companyYear,
+            );
+        }
+        return $results;
     }
 
     #========================================================[ Crew Category ]===
@@ -2894,6 +2847,53 @@ EOF;
         }
         return $data;
 
+    }
+
+    #========================================================[ Helper Technical specifications ]===
+    /**
+     * Get movie tech specs
+     * @param $type input techspec type like soundMixes or aspectRatios
+     * @param $valueType input type like text or soundMix
+     * @param $arrayName output array name
+     * @return array of array[0..n] of array[type, array attributes]
+     * @see IMDB page / (specifications)
+     */
+    protected function techSpec($type, $valueType, $arrayName)
+    {
+            $query = <<<EOF
+query TechSpec(\$id: ID!) {
+  title(id: \$id) {
+    technicalSpecifications {
+      $type {
+        items {
+          $valueType
+          attributes {
+            text
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+
+        $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
+        if ($data->title->technicalSpecifications->$type->items != null) {
+            foreach ($data->title->technicalSpecifications->$type->items as $item) {
+                $type = isset($item->$valueType) ? $item->$valueType : '';
+                $attributes = array();
+                if ($item->attributes != null) {
+                    foreach ($item->attributes as $attribute) {
+                        $attributes[] = $attribute->text;
+                    }
+                }
+                $arrayName[] = array(
+                    'type' => $type,
+                    'attributes' => $attributes
+                );
+            }
+        }
+        return $arrayName;
     }
 
     #========================================================[ GraphQL Get All]===
