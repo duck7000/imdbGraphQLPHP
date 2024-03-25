@@ -434,8 +434,8 @@ EOF;
 
     #----------------------------------------------------------------[ Spouse ]---
     /** Get spouse(s)
-     * @return array [0..n] of array spouses [string imdb, string name, array from,
-     *         array to, string comment, int children, boolean current] where from/to are array
+     * @return array [0..n] of array spouses [imdb, name, array from,
+     *         array to, dateText, comment, children] where from/to are array
      *         [day,month,mon,year] (MonthName is the name, MonthInt the number of the month),
      * @see IMDB person page /bio
      */
@@ -469,6 +469,11 @@ query Spouses(\$id: ID!) {
             year
           }
         }
+        displayableProperty {
+          value {
+            plainText
+          }
+        }
       }
       attributes {
         text
@@ -493,13 +498,13 @@ EOF;
                     }
                     
                     // From date
-                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : null;
-                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : null;
+                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
+                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
                     $fromDateMonthName = '';
                     if (!empty($fromDateMonthInt)) {
                         $fromDateMonthName = date("F", mktime(0, 0, 0, $fromDateMonthInt, 10));
                     }
-                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : null;
+                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : '';
                     $fromDate = array(
                         "day" => $fromDateDay,
                         "month" => $fromDateMonthName,
@@ -508,19 +513,22 @@ EOF;
                     );
                     
                     // To date
-                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : null;
-                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : null;
+                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
+                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
                     $toDateMonthName = '';
                     if (!empty($toDateMonthInt)) {
                         $toDateMonthName = date("F", mktime(0, 0, 0, $toDateMonthInt, 10));
                     }
-                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : null;
+                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : '';
                     $toDate = array(
                         "day" => $toDateDay,
                         "month" => $toDateMonthName,
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
+                    
+                    // date as plaintext
+                    $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
                     
                     // Comments and children
                     $comment = '';
@@ -539,6 +547,7 @@ EOF;
                         'name' => $name,
                         'from' => $fromDate,
                         'to' => $toDate,
+                        'dateText' => $dateText,
                         'comment' => $comment,
                         'children' => $children,
                         'current' => $spouse->current
