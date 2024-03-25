@@ -435,7 +435,7 @@ EOF;
     #----------------------------------------------------------------[ Spouse ]---
     /** Get spouse(s)
      * @return array [0..n] of array spouses [string imdb, string name, array from,
-     *         array to, string comment, int children] where from/to are array
+     *         array to, string comment, int children, boolean current] where from/to are array
      *         [day,month,mon,year] (MonthName is the name, MonthInt the number of the month),
      * @see IMDB person page /bio
      */
