@@ -473,6 +473,7 @@ query Spouses(\$id: ID!) {
       attributes {
         text
       }
+      current
     }
   }
 }
@@ -539,7 +540,8 @@ EOF;
                         'from' => $fromDate,
                         'to' => $toDate,
                         'comment' => $comment,
-                        'children' => $children
+                        'children' => $children,
+                        'current' => $spouse->current
                     );
                 }
             } else {
