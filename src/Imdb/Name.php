@@ -493,13 +493,13 @@ EOF;
                     }
                     
                     // From date
-                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
-                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
+                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : null;
+                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : null;
                     $fromDateMonthName = '';
                     if (!empty($fromDateMonthInt)) {
                         $fromDateMonthName = date("F", mktime(0, 0, 0, $fromDateMonthInt, 10));
                     }
-                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : '';
+                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : null;
                     $fromDate = array(
                         "day" => $fromDateDay,
                         "month" => $fromDateMonthName,
@@ -508,13 +508,13 @@ EOF;
                     );
                     
                     // To date
-                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
-                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
+                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : null;
+                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : null;
                     $toDateMonthName = '';
                     if (!empty($toDateMonthInt)) {
                         $toDateMonthName = date("F", mktime(0, 0, 0, $toDateMonthInt, 10));
                     }
-                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : '';
+                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : null;
                     $toDate = array(
                         "day" => $toDateDay,
                         "month" => $toDateMonthName,
