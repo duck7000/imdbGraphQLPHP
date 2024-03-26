@@ -2,6 +2,15 @@
 History for IMDBPHP6
 ====================
 
+v1.3.13
+-------------------
+* Added professions method to Name Class, gets all professions of a person
+* Renamed popRank method to rank
+* Added rank method to Name Class, gets current rank of a person at imdb
+* Added pubother method to Name Class, this gets other works of a person
+* Added current to spouse method, this indicates if a spouse is the current one or not
+* Added dateText to spouse method, this is the fromeDate and toDate in plain text
+
 v1.3.12
 -------------------
 * Added helper method for GraphQL paginated (to get paginated content just like in Title class)
