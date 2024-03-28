@@ -2103,10 +2103,11 @@ EOF;
     #-------------------------------------------------[ Trailer ]---
     /**
      * Get video URL's and images from videogallery page (Trailers only)
+     * @param $amount determine how many trailers are returned, default: 1
      * @return array trailers (array[string videoUrl,string videoImageUrl])
      * videoUrl is a embeded url that is tested to work in iframe (won't work in html5 <video>)
      */
-    public function trailer()
+    public function trailer($amount = 1)
     {
         if (empty($this->trailers)) {
             $query = <<<EOF
@@ -2203,7 +2204,7 @@ EOF;
                                  . 'ZA' . $title . ',' . $margin . ',138,14,176,arialbd,7,255,255,255,1_.jpg';
 
                 }
-                if (count($this->trailers) <= 1) {
+                if (count($this->trailers) <= $amount) {
                     $this->trailers[] = array(
                         'videoUrl' => $embedUrl,
                         'videoImageUrl' => $thumbUrl
