@@ -1227,33 +1227,38 @@ EOF;
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,plot,season,episode,image_url])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,airdateParts array(day,month,year),plot,season,episode,image_url])
      * array(1) {
-        [1]=>
-        array(13) {
-            [1]=> //can be seasonnumber, year or -1 (Unknown)
-            array(6) {
-            ["imdbid"]=>
-            string(7) "1495166"
-            ["title"]=>
-            string(5) "Pilot"
-            ["airdate"]=>
-            string(11) "7 jun. 2010"
-            ["plot"]=>
-            string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
-            ["episode"]=>
-            string(1) "1" //can be seasonnumber or -1 (Unknown)
-            ["image_url"]=>
-            string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
-            }
-        }
+     *   [1]=>
+     *   array(13) {
+     *       [1]=> //can be seasonnumber, year or -1 (Unknown)
+     *       array(6) {
+     *       ["imdbid"]=>
+     *       string(7) "1495166"
+     *       ["title"]=>
+     *       string(5) "Pilot"
+     *       ["airdate"]=>
+     *       string(11) "7 jun. 2010"
+     *       [airdateParts] => Array
+     *                   (
+     *                       [day] => 7
+     *                       [month] => 6
+     *                       [year] => 2010
+     *                   )
+     *       ["plot"]=>
+     *       string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
+     *       ["episode"]=>
+     *       string(1) "1" //can be seasonnumber or -1 (Unknown)
+     *       ["image_url"]=>
+     *       string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
+     *       }
+     *   }
      * @see IMDB page /episodes
+     * @param $thumb boolean true: thumbnail url or false: full image url
      * @param $yearbased This gives user control if episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
-     * @see there seems to be a limit on max episodes per season of 250!
-     *      This may also be true for year based tv series, so max 250 per year!
      */
-    public function episode($yearbased = 0)
+    public function episode($thumb = true, $yearbased = 0)
     {
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
             if (empty($this->seasonEpisodes)) {
@@ -1280,58 +1285,14 @@ EOF;
                         }
                         $filter = 'filter: { includeSeasons: ["' . $seasonFilter . '", "' . $SeasonUnknown . '"] }';
                     }
-//Episode Query
-                    $queryEpisodes = <<<EOF
-query Episodes(\$id: ID!) {
-  title(id: \$id) {
-    primaryImage {
-      url
-    }
-    episodes {
-      episodes(first: 9999, $filter) {
-        edges {
-          node {
-            id
-            titleText {
-              text
-            }
-            plot {
-              plotText {
-                plainText
-              }
-            }
-            primaryImage {
-              url
-              width
-              height
-            }
-            releaseDate {
-              day
-              month
-              year
-            }
-            series {
-              displayableEpisodeNumber {
-                episodeNumber {
-                  episodeNumber
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-                    $episodesData = $this->graphql->query($queryEpisodes, "Episodes", ["id" => "tt$this->imdbID"]);
+                    
+                    // Get all episodes
+                    $episodesData = $this->graphQlGetAllEpisodes($filter);
+                    
                     $episodes = array();
-                    foreach ($episodesData->title->episodes->episodes->edges as $keyEp => $edge) {
+                    foreach ($episodesData as $keyEp => $edge) {
                         // vars
-                        $imdbId = '';
-                        $title = '';
                         $airDate = '';
-                        $plot = '';
                         $epNumber = '';
                         $imgUrl = '';
                         // Episode ImdbId
@@ -1339,10 +1300,15 @@ EOF;
                         // Episode Title
                         $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : '';
                         // Episode Airdate
-                        $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : '';
-                        $month = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month : '';
-                        $year = isset($edge->node->releaseDate->year) ? $edge->node->releaseDate->year : '';
-                        // return airdate like shown on episode as string.
+                        $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : null;
+                        $month = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month : null;
+                        $year = isset($edge->node->releaseDate->year) ? $edge->node->releaseDate->year : null;
+                        $dateParts = array(
+                            'day' => $day,
+                            'month' => $month,
+                            'year' => $year
+                        );
+                        // return airdate as string.
                         if (!empty($day)) {
                             $airDate .= $day;
                             if (!empty($month)) {
@@ -1370,22 +1336,26 @@ EOF;
                         }
                         // Episode Image
                         if (isset($edge->node->primaryImage->url) && !empty($edge->node->primaryImage->url)) {
-                            $epImageUrl = $edge->node->primaryImage->url;
-                            $fullImageWidth = $edge->node->primaryImage->width;
-                            $fullImageHeight = $edge->node->primaryImage->height;
-                            $newImageWidth = 224;
-                            $newImageHeight = 126;
+                            if ($thumb === true) {
+                                $epImageUrl = $edge->node->primaryImage->url;
+                                $fullImageWidth = $edge->node->primaryImage->width;
+                                $fullImageHeight = $edge->node->primaryImage->height;
+                                $newImageWidth = 224;
+                                $newImageHeight = 126;
 
-                            $img = str_replace('.jpg', '', $epImageUrl);
+                                $img = str_replace('.jpg', '', $epImageUrl);
 
-                            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                            $imgUrl = $img . $parameter;
-
+                                $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                                $imgUrl = $img . $parameter;
+                            } else {
+                                $imgUrl = $edge->node->primaryImage->url;
+                            }
                         }
                         $episode = array(
                                 'imdbid' => $imdbId,
                                 'title' => $title,
                                 'airdate' => $airDate,
+                                'airdateParts' => $dateParts,
                                 'plot' => $plot,
                                 'season' => $seasonYear,
                                 'episode' => $epNumber,
@@ -2848,6 +2818,72 @@ EOF;
         }
         return $data;
 
+    }
+
+    #========================================================[ GraphQL Get All Episodes]===
+    /**
+     * Get all episodes of a title
+     * @param $filter add filter options to query
+     * @return \stdClass[]
+     */
+    protected function graphQlGetAllEpisodes($filter)
+    {
+    
+        $query = <<<EOF
+query Episodes(\$id: ID!, \$after: ID) {
+  title(id: \$id) {
+    episodes {
+      episodes(first: 9999, after: \$after $filter) {
+        edges {
+          node {
+            id
+            titleText {
+              text
+            }
+            plot {
+              plotText {
+                plainText
+              }
+            }
+            primaryImage {
+              url
+              width
+              height
+            }
+            releaseDate {
+              day
+              month
+              year
+            }
+            series {
+              displayableEpisodeNumber {
+                episodeNumber {
+                  episodeNumber
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+}
+EOF;
+        // Results are paginated, so loop until we've got all the data
+        $endCursor = null;
+        $hasNextPage = true;
+        $edges = array();
+        while ($hasNextPage) {
+            $data = $this->graphql->query($query, "Episodes", ["id" => "tt$this->imdbID", "after" => $endCursor]);
+            $edges = array_merge($edges, $data->title->episodes->episodes->edges);
+            $hasNextPage = $data->title->episodes->episodes->pageInfo->hasNextPage;
+            $endCursor = $data->title->episodes->episodes->pageInfo->endCursor;
+        }
+        return $edges;
     }
 
     #========================================================[ Helper Technical specifications ]===
