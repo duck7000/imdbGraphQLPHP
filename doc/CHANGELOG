@@ -2,6 +2,13 @@
 History for IMDBPHP6
 ====================
 
+v1.3.14
+-------------------
+* Fixed bug 250 items limit on episodes, now all episodes are returned
+* Title class episodes, added thumb parameter true for thumbnail or false for full image url
+* Title class episodes, added airdateParts array to episodes, array(day, month,year) as int
+* Title class trailer, added amount parameter (int), this controls how many trailers are returned, default: 1
+
 v1.3.13
 -------------------
 * Added professions method to Name Class, gets all professions of a person
