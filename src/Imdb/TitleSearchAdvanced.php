@@ -129,7 +129,9 @@ query advancedSearch{
   }
 }
 EOF;
+        // this strip spaces from $query to lower character count due hosters limit
         $queryStripped = implode("\n", array_map('trim', explode("\n", $query)));
+
         $data = $this->graphql->query($queryStripped, "advancedSearch");
         foreach ($data->advancedTitleSearch->edges as $edge) {
             $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
