@@ -1229,36 +1229,40 @@ EOF;
      * Get the series episode(s)
      * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,airdateParts array(day,month,year),plot,season,episode,image_url])
      * array(1) {
-     *   [1]=>
-     *   array(13) {
-     *       [1]=> //can be seasonnumber, year or -1 (Unknown)
-     *       array(6) {
-     *       ["imdbid"]=>
-     *       string(7) "1495166"
-     *       ["title"]=>
-     *       string(5) "Pilot"
-     *       ["airdate"]=>
-     *       string(11) "7 jun. 2010"
-     *       [airdateParts] => Array
-     *                   (
-     *                       [day] => 7
-     *                       [month] => 6
-     *                       [year] => 2010
-     *                   )
-     *       ["plot"]=>
-     *       string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
-     *       ["episode"]=>
-     *       string(1) "1" //can be seasonnumber or -1 (Unknown)
-     *       ["image_url"]=>
-     *       string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
-     *       }
-     *   }
+        [1]=>
+        array(13) {
+            [1]=> //can be seasonnumber, year or -1 (Unknown)
+            array(6) {
+            ["imdbid"]=>
+            string(7) "1495166"
+            ["title"]=>
+            string(5) "Pilot"
+            ["airdate"]=>
+            string(11) "7 jun. 2010"
+            [airdateParts] => Array
+                        (
+                            [day] => 7
+                            [month] => 6
+                            [year] => 2010
+                        )
+            ["plot"]=>
+            string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
+            ["episode"]=>
+            string(1) "1" //can be seasonnumber or -1 (Unknown)
+            ["image_url"]=>
+            string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
+            }
+        }
      * @see IMDB page /episodes
-     * @param $thumb boolean true: thumbnail url or false: full image url
-     * @param $yearbased This gives user control if episodes are yearbased or season based
+     * @param $imgSize set episode image url size
+     *  Possible values: small (cropped from center 224x126)
+     *                   medium (untouched max 621x931) 
+     *                   large (untouched original) caution, this can be very big in size!
+     *                   Default: small
+     * @param $yearbased This gives user control if returned episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
      */
-    public function episode($thumb = true, $yearbased = 0)
+    public function episode($imgSize = "small", $yearbased = 0)
     {
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
             if (empty($this->seasonEpisodes)) {
@@ -1336,7 +1340,7 @@ EOF;
                         }
                         // Episode Image
                         if (isset($edge->node->primaryImage->url) && !empty($edge->node->primaryImage->url)) {
-                            if ($thumb === true) {
+                            if ($imgSize == "small") {
                                 $epImageUrl = $edge->node->primaryImage->url;
                                 $fullImageWidth = $edge->node->primaryImage->width;
                                 $fullImageHeight = $edge->node->primaryImage->height;
@@ -1347,6 +1351,9 @@ EOF;
 
                                 $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                                 $imgUrl = $img . $parameter;
+                            } elseif ($imgSize == "medium") {
+                                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                                $imgUrl = $img . 'QL100_SY931_.jpg';
                             } else {
                                 $imgUrl = $edge->node->primaryImage->url;
                             }
@@ -1359,7 +1366,7 @@ EOF;
                                 'plot' => $plot,
                                 'season' => $seasonYear,
                                 'episode' => $epNumber,
-                                'image_url' => $imgUrl
+                                'imgUrl' => $imgUrl
                             );
                         $episodes[] = $episode;
                     }
