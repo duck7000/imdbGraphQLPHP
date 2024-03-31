@@ -427,7 +427,7 @@ EOF;
 
                 }
                 $this->recommendations[] = array(
-                    "title" => ucwords($edge->node->titleText->text),
+                    "title" => $this->titleCase($edge->node->titleText->text),
                     "imdbid" => str_replace('tt', '', $edge->node->id),
                     "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
                     "img" => $thumb,
@@ -2995,7 +2995,7 @@ EOF;
     protected function titleCase($inputString)
     {
         $delimiters = array(" ", "-", ".", "'", "O'", "Mc", "(");
-        $exceptions = array("I", "II", "III", "IV", "V", "VI");
+        $exceptions = array("I", "II", "III", "IV", "V", "VI", "GT");
         $string = mb_convert_case($inputString, MB_CASE_TITLE, "UTF-8");
         foreach ($delimiters as $dlnr => $delimiter) {
             $words = explode($delimiter, $string);
