@@ -1227,32 +1227,32 @@ EOF;
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,airdateParts array(day,month,year),plot,season,episode,image_url])
+     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,airdateParts array(day,month,year),plot,season,episode,imgUrl])
      * array(1) {
-        [1]=>
-        array(13) {
-            [1]=> //can be seasonnumber, year or -1 (Unknown)
-            array(6) {
-            ["imdbid"]=>
-            string(7) "1495166"
-            ["title"]=>
-            string(5) "Pilot"
-            ["airdate"]=>
-            string(11) "7 jun. 2010"
-            [airdateParts] => Array
-                        (
-                            [day] => 7
-                            [month] => 6
-                            [year] => 2010
-                        )
-            ["plot"]=>
-            string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
-            ["episode"]=>
-            string(1) "1" //can be seasonnumber or -1 (Unknown)
-            ["image_url"]=>
-            string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
-            }
-        }
+     *   [1]=>
+     *   array(13) {
+     *       [1]=> //can be seasonnumber, year or -1 (Unknown)
+     *       array(6) {
+     *       ["imdbid"]=>
+     *       string(7) "1495166"
+     *       ["title"]=>
+     *       string(5) "Pilot"
+     *       ["airdate"]=>
+     *       string(11) "7 jun. 2010"
+     *       [airdateParts] => Array
+     *                   (
+     *                       [day] => 7
+     *                       [month] => 6
+     *                       [year] => 2010
+     *                   )
+     *       ["plot"]=>
+     *       string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
+     *       ["episode"]=>
+     *       string(1) "1" //can be seasonnumber or -1 (Unknown)
+     *       ["imgUrl"]=>
+     *       string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
+     *       }
+     *   }
      * @see IMDB page /episodes
      * @param $imgSize set episode image url size
      *  Possible values: small (cropped from center 224x126)
