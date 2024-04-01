@@ -2,6 +2,14 @@
 History for IMDBPHP6
 ====================
 
+v1.3.15
+-------------------
+* Episodes improved images, added $imgSize parameter for small, medium or full images and renamed img_url to imgUrl
+* Title class recommendations added titleCase function to title
+* Title class trailer fixed bug amount parameter returning 2 instead of one trailer
+* Title class award fixed misspelt array index name, awardPerons to awardPersons
+* Title class titleYear added titleCase function to title and originalTitle
+
 v1.3.14
 -------------------
 * Fixed bug 250 items limit on episodes, now all episodes are returned
