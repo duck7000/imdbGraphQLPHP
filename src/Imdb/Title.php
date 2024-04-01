@@ -2511,15 +2511,14 @@ EOF;
             $fullImageHeight = $data->title->primaryImage->height;
             $newImageWidth = 190;
             $newImageHeight = 281;
-
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-
             $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            
+            // thumb image
             $this->mainPosterThumb = $img . $parameter;
-
-            if (strpos($data->title->primaryImage->url, '._V1')) {
-                $this->mainPoster = preg_replace('#\._V1_.+?(\.\w+)$#is', '$1', $this->mainPosterThumb);
-            }
+            
+            // full image
+            $this->mainPoster = $data->title->primaryImage->url;
         }
     }
 
