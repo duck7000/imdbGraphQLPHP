@@ -2375,7 +2375,7 @@ EOF;
                     'awardCategory' => $awardCategory,
                     'awardName' => $awardName,
                     'awardNotes' => $awardNotes,
-                    'awardPerons' => $persons,
+                    'awardPersons' => $persons,
                     'awardOutcome' => $conclusion
                 );
             }
