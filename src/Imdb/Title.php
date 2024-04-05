@@ -70,6 +70,7 @@ class Title extends MdbBase
     protected $compCreditsSpecial = array();
     protected $compCreditsOther = array();
     protected $connections = array();
+    protected $externalSites = array();
     protected $productionBudget = array();
     protected $grosses = array();
     protected $alternateversions = array();
@@ -1874,6 +1875,62 @@ EOF;
             }
         }
         return $this->connections;
+    }
+
+    #-------------------------------------------------------[ External sites ]---
+    /** external websites with info of this title, excluding external reviews.
+     * @return array of array('label: string, 'url: string, language: array[])
+     * @see IMDB page /externalsites
+     */
+    public function extSites()
+    {
+        $categoryIds = array(
+            'official' => 'official',
+            'video' => 'video',
+            'photo' => 'photo',
+            'sound' => 'sound',
+            'misc' => 'misc'
+        );
+        
+        if (empty($this->externalSites)) {
+            
+            foreach ($categoryIds as $categoryId) {
+                $this->externalSites[$categoryId] = array();
+            }
+            
+            $query = <<<EOF
+          label
+          url
+          externalLinkCategory {
+            id
+          }
+          externalLinkLanguages {
+            text
+          }
+EOF;
+            $filter = ' filter: {excludeCategories: "review"}';
+            $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
+            foreach ($edges as $edge) {
+                $label = null;
+                $url = null;
+                $language = array();
+                if (isset($edge->node->url)) {
+                    $url = $edge->node->url;
+                    $label = $edge->node->label;
+                }
+                if ($edge->node->externalLinkLanguages != null) {
+                    foreach ($edge->node->externalLinkLanguages as $lang) {
+                        $language[] = isset($lang->text) ? $lang->text : null;
+                    }
+                }
+                $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
+                    'label' => $label,
+                    'url' => $url,
+                    'language' => $language
+                );
+            }
+        }
+        return $this->externalSites;
     }
 
     #========================================================[ /Box Office page ]===
