@@ -2289,7 +2289,7 @@ EOF;
     /**
      * Get all awards for a title
      * @param $winsOnly Default: false, set to true to only get won awards
-     * @param $event Default: "" fill eventId Example " ev0000003" to only get Oscars
+     * @param $event Default: "" fill eventId Example "ev0000003" to only get Oscars
      *  Possible values for $event:
      *  ev0000003 (Oscar)
      *  ev0000223 (Emmy)
