@@ -3074,4 +3074,33 @@ EOF;
        return $string;
     }
 
+    #----------------------------------------------------------[ imdbID redirect ]---
+    /**
+     * Check if imdbid is redirected to another id or not.
+     * It sometimes happens that imdb redirects an existing id to a new id.
+     * If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
+     * @var $this->imdbID The imdbid used to call this class
+     * @var $titleImdbId the returned imdbid from Graphql call (in some cases this can be different)
+     * @return $titleImdbId (the new redirected imdbId) or false (no redirect)
+     * @see IMDB page / (TitlePage)
+     */
+    public function checkRedirect()
+    {
+        $query = <<<EOF
+query Redirect(\$id: ID!) {
+  title(id: \$id) {
+    id
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Redirect", ["id" => "tt$this->imdbID"]);
+        $titleImdbId = str_replace('tt', '', $data->title->id);
+        if ($titleImdbId  != $this->imdbID) {
+            // todo write to log?
+            return $titleImdbId;
+        } else {
+            return false;
+        }
+    }
+
 }
