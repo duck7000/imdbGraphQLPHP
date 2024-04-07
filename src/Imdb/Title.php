@@ -30,6 +30,10 @@ class Title extends MdbBase
     protected $creditsCast = array();
     protected $creditsPrincipal = array();
     protected $creditsComposer = array();
+    protected $creditsStunts = array();
+    protected $creditsThanks = array();
+    protected $creditsVisualEffects = array();
+    protected $creditsSpecialEffects = array();
     protected $creditsDirector = array();
     protected $creditsProducer = array();
     protected $creditsWriter = array();
@@ -1102,9 +1106,9 @@ EOF;
         return $this->creditsWriter;
     }
 
-    #---------------------------------------------------------------[ Producers ]---
-    /** Get the producers(s)
-     * @return array producers (array[0..n] of arrays[imdb,name,role])
+    #-------------------------------------------------------------[ Producers ]---
+    /** Obtain the producer credits of this title
+     * @return array (array[0..n] of arrays[imdb,name,role])
      * @see IMDB page /fullcredits
      */
     public function producer()
@@ -1112,66 +1116,8 @@ EOF;
         if (!empty($this->creditsProducer)) {
             return $this->creditsProducer;
         }
-        $data = $this->creditsQuery("producer");
-        foreach ($data->title->credits->edges as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $role = '';
-            if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
-                foreach ($edge->node->jobs as $keyJobs => $job) {
-                    $role .= $job->text;
-                    if ($keyJobs !== key(array_slice($edge->node->jobs, -1, 1, true))) {
-                        $role .= ' / ';
-                    }
-                }
-            }
-            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                $countAttributes = count($edge->node->attributes);
-                $countJobs = count($edge->node->jobs);
-                if ($countAttributes > $countJobs) {
-                    $key = ($countJobs);
-                    $role .= ' ';
-                    foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                        if ($keyAttributes >= $key) {
-                            $role .= '(' . $attribute->text . ')';
-                            if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
-                                $role .= ' ';
-                            }
-                        }
-                    }
-                }
-            }
-            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
-                $totalEpisodes = count($edge->node->episodeCredits->edges);
-                if ($totalEpisodes == 1) {
-                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
-                    if ($value == "unknown") {
-                        $totalEpisodes = 'unknown';
-                    }
-                }
-                $episodeText = ' episode';
-                if ($totalEpisodes > 1) {
-                    $episodeText .= 's';
-                }
-                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                    $role .= ' ';
-                }
-                $role .= '(' . $totalEpisodes . $episodeText;
-                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
-                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
-                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
-                    }
-                }
-                $role .= ')';
-            }
-            $this->creditsProducer[] = array(
-                'imdb' => $imdb,
-                'name' => $name,
-                'role' => $role
-            );
-        }
-        return $this->creditsProducer;
+        $data = $this->creditHelper($this->creditsQuery("producer"));
+        return $this->creditsProducer = $data;
     }
 
     #-------------------------------------------------------------[ Composers ]---
@@ -1186,6 +1132,62 @@ EOF;
         }
         $composerData = $this->directorComposer($this->creditsQuery("composer"));
         return $this->creditsComposer = $composerData;
+    }
+    
+    #-------------------------------------------------------------[ Stunts ]---
+    /** Obtain the stunts credits of this title
+     * @return array (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function stunts()
+    {
+        if (!empty($this->creditsStunts)) {
+            return $this->creditsStunts;
+        }
+        $data = $this->creditHelper($this->creditsQuery("stunts"));
+        return $this->creditsStunts = $data;
+    }
+    
+    #-------------------------------------------------------------[ Thanks ]---
+    /** Obtain thanks credits of this title
+     * @return array (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function thanks()
+    {
+        if (!empty($this->creditsThanks)) {
+            return $this->creditsThanks;
+        }
+        $data = $this->creditHelper($this->creditsQuery("thanks"));
+        return $this->creditsThanks = $data;
+    }
+    
+    #-------------------------------------------------------------[ Visual Effects ]---
+    /** Obtain Visual Effects credits of this title
+     * @return array (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function visualEffects()
+    {
+        if (!empty($this->creditsVisualEffects)) {
+            return $this->creditsVisualEffects;
+        }
+        $data = $this->creditHelper($this->creditsQuery("visual_effects"));
+        return $this->creditsVisualEffects = $data;
+    }
+    
+        #-------------------------------------------------------------[ Special Effects ]---
+    /** Obtain Special Effects credits of this title
+     * @return array (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    public function specialEffects()
+    {
+        if (!empty($this->creditsSpecialEffects)) {
+            return $this->creditsSpecialEffects;
+        }
+        $data = $this->creditHelper($this->creditsQuery("special_effects"));
+        return $this->creditsSpecialEffects = $data;
     }
 
     #====================================================[ /crazycredits page ]===
@@ -2803,6 +2805,75 @@ EOF;
                     $role .= '(' . $attribute->text . ')';
                     if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
                         $role .= ' ';
+                    }
+                }
+            }
+            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+                $totalEpisodes = count($edge->node->episodeCredits->edges);
+                if ($totalEpisodes == 1) {
+                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
+                    if ($value == "unknown") {
+                        $totalEpisodes = 'unknown';
+                    }
+                }
+                $episodeText = ' episode';
+                if ($totalEpisodes > 1) {
+                    $episodeText .= 's';
+                }
+                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                    $role .= ' ';
+                }
+                $role .= '(' . $totalEpisodes . $episodeText;
+                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
+                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
+                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                    }
+                }
+                $role .= ')';
+            }
+            $output[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'role' => $role
+            );
+        }
+        return $output;
+    }
+
+    #---------------------------------------------------------------[ credit helper ]---
+    /** helper for stunts, thanks, visualEffects and specialEffects
+     * @return array (array[0..n] of arrays[imdb,name,role])
+     * @see IMDB page /fullcredits
+     */
+    private function creditHelper($data)
+    {
+        $output = array();
+        foreach ($data->title->credits->edges as $edge) {
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $role = '';
+            if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
+                foreach ($edge->node->jobs as $keyJobs => $job) {
+                    $role .= $job->text;
+                    if ($keyJobs !== key(array_slice($edge->node->jobs, -1, 1, true))) {
+                        $role .= ' / ';
+                    }
+                }
+            }
+            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
+                $countAttributes = count($edge->node->attributes);
+                $countJobs = count($edge->node->jobs);
+                if ($countAttributes > $countJobs) {
+                    $key = ($countJobs);
+                    $role .= ' ';
+                    foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                        if ($keyAttributes >= $key) {
+                            $role .= '(' . $attribute->text . ')';
+                            if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
+                                $role .= ' ';
+                            }
+                        }
                     }
                 }
             }
