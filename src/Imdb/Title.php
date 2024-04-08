@@ -534,7 +534,7 @@ EOF;
     #--------------------------------------------------------[ Photo specific ]---
     /**
      * Get the main photo image url for thumbnail or full size
-     * @param boolean $thumb get the thumbnail (height: 281) or the full version
+     * @param boolean $thumb get the thumbnail (height: 281) or large (max 1000 pixels)
      * @return string|false photo (string URL if found, FALSE otherwise)
      * @see IMDB page / (TitlePage)
      */
@@ -2577,7 +2577,7 @@ EOF;
             $this->mainPosterThumb = $img . $parameter;
             
             // full image
-            $this->mainPoster = $data->title->primaryImage->url;
+            $this->mainPoster = $img . 'QL100_SX1000_.jpg';
         }
     }
 
