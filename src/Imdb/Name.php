@@ -95,14 +95,12 @@ EOF;
 
     #--------------------------------------------------------[ Photo specific ]---
     /** Get cover photo
-     * @param boolean $size (optional) small:  thumbnail (67x98, default)
-     *                                 medium: image size (621x931)
-     *                                 large:  image maximum size
-     * @note if small or medium url 404 or 401 the full image url is returned!
+     * @param boolean $thumb true: thumbnail (67x98 pixels, default), false: large (max height 1000 pixels)
+     * @note if thumb url 404 or 401 the full image url is returned!
      * @return mixed photo (string url if found, empty string otherwise)
      * @see IMDB person page / (Main page)
      */
-    public function photo($size = "small")
+    public function photo($thumb = true)
     {
     $query = <<<EOF
 query PrimaryImage(\$id: ID!) {
@@ -117,22 +115,18 @@ EOF;
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if ($data->name->primaryImage->url != null) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
-                if ($size == "small") {
+                if ($thumb == true) {
                     $this->mainPhoto = $img . 'QL100_SY98_.jpg';
                     $headers = get_headers($this->mainPhoto);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                         $this->mainPhoto = $data->name->primaryImage->url;
                     }
-                }
-                if ($size == "medium") {
-                    $this->mainPhoto = $img . 'QL100_SY931_.jpg';
+                } else {
+                    $this->mainPhoto = $img . 'QL100_SY1000_.jpg';
                     $headers = get_headers($this->mainPhoto);
                     if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                         $this->mainPhoto = $data->name->primaryImage->url;
                     }
-                }
-                if ($size == "large") {
-                    $this->mainPhoto = $data->name->primaryImage->url;
                 }
             } else {
                 return $this->mainPhoto;
