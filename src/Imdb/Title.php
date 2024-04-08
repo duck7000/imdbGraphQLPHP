@@ -1257,15 +1257,11 @@ EOF;
      *       }
      *   }
      * @see IMDB page /episodes
-     * @param $imgSize set episode image url size
-     *  Possible values: small (cropped from center 224x126)
-     *                   medium (untouched max 621x931) 
-     *                   large (untouched original) caution, this can be very big in size!
-     *                   Default: small
+     * @param $thumb boolean true: thumbnail (cropped from center 224x126), false: large (max 1000 pixels)
      * @param $yearbased This gives user control if returned episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
      */
-    public function episode($imgSize = "small", $yearbased = 0)
+    public function episode($thumb = true, $yearbased = 0)
     {
         if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
             if (empty($this->seasonEpisodes)) {
@@ -1343,7 +1339,7 @@ EOF;
                         }
                         // Episode Image
                         if (isset($edge->node->primaryImage->url) && !empty($edge->node->primaryImage->url)) {
-                            if ($imgSize == "small") {
+                            if ($thumb == true) {
                                 $epImageUrl = $edge->node->primaryImage->url;
                                 $fullImageWidth = $edge->node->primaryImage->width;
                                 $fullImageHeight = $edge->node->primaryImage->height;
@@ -1354,11 +1350,9 @@ EOF;
 
                                 $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                                 $imgUrl = $img . $parameter;
-                            } elseif ($imgSize == "medium") {
-                                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                $imgUrl = $img . 'QL100_SY931_.jpg';
                             } else {
-                                $imgUrl = $edge->node->primaryImage->url;
+                                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                                $imgUrl = $img . 'QL100_SY1000_.jpg';
                             }
                         }
                         $episode = array(
