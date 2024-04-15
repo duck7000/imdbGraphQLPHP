@@ -4,7 +4,7 @@ History for IMDBPHP6
 
 v1.3.16
 -------------------
-* Title class changed output of Director,composer,producer,writer,thanks,stunts,visual effects and special effects to output array instead of string for jobs and episode credits
+* Title class changed output of Director, composer, producer, writer, thanks, stunts, visual effects, cinematographer and special effects to output array instead of string for jobs and episode credits
 * Title class episode, photo parameter thumb is true or false, true == thumbnail, false == large image max 1000 pixels
 * Name class photo parameter thumb is true or false, true == thumbnail, false == large image max 1000 pixels
 * Title class added thanks,stunts,visual effects and special effects methods
