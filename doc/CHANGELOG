@@ -2,6 +2,16 @@
 History for IMDBPHP6
 ====================
 
+v1.3.16
+-------------------
+* Title class changed output of Director,composer,producer,writer,thanks,stunts,visual effects and special effects to output array instead of string for jobs and episode credits
+* Title class episode, photo parameter thumb is true or false, true == thumbnail, false == large image max 1000 pixels
+* Name class photo parameter thumb is true or false, true == thumbnail, false == large image max 1000 pixels
+* Title class added thanks,stunts,visual effects and special effects methods
+* Title and Name class added checkRedirect to check if an imdbid is redirected or not
+* Title and Name class added externalSites method
+* fixed multiple doc blocs
+
 v1.3.15
 -------------------
 * Episodes improved images, added $imgSize parameter for small, medium or full images and renamed img_url to imgUrl
