@@ -1035,7 +1035,7 @@ EOF;
 
     #---------------------------------------------------------------[ Writers ]---
     /** Get the writer(s)
-     * @return array writers (array[0..n] of arrays[imdb,name,role])
+     * @return array writers (array[0..n] of arrays[imdb,name,jobs[]])
      * @see IMDB page /fullcredits
      */
     public function writer()
@@ -1047,61 +1047,18 @@ EOF;
         foreach ($data->title->credits->edges as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $role = '';
-            if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
-                foreach ($edge->node->jobs as $keyJobs => $job) {
-                    $role = '';
-                    if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                        $role .= '(' . $edge->node->attributes[$keyJobs]->text . ')';
-                    }
-                    if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
-                        if ($keyJobs == 0) {
-                            $totalEpisodes = count($edge->node->episodeCredits->edges);
-                            if ($totalEpisodes == 1) {
-                                $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
-                                if ($value == "unknown") {
-                                    $totalEpisodes = 'unknown';
-                                }
-                            }
-                            $episodeText = ' episode';
-                            if ($totalEpisodes > 1) {
-                                $episodeText .= 's';
-                            }
-                            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                                $role .= ' ';
-                            }
-                            $role .= '(' . $totalEpisodes . $episodeText;
-                            if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
-                                $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
-                                if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                                    $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
-                                }
-                            }
-                            $role .= ')';
-                        } else {
-                            $role .= ' (unknown episodes';
-                            if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
-                                $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
-                                if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                                    $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
-                                }
-                            }
-                            $role .= ')';
-                        }
-                    }
-                    $this->creditsWriter[] = array(
-                        'imdb' => $imdb,
-                        'name' => $name,
-                        'role' => $role
-                    );
+            $jobs = array();
+            if ($edge->node->jobs != null) {
+                foreach ($edge->node->jobs as $value) {
+                    $jobs[] = $value->text;
                 }
-            } else {
-                $this->creditsWriter[] = array(
-                        'imdb' => $imdb,
-                        'name' => $name,
-                        'role' => $role
-                    );
             }
+            $this->creditsWriter[] = array(
+                'imdb' => $imdb,
+                'name' => $name,
+                'jobs' => $jobs
+                
+            );
         }
         return $this->creditsWriter;
     }
