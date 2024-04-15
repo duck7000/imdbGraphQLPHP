@@ -2776,8 +2776,8 @@ EOF;
     }
 
     #---------------------------------------------------------------[ credit helper ]---
-    /** helper for stunts, thanks, visualEffects and specialEffects
-     * @return array (array[0..n] of arrays[imdb,name,role])
+    /** helper for stunts, thanks, visualEffects, specialEffects and producer
+     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     private function creditHelper($data)
@@ -2786,59 +2786,33 @@ EOF;
         foreach ($data->title->credits->edges as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $role = '';
-            if ($edge->node->jobs != NULL && count($edge->node->jobs) > 0) {
-                foreach ($edge->node->jobs as $keyJobs => $job) {
-                    $role .= $job->text;
-                    if ($keyJobs !== key(array_slice($edge->node->jobs, -1, 1, true))) {
-                        $role .= ' / ';
-                    }
+            $jobs = array();
+            if ($edge->node->jobs != null) {
+                foreach ($edge->node->jobs as $value) {
+                    $jobs[] = $value->text;
                 }
             }
-            if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                $countAttributes = count($edge->node->attributes);
-                $countJobs = count($edge->node->jobs);
-                if ($countAttributes > $countJobs) {
-                    $key = ($countJobs);
-                    $role .= ' ';
-                    foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                        if ($keyAttributes >= $key) {
-                            $role .= '(' . $attribute->text . ')';
-                            if ($keyAttributes !== key(array_slice($edge->node->attributes, -1, 1, true))) {
-                                $role .= ' ';
-                            }
-                        }
-                    }
-                }
-            }
-            if ($edge->node->episodeCredits != NULL && count($edge->node->episodeCredits->edges) > 0) {
+            $totalEpisodes = 0;
+            $year = null;
+            $endYear = null;
+            if ($edge->node->episodeCredits != null) {
                 $totalEpisodes = count($edge->node->episodeCredits->edges);
-                if ($totalEpisodes == 1) {
-                    $value =  $edge->node->episodeCredits->edges[0]->node->title->series->displayableEpisodeNumber->episodeNumber->text;
-                    if ($value == "unknown") {
-                        $totalEpisodes = 'unknown';
-                    }
-                }
-                $episodeText = ' episode';
-                if ($totalEpisodes > 1) {
-                    $episodeText .= 's';
-                }
-                if ($edge->node->attributes != NULL && count($edge->node->attributes) > 0) {
-                    $role .= ' ';
-                }
-                $role .= '(' . $totalEpisodes . $episodeText;
-                if ($edge->node->episodeCredits->yearRange != NULL && isset($edge->node->episodeCredits->yearRange->year)) {
-                    $role .= ', ' .$edge->node->episodeCredits->yearRange->year;
+                if (isset($edge->node->episodeCredits->yearRange->year)) {
+                    $year = $edge->node->episodeCredits->yearRange->year;
                     if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                        $role .= '-' . $edge->node->episodeCredits->yearRange->endYear;
+                        $endYear = $edge->node->episodeCredits->yearRange->endYear;
                     }
                 }
-                $role .= ')';
             }
             $output[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
-                'role' => $role
+                'jobs' => $jobs,
+                'episode' => array(
+                    'total' => $totalEpisodes,
+                    'year' => $year,
+                    'endYear' => $endYear
+                    )
             );
         }
         return $output;
