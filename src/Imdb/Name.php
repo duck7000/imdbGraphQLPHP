@@ -1508,12 +1508,14 @@ EOF;
         $query = <<<EOF
 query Redirect(\$id: ID!) {
   name(id: \$id) {
-    id
+    meta {
+      canonicalId
+    }
   }
 }
 EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "nm$this->imdbID"]);
-        $nameImdbId = str_replace('nm', '', $data->name->id);
+        $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
         if ($nameImdbId  != $this->imdbID) {
             // todo write to log?
             return $nameImdbId;
