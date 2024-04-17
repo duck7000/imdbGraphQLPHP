@@ -3068,12 +3068,14 @@ EOF;
         $query = <<<EOF
 query Redirect(\$id: ID!) {
   title(id: \$id) {
-    id
+    meta {
+      canonicalId
+    }
   }
 }
 EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "tt$this->imdbID"]);
-        $titleImdbId = str_replace('tt', '', $data->title->id);
+        $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
         if ($titleImdbId  != $this->imdbID) {
             // todo write to log?
             return $titleImdbId;
