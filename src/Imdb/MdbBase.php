@@ -29,6 +29,11 @@ class MdbBase extends Config
     protected $cache;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @var Config
      */
     protected $config;
@@ -45,13 +50,15 @@ class MdbBase extends Config
 
     /**
      * @param Config $config OPTIONAL override default config
+     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
      * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
-    public function __construct(Config $config = null, CacheInterface $cache = null)
+    public function __construct(Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null)
     {
         $this->config = $config ?: $this;
-        $this->cache = empty($cache) ? new Cache($this->config) : $cache;
-        $this->graphql = new GraphQL($this->cache, $this->config);
+        $this->logger = empty($logger) ? new Logger($this->debug) : $logger;
+        $this->cache = empty($cache) ? new Cache($this->config, $this->logger) : $cache;
+        $this->graphql = new GraphQL($this->cache, $this->logger, $this->config);
     }
 
     /**
@@ -73,6 +80,24 @@ class MdbBase extends Config
             $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
         } elseif (preg_match("/(?:nm|tt)(\d{7,8})/", $id, $matches)) {
             $this->imdbID = $matches[1];
+        } else {
+            $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
         }
+    }
+
+    #---------------------------------------------------------[ Debug helpers ]---
+    protected function debug_scalar($scalar)
+    {
+        $this->logger->error($scalar);
+    }
+
+    protected function debug_object($object)
+    {
+        $this->logger->error('{object}', array('object' => $object));
+    }
+
+    protected function debug_html($html)
+    {
+        $this->logger->error(htmlentities($html));
     }
 }

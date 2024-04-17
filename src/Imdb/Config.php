@@ -184,4 +184,10 @@ class Config
      */
     public $sortOrder = "ASC";
 
+    /**
+     * Enable debug mode?
+     * @var boolean
+     */
+    public $debug = false;
+
 }

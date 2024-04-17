@@ -10,6 +10,7 @@
 
 namespace Imdb;
 
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -26,6 +27,11 @@ class GraphQL
     private $cache;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var Config
      */
     private $config;
@@ -33,11 +39,13 @@ class GraphQL
     /**
      * GraphQL constructor.
      * @param CacheInterface $cache
+     * @param LoggerInterface $logger
      * @param Config $config
      */
-    public function __construct($cache, $config)
+    public function __construct($cache, $logger, $config)
     {
         $this->cache = $cache;
+        $this->logger = $logger;
         $this->config = $config;
     }
 
@@ -84,11 +92,17 @@ class GraphQL
             'variables' => $variables)
         );
 
+        $this->logger->info("[GraphQL] Requesting $queryName");
+
         $request->post($payload);
 
         if (200 == $request->getStatus()) {
             return json_decode($request->getResponseBody())->data;
         } else {
+            $this->logger->error(
+                "[GraphQL] Failed to retrieve query [{queryName}]. Response headers:{headers}. Response body:{body}",
+                array('queryName' => $queryName, 'headers' => $request->getLastResponseHeaders(), 'body' => $request->getResponseBody())
+            );
             return new \StdClass();
         }
     }

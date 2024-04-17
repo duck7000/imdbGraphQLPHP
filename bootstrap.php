@@ -1,6 +1,8 @@
 <?php
+require_once __DIR__ . '/src/Psr/Log/LoggerInterface.php';
 require_once __DIR__ . '/src/Psr/SimpleCache/CacheInterface.php';
 require_once __DIR__ . '/src/Imdb/Config.php';
+require_once __DIR__ . '/src/Imdb/Logger.php';
 require_once __DIR__ . '/src/Imdb/Cache.php';
 require_once __DIR__ . '/src/Imdb/Request.php';
 require_once __DIR__ . '/src/Imdb/GraphQL.php';
