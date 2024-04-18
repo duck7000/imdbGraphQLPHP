@@ -2734,7 +2734,10 @@ query CreditCrew(\$id: ID!) {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "CreditCrew", ["id" => "tt$this->imdbID"]);
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryStripped = implode("\n", array_map('trim', explode("\n", $query)));
+
+        $data = $this->graphql->query($queryStripped, "CreditCrew", ["id" => "tt$this->imdbID"]);
         return $data;
     }
 
