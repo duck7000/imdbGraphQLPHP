@@ -2,6 +2,12 @@
 History for IMDBPHP6
 ====================
 
+v1.3.17
+-------------------
+* Title and Name class changed checkRedirect, better api call, documented by imdb
+* Added logger, for the moment only on GraphQL API call
+* Title class added space stripping to query of creditsQuery() due to hoster character limits
+
 v1.3.16
 -------------------
 * Title class changed output of Director, composer, producer, writer, thanks, stunts, visual effects, cinematographer and special effects to output array instead of string for jobs and episode credits
