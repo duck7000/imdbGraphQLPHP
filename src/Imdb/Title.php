@@ -3078,4 +3078,15 @@ EOF;
         }
     }
 
+    #----------------------------------------------------------[ helper, strip spaces from query ]---
+    /**
+     * Strip spaces from imdb Graphql query, due to hosters request limits of around 1000 characters
+     * @param $query input query
+     * @return query stripped from all spaces but keeps linebreaks intact
+     */
+    protected function stripSpaces($query)
+    {
+        return implode("\n", array_map('trim', explode("\n", $query)));
+    }
+
 }
