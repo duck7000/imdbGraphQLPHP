@@ -1044,7 +1044,7 @@ EOF;
             return $this->creditsWriter;
         }
         $data = $this->creditsQuery("writer");
-        foreach ($data->title->credits->edges as $edge) {
+        foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             $jobs = array();
@@ -2689,12 +2689,8 @@ EOF;
      */
     private function creditsQuery($crewCategory)
     {
-$query = <<<EOF
-query CreditCrew(\$id: ID!) {
-  title(id: \$id) {
-    credits(first: 9999, filter: { categories: ["$crewCategory"] }) {
-      edges {
-        node {
+        $filter = ', filter: { categories: ["' .$crewCategory . '"] }';
+        $query = <<<EOF
           name {
             nameText {
               text
@@ -2728,16 +2724,11 @@ query CreditCrew(\$id: ID!) {
               }
             }
           }
-        }
-      }
-    }
-  }
-}
 EOF;
         // this strip spaces from $query to lower character count due hosters limit
-        $queryStripped = implode("\n", array_map('trim', explode("\n", $query)));
-
-        $data = $this->graphql->query($queryStripped, "CreditCrew", ["id" => "tt$this->imdbID"]);
+        $queryNode = implode("\n", array_map('trim', explode("\n", $query)));
+        
+        $data = $this->graphQlGetAll("CreditCrew", "credits", $queryNode, $filter);
         return $data;
     }
 
@@ -2750,7 +2741,7 @@ EOF;
     private function directorComposer($data)
     {
         $output = array();
-        foreach ($data->title->credits->edges as $edge) {
+        foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             $totalEpisodes = 0;
@@ -2786,7 +2777,7 @@ EOF;
     private function creditHelper($data)
     {
         $output = array();
-        foreach ($data->title->credits->edges as $edge) {
+        foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
             $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
             $jobs = array();
