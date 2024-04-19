@@ -2726,7 +2726,7 @@ EOF;
           }
 EOF;
         // this strip spaces from $query to lower character count due hosters limit
-        $queryNode = implode("\n", array_map('trim', explode("\n", $query)));
+        $queryNode = $this->stripSpaces($query);
         
         $data = $this->graphQlGetAll("CreditCrew", "credits", $queryNode, $filter);
         return $data;
