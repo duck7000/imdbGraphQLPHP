@@ -2011,22 +2011,15 @@ EOF;
     {
         if (empty($this->alternateversions)) {
             $query = <<<EOF
-query AlternateVersions(\$id: ID!) {
-  title(id: \$id) {
-    alternateVersions(first: 9999) {
-      edges {
-        node {
-          text {
-            plainText
-          }
-        }
-      }
-    }
-  }
-}
+              text {
+                plainText
+              }
 EOF;
-            $data = $this->graphql->query($query, "AlternateVersions", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->alternateVersions->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphQlGetAll("AlternateVersions", "alternateVersions", $queryNode);
+            foreach ($data as $edge) {
                 $this->alternateversions[] = $edge->node->text->plainText;
             }
         }
