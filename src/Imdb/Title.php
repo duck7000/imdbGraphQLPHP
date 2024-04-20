@@ -1782,34 +1782,37 @@ EOF;
             }
             
             $query = <<<EOF
-          associatedTitle {
-            id
-            titleText {
-              text
-            }
-            titleType {
-              text
-            }
-            releaseYear {
-              year
-              endYear
-            }
-            series {
-              series {
+              associatedTitle {
+                id
                 titleText {
                   text
                 }
+                titleType {
+                  text
+                }
+                releaseYear {
+                  year
+                  endYear
+                }
+                series {
+                  series {
+                    titleText {
+                      text
+                    }
+                  }
+                }
               }
-            }
-          }
-          category {
-            id
-          }
-          description {
-            plainText
-          }
+              category {
+                id
+              }
+              description {
+                plainText
+              }
 EOF;
-            $edges = $this->graphQlGetAll("Connections", "connections", $query);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $edges = $this->graphQlGetAll("Connections", "connections", $queryNode);
             foreach ($edges as $edge) {
                 $this->connections[$categoryIds[$edge->node->category->id]][] = array(
                     'titleId' => str_replace('tt', '', $edge->node->associatedTitle->id),
