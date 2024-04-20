@@ -2967,13 +2967,13 @@ EOF;
      * @param string $filter Add's extra Graphql query filters like categories
      * @return \stdClass[]
      */
-    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
+    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '', $first = 9999)
     {
     
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
   title(id: \$id) {
-    $fieldName(first: 9999, after: \$after$filter) {
+    $fieldName(first: $first, after: \$after$filter) {
       edges {
         node {
           $nodeQuery
