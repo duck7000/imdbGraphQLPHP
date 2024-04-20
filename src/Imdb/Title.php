@@ -2130,8 +2130,10 @@ query Video(\$id: ID!) {
   }
 }
 EOF;
-
-            $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphql->query($queryNode, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->primaryVideos->edges as $edge) {
                 // check if url and contentType is set and contentType = Trailer
                 if (!isset($edge->node->playbackURLs[0]->url) ||
