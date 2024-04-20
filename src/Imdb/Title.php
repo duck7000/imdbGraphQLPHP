@@ -2858,7 +2858,6 @@ EOF;
      */
     protected function graphQlGetAllEpisodes($filter)
     {
-    
         $query = <<<EOF
 query Episodes(\$id: ID!, \$after: ID) {
   title(id: \$id) {
@@ -2903,12 +2902,15 @@ query Episodes(\$id: ID!, \$after: ID) {
   }
 }
 EOF;
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+        
         // Results are paginated, so loop until we've got all the data
         $endCursor = null;
         $hasNextPage = true;
         $edges = array();
         while ($hasNextPage) {
-            $data = $this->graphql->query($query, "Episodes", ["id" => "tt$this->imdbID", "after" => $endCursor]);
+            $data = $this->graphql->query($queryNode, "Episodes", ["id" => "tt$this->imdbID", "after" => $endCursor]);
             $edges = array_merge($edges, $data->title->episodes->episodes->edges);
             $hasNextPage = $data->title->episodes->episodes->pageInfo->hasNextPage;
             $endCursor = $data->title->episodes->episodes->pageInfo->endCursor;
