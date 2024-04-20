@@ -1976,25 +1976,17 @@ EOF;
     {
         if (empty($this->keywords)) {
             $query = <<<EOF
-query Keywords(\$id: ID!) {
-  title(id: \$id) {
-    keywords(first: 9999) {
-      edges {
-        node {
-          keyword {
-            text {
-              text
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              keyword {
+                text {
+                  text
+                }
+              }
 EOF;
-
-            $data = $this->graphql->query($query, "Keywords", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->keywords->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphQlGetAll("Keywords", "keywords", $queryNode);
+            foreach ($data as $edge) {
                 $this->keywords[] = $edge->node->keyword->text->text;
             }
         }
