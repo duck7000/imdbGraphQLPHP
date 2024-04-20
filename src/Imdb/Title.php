@@ -2622,12 +2622,8 @@ EOF;
      */
     protected function companyCredits($category)
     {
+        $filter = ', filter: { categories: ["' .$category . '"] }';
         $query = <<<EOF
-query CompanyCredits(\$id: ID!) {
-  title(id: \$id) {
-    companyCredits(first: 9999, filter: {categories: ["$category"]}) {
-      edges {
-        node {
           company {
             id
           }
@@ -2645,15 +2641,13 @@ query CompanyCredits(\$id: ID!) {
           yearsInvolved {
             year
           }
-        }
-      }
-    }
-  }
-}
 EOF;
-        $data = $this->graphql->query($query, "CompanyCredits", ["id" => "tt$this->imdbID"]);
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+        
+        $data = $this->graphQlGetAll("CompanyCredits", "companyCredits", $queryNode, $filter);
         $results = array();
-        foreach ($data->title->companyCredits->edges as $edge) {
+        foreach ($data as $edge) {
             $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
             $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
             $companyCountry = '';
