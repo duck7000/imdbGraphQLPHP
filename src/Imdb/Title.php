@@ -1448,30 +1448,20 @@ EOF;
     public function trivia($spoil = false)
     {
         if (empty($this->trivias)) {
-            if ($spoil === false) {
-                $filter = 'first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}';
-            } else {
-                $filter = 'first: 9999';
-            }
+            $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
+
             $query = <<<EOF
-query Trivia(\$id: ID!) {
-  title(id: \$id) {
-    trivia($filter) {
-      edges {
-        node {
-          displayableArticle {
-            body {
-              plainText
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              displayableArticle {
+                body {
+                  plainText
+                }
+              }
 EOF;
-            $data = $this->graphql->query($query, "Trivia", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->trivia->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("Trivia", "trivia", $queryNode, $filter);
+            foreach ($data as $edge) {
                 $this->trivias[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
             }
         }
