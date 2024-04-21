@@ -1358,35 +1358,29 @@ EOF;
     #===========================================================[ /goofs page ]===
     #-----------------------------------------------------------[ Goofs Array ]---
     /** Get the goofs
+     * @param $spoil boolean if true spoilers are also included.
      * @return array goofs (array[0..n] of array[type,content]
      * @see IMDB page /goofs
-     * @version Spoilers are currently skipped (differently formatted)
      */
-    public function goof()
+    public function goof($spoil = false)
     {
         if (empty($this->goofs)) {
+            $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-query Goofs(\$id: ID!) {
-  title(id: \$id) {
-    goofs(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
-      edges {
-        node {
-          category {
-            text
-          }
-          displayableArticle {
-            body {
-              plainText
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              category {
+                text
+              }
+              displayableArticle {
+                body {
+                  plainText
+                }
+              }
 EOF;
-            $data = $this->graphql->query($query, "Goofs", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->goofs->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("Goofs", "goofs", $queryNode, $filter);
+            foreach ($data as $edge) {
                 $type = isset($edge->node->category->text) ? $edge->node->category->text : '';
                 $content = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
                 $this->goofs[] = array(
