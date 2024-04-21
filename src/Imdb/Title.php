@@ -1652,26 +1652,18 @@ EOF;
     {
         if (empty($this->locations)) {
             $query = <<<EOF
-query FilmingLocations(\$id: ID!) {
-  title(id: \$id) {
-    filmingLocations(first: 9999) {
-      edges {
-        node {
-          text
-          displayableProperty {
-            qualifiersInMarkdownList {
-              markdown
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              text
+              displayableProperty {
+                qualifiersInMarkdownList {
+                  markdown
+                }
+              }
 EOF;
-
-            $data = $this->graphql->query($query, "FilmingLocations", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->filmingLocations->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $queryNode);
+            foreach ($data as $edge) {
                 $real = isset($edge->node->text) ? $edge->node->text : '';
                 $movie = array();
                 if ($edge->node->displayableProperty->qualifiersInMarkdownList != null) {
