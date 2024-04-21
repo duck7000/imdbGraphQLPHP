@@ -1531,23 +1531,16 @@ EOF;
     {
         if (empty($this->soundtracks)) {
             $query = <<<EOF
-query Soundtrack(\$id: ID!) {
-  title(id: \$id) {
-    soundtrack(first: 9999) {
-      edges {
-        node {
-          text
-          comments {
-            plaidHtml
-          }
-        }
-      }
-    }
-  }
-}
+              text
+              comments {
+                plaidHtml
+              }
 EOF;
-            $data = $this->graphql->query($query, "Soundtrack", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->soundtrack->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("Soundtrack", "soundtrack", $queryNode);
+            foreach ($data as $edge) {
                 if (isset($edge->node->text) && $edge->node->text !== '') {
                     $title = $this->titleCase(trim($edge->node->text));
                 } else {
