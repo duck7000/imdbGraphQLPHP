@@ -1407,24 +1407,17 @@ EOF;
     {
         if (empty($this->quotes)) {
             $query = <<<EOF
-query Quotes(\$id: ID!) {
-  title(id: \$id) {
-    quotes(first: 9999) {
-      edges {
-        node {
-          displayableArticle {
-            body {
-              plaidHtml
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              displayableArticle {
+                body {
+                  plaidHtml
+                }
+              }
 EOF;
-            $data = $this->graphql->query($query, "Quotes", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->quotes->edges as $key => $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("Quotes", "quotes", $queryNode);
+            foreach ($data as $key => $edge) {
                 $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
                 foreach ($quoteParts as $quoteItem) {
                     if (trim(strip_tags($quoteItem)) == '') {
