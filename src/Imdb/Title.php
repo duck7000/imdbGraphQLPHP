@@ -1158,26 +1158,19 @@ EOF;
     {
         if (empty($this->crazyCredits)) {
             $query = <<<EOF
-query CrazyCredits(\$id: ID!) {
-  title(id: \$id) {
-    crazyCredits(first: 9999) {
-      edges {
-        node {
-          displayableArticle {
-            body {
-              plainText
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              displayableArticle {
+                body {
+                  plainText
+                }
+              }
 EOF;
-            $data = $this->graphql->query($query, "CrazyCredits", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->crazyCredits->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphQlGetAll("CrazyCredits", "crazyCredits", $queryNode);
+            foreach ($data as $edge) {
                 $crazyCredit = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
-                $this->crazyCredits[] = $crazyCredit;
+                $this->crazyCredits[] = preg_replace('/\s\s+/', ' ', $crazyCredit);
             }
         }
         return $this->crazyCredits;
