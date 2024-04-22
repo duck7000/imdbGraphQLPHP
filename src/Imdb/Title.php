@@ -924,27 +924,30 @@ EOF;
             return $this->creditsCast;
         }
         $filter = ', filter: { categories: ["cast"] }';
-$queryNode = <<<EOF
-name {
-  nameText {
-    text
-  }
-  id
-  primaryImage {
-    url
-    width
-    height
-  }
-}
-... on Cast {
-  characters {
-    name
-  }
-  attributes {
-    text
-  }
-}
+        $query = <<<EOF
+            name {
+              nameText {
+                text
+              }
+              id
+              primaryImage {
+                url
+                width
+                height
+              }
+            }
+            ... on Cast {
+              characters {
+                name
+              }
+              attributes {
+                text
+              }
+            }
 EOF;
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+        
         $data = $this->graphQlGetAll("CreditQuery", "credits", $queryNode, $filter);
         foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
