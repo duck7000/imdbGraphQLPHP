@@ -416,7 +416,10 @@ query Recommendations(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphql->query($queryNode, "Recommendations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 $thumb = '';
                 if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
