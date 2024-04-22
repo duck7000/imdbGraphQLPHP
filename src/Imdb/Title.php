@@ -596,29 +596,22 @@ EOF;
     {
         if (empty($this->releaseDates)) {
             $query = <<<EOF
-query ReleaseDates(\$id: ID!) {
-  title(id: \$id) {
-    releaseDates(first: 9999) {
-      edges {
-        node {
-          country {
-            text
-          }
-          day
-          month
-          year
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
+              country {
+                text
+              }
+              day
+              month
+              year
+              attributes {
+                text
+              }
 EOF;
-            $data = $this->graphql->query($query, "ReleaseDates", ["id" => "tt$this->imdbID"]);
-            if ($data->title->releaseDates->edges != null) {
-                foreach ($data->title->releaseDates->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphQlGetAll("ReleaseDates", "releaseDates", $queryNode);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $country = isset($edge->node->country->text) ? $edge->node->country->text : '';
                     $attributes = array();
                     if ($edge->node->attributes != null) {
