@@ -1334,7 +1334,7 @@ EOF;
     #-----------------------------------------------------------[ Goofs Array ]---
     /** Get the goofs
      * @param $spoil boolean if true spoilers are also included.
-     * @return array goofs (array[categoryId] of array[content]
+     * @return array goofs (array[categoryId] of array[content, isSpoiler]
      * @see IMDB page /goofs
      */
     public function goof($spoil = false)
@@ -1370,6 +1370,7 @@ EOF;
                   plainText
                 }
               }
+              isSpoiler
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
@@ -1378,7 +1379,8 @@ EOF;
             foreach ($data as $edge) {
                 $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
                     'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                       $edge->node->displayableArticle->body->plainText : ''
+                                       $edge->node->displayableArticle->body->plainText : '',
+                    'isSpoiler' => $edge->node->isSpoiler
                 );
             }
         }
