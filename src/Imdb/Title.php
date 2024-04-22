@@ -874,8 +874,10 @@ query PrincipalCredits(\$id: ID!) {
   }
 }
 EOF;
-
-            $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphql->query($queryNode, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->principalCredits as $value){
                 $category = '';
                 $cat = $value->credits[0]->category->text;
