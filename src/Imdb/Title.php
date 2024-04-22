@@ -713,26 +713,19 @@ EOF;
     {
         if (empty($this->mpaas)) {
             $query = <<<EOF
-query Mpaa(\$id: ID!) {
-  title(id: \$id) {
-    certificates(first: 9999) {
-      edges {
-        node {
-          country {
-            text
-          }
-          rating
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
+              country {
+                text
+              }
+              rating
+              attributes {
+                text
+              }
 EOF;
-            $data = $this->graphql->query($query, "Mpaa", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->certificates->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphQlGetAll("Mpaa", "certificates", $queryNode);
+            foreach ($data as $edge) {
                 $comments = array();
                 foreach ($edge->node->attributes as $key => $attribute) {
                     if (isset($attribute->text) && $attribute->text != '') {
