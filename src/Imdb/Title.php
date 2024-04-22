@@ -331,41 +331,29 @@ EOF;
     #----------------------------------------------------------[ FAQ ]---
     /**
      * Get movie frequently asked questions, it includes questions with and without answer
-     * @param $spoiler boolean (true or false) to include spoilers or not, isSpoiler indicates if this question is spoiler or not
+     * @param $spoil boolean (true or false) to include spoilers or not, isSpoiler indicates if this question is spoiler or not
      * @return array of array(question: string, answer: string, isSpoiler: boolean)
      * @see IMDB page / (Faq)
      */
-    public function faq($spoiler = false)
+    public function faq($spoil = false)
     {
         if (empty($this->faqs)) {
-            $spoiler = $spoiler === true ? "null" : "EXCLUDE_SPOILERS";
+            $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-query Faq(\$id: ID!) {
-  title(id: \$id) {
-    faqs(
-      first: 9999
-      filter: {
-        spoilers: $spoiler
-      }
-    ) {
-      edges {
-        node {
-          question {
-            plainText
-          }
-          answer {
-            plainText
-          }
-          isSpoiler
-        }
-      }
-    }
-  }
-}
+              question {
+                plainText
+              }
+              answer {
+                plainText
+              }
+              isSpoiler
 EOF;
-            $data = $this->graphql->query($query, "Faq", ["id" => "tt$this->imdbID"]);
-            if ($data->title->faqs->edges != null) {
-                foreach ($data->title->faqs->edges as $edge) {
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+        
+            $data = $this->graphQlGetAll("Faq", "faqs", $queryNode, $filter);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $this->faqs[] = array(
                         'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : '',
                         'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : '',
