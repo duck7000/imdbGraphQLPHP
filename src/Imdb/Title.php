@@ -1334,16 +1334,36 @@ EOF;
     #-----------------------------------------------------------[ Goofs Array ]---
     /** Get the goofs
      * @param $spoil boolean if true spoilers are also included.
-     * @return array goofs (array[0..n] of array[type,content]
+     * @return array goofs (array[categoryId] of array[content]
      * @see IMDB page /goofs
      */
     public function goof($spoil = false)
     {
+        // imdb connection category ids to camelCase
+        $categoryIds = array(
+            'continuity' => 'continuity',
+            'factual_error' => 'factualError',
+            'not_a_goof' => 'notAGoof',
+            'revealing_mistake' => 'revealingMistake',
+            'miscellaneous' => 'miscellaneous',
+            'anachronism' => 'anachronism',
+            'audio_visual_unsynchronized' => 'audioVisualUnsynchronized',
+            'crew_or_equipment_visible' => 'crewOrEquipmentVisible',
+            'error_in_geography' => 'errorInGeography',
+            'plot_hole' => 'plotHole',
+            'boom_mic_visible' => 'boomMicVisible',
+            'character_error' => 'characterError'
+        );
+        
         if (empty($this->goofs)) {
+            foreach ($categoryIds as $categoryId) {
+                $this->goofs[$categoryId] = array();
+            }
+            
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
               category {
-                text
+                id
               }
               displayableArticle {
                 body {
@@ -1356,11 +1376,9 @@ EOF;
             
             $data = $this->graphQlGetAll("Goofs", "goofs", $queryNode, $filter);
             foreach ($data as $edge) {
-                $type = isset($edge->node->category->text) ? $edge->node->category->text : '';
-                $content = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
-                $this->goofs[] = array(
-                    "type" => $type,
-                    "content" => $content
+                $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
+                    'content' => isset($edge->node->displayableArticle->body->plainText) ?
+                                       $edge->node->displayableArticle->body->plainText : ''
                 );
             }
         }
