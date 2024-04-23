@@ -1424,19 +1424,37 @@ EOF;
     /**
      * Get the trivia info
      * @param boolean $spoil if true spoilers are also included.
-     * @return array trivia (array[0..n] string
+     * @return array (array[categoryId] of array[content, trademark, isSpoiler]
      * @see IMDB page /trivia
      */
     public function trivia($spoil = false)
     {
-        if (empty($this->trivias)) {
-            $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
+        // imdb connection category ids to camelCase
+        $categoryIds = array(
+            'uncategorized' => 'uncategorized',
+            'actor-trademark' => 'actorTrademark',
+            'cameo' => 'cameo',
+            'director-cameo' => 'directorCameo',
+            'director-trademark' => 'directorTrademark',
+            'smithee' => 'smithee'
+        );
 
+        if (empty($this->trivias)) {
+            foreach ($categoryIds as $categoryId) {
+                $this->trivias[$categoryId] = array();
+            }
+
+            $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-              displayableArticle {
-                body {
-                  plainText
-                }
+              category {
+                id
+              }
+              text {
+                plainText
+              }
+              isSpoiler
+              trademark {
+                plainText
               }
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
@@ -1444,7 +1462,13 @@ EOF;
             
             $data = $this->graphQlGetAll("Trivia", "trivia", $queryNode, $filter);
             foreach ($data as $edge) {
-                $this->trivias[] = preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText);
+                $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
+                    'content' => isset($edge->node->text->plainText) ?
+                                       preg_replace('/\s\s+/', ' ', $edge->node->text->plainText) : '',
+                    'trademark' => isset($edge->node->trademark->plainText) ?
+                                         $edge->node->trademark->plainText : null,
+                    'isSpoiler' => $edge->node->isSpoiler
+                );
             }
         }
         return $this->trivias;
