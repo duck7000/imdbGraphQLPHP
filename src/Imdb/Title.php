@@ -1424,7 +1424,7 @@ EOF;
     /**
      * Get the trivia info
      * @param boolean $spoil if true spoilers are also included.
-     * @return array (array[categoryId] of array[content, trademark, isSpoiler]
+     * @return array (array[categoryId] of array[content, names: array(name, id), trademark, isSpoiler]
      * @see IMDB page /trivia
      */
     public function trivia($spoil = false)
@@ -1456,15 +1456,31 @@ EOF;
               trademark {
                 plainText
               }
+              relatedNames {
+                nameText {
+                  text
+                }
+                id
+              }
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
             
             $data = $this->graphQlGetAll("Trivia", "trivia", $queryNode, $filter);
             foreach ($data as $edge) {
+                $names = array();
+                if ($edge->node->relatedNames != null) {
+                    foreach ($edge->node->relatedNames as $name) {
+                        $names[] = array(
+                            'name' => $name->nameText->text,
+                            'id' => str_replace('nm', '', $name->id)
+                        );
+                    }
+                }
                 $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
                     'content' => isset($edge->node->text->plainText) ?
                                        preg_replace('/\s\s+/', ' ', $edge->node->text->plainText) : '',
+                    'names' => $names,
                     'trademark' => isset($edge->node->trademark->plainText) ?
                                          $edge->node->trademark->plainText : null,
                     'isSpoiler' => $edge->node->isSpoiler
