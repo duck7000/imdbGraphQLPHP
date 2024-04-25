@@ -637,9 +637,6 @@ EOF;
             $query = <<<EOF
 query AlsoKnow(\$id: ID!) {
   title(id: \$id) {
-    originalTitleText {
-      text
-    }
     akas(first: 9999, sort: {order: ASC by: COUNTRY}) {
       edges {
         node {
@@ -661,17 +658,17 @@ query AlsoKnow(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
-            $originalTitle = $data->title->originalTitleText->text;
-            $comments = array();
+            $originalTitle = $this->originalTitle();
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
                     "title" => ucwords($originalTitle),
                     "country" => "(Original Title)",
-                    "comment" => $comments
+                    "comment" => array()
                 );
             }
 
             foreach ($data->title->akas->edges as $edge) {
+                $comments = array();
                 foreach ($edge->node->attributes as $attribute) {
                     if (isset($attribute->text) && $attribute->text != '') {
                         $comments[] = $attribute->text;
