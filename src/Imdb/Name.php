@@ -714,7 +714,10 @@ query Salaries(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "Salaries", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphql->query($queryNode, "Salaries", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->titleSalaries != null) {
                 foreach ($data->name->titleSalaries->edges as $edge) {
                     $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
