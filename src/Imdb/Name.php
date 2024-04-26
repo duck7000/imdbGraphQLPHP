@@ -922,7 +922,10 @@ query PubOther(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "PubOther", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphql->query($queryNode, "PubOther", ["id" => "nm$this->imdbID"]);
             if ($data->name->otherWorks->edges != null) {
                 foreach ($data->name->otherWorks->edges as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
