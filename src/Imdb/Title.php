@@ -992,7 +992,7 @@ EOF;
         if (!empty($this->creditsDirector)) {
             return $this->creditsDirector;
         }
-        $directorData = $this->directorComposer($this->creditsQuery("director"));
+        $directorData = $this->creditHelper($this->creditsQuery("director"));
         
         return $this->creditsDirector = $directorData;
     }
@@ -1008,7 +1008,7 @@ EOF;
         if (!empty($this->creditsCinematographer)) {
             return $this->creditsCinematographer;
         }
-        $cinematographerData = $this->directorComposer($this->creditsQuery("cinematographer"));
+        $cinematographerData = $this->creditHelper($this->creditsQuery("cinematographer"));
         
         return $this->creditsCinematographer = $cinematographerData;
     }
@@ -1051,7 +1051,7 @@ EOF;
         if (!empty($this->creditsComposer)) {
             return $this->creditsComposer;
         }
-        $composerData = $this->directorComposer($this->creditsQuery("composer"));
+        $composerData = $this->creditHelper($this->creditsQuery("composer"));
         return $this->creditsComposer = $composerData;
     }
     
@@ -2691,43 +2691,6 @@ EOF;
         
         $data = $this->graphQlGetAll("CreditCrew", "credits", $queryNode, $filter);
         return $data;
-    }
-
-    #========================================================[ Director/Composer ]===
-    /**
-     * process data for Director and Composer
-     * @return array director/composer (array[0..n] of arrays[imdb,name,episode(total, year, endYear)])
-     * @see used by the methods director and composer
-     */
-    private function directorComposer($data)
-    {
-        $output = array();
-        foreach ($data as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $totalEpisodes = 0;
-            $year = null;
-            $endYear = null;
-            if ($edge->node->episodeCredits != null) {
-                $totalEpisodes = count($edge->node->episodeCredits->edges);
-                if (isset($edge->node->episodeCredits->yearRange->year)) {
-                    $year = $edge->node->episodeCredits->yearRange->year;
-                    if (isset($edge->node->episodeCredits->yearRange->endYear)) {
-                        $endYear = $edge->node->episodeCredits->yearRange->endYear;
-                    }
-                }
-            }
-            $output[] = array(
-                'imdb' => $imdb,
-                'name' => $name,
-                'episode' => array(
-                    'total' => $totalEpisodes,
-                    'year' => $year,
-                    'endYear' => $endYear
-                    )
-            );
-        }
-        return $output;
     }
 
     #---------------------------------------------------------------[ credit helper ]---
