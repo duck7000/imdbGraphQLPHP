@@ -478,7 +478,10 @@ query Spouses(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphql->query($queryNode, "Spouses", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->spouses != null) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
