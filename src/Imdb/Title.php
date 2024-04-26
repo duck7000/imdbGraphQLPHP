@@ -627,47 +627,45 @@ EOF;
     /**
      * Get movie's alternative names
      * The first item in the list will be the original title
-     * @return array<array{title: string, country: string, comment: array()}>
+     * @return array<array{title: string, country: string, countryId: string, language: string, languageId: string, comment: array()}>
      * Ordered Ascending by Country
      * @see IMDB page ReleaseInfo
      */
     public function alsoknow()
     {
         if (empty($this->akas)) {
+            $filter = ', sort: {order: ASC by: COUNTRY}';
             $query = <<<EOF
-query AlsoKnow(\$id: ID!) {
-  title(id: \$id) {
-    akas(first: 9999, sort: {order: ASC by: COUNTRY}) {
-      edges {
-        node {
-          country {
-            text
-          }
-          displayableProperty {
-            value {
-              plainText
-            }
-          }
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
+              country {
+                id
+                text
+              }
+              text
+              attributes {
+                text
+              }
+              language {
+                id
+                text
+              }
 EOF;
-            $data = $this->graphql->query($query, "AlsoKnow", ["id" => "tt$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphQlGetAll("AlsoKnow", "akas", $queryNode, $filter);
             $originalTitle = $this->originalTitle();
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
-                    "title" => ucwords($originalTitle),
-                    "country" => "(Original Title)",
-                    "comment" => array()
+                    'title' => ucwords($originalTitle),
+                    'country' => "(Original Title)",
+                    'countryId' => null,
+                    'language' => null,
+                    'languageId' => null,
+                    'comment' => array()
                 );
             }
 
-            foreach ($data->title->akas->edges as $edge) {
+            foreach ($data as $edge) {
                 $comments = array();
                 foreach ($edge->node->attributes as $attribute) {
                     if (isset($attribute->text) && $attribute->text != '') {
@@ -675,9 +673,12 @@ EOF;
                     }
                 }
                 $this->akas[] = array(
-                    "title" => ucwords($edge->node->displayableProperty->value->plainText),
-                    "country" => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown',
-                    "comment" => $comments
+                    'title' => ucwords($edge->node->text),
+                    'country' => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown',
+                    'countryId' => isset($edge->node->country->id) ? $edge->node->country->id : null,
+                    'language' => isset($edge->node->language->text) ? ucwords($edge->node->language->text) : null,
+                    'languageId' => isset($edge->node->language->id) ? $edge->node->language->id : null,
+                    'comment' => $comments
                 );
             }
         }
