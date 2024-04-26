@@ -1015,7 +1015,7 @@ EOF;
 
     #---------------------------------------------------------------[ Writers ]---
     /** Get the writer(s)
-     * @return array writers (array[0..n] of arrays[imdb,name,jobs[]])
+     * @return array writers (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function writer()
@@ -1023,24 +1023,8 @@ EOF;
         if (!empty($this->creditsWriter)) {
             return $this->creditsWriter;
         }
-        $data = $this->creditsQuery("writer");
-        foreach ($data as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
-            $jobs = array();
-            if ($edge->node->jobs != null) {
-                foreach ($edge->node->jobs as $value) {
-                    $jobs[] = $value->text;
-                }
-            }
-            $this->creditsWriter[] = array(
-                'imdb' => $imdb,
-                'name' => $name,
-                'jobs' => $jobs
-                
-            );
-        }
-        return $this->creditsWriter;
+        $data = $this->creditHelper($this->creditsQuery("writer"));
+        return $this->creditsWriter = $data;
     }
 
     #-------------------------------------------------------------[ Producers ]---
