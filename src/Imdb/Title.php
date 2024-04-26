@@ -984,7 +984,7 @@ EOF;
     #-------------------------------------------------------------[ Directors ]---
     /**
      * Get the director(s) of the movie
-     * @return array director (array[0..n] of arrays[imdb,name,episode array(total, year, endYear)]])
+     * @return array director (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function director()
@@ -1000,7 +1000,7 @@ EOF;
     #-------------------------------------------------------------[ Cinematographers ]---
     /**
      * Get the cinematographer of the title
-     * @return array creditsCinematographer (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)])
+     * @return array creditsCinematographer (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function cinematographer()
@@ -1029,7 +1029,7 @@ EOF;
 
     #-------------------------------------------------------------[ Producers ]---
     /** Obtain the producer credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)]])
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function producer()
@@ -1043,7 +1043,7 @@ EOF;
 
     #-------------------------------------------------------------[ Composers ]---
     /** Obtain the composer(s) ("Original Music by...")
-     * @return array composer (array[0..n] of arrays[imdb,name,episode array(total, year, endYear)]])
+     * @return array composer (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function composer()
@@ -1057,7 +1057,7 @@ EOF;
     
     #-------------------------------------------------------------[ Stunts ]---
     /** Obtain the stunts credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)]])
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function stunts()
@@ -1071,7 +1071,7 @@ EOF;
     
     #-------------------------------------------------------------[ Thanks ]---
     /** Obtain thanks credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)]])
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function thanks()
@@ -1085,7 +1085,7 @@ EOF;
     
     #-------------------------------------------------------------[ Visual Effects ]---
     /** Obtain Visual Effects credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)]])
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function visualEffects()
@@ -1099,7 +1099,7 @@ EOF;
     
         #-------------------------------------------------------------[ Special Effects ]---
     /** Obtain Special Effects credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)]])
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     public function specialEffects()
