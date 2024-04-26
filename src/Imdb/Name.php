@@ -782,7 +782,10 @@ query PubPrint(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "PubPrint", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphql->query($queryNode, "PubPrint", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->publicityListings != null) {
                 foreach ($data->name->publicityListings->edges as $edge) {
                     $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
