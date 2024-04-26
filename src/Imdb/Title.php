@@ -2748,7 +2748,7 @@ EOF;
 
     #---------------------------------------------------------------[ credit helper ]---
     /** helper for stunts, thanks, visualEffects, specialEffects and producer
-     * @return array (array[0..n] of arrays[imdb,name,jobs array[], episode array(total, year, endYear)])
+     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[], episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
      */
     private function creditHelper($data)
@@ -2775,10 +2775,17 @@ EOF;
                     }
                 }
             }
+            $attributes = array();
+            if ($edge->node->attributes != NULL) {
+                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    $attributes[] = isset($attribute->text) ? $attribute->text : null;
+                }
+            }
             $output[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
                 'jobs' => $jobs,
+                'attributes' => $attributes,
                 'episode' => array(
                     'total' => $totalEpisodes,
                     'year' => $year,
