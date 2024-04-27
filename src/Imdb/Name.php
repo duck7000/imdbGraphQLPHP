@@ -1344,7 +1344,10 @@ EOF;
             }
           }
 EOF;
-            $edges = $this->graphQlGetAll("Credits", "credits", $query);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $edges = $this->graphQlGetAll("Credits", "credits", $queryNode);
             foreach ($edges as $edge) {
                 $characters = array();
                 if (isset($edge->node->characters) && $edge->node->characters != null) {
