@@ -1205,7 +1205,10 @@ query KnownFor(\$id: ID!) {
   }
 }
 EOF;
-            $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+            
+            $data = $this->graphql->query($queryNode, "KnownFor", ["id" => "nm$this->imdbID"]);
             if ($data != null) {
                 foreach ($data->name->knownFor->edges as $edge) {
                     $title = isset($edge->node->credit->title->titleText->text) ?
