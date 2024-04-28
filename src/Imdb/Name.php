@@ -1385,23 +1385,16 @@ EOF;
     protected function dataParse($name, $arrayName)
     {
         $query = <<<EOF
-query Data(\$id: ID!) {
-  name(id: \$id) {
-    $name(first: 9999) {
-      edges {
-        node {
           text {
             plainText
           }
-        }
-      }
-    }
-  }
-}
 EOF;
-        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
-        if ($data != null && $data->name->$name != null) {
-            foreach ($data->name->$name->edges as $edge) {
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+            
+        $data = $this->graphQlGetAll("Data", $name, $queryNode);
+        if ($data != null) {
+            foreach ($data as $edge) {
                 if (isset($edge->node->text->plainText)) {
                     $arrayName[] = $edge->node->text->plainText;
                 }
