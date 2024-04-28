@@ -1070,60 +1070,50 @@ EOF;
      */
     public function award($winsOnly = false, $event = "")
     {
-        $winsOnly = $winsOnly === true ? "WINS_ONLY" : "null";
-        $event = !empty($event) ? "events: " . '"' . trim($event) . '"' : "";
+        $wins = $winsOnly === true ? 'WINS_ONLY' : 'null';
+        $event = !empty($event) ? ', events: "' . trim($event) . '"' : '';
+        $filter = ', sort: {by: PRESTIGIOUS, order: DESC}, filter: {wins: ' . $wins . $event . '}';
         if (empty($this->awards)) {
             $query = <<<EOF
-query Award(\$id: ID!) {
-  name(id: \$id) {
-    awardNominations(
-      first: 9999
-      sort: {by: PRESTIGIOUS, order: DESC}
-      filter: {wins: $winsOnly $event}
-    ) {
-      edges {
-        node {
-          award {
-            event {
-              text
-            }
-            text
-            category {
-              text
-            }
-            eventEdition {
-              year
-            }
-            notes {
-              plainText
-            }
-          }
-          isWinner
-          awardedEntities {
-            ... on AwardedNames {
-              secondaryAwardTitles {
-                title {
-                  id
-                  titleText {
-                    text
-                  }
+              award {
+                event {
+                  text
                 }
-                note {
+                text
+                category {
+                  text
+                }
+                eventEdition {
+                  year
+                }
+                notes {
                   plainText
                 }
               }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+              isWinner
+              awardedEntities {
+                ... on AwardedNames {
+                  secondaryAwardTitles {
+                    title {
+                      id
+                      titleText {
+                        text
+                      }
+                    }
+                    note {
+                      plainText
+                    }
+                  }
+                }
+              }
 EOF;
-            $data = $this->graphql->query($query, "Award", ["id" => "nm$this->imdbID"]);
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
+            $data = $this->graphQlGetAll("Award", "awardNominations", $queryNode, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
-            foreach ($data->name->awardNominations->edges as $edge) {
+            foreach ($data as $edge) {
                 $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
                 $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : '';
                 $awardName = isset($edge->node->award->text) ? $edge->node->award->text : '';
