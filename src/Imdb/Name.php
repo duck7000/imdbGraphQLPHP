@@ -821,50 +821,41 @@ EOF;
     public function pubmovies()
     {
         if (empty($this->pubMovies)) {
+            $filter = ', filter: {categories: ["nameFilmBiography"]}';
             $query = <<<EOF
-query PubFilm(\$id: ID!) {
-  name(id: \$id) {
-    publicityListings(first: 9999, filter: {categories: ["nameFilmBiography"]}) {
-      edges {
-        node {
-          ... on NameFilmBiography {
-            title {
-              titleText {
-                text
-              }
-              id
-              releaseYear {
-                year
-              }
-              series {
-                displayableEpisodeNumber {
-                  displayableSeason {
-                    text
-                  }
-                  episodeNumber {
-                    text
-                  }
-                }
-                series {
+              ... on NameFilmBiography {
+                title {
                   titleText {
                     text
                   }
+                  id
+                  releaseYear {
+                    year
+                  }
+                  series {
+                    displayableEpisodeNumber {
+                      displayableSeason {
+                        text
+                      }
+                      episodeNumber {
+                        text
+                      }
+                    }
+                    series {
+                      titleText {
+                        text
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
-      }
-    }
-  }
-}
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
 
-            $data = $this->graphql->query($queryNode, "PubFilm", ["id" => "nm$this->imdbID"]);
-            if ($data != null && $data->name->publicityListings != null) {
-                foreach ($data->name->publicityListings->edges as $edge) {
+            $data = $this->graphQlGetAll("PubFilm", "publicityListings", $queryNode, $filter);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
                     $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
                     $filmYear = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
