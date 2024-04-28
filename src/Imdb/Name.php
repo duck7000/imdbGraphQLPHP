@@ -903,31 +903,21 @@ EOF;
     {
         if (empty($this->pubOtherWorks)) {
             $query = <<<EOF
-query PubOther(\$id: ID!) {
-  name(id: \$id) {
-    otherWorks(first: 9999) {
-      edges {
-        node {
-          category {
-            text
-          }
-          fromDate
-          toDate
-          text {
-            plainText
-          }
-        }
-      }
-    }
-  }
-}
+              category {
+                text
+              }
+              fromDate
+              toDate
+              text {
+                plainText
+              }
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
 
-            $data = $this->graphql->query($queryNode, "PubOther", ["id" => "nm$this->imdbID"]);
-            if ($data->name->otherWorks->edges != null) {
-                foreach ($data->name->otherWorks->edges as $edge) {
+            $data = $this->graphQlGetAll("PubOther", "otherWorks", $queryNode);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
                     
                     // From date
