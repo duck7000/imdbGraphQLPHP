@@ -988,17 +988,21 @@ EOF;
             }
             
             $query = <<<EOF
-          label
-          url
-          externalLinkCategory {
-            id
-          }
-          externalLinkLanguages {
-            text
-          }
+              label
+              url
+              externalLinkCategory {
+                id
+              }
+              externalLinkLanguages {
+                text
+              }
 EOF;
+            // this strip spaces from $query to lower character count due hosters limit
+            $queryNode = $this->stripSpaces($query);
+
             $filter = ' filter: {excludeCategories: "review"}';
-            $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
+
+            $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $queryNode, $filter);
             foreach ($edges as $edge) {
                 $label = null;
                 $url = null;
