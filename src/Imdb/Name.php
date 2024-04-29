@@ -1374,12 +1374,8 @@ EOF;
      */
     protected function nameDetailsParse($name, $arrayName)
     {
+        $filter = ', filter: {relationshipTypes: ' . $name . '}';
         $query = <<<EOF
-query Data(\$id: ID!) {
-  name(id: \$id) {
-    relations(first: 9999, filter: {relationshipTypes: $name}) {
-      edges {
-        node {
           relationName {
             name {
               id
@@ -1393,15 +1389,13 @@ query Data(\$id: ID!) {
           relationshipType {
             text
           }
-        }
-      }
-    }
-  }
-}
 EOF;
-        $data = $this->graphql->query($query, "Data", ["id" => "nm$this->imdbID"]);
+        // this strip spaces from $query to lower character count due hosters limit
+        $queryNode = $this->stripSpaces($query);
+            
+        $data = $this->graphQlGetAll("Data", "relations", $queryNode, $filter);
         if ($data != null) {
-            foreach ($data->name->relations->edges as $edge) {
+            foreach ($data as $edge) {
                 if (isset($edge->node->relationName->name->id)) {
                     $relName = $edge->node->relationName->name->nameText->text;
                     $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
