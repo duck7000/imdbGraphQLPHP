@@ -2,6 +2,16 @@
 History for IMDBPHP6
 ====================
 
+v1.4.0
+-------------------
+* Title and Name class changed almost all methods to use grapQlGetAll method so above 250 items can be fetched
+* Title class alsoKnownAs fixed bug comments and added lanuage, languagId and countryId to output array
+* Title class changed output of director, writer, composer, producer, cinematographer, stunts, thanks, visualEffects and specialEffects
+    These methods all have name, id, jobs, attributes and episodes info
+* Title class goof and trivia are now categorized in the output array just like connections and added names, isSpoiler and trademark. Goof added spoil parameter
+* Title class faq changed parameter $spoiler to $spoil for consistency
+* Title class mainPhoto added parameter thumb to choose between thumbnail (100x100 pixels) or large image (max 1000 pixels)
+
 v1.3.17
 -------------------
 * Title and Name class changed checkRedirect, better api call, documented by imdb
