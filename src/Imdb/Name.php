@@ -760,34 +760,25 @@ EOF;
     public function pubprints()
     {
         if (empty($this->pubPrints)) {
+            $filter = ', filter: {categories: ["namePrintBiography"]}';
             $query = <<<EOF
-query PubPrint(\$id: ID!) {
-  name(id: \$id) {
-    publicityListings(first: 9999, filter: {categories: ["namePrintBiography"]}) {
-      edges {
-        node {
-          ... on NamePrintBiography {
-            title {
-                text
-            }
-            authors {
-                plainText
-            }
-            isbn
-            publisher
-          }
-        }
-      }
-    }
-  }
-}
+              ... on NamePrintBiography {
+                title {
+                    text
+                }
+                authors {
+                    plainText
+                }
+                isbn
+                publisher
+              }
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
 
-            $data = $this->graphql->query($queryNode, "PubPrint", ["id" => "nm$this->imdbID"]);
-            if ($data != null && $data->name->publicityListings != null) {
-                foreach ($data->name->publicityListings->edges as $edge) {
+            $data = $this->graphQlGetAll("PubPrint", "publicityListings", $queryNode, $filter);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
                     $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
                     $publisher = isset($edge->node->publisher) ? $edge->node->publisher : '';
