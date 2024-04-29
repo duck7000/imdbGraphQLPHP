@@ -687,39 +687,29 @@ EOF;
     {
         if (empty($this->bioSalary)) {
             $query = <<<EOF
-query Salaries(\$id: ID!) {
-  name(id: \$id) {
-    titleSalaries(first: 9999) {
-      edges {
-        node {
-          title {
-            titleText {
-              text
-            }
-            id
-            releaseYear {
-              year
-            }
-          }
-          amount {
-            amount
-            currency
-          }
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
+              title {
+                titleText {
+                  text
+                }
+                id
+                releaseYear {
+                  year
+                }
+              }
+              amount {
+                amount
+                currency
+              }
+              attributes {
+                text
+              }
 EOF;
             // this strip spaces from $query to lower character count due hosters limit
             $queryNode = $this->stripSpaces($query);
 
-            $data = $this->graphql->query($queryNode, "Salaries", ["id" => "nm$this->imdbID"]);
-            if ($data != null && $data->name->titleSalaries != null) {
-                foreach ($data->name->titleSalaries->edges as $edge) {
+            $data = $this->graphQlGetAll("Salaries", "titleSalaries", $queryNode);
+            if ($data != null) {
+                foreach ($data as $edge) {
                     $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
                     $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
                     $year = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
