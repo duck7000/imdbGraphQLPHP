@@ -57,8 +57,10 @@ class GraphQL
         if ($fromCache != null) {
             return json_decode($fromCache);
         }
+        // strip spaces from query
+        $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
-        $result = $this->doRequest($query, $qn, $variables);
+        $result = $this->doRequest($fullQuery, $qn, $variables);
 
         $this->cache->set($key, json_encode($result));
 
