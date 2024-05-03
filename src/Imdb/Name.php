@@ -1389,7 +1389,6 @@ EOF;
      */
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
-    
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
   name(id: \$id) {
@@ -1407,7 +1406,7 @@ query $queryName(\$id: ID!, \$after: ID) {
   }
 }
 EOF;
-        // strip spaces from query
+        // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
         // Results are paginated, so loop until we've got all the data
