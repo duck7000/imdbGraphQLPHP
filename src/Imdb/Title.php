@@ -2776,6 +2776,7 @@ query Episodes(\$id: ID!, \$after: ID) {
   }
 }
 EOF;
+        // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
         // Results are paginated, so loop until we've got all the data
@@ -2802,7 +2803,7 @@ EOF;
      */
     protected function techSpec($type, $valueType, $arrayName)
     {
-            $query = <<<EOF
+        $query = <<<EOF
 query TechSpec(\$id: ID!) {
   title(id: \$id) {
     technicalSpecifications {
@@ -2818,7 +2819,6 @@ query TechSpec(\$id: ID!) {
   }
 }
 EOF;
-
         $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
         if ($data->title->technicalSpecifications->$type->items != null) {
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
@@ -2849,7 +2849,6 @@ EOF;
      */
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
-    
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
   title(id: \$id) {
@@ -2867,6 +2866,7 @@ query $queryName(\$id: ID!, \$after: ID) {
   }
 }
 EOF;
+        // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
         // Results are paginated, so loop until we've got all the data
