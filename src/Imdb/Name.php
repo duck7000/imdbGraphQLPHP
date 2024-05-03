@@ -87,7 +87,6 @@ query Name(\$id: ID!) {
   }
 }
 EOF;
-
         $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
         $this->fullName = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
         return $this->fullName;
@@ -152,7 +151,6 @@ query BirthName(\$id: ID!) {
   }
 }
 EOF;
-
         $data = $this->graphql->query($query, "BirthName", ["id" => "nm$this->imdbID"]);
         $this->birthName = isset($data->name->birthName->text) ? $data->name->birthName->text : '';
         return $this->birthName;
@@ -175,7 +173,6 @@ query NickName(\$id: ID!) {
   }
 }
 EOF;
-
             $data = $this->graphql->query($query, "NickName", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->nickNames as $nickName) {
                 if (!empty($nickName->text)) {
@@ -207,7 +204,6 @@ query AkaName(\$id: ID!) {
   }
 }
 EOF;
-
             $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
             if ($data->name->akas->edges != null) {
                 foreach ($data->name->akas->edges as $edge) {
@@ -478,10 +474,7 @@ query Spouses(\$id: ID!) {
   }
 }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphql->query($queryNode, "Spouses", ["id" => "nm$this->imdbID"]);
+            $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->spouses != null) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
@@ -704,10 +697,7 @@ EOF;
                 text
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphQlGetAll("Salaries", "titleSalaries", $queryNode);
+            $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
@@ -763,10 +753,7 @@ EOF;
                 publisher
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphQlGetAll("PubPrint", "publicityListings", $queryNode, $filter);
+            $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
@@ -831,10 +818,7 @@ EOF;
                 }
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphQlGetAll("PubFilm", "publicityListings", $queryNode, $filter);
+            $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
@@ -884,10 +868,7 @@ EOF;
                 plainText
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphQlGetAll("PubOther", "otherWorks", $queryNode);
+            $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
@@ -959,12 +940,10 @@ EOF;
                 text
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
 
             $filter = ' filter: {excludeCategories: "review"}';
 
-            $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $queryNode, $filter);
+            $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
             foreach ($edges as $edge) {
                 $label = null;
                 $url = null;
@@ -1073,10 +1052,7 @@ EOF;
                 }
               }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $data = $this->graphQlGetAll("Award", "awardNominations", $queryNode, $filter);
+            $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
             foreach ($data as $edge) {
@@ -1161,10 +1137,7 @@ query KnownFor(\$id: ID!) {
   }
 }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-            
-            $data = $this->graphql->query($queryNode, "KnownFor", ["id" => "nm$this->imdbID"]);
+            $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
             if ($data != null) {
                 foreach ($data->name->knownFor->edges as $edge) {
                     $title = isset($edge->node->credit->title->titleText->text) ?
@@ -1303,10 +1276,7 @@ EOF;
             }
           }
 EOF;
-            // this strip spaces from $query to lower character count due hosters limit
-            $queryNode = $this->stripSpaces($query);
-
-            $edges = $this->graphQlGetAll("Credits", "credits", $queryNode);
+            $edges = $this->graphQlGetAll("Credits", "credits", $query);
             foreach ($edges as $edge) {
                 $characters = array();
                 if (isset($edge->node->characters) && $edge->node->characters != null) {
@@ -1351,10 +1321,7 @@ EOF;
             plainText
           }
 EOF;
-        // this strip spaces from $query to lower character count due hosters limit
-        $queryNode = $this->stripSpaces($query);
-            
-        $data = $this->graphQlGetAll("Data", $name, $queryNode);
+        $data = $this->graphQlGetAll("Data", $name, $query);
         if ($data != null) {
             foreach ($data as $edge) {
                 if (isset($edge->node->text->plainText)) {
@@ -1390,10 +1357,7 @@ EOF;
             text
           }
 EOF;
-        // this strip spaces from $query to lower character count due hosters limit
-        $queryNode = $this->stripSpaces($query);
-            
-        $data = $this->graphQlGetAll("Data", "relations", $queryNode, $filter);
+        $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
         if ($data != null) {
             foreach ($data as $edge) {
                 if (isset($edge->node->relationName->name->id)) {
@@ -1443,13 +1407,15 @@ query $queryName(\$id: ID!, \$after: ID) {
   }
 }
 EOF;
+        // strip spaces from query
+        $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
         // Results are paginated, so loop until we've got all the data
         $endCursor = null;
         $hasNextPage = true;
         $edges = array();
         while ($hasNextPage) {
-            $data = $this->graphql->query($query, $queryName, ["id" => "nm$this->imdbID", "after" => $endCursor]);
+            $data = $this->graphql->query($fullQuery, $queryName, ["id" => "nm$this->imdbID", "after" => $endCursor]);
             $edges = array_merge($edges, $data->name->{$fieldName}->edges);
             $hasNextPage = $data->name->{$fieldName}->pageInfo->hasNextPage;
             $endCursor = $data->name->{$fieldName}->pageInfo->endCursor;
@@ -1486,17 +1452,6 @@ EOF;
         } else {
             return false;
         }
-    }
-
-    #----------------------------------------------------------[ helper, strip spaces from query ]---
-    /**
-     * Strip spaces from imdb Graphql query, due to hosters request limits of around 1000 characters
-     * @param $query input query
-     * @return query stripped from all spaces but keeps linebreaks intact
-     */
-    protected function stripSpaces($query)
-    {
-        return implode("\n", array_map('trim', explode("\n", $query)));
     }
 
 }
