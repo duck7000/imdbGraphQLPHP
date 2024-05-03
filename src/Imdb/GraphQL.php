@@ -57,7 +57,7 @@ class GraphQL
         if ($fromCache != null) {
             return json_decode($fromCache);
         }
-        // strip spaces from query
+        // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
         $result = $this->doRequest($fullQuery, $qn, $variables);
