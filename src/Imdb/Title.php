@@ -2365,6 +2365,56 @@ EOF;
         return $this->cameras;
     }
 
+    #----------------------------------------------------------[ Movie Featured Reviews ]---
+    /**
+     * Get movie featured reviews (max 5 available)
+     * @return array[] of array(authorNickName| string, authorRating| int or null, summaryText| string, reviewText| string, submissionDate| iso date string)
+     * @see IMDB page / (TitlePage)
+     */
+    public function featuredReview()
+    {
+        if (empty($this->featuredReviews)) {
+            $query = <<<EOF
+                query Reviews(\$id: ID!) {
+                  title(id: \$id) {
+                    featuredReviews(first: 5) {
+                      edges {
+                        node {
+                          summary {
+                            originalText
+                          }
+                          author {
+                            nickName
+                          }
+                          authorRating
+                          text {
+                            originalText {
+                              plainText
+                            }
+                          }
+                          submissionDate
+                        }
+                      }
+                    }
+                  }
+                }
+EOF;
+            $data = $this->graphql->query($query, "Reviews", ["id" => "tt$this->imdbID"]);
+            if ($data->title->featuredReviews->edges != null) {
+                foreach ($data->title->featuredReviews->edges as $edge) {
+                $this->featuredReviews[] = array(
+                    'authorNickName' => isset($edge->node->author->nickName) ? $edge->node->author->nickName : null,
+                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : null,
+                    'summaryText' => isset($edge->node->summary->originalText) ? $edge->node->summary->originalText : null,
+                    'reviewText' => isset($edge->node->text->originalText->plainText) ? $edge->node->text->originalText->plainText : null,
+                    'submissionDate' => isset($edge->node->submissionDate) ? $edge->node->submissionDate : null
+                    );
+                }
+            }
+        }
+        return $this->featuredReviews;
+    }
+
 
     #========================================================[ Helper functions ]===
     #===============================================================================
