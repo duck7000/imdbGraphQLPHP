@@ -2415,6 +2415,25 @@ EOF;
         return $this->featuredReviews;
     }
 
+    #----------------------------------------------------------[ Movie isAdult ]---
+    /**
+     * Get adult status of a title
+     * @return boolean
+     * @see IMDB page / (TitlePage)
+     */
+    public function isAdult()
+    {
+        $query = <<<EOF
+            query Adult(\$id: ID!) {
+              title(id: \$id) {
+                isAdult
+              }
+            }
+EOF;
+        $data = $this->graphql->query($query, "Adult", ["id" => "tt$this->imdbID"]);
+        return $data->title->isAdult;
+    }
+
 
     #========================================================[ Helper functions ]===
     #===============================================================================
