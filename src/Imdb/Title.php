@@ -1400,8 +1400,10 @@ EOF;
               category {
                 id
               }
-              text {
-                plainText
+              displayableArticle {
+                body {
+                  plainText
+                }
               }
               isSpoiler
               trademark {
@@ -1426,8 +1428,8 @@ EOF;
                     }
                 }
                 $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
-                    'content' => isset($edge->node->text->plainText) ?
-                                       preg_replace('/\s\s+/', ' ', $edge->node->text->plainText) : '',
+                    'content' => isset($edge->node->displayableArticle->body->plainText) ?
+                                       preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : '',
                     'names' => $names,
                     'trademark' => isset($edge->node->trademark->plainText) ?
                                          $edge->node->trademark->plainText : null,
