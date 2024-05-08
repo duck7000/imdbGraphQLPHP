@@ -816,32 +816,31 @@ EOF;
     {
         if (empty($this->creditsPrincipal)) {
             $query = <<<EOF
-query PrincipalCredits(\$id: ID!) {
-  title(id: \$id) {
-    principalCredits {
-      credits {
-        name {
-          nameText {
-            text
-          }
-          id
-        }
-        category {
-          text
-        }
-      }
-    }
-  }
-}
+                query PrincipalCredits(\$id: ID!) {
+                  title(id: \$id) {
+                    principalCredits {
+                      credits {
+                        name {
+                          nameText {
+                            text
+                          }
+                          id
+                        }
+                        category {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
 EOF;
             $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->principalCredits as $value){
-                $category = '';
                 $cat = $value->credits[0]->category->text;
                 if ($cat == "Actor" || $cat == "Actress") {
                     $category = "Star";
                 } else {
-                    $category = $value->credits[0]->category->text;
+                    $category = $cat;
                 }
                 $temp = array();
                 foreach ($value->credits as $key => $credit) {
