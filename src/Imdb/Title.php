@@ -1602,20 +1602,22 @@ EOF;
     {
         if (empty($this->locations)) {
             $query = <<<EOF
-              text
               displayableProperty {
                 qualifiersInMarkdownList {
-                  markdown
+                  plainText
+                }
+                value {
+                  plainText
                 }
               }
 EOF;
             $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $query);
             foreach ($data as $edge) {
-                $real = isset($edge->node->text) ? $edge->node->text : '';
+                $real = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
                 $movie = array();
                 if ($edge->node->displayableProperty->qualifiersInMarkdownList != null) {
-                    foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $key => $attribute) {
-                        $movie[] = $attribute->markdown;
+                    foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $attribute) {
+                        $movie[] = $attribute->plainText;
                     }
                 }
                 $this->locations[] = array(
