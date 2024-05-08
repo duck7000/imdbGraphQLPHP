@@ -2,6 +2,10 @@ imdbphp6
 =======
 
 PHP library for retrieving film and TV information from IMDb.<br>
+This library uses GraphQL API from imdb to get the data.<br>
+The data received from imdb GraphQL API could however be different compared to previous scraper methods.<br>
+Thanks to @tBoothman for his groundwork to make this possible!<br><br>
+
 imdbphp6 is NOT a fork, it is based on imdbphp<br>
 This library uses GraphQL API from imdb to get the data. (Thanks to @tboothman)<br>
 Retrieve all information from IMDb including films, TV series, TV episodes, people and coming soon releases.<br>
@@ -63,10 +67,7 @@ $releases = $calendar->comingSoon();
 Installation
 ============
 
-This library uses GraphQL API from imdb to get the data.<br>
-The data received from imdb GraphQL API could however be different compared to previous scraper methods.<br>
-There seems to be a 250 limit on episodes per season, this may also be true for year based tv series.<br>
-Thanks to @tBoothman for his groundwork to make this possible!
+Download the latest version or latest git version and extract it to your webserver. Use one of the above methods to get some results
 
 Get the files with one of:
 * Git clone. Checkout the latest release tag
