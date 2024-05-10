@@ -1349,7 +1349,6 @@ EOF;
               nameText {
                 text
               }
-              
             }
             nameText
           }
