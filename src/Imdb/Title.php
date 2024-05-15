@@ -1717,41 +1717,39 @@ EOF;
             'spoofs' => 'spoofs',
             'version_of' => 'versionOf'
         );
-        
+
         if (empty($this->connections)) {
-            
             foreach ($categoryIds as $categoryId) {
                 $this->connections[$categoryId] = array();
             }
-            
             $query = <<<EOF
-              associatedTitle {
-                id
-                titleText {
-                  text
-                }
-                titleType {
-                  text
-                }
-                releaseYear {
-                  year
-                  endYear
-                }
-                series {
+                associatedTitle {
+                  id
+                  titleText {
+                    text
+                  }
+                  titleType {
+                    text
+                  }
+                  releaseYear {
+                    year
+                    endYear
+                  }
                   series {
-                    titleText {
-                      text
+                    series {
+                      titleText {
+                        text
+                      }
                     }
                   }
                 }
-              }
-              category {
-                id
-              }
-              description {
-                plainText
-              }
-EOF;
+                category {
+                  id
+                }
+                description {
+                  plainText
+                }
+            EOF;
             $edges = $this->graphQlGetAll("Connections", "connections", $query);
             foreach ($edges as $edge) {
                 $this->connections[$categoryIds[$edge->node->category->id]][] = array(
