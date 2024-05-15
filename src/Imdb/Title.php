@@ -215,15 +215,14 @@ EOF;
     {
         if ($this->mainRating == -1) {
             $query = <<<EOF
-query Rating(\$id: ID!) {
-  title(id: \$id) {
-    ratingsSummary {
-      aggregateRating
-    }
-  }
-}
-EOF;
-
+                query Rating(\$id: ID!) {
+                  title(id: \$id) {
+                    ratingsSummary {
+                      aggregateRating
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->ratingsSummary->aggregateRating) && !empty($data->title->ratingsSummary->aggregateRating)) {
                 $this->mainRating = $data->title->ratingsSummary->aggregateRating;
@@ -242,15 +241,14 @@ EOF;
     public function votes()
     {
         $query = <<<EOF
-query RatingVotes(\$id: ID!) {
-  title(id: \$id) {
-    ratingsSummary {
-      voteCount
-    }
-  }
-}
-EOF;
-
+            query RatingVotes(\$id: ID!) {
+              title(id: \$id) {
+                ratingsSummary {
+                  voteCount
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->ratingsSummary->voteCount) && !empty($data->title->ratingsSummary->voteCount)) {
             return $data->title->ratingsSummary->voteCount;
