@@ -340,14 +340,14 @@ EOF;
         if (empty($this->faqs)) {
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-              question {
-                plainText
-              }
-              answer {
-                plainText
-              }
-              isSpoiler
-EOF;
+                question {
+                  plainText
+                }
+                answer {
+                  plainText
+                }
+                isSpoiler
+            EOF;
             $data = $this->graphQlGetAll("Faq", "faqs", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
