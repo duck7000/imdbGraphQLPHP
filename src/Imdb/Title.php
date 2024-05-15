@@ -2447,25 +2447,24 @@ EOF;
     protected function titleYear()
     {
         $query = <<<EOF
-query TitleYear(\$id: ID!) {
-  title(id: \$id) {
-    titleText {
-      text
-    }
-    originalTitleText {
-      text
-    }
-    titleType {
-      text
-    }
-    releaseYear {
-      year
-      endYear
-    }
-  }
-}
-EOF;
-
+            query TitleYear(\$id: ID!) {
+              title(id: \$id) {
+                titleText {
+                  text
+                }
+                originalTitleText {
+                  text
+                }
+                titleType {
+                  text
+                }
+                releaseYear {
+                  year
+                  endYear
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
 
         $this->mainTitle = $this->titleCase(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
