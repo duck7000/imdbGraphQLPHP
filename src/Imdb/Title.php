@@ -719,16 +719,16 @@ EOF;
     {
         if ($this->mainTop250 == -1) {
             $query = <<<EOF
-query TopRated(\$id: ID!) {
-  title(id: \$id) {
-    ratingsSummary {
-      topRanking {
-        rank
-      }
-    }
-  }
-}
-EOF;
+                query TopRated(\$id: ID!) {
+                  title(id: \$id) {
+                    ratingsSummary {
+                      topRanking {
+                        rank
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->ratingsSummary->topRanking->rank) && $data->title->ratingsSummary->topRanking->rank <= 250) {
                 $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
