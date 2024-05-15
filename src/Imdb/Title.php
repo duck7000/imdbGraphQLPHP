@@ -266,16 +266,16 @@ EOF;
     public function metacritic()
     {
         $query = <<<EOF
-query Metacritic(\$id: ID!) {
-  title(id: \$id) {
-    metacritic {
-      metascore {
-        score
-      }
-    }
-  }
-}
-EOF;
+            query Metacritic(\$id: ID!) {
+              title(id: \$id) {
+                metacritic {
+                  metascore {
+                    score
+                  }
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->metacritic->metascore->score)) {
             if ($data->title->metacritic !== null) {
