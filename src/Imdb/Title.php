@@ -2920,22 +2920,22 @@ EOF;
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
         $query = <<<EOF
-query $queryName(\$id: ID!, \$after: ID) {
-  title(id: \$id) {
-    $fieldName(first: 9999, after: \$after$filter) {
-      edges {
-        node {
-          $nodeQuery
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-}
-EOF;
+            query $queryName(\$id: ID!, \$after: ID) {
+              title(id: \$id) {
+                $fieldName(first: 9999, after: \$after$filter) {
+                  edges {
+                    node {
+                      $nodeQuery
+                    }
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
+                }
+              }
+            }
+        EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
