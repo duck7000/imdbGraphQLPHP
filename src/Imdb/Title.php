@@ -2757,27 +2757,27 @@ EOF;
     private function seasonYearCheck($yearbased)
     {
         $querySeasons = <<<EOF
-query Seasons(\$id: ID!) {
-  title(id: \$id) {
-    episodes {
-      displayableSeasons(first: 9999) {
-        edges {
-          node {
-            text
-          }
-        }
-      }
-      displayableYears(first: 9999) {
-        edges {
-          node {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+            query Seasons(\$id: ID!) {
+              title(id: \$id) {
+                episodes {
+                  displayableSeasons(first: 9999) {
+                    edges {
+                      node {
+                        text
+                      }
+                    }
+                  }
+                  displayableYears(first: 9999) {
+                    edges {
+                      node {
+                        text
+                      }
+                    }
+                  }
+                }
+              }
+            }
+        EOF;
         $seasonsData = $this->graphql->query($querySeasons, "Seasons", ["id" => "tt$this->imdbID"]);
         if ($seasonsData->title->episodes != null) {
             $bySeason = count($seasonsData->title->episodes->displayableSeasons->edges);
