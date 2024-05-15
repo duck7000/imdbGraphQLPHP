@@ -38,7 +38,7 @@ class Title extends MdbBase
     protected $creditsProducer = array();
     protected $creditsWriter = array();
     protected $creditsCinematographer = array();
-    protected $langs = array();
+    protected $languages = array();
     protected $keywords = array();
     protected $mainPoster = "";
     protected $mainPosterThumb = "";
@@ -435,26 +435,25 @@ EOF;
      */
     public function language()
     {
-        if (empty($this->langs)) {
+        if (empty($this->languages)) {
             $query = <<<EOF
-query Languages(\$id: ID!) {
-  title(id: \$id) {
-    spokenLanguages {
-      spokenLanguages {
-        text
-      }
-    }
-  }
-}
-EOF;
-
+                query Languages(\$id: ID!) {
+                  title(id: \$id) {
+                    spokenLanguages {
+                      spokenLanguages {
+                        text
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Languages", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->spokenLanguages->spokenLanguages)) {
                 foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
-                    $this->langs[] = $language->text;
+                    $this->languages[] = $language->text;
                 }
             }
-            return $this->langs;
+            return $this->languages;
         }
     }
 
