@@ -2604,24 +2604,24 @@ EOF;
     {
         $filter = ', filter: { categories: ["' .$category . '"] }';
         $query = <<<EOF
-          company {
-            id
-          }
-          displayableProperty {
-            value {
-              plainText
+            company {
+              id
             }
-          }
-          countries {
-            text
-          }
-          attributes {
-            text
-          }
-          yearsInvolved {
-            year
-          }
-EOF;
+            displayableProperty {
+              value {
+                plainText
+              }
+            }
+            countries {
+              text
+            }
+            attributes {
+              text
+            }
+            yearsInvolved {
+              year
+            }
+        EOF;
         $data = $this->graphQlGetAll("CompanyCredits", "companyCredits", $query, $filter);
         $results = array();
         foreach ($data as $edge) {
