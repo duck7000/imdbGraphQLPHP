@@ -1397,25 +1397,25 @@ EOF;
 
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-              category {
-                id
-              }
-              displayableArticle {
-                body {
+                category {
+                  id
+                }
+                displayableArticle {
+                  body {
+                    plainText
+                  }
+                }
+                isSpoiler
+                trademark {
                   plainText
                 }
-              }
-              isSpoiler
-              trademark {
-                plainText
-              }
-              relatedNames {
-                nameText {
-                  text
+                relatedNames {
+                  nameText {
+                    text
+                  }
+                  id
                 }
-                id
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("Trivia", "trivia", $query, $filter);
             foreach ($data as $edge) {
                 $names = array();
