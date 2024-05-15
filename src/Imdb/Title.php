@@ -2803,49 +2803,49 @@ EOF;
     protected function graphQlGetAllEpisodes($filter)
     {
         $query = <<<EOF
-query Episodes(\$id: ID!, \$after: ID) {
-  title(id: \$id) {
-    episodes {
-      episodes(first: 9999, after: \$after $filter) {
-        edges {
-          node {
-            id
-            titleText {
-              text
-            }
-            plot {
-              plotText {
-                plainText
-              }
-            }
-            primaryImage {
-              url
-              width
-              height
-            }
-            releaseDate {
-              day
-              month
-              year
-            }
-            series {
-              displayableEpisodeNumber {
-                episodeNumber {
-                  episodeNumber
+            query Episodes(\$id: ID!, \$after: ID) {
+              title(id: \$id) {
+                episodes {
+                  episodes(first: 9999, after: \$after $filter) {
+                    edges {
+                      node {
+                        id
+                        titleText {
+                          text
+                        }
+                        plot {
+                          plotText {
+                            plainText
+                          }
+                        }
+                        primaryImage {
+                          url
+                          width
+                          height
+                        }
+                        releaseDate {
+                          day
+                          month
+                          year
+                        }
+                        series {
+                          displayableEpisodeNumber {
+                            episodeNumber {
+                              episodeNumber
+                            }
+                          }
+                        }
+                      }
+                    }
+                    pageInfo {
+                      endCursor
+                      hasNextPage
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-      }
-    }
-  }
-}
-EOF;
+        EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
