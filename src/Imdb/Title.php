@@ -172,26 +172,25 @@ class Title extends MdbBase
     {
         if (empty($this->runtimes)) {
             $query = <<<EOF
-query Runtimes(\$id: ID!) {
-  title(id: \$id) {
-    runtimes(first: 9999) {
-      edges {
-        node {
-          attributes {
-            text
-          }
-          country {
-            text
-          }
-          seconds
-        }
-      }
-    }
-  }
-}
-EOF;
+                query Runtimes(\$id: ID!) {
+                  title(id: \$id) {
+                    runtimes(first: 9999) {
+                      edges {
+                        node {
+                          attributes {
+                            text
+                          }
+                          country {
+                            text
+                          }
+                          seconds
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
-
             foreach ($data->title->runtimes->edges as $edge) {
                 $this->runtimes[] = array(
                     "time" => $edge->node->seconds / 60,
