@@ -2662,40 +2662,40 @@ EOF;
     {
         $filter = ', filter: { categories: ["' .$crewCategory . '"] }';
         $query = <<<EOF
-          name {
-            nameText {
-              text
+            name {
+              nameText {
+                text
+              }
+              id
             }
-            id
-          }
-          ... on Crew {
-            jobs {
-              text
-            }
-            attributes {
-              text
-            }
-            episodeCredits(first: 9999) {
-              edges {
-                node {
-                  title {
-                    series {
-                      displayableEpisodeNumber {
-                        episodeNumber {
-                          text
+            ... on Crew {
+              jobs {
+                text
+              }
+              attributes {
+                text
+              }
+              episodeCredits(first: 9999) {
+                edges {
+                  node {
+                    title {
+                      series {
+                        displayableEpisodeNumber {
+                          episodeNumber {
+                            text
+                          }
                         }
                       }
                     }
                   }
                 }
-              }
-              yearRange {
-                year
-                endYear
+                yearRange {
+                  year
+                  endYear
+                }
               }
             }
-          }
-EOF;
+        EOF;
         $data = $this->graphQlGetAll("CreditCrew", "credits", $query, $filter);
         return $data;
     }
