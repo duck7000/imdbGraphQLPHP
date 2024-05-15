@@ -2432,7 +2432,7 @@ EOF;
                 isAdult
               }
             }
-EOF;
+        EOF;
         $data = $this->graphql->query($query, "Adult", ["id" => "tt$this->imdbID"]);
         return $data->title->isAdult;
     }
