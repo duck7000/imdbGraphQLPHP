@@ -581,16 +581,16 @@ EOF;
     {
         if (empty($this->releaseDates)) {
             $query = <<<EOF
-              country {
-                text
-              }
-              day
-              month
-              year
-              attributes {
-                text
-              }
-EOF;
+                country {
+                  text
+                }
+                day
+                month
+                year
+                attributes {
+                  text
+                }
+            EOF;
             $data = $this->graphQlGetAll("ReleaseDates", "releaseDates", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
