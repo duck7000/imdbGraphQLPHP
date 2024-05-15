@@ -375,32 +375,32 @@ EOF;
     {
         if (empty($this->recommendations)) {
             $query = <<<EOF
-query Recommendations(\$id: ID!) {
-  title(id: \$id) {
-    moreLikeThisTitles(first: 12) {
-      edges {
-        node {
-          id
-          titleText {
-            text
-          }
-          ratingsSummary {
-            aggregateRating
-          }
-          primaryImage {
-            url
-            width
-            height
-          }
-          releaseYear {
-            year
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+                query Recommendations(\$id: ID!) {
+                  title(id: \$id) {
+                    moreLikeThisTitles(first: 12) {
+                      edges {
+                        node {
+                          id
+                          titleText {
+                            text
+                          }
+                          ratingsSummary {
+                            aggregateRating
+                          }
+                          primaryImage {
+                            url
+                            width
+                            height
+                          }
+                          releaseYear {
+                            year
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 $thumb = '';
@@ -409,12 +409,9 @@ EOF;
                     $fullImageHeight = $edge->node->primaryImage->height;
                     $newImageWidth = 140;
                     $newImageHeight = 207;
-
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-
                     $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                     $thumb = $img . $parameter;
-
                 }
                 $this->recommendations[] = array(
                     "title" => $this->titleCase($edge->node->titleText->text),
