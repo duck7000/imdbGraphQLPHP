@@ -2485,17 +2485,16 @@ EOF;
     private function populatePoster()
     {
         $query = <<<EOF
-query Poster(\$id: ID!) {
-  title(id: \$id) {
-    primaryImage {
-      url
-      width
-      height
-    }
-  }
-}
-EOF;
-
+            query Poster(\$id: ID!) {
+              title(id: \$id) {
+                primaryImage {
+                  url
+                  width
+                  height
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
             $fullImageWidth = $data->title->primaryImage->width;
