@@ -1100,12 +1100,12 @@ EOF;
     {
         if (empty($this->crazyCredits)) {
             $query = <<<EOF
-              displayableArticle {
-                body {
-                  plainText
+                displayableArticle {
+                  body {
+                    plainText
+                  }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("CrazyCredits", "crazyCredits", $query);
             foreach ($data as $edge) {
                 $crazyCredit = isset($edge->node->displayableArticle->body->plainText) ? $edge->node->displayableArticle->body->plainText : '';
