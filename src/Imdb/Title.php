@@ -1271,15 +1271,14 @@ EOF;
     public function isOngoing()
     {
         $query = <<<EOF
-query IsOngoing(\$id: ID!) {
-  title(id: \$id) {
-    episodes {
-      isOngoing
-    }
-  }
-}
-EOF;
-
+            query IsOngoing(\$id: ID!) {
+              title(id: \$id) {
+                episodes {
+                  isOngoing
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "IsOngoing", ["id" => "tt$this->imdbID"]);
         if (isset($data->title->episodes) && $data->title->episodes != null) {
             $this->isOngoing = isset($data->title->episodes->isOngoing) ? $data->title->episodes->isOngoing : null;
