@@ -784,20 +784,19 @@ EOF;
     {
         if (empty($this->taglines)) {
             $query = <<<EOF
-query Taglines(\$id: ID!) {
-  title(id: \$id) {
-    taglines(first: 9999) {
-      edges {
-        node {
-          text
-        }
-      }
-    }
-  }
-}
-EOF;
+                query Taglines(\$id: ID!) {
+                  title(id: \$id) {
+                    taglines(first: 9999) {
+                      edges {
+                        node {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Taglines", ["id" => "tt$this->imdbID"]);
-
             foreach ($data->title->taglines->edges as $edge) {
                 $this->taglines[] = $edge->node->text;
             }
