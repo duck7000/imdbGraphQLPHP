@@ -1839,18 +1839,17 @@ EOF;
     {
         if (empty($this->productionBudget)) {
             $query = <<<EOF
-query ProductionBudget(\$id: ID!) {
-  title(id: \$id) {
-    productionBudget {
-      budget {
-        amount
-        currency
-      }
-    }
-  }
-}
-EOF;
-
+                query ProductionBudget(\$id: ID!) {
+                  title(id: \$id) {
+                    productionBudget {
+                      budget {
+                        amount
+                        currency
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "ProductionBudget", ["id" => "tt$this->imdbID"]);
             if ($data->title->productionBudget != null && isset($data->title->productionBudget->budget->amount)) {
                 $this->productionBudget["amount"] = $data->title->productionBudget->budget->amount;
