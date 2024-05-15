@@ -1604,15 +1604,15 @@ EOF;
     {
         if (empty($this->locations)) {
             $query = <<<EOF
-              displayableProperty {
-                qualifiersInMarkdownList {
-                  plainText
+                displayableProperty {
+                  qualifiersInMarkdownList {
+                    plainText
+                  }
+                  value {
+                    plainText
+                  }
                 }
-                value {
-                  plainText
-                }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $query);
             foreach ($data as $edge) {
                 $real = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
