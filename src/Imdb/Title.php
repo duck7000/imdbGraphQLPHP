@@ -1943,10 +1943,10 @@ EOF;
     {
         if (empty($this->alternateversions)) {
             $query = <<<EOF
-              text {
-                plainText
-              }
-EOF;
+                text {
+                  plainText
+                }
+            EOF;
             $data = $this->graphQlGetAll("AlternateVersions", "alternateVersions", $query);
             foreach ($data as $edge) {
                 $this->alternateversions[] = $edge->node->text->plainText;
