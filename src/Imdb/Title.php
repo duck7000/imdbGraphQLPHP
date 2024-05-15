@@ -2874,21 +2874,21 @@ EOF;
     protected function techSpec($type, $valueType, $arrayName)
     {
         $query = <<<EOF
-query TechSpec(\$id: ID!) {
-  title(id: \$id) {
-    technicalSpecifications {
-      $type {
-        items {
-          $valueType
-          attributes {
-            text
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+            query TechSpec(\$id: ID!) {
+              title(id: \$id) {
+                technicalSpecifications {
+                  $type {
+                    items {
+                      $valueType
+                      attributes {
+                        text
+                      }
+                    }
+                  }
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
         if ($data->title->technicalSpecifications->$type->items != null) {
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
