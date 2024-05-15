@@ -902,7 +902,7 @@ EOF;
                 text
               }
             }
-EOF;
+        EOF;
         $data = $this->graphQlGetAll("CreditQuery", "credits", $query, $filter);
         foreach ($data as $edge) {
             $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
