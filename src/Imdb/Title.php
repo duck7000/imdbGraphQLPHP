@@ -2232,38 +2232,38 @@ EOF;
 
         if (empty($this->awards)) {
             $query = <<<EOF
-              award {
-                event {
+                award {
+                  event {
+                    text
+                  }
                   text
+                  category {
+                    text
+                  }
+                  eventEdition {
+                    year
+                  }
+                  notes {
+                    plainText
+                  }
                 }
-                text
-                category {
-                  text
-                }
-                eventEdition {
-                  year
-                }
-                notes {
-                  plainText
-                }
-              }
-              isWinner
-              awardedEntities {
-                ... on AwardedTitles {
-                  secondaryAwardNames {
-                    name {
-                      id
-                      nameText {
-                        text
+                isWinner
+                awardedEntities {
+                  ... on AwardedTitles {
+                    secondaryAwardNames {
+                      name {
+                        id
+                        nameText {
+                          text
+                        }
                       }
-                    }
-                    note {
-                      plainText
+                      note {
+                        plainText
+                      }
                     }
                   }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
