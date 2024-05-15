@@ -298,27 +298,26 @@ EOF;
     {
         if (empty($this->mainRank)) {
             $query = <<<EOF
-query Rank(\$id: ID!) {
-  title(id: \$id) {
-    meterRanking {
-      currentRank
-      rankChange {
-        changeDirection
-        difference
-      }
-    }
-  }
-}
-EOF;
-
+                query Rank(\$id: ID!) {
+                  title(id: \$id) {
+                    meterRanking {
+                      currentRank
+                      rankChange {
+                        changeDirection
+                        difference
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Rank", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->meterRanking)) {
                 $this->mainRank['currentRank'] = isset($data->title->meterRanking->currentRank) ?
                                                         $data->title->meterRanking->currentRank : null;
-                                                        
+
                 $this->mainRank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
                                                             $data->title->meterRanking->rankChange->changeDirection : null;
-                                                            
+
                 $this->mainRank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
                                                        $data->title->meterRanking->rankChange->difference : null;
             } else {
@@ -327,7 +326,7 @@ EOF;
         }
         return $this->mainRank;
     }
-    
+
     #----------------------------------------------------------[ FAQ ]---
     /**
      * Get movie frequently asked questions, it includes questions with and without answer
