@@ -467,19 +467,18 @@ EOF;
     {
         if (empty($this->genres)) {
             $query = <<<EOF
-query Genres(\$id: ID!) {
-  title(id: \$id) {
-    titleGenres {
-      genres {
-        genre {
-          text
-        }
-      }
-    }
-  }
-}
-EOF;
-
+                query Genres(\$id: ID!) {
+                  title(id: \$id) {
+                    titleGenres {
+                      genres {
+                        genre {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->titleGenres->genres as $edge) {
                 $this->genres[] = $edge->genre->text;
