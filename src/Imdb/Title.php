@@ -1966,20 +1966,20 @@ EOF;
     {
         if (empty($this->mainPhoto)) {
             $query = <<<EOF
-query MainPhoto(\$id: ID!) {
-  title(id: \$id) {
-    images(first: $amount) {
-      edges {
-        node {
-          url
-          width
-          height
-        }
-      }
-    }
-  }
-}
-EOF;
+                query MainPhoto(\$id: ID!) {
+                  title(id: \$id) {
+                    images(first: $amount) {
+                      edges {
+                        node {
+                          url
+                          width
+                          height
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "MainPhoto", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->images->edges as $edge) {
                 if (isset($edge->node->url) && $edge->node->url != '') {
