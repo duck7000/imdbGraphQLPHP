@@ -747,22 +747,22 @@ EOF;
     public function plot()
     {
         if (empty($this->plot)) {
-                    $query = <<<EOF
-query Plots(\$id: ID!) {
-  title(id: \$id) {
-    plots(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
-      edges {
-        node {
-          author
-          plotText {
-            plainText
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+            $query = <<<EOF
+                query Plots(\$id: ID!) {
+                  title(id: \$id) {
+                    plots(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
+                      edges {
+                        node {
+                          author
+                          plotText {
+                            plainText
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->plots->edges as $key => $edge) {
                 $this->plot[] = array(
