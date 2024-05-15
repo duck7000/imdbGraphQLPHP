@@ -2024,38 +2024,38 @@ EOF;
     {
         if (empty($this->trailers)) {
             $query = <<<EOF
-query Video(\$id: ID!) {
-  title(id: \$id) {
-    primaryVideos(first: 9999) {
-      edges {
-        node {
-          playbackURLs {
-            url
-          }
-          thumbnail {
-            url
-            width
-            height
-          }
-          runtime {
-            value
-          }
-          contentType {
-            displayName {
-              value
-            }
-          }
-          primaryTitle {
-            titleText {
-              text
-            }
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+                query Video(\$id: ID!) {
+                  title(id: \$id) {
+                    primaryVideos(first: 9999) {
+                      edges {
+                        node {
+                          playbackURLs {
+                            url
+                          }
+                          thumbnail {
+                            url
+                            width
+                            height
+                          }
+                          runtime {
+                            value
+                          }
+                          contentType {
+                            displayName {
+                              value
+                            }
+                          }
+                          primaryTitle {
+                            titleText {
+                              text
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->primaryVideos->edges as $edge) {
                 // check if url and contentType is set and contentType = Trailer
