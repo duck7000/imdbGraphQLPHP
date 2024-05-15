@@ -2401,7 +2401,7 @@ EOF;
                     }
                   }
                 }
-EOF;
+            EOF;
             $data = $this->graphql->query($query, "Reviews", ["id" => "tt$this->imdbID"]);
             if ($data->title->featuredReviews->edges != null) {
                 foreach ($data->title->featuredReviews->edges as $edge) {
