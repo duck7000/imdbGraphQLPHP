@@ -497,17 +497,16 @@ EOF;
     {
         if ($this->mainPlotoutline == "") {
             $query = <<<EOF
-query PlotOutline(\$id: ID!) {
-  title(id: \$id) {
-    plot {
-      plotText {
-        plainText
-      }
-    }
-  }
-}
-EOF;
-
+                query PlotOutline(\$id: ID!) {
+                  title(id: \$id) {
+                    plot {
+                      plotText {
+                        plainText
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "PlotOutline", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->plot->plotText->plainText)) {
                 $this->mainPlotoutline = $data->title->plot->plotText->plainText;
