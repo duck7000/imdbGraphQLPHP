@@ -627,19 +627,19 @@ EOF;
         if (empty($this->akas)) {
             $filter = ', sort: {order: ASC by: COUNTRY}';
             $query = <<<EOF
-              country {
-                id
+                country {
+                  id
+                  text
+                }
                 text
-              }
-              text
-              attributes {
-                text
-              }
-              language {
-                id
-                text
-              }
-EOF;
+                attributes {
+                  text
+                }
+                language {
+                  id
+                  text
+                }
+            EOF;
             $data = $this->graphQlGetAll("AlsoKnow", "akas", $query, $filter);
             $originalTitle = $this->originalTitle();
             if (!empty($originalTitle)) {
@@ -652,7 +652,6 @@ EOF;
                     'comment' => array()
                 );
             }
-
             foreach ($data as $edge) {
                 $comments = array();
                 foreach ($edge->node->attributes as $attribute) {
