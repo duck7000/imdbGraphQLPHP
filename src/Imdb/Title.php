@@ -1350,12 +1350,12 @@ EOF;
     {
         if (empty($this->quotes)) {
             $query = <<<EOF
-              displayableArticle {
-                body {
-                  plaidHtml
+                displayableArticle {
+                  body {
+                    plaidHtml
+                  }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("Quotes", "quotes", $query);
             foreach ($data as $key => $edge) {
                 $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
