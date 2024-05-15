@@ -1493,11 +1493,11 @@ EOF;
     {
         if (empty($this->soundtracks)) {
             $query = <<<EOF
-              text
-              comments {
-                plaidHtml
-              }
-EOF;
+                text
+                comments {
+                  plaidHtml
+                }
+            EOF;
             $data = $this->graphQlGetAll("Soundtrack", "soundtrack", $query);
             foreach ($data as $edge) {
                 if (isset($edge->node->text) && $edge->node->text !== '') {
