@@ -1311,24 +1311,23 @@ EOF;
             'boom_mic_visible' => 'boomMicVisible',
             'character_error' => 'characterError'
         );
-        
+
         if (empty($this->goofs)) {
             foreach ($categoryIds as $categoryId) {
                 $this->goofs[$categoryId] = array();
             }
-            
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
-              category {
-                id
-              }
-              displayableArticle {
-                body {
-                  plainText
+                category {
+                  id
                 }
-              }
-              isSpoiler
-EOF;
+                displayableArticle {
+                  body {
+                    plainText
+                  }
+                }
+                isSpoiler
+            EOF;
             $data = $this->graphQlGetAll("Goofs", "goofs", $query, $filter);
             foreach ($data as $edge) {
                 $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
