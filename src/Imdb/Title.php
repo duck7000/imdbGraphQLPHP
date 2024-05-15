@@ -833,7 +833,7 @@ EOF;
                     }
                   }
                 }
-EOF;
+            EOF;
             $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->principalCredits as $value){
                 $cat = $value->credits[0]->category->text;
