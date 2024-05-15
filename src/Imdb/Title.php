@@ -1919,12 +1919,12 @@ EOF;
     {
         if (empty($this->keywords)) {
             $query = <<<EOF
-              keyword {
-                text {
-                  text
+                keyword {
+                  text {
+                    text
+                  }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("Keywords", "keywords", $query);
             foreach ($data as $edge) {
                 $this->keywords[] = $edge->node->keyword->text->text;
