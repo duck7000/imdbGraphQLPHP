@@ -683,14 +683,14 @@ EOF;
     {
         if (empty($this->mpaas)) {
             $query = <<<EOF
-              country {
-                text
-              }
-              rating
-              attributes {
-                text
-              }
-EOF;
+                country {
+                  text
+                }
+                rating
+                attributes {
+                  text
+                }
+            EOF;
             $data = $this->graphQlGetAll("Mpaa", "certificates", $query);
             foreach ($data as $edge) {
                 $comments = array();
