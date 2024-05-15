@@ -1871,25 +1871,24 @@ EOF;
     {
         if (empty($this->grosses)) {
             $query = <<<EOF
-query RankedLifetimeGrosses(\$id: ID!) {
-  title(id: \$id) {
-    rankedLifetimeGrosses(first: 9999) {
-      edges {
-        node {
-          boxOfficeAreaType {
-            text
-          }
-          total {
-            amount
-            currency
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
-
+                query RankedLifetimeGrosses(\$id: ID!) {
+                  title(id: \$id) {
+                    rankedLifetimeGrosses(first: 9999) {
+                      edges {
+                        node {
+                          boxOfficeAreaType {
+                            text
+                          }
+                          total {
+                            amount
+                            currency
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "RankedLifetimeGrosses", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
                 if (isset($edge->node->boxOfficeAreaType->text) && $edge->node->boxOfficeAreaType->text != '') {
