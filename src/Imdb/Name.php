@@ -434,52 +434,52 @@ EOF;
     {
         if (empty($this->spouses)) {
             $query = <<<EOF
-query Spouses(\$id: ID!) {
-  name(id: \$id) {
-    spouses {
-      spouse {
-        name {
-          id
-        }
-        asMarkdown {
-          plainText
-        }
-      }
-      timeRange {
-        fromDate {
-          dateComponents {
-            day
-            month
-            year
-          }
-        }
-        toDate {
-          dateComponents {
-            day
-            month
-            year
-          }
-        }
-        displayableProperty {
-          value {
-            plainText
-          }
-        }
-      }
-      attributes {
-        text
-      }
-      current
-    }
-  }
-}
-EOF;
+                query Spouses(\$id: ID!) {
+                  name(id: \$id) {
+                    spouses {
+                      spouse {
+                        name {
+                          id
+                        }
+                        asMarkdown {
+                          plainText
+                        }
+                      }
+                      timeRange {
+                        fromDate {
+                          dateComponents {
+                            day
+                            month
+                            year
+                          }
+                        }
+                        toDate {
+                          dateComponents {
+                            day
+                            month
+                            year
+                          }
+                        }
+                        displayableProperty {
+                          value {
+                            plainText
+                          }
+                        }
+                      }
+                      attributes {
+                        text
+                      }
+                      current
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->spouses != null) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
                     $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
-                    
+
                     // Spouse id
                     $imdbId = '';
                     if ($spouse->spouse->name != null) {
@@ -487,7 +487,7 @@ EOF;
                             $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
                         }
                     }
-                    
+
                     // From date
                     $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
                     $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
@@ -502,7 +502,7 @@ EOF;
                         "mon" => $fromDateMonthInt,
                         "year" => $fromDateYear
                     );
-                    
+
                     // To date
                     $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
                     $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
@@ -517,10 +517,10 @@ EOF;
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
-                    
+
                     // date as plaintext
                     $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
-                    
+
                     // Comments and children
                     $comment = '';
                     $children = 0;
