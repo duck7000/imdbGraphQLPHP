@@ -599,23 +599,23 @@ EOF;
     {
         if (empty($this->bioBio)) {
             $query = <<<EOF
-query MiniBio(\$id: ID!) {
-  name(id: \$id) {
-    bios(first: 9999) {
-      edges {
-        node {
-          text {
-            plainText
-          }
-          author {
-            plainText
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+                query MiniBio(\$id: ID!) {
+                  name(id: \$id) {
+                    bios(first: 9999) {
+                      edges {
+                        node {
+                          text {
+                            plainText
+                          }
+                          author {
+                            plainText
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "MiniBio", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->bios->edges as $edge) {
                 $bio_bio["desc"] = isset($edge->node->text->plainText) ? $edge->node->text->plainText : '';
