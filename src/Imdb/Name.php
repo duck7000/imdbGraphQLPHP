@@ -1343,19 +1343,19 @@ EOF;
     {
         $filter = ', filter: {relationshipTypes: ' . $name . '}';
         $query = <<<EOF
-          relationName {
-            name {
-              id
-              nameText {
-                text
+            relationName {
+              name {
+                id
+                nameText {
+                  text
+                }
               }
+              nameText
             }
-            nameText
-          }
-          relationshipType {
-            text
-          }
-EOF;
+            relationshipType {
+              text
+            }
+        EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
         if ($data != null) {
             foreach ($data as $edge) {
