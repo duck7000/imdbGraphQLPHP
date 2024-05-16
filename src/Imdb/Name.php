@@ -923,26 +923,23 @@ EOF;
             'sound' => 'sound',
             'misc' => 'misc'
         );
-        
+
         if (empty($this->externalSites)) {
-            
             foreach ($categoryIds as $categoryId) {
                 $this->externalSites[$categoryId] = array();
             }
-            
             $query = <<<EOF
-              label
-              url
-              externalLinkCategory {
-                id
-              }
-              externalLinkLanguages {
-                text
-              }
-EOF;
+                label
+                url
+                externalLinkCategory {
+                  id
+                }
+                externalLinkLanguages {
+                  text
+                }
+            EOF;
 
             $filter = ' filter: {excludeCategories: "review"}';
-
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
             foreach ($edges as $edge) {
                 $label = null;
