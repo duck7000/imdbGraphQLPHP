@@ -1317,10 +1317,10 @@ EOF;
     protected function dataParse($name, $arrayName)
     {
         $query = <<<EOF
-          text {
-            plainText
-          }
-EOF;
+            text {
+              plainText
+            }
+        EOF;
         $data = $this->graphQlGetAll("Data", $name, $query);
         if ($data != null) {
             foreach ($data as $edge) {
