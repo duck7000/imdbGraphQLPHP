@@ -791,33 +791,33 @@ EOF;
         if (empty($this->pubMovies)) {
             $filter = ', filter: {categories: ["nameFilmBiography"]}';
             $query = <<<EOF
-              ... on NameFilmBiography {
-                title {
-                  titleText {
-                    text
-                  }
-                  id
-                  releaseYear {
-                    year
-                  }
-                  series {
-                    displayableEpisodeNumber {
-                      displayableSeason {
-                        text
-                      }
-                      episodeNumber {
-                        text
-                      }
+                ... on NameFilmBiography {
+                  title {
+                    titleText {
+                      text
+                    }
+                    id
+                    releaseYear {
+                      year
                     }
                     series {
-                      titleText {
-                        text
+                      displayableEpisodeNumber {
+                        displayableSeason {
+                          text
+                        }
+                        episodeNumber {
+                          text
+                        }
+                      }
+                      series {
+                        titleText {
+                          text
+                        }
                       }
                     }
                   }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
@@ -831,6 +831,7 @@ EOF;
                         $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : '';
                         $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
                                                   $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : '';
+
                         $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
                                                    $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : '';
                     }
