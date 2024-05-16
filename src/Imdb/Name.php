@@ -272,25 +272,25 @@ EOF;
     {
         if (empty($this->deathday)) {
             $query = <<<EOF
-query DeathDate(\$id: ID!) {
-  name(id: \$id) {
-    deathDate {
-      dateComponents {
-        day
-        month
-        year
-      }
-    }
-    deathLocation {
-      text
-    }
-    deathCause {
-      text
-    }
-    deathStatus
-  }
-}
-EOF;
+                query DeathDate(\$id: ID!) {
+                  name(id: \$id) {
+                    deathDate {
+                      dateComponents {
+                        day
+                        month
+                        year
+                      }
+                    }
+                    deathLocation {
+                      text
+                    }
+                    deathCause {
+                      text
+                    }
+                    deathStatus
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "DeathDate", ["id" => "nm$this->imdbID"]);
             $day = isset($data->name->deathDate->dateComponents->day) ? $data->name->deathDate->dateComponents->day : '';
             $monthInt = isset($data->name->deathDate->dateComponents->month) ? $data->name->deathDate->dateComponents->month : '';
