@@ -1183,14 +1183,14 @@ EOF;
     {
         // imdb credits category ids to camelCase names
         $categoryIds = array(
-            'director' => 'Director',
-            'writer' => 'Writer',
-            'actress' => 'Actress',
-            'actor' => 'Actor',
-            'producer' => 'Producer',
-            'composer' => 'Composer',
-            'cinematographer' => 'Cinematographer',
-            'editor' => 'Editor',
+            'director' => 'director',
+            'writer' => 'writer',
+            'actress' => 'actress',
+            'actor' => 'actor',
+            'producer' => 'producer',
+            'composer' => 'composer',
+            'cinematographer' => 'cinematographer',
+            'editor' => 'editor',
             'casting_director' => 'castingDirector',
             'production_designer' => 'productionDesigner',
             'art_director' => 'artDirector',
@@ -1203,8 +1203,8 @@ EOF;
             'sound_department' => 'soundDepartment',
             'special_effects' => 'specialEffects',
             'visual_effects' => 'visualEffects',
-            'stunts' => 'Stunts',
-            'choreographer' => 'Choreographer',
+            'stunts' => 'stunts',
+            'choreographer' => 'choreographer',
             'camera_department' => 'cameraDepartment',
             'animation_department' => 'animationDepartment',
             'casting_department' => 'castingDepartment',
@@ -1216,18 +1216,18 @@ EOF;
             'production_department' => 'productionDepartment',
             'script_department' => 'scriptDepartment',
             'transportation_department' => 'transportationDepartment',
-            'miscellaneous' => 'Miscellaneous',
-            'thanks' => 'Thanks',
-            'executive' => 'Executive',
-            'legal' => 'Legal',
-            'soundtrack' => 'Soundtrack',
-            'manager' => 'Manager',
-            'assistant' => 'Assistant',
+            'miscellaneous' => 'miscellaneous',
+            'thanks' => 'thanks',
+            'executive' => 'executive',
+            'legal' => 'legal',
+            'soundtrack' => 'soundtrack',
+            'manager' => 'manager',
+            'assistant' => 'assistant',
             'talent_agent' => 'talentAgent',
-            'self' => 'Self',
-            'publicist' => 'Publicist',
+            'self' => 'self',
+            'publicist' => 'publicist',
             'music_artist' => 'musicArtist',
-            'podcaster' => 'Podcaster',
+            'podcaster' => 'podcaster',
             'archive_footage' => 'archiveFootage',
             'archive_sound' => 'archiveSound',
             'costume_supervisor' => 'costumeSupervisor',
@@ -1237,45 +1237,43 @@ EOF;
             'music_supervisor' => 'musicSupervisor',
             'property_master' => 'propertyMaster',
             'script_supervisor' => 'scriptSupervisor',
-            'showrunner' => 'Showrunner',
+            'showrunner' => 'showrunner',
             'stunt_coordinator' => 'stuntCoordinator',
-            'accountant' => 'Accountant'
+            'accountant' => 'accountant'
         );
-        
+
         if (empty($this->credits)) {
-            
             foreach ($categoryIds as $categoryId) {
                 $this->credits[$categoryId] = array();
             }
-            
             $query = <<<EOF
-          category {
-            id
-          }
-          title {
-            id
-            titleText {
-              text
-            }
-            titleType {
-              text
-            }
-            releaseYear {
-              year
-              endYear
-            }
-          }
-          ... on Cast {
-            characters {
-              name
-            }
-          }
-          ... on Crew {
-            jobs {
-              text
-            }
-          }
-EOF;
+                category {
+                  id
+                }
+                title {
+                  id
+                  titleText {
+                    text
+                  }
+                  titleType {
+                    text
+                  }
+                  releaseYear {
+                    year
+                    endYear
+                  }
+                }
+                ... on Cast {
+                  characters {
+                    name
+                  }
+                }
+                ... on Crew {
+                  jobs {
+                    text
+                  }
+                }
+            EOF;
             $edges = $this->graphQlGetAll("Credits", "credits", $query);
             foreach ($edges as $edge) {
                 $characters = array();
@@ -1306,7 +1304,7 @@ EOF;
         }
         return $this->credits;
     }
-    
+
     #========================================================[ Helper functions ]===
 
     #-----------------------------------------[ Helper for Trivia, Quotes and Trademarks ]---
