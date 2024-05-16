@@ -1109,49 +1109,49 @@ EOF;
     {
         if (empty($this->creditKnownFor)) {
             $query = <<<EOF
-query KnownFor(\$id: ID!) {
-  name(id: \$id) {
-    knownFor(first: 9999) {
-      edges {
-        node{
-          credit {
-            title {
-              id
-              titleText {
-                text
-              }
-              releaseYear {
-                year
-                endYear
-              }
-            }
-            ... on Cast {
-              characters {
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+                query KnownFor(\$id: ID!) {
+                  name(id: \$id) {
+                    knownFor(first: 9999) {
+                      edges {
+                        node{
+                          credit {
+                            title {
+                              id
+                              titleText {
+                                text
+                              }
+                              releaseYear {
+                                year
+                                endYear
+                              }
+                            }
+                            ... on Cast {
+                              characters {
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
             if ($data != null) {
                 foreach ($data->name->knownFor->edges as $edge) {
                     $title = isset($edge->node->credit->title->titleText->text) ?
                                    $edge->node->credit->title->titleText->text : '';
-                                   
+
                     $titleId = isset($edge->node->credit->title->id) ?
                                      str_replace('tt', '', $edge->node->credit->title->id) : '';
-                                     
+
                     $titleYear = isset($edge->node->credit->title->releaseYear->year) ?
                                        $edge->node->credit->title->releaseYear->year : null;
-                                       
+
                     $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
                                           $edge->node->credit->title->releaseYear->endYear : null;
-                                        
+
                     $characters = array();
                     if ($edge->node->credit->characters != null) {
                         foreach ($edge->node->credit->characters as $character) {
