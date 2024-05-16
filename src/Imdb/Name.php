@@ -1020,38 +1020,38 @@ EOF;
         $filter = ', sort: {by: PRESTIGIOUS, order: DESC}, filter: {wins: ' . $wins . $event . '}';
         if (empty($this->awards)) {
             $query = <<<EOF
-              award {
-                event {
+                award {
+                  event {
+                    text
+                  }
                   text
+                  category {
+                    text
+                  }
+                  eventEdition {
+                    year
+                  }
+                  notes {
+                    plainText
+                  }
                 }
-                text
-                category {
-                  text
-                }
-                eventEdition {
-                  year
-                }
-                notes {
-                  plainText
-                }
-              }
-              isWinner
-              awardedEntities {
-                ... on AwardedNames {
-                  secondaryAwardTitles {
-                    title {
-                      id
-                      titleText {
-                        text
+                isWinner
+                awardedEntities {
+                  ... on AwardedNames {
+                    secondaryAwardTitles {
+                      title {
+                        id
+                        titleText {
+                          text
+                        }
                       }
-                    }
-                    note {
-                      plainText
+                      note {
+                        plainText
+                      }
                     }
                   }
                 }
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
@@ -1064,7 +1064,7 @@ EOF;
                 $awardIsWinner = $edge->node->isWinner;
                 $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
                 $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
-                
+
                 //credited titles
                 $titles = array();
                 if ($edge->node->awardedEntities->secondaryAwardTitles !== null) {
@@ -1079,7 +1079,6 @@ EOF;
                         );
                     }
                 }
-                
                 $this->awards[$eventName][] = array(
                     'awardYear' => $eventEditionYear,
                     'awardWinner' => $awardIsWinner,
