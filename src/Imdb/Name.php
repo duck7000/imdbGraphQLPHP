@@ -324,16 +324,16 @@ EOF;
     {
         if (empty($this->professions)) {
             $query = <<<EOF
-query Professions(\$id: ID!) {
-  name(id: \$id) {
-    primaryProfessions {
-      category {
-        text
-      }
-    }
-  }
-}
-EOF;
+                query Professions(\$id: ID!) {
+                  name(id: \$id) {
+                    primaryProfessions {
+                      category {
+                        text
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "Professions", ["id" => "nm$this->imdbID"]);
             if (isset($data->name->primaryProfessions) && $data->name->primaryProfessions != null) {
                 foreach ($data->name->primaryProfessions as $primaryProfession) {
