@@ -192,18 +192,18 @@ EOF;
     {
         if (empty($this->akaName)) {
             $query = <<<EOF
-query AkaName(\$id: ID!) {
-  name(id: \$id) {
-    akas(first: 9999) {
-      edges {
-        node {
-          text
-        }
-      }
-    }
-  }
-}
-EOF;
+                query AkaName(\$id: ID!) {
+                  name(id: \$id) {
+                    akas(first: 9999) {
+                      edges {
+                        node {
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
             if ($data->name->akas->edges != null) {
                 foreach ($data->name->akas->edges as $edge) {
