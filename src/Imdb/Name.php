@@ -859,20 +859,21 @@ EOF;
     {
         if (empty($this->pubOtherWorks)) {
             $query = <<<EOF
-              category {
-                text
-              }
-              fromDate
-              toDate
-              text {
-                plainText
-              }
-EOF;
+                category {
+                  text
+                }
+                fromDate
+                toDate
+                text {
+                  plainText
+                }
+            EOF;
             $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
-                    
+                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
+
                     // From date
                     $fromDateDay = isset($edge->node->fromDate->day) ? $edge->node->fromDate->day : null;
                     $fromDateMonth = isset($edge->node->fromDate->month) ? $edge->node->fromDate->month : null;
@@ -892,9 +893,6 @@ EOF;
                         "month" => $toDateMonth,
                         "year" => $toDateYear
                     );
-
-                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
-
                     $this->pubOtherWorks[] = array(
                         "category" => $category,
                         "fromDate" => $fromDate,
