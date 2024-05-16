@@ -165,14 +165,14 @@ EOF;
     {
         if (empty($this->nickName)) {
             $query = <<<EOF
-query NickName(\$id: ID!) {
-  name(id: \$id) {
-    nickNames {
-      text
-    }
-  }
-}
-EOF;
+                query NickName(\$id: ID!) {
+                  name(id: \$id) {
+                    nickNames {
+                      text
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "NickName", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->nickNames as $nickName) {
                 if (!empty($nickName->text)) {
