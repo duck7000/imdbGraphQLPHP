@@ -742,17 +742,17 @@ EOF;
         if (empty($this->pubPrints)) {
             $filter = ', filter: {categories: ["namePrintBiography"]}';
             $query = <<<EOF
-              ... on NamePrintBiography {
-                title {
+                ... on NamePrintBiography {
+                  title {
                     text
-                }
-                authors {
+                  }
+                  authors {
                     plainText
+                  }
+                  isbn
+                  publisher
                 }
-                isbn
-                publisher
-              }
-EOF;
+            EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
