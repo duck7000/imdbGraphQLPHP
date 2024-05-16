@@ -79,14 +79,14 @@ class Name extends MdbBase
     public function name()
     {
         $query = <<<EOF
-query Name(\$id: ID!) {
-  name(id: \$id) {
-    nameText {
-      text
-    }
-  }
-}
-EOF;
+            query Name(\$id: ID!) {
+              name(id: \$id) {
+                nameText {
+                  text
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
         $this->fullName = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
         return $this->fullName;
