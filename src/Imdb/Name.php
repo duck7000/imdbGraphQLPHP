@@ -1434,14 +1434,14 @@ EOF;
     public function checkRedirect()
     {
         $query = <<<EOF
-query Redirect(\$id: ID!) {
-  name(id: \$id) {
-    meta {
-      canonicalId
-    }
-  }
-}
-EOF;
+            query Redirect(\$id: ID!) {
+              name(id: \$id) {
+                meta {
+                  canonicalId
+                }
+              }
+            }
+        EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "nm$this->imdbID"]);
         $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
         if ($nameImdbId  != $this->imdbID) {
