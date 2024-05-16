@@ -24,15 +24,12 @@ use Psr\SimpleCache\CacheInterface;
 class Name extends MdbBase
 {
 
-    // "Name" page:
     protected $mainPhoto = null;
     protected $fullName = "";
     protected $birthday = array();
     protected $deathday = array();
     protected $professions = array();
     protected $popRank = array();
-
-    // "Bio" page:
     protected $birthName = "";
     protected $nickName = array();
     protected $akaName = array();
@@ -46,14 +43,10 @@ class Name extends MdbBase
     protected $bioQuotes = array();
     protected $bioTrademark = array();
     protected $bioSalary = array();
-
-    // "Publicity" page:
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubOtherWorks = array();
     protected $externalSites = array();
-
-    // "Credits" page:
     protected $awards = array();
     protected $creditKnownFor = array();
     protected $credits = array();
