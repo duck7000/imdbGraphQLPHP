@@ -101,15 +101,15 @@ EOF;
      */
     public function photo($thumb = true)
     {
-    $query = <<<EOF
-query PrimaryImage(\$id: ID!) {
-  name(id: \$id) {
-    primaryImage {
-      url
-    }
-  }
-}
-EOF;
+        $query = <<<EOF
+            query PrimaryImage(\$id: ID!) {
+              name(id: \$id) {
+                primaryImage {
+                  url
+                }
+              }
+            }
+        EOF;
         if ($this->mainPhoto === null) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if ($data->name->primaryImage->url != null) {
