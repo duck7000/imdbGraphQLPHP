@@ -395,18 +395,18 @@ EOF;
     {
         if (empty($this->bodyheight)) {
             $query = <<<EOF
-query BodyHeight(\$id: ID!) {
-  name(id: \$id) {
-    height {
-      displayableProperty {
-        value {
-          plainText
-        }
-      }
-    }
-  }
-}
-EOF;
+                query BodyHeight(\$id: ID!) {
+                  name(id: \$id) {
+                    height {
+                      displayableProperty {
+                        value {
+                          plainText
+                        }
+                      }
+                    }
+                  }
+                }
+            EOF;
             $data = $this->graphql->query($query, "BodyHeight", ["id" => "nm$this->imdbID"]);
             if (isset($data->name->height->displayableProperty->value->plainText)) {
                 $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
