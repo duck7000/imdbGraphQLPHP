@@ -45,44 +45,44 @@ class TitleSearch extends MdbBase
         }
 
         $query = <<<EOF
-query Search{
-  mainSearch(
-    first: $amount
-    options: {
-      searchTerm: "$searchTerms"
-      type: TITLE
-      includeAdult: true
-      titleSearchOptions: {
-        type: [$types]
-        releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}
-        }
-    }
-  ) {
-    edges {
-      node{
-        entity {
-          ... on Title {
-            id
-            titleText {
-              text
+            query Search{
+              mainSearch(
+                first: $amount
+                options: {
+                  searchTerm: "$searchTerms"
+                  type: TITLE
+                  includeAdult: true
+                  titleSearchOptions: {
+                    type: [$types]
+                    releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}
+                    }
+                }
+              ) {
+                edges {
+                  node{
+                    entity {
+                      ... on Title {
+                        id
+                        titleText {
+                          text
+                        }
+                        originalTitleText {
+                          text
+                        }
+                        titleType {
+                          text
+                        }
+                        releaseYear {
+                          year
+                          endYear
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
-            originalTitleText {
-              text
-            }
-            titleType {
-              text
-            }
-            releaseYear {
-              year
-              endYear
-            }
-          }
-        }
-      }
-    }
-  }
-}
-EOF;
+        EOF;
         $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
             $imdbId = isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : '';
