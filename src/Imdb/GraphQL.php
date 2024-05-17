@@ -53,17 +53,13 @@ class GraphQL
     {
         $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . ".json";
         $fromCache = $this->cache->get($key);
-
         if ($fromCache != null) {
             return json_decode($fromCache);
         }
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
-
         $result = $this->doRequest($fullQuery, $qn, $variables);
-
         $this->cache->set($key, json_encode($result));
-
         return $result;
     }
 
@@ -77,7 +73,6 @@ class GraphQL
     {
         $request = new Request('https://api.graphql.imdb.com/');
         $request->addHeaderLine("Content-Type", "application/json");
-
         if ($this->config->useLocalization === true) {
             if (!empty($this->config->country)) {
                 $request->addHeaderLine("X-Imdb-User-Country", $this->config->country);
@@ -86,18 +81,15 @@ class GraphQL
                 $request->addHeaderLine("X-Imdb-User-Language", $this->config->language);
             }
         }
-
         $payload = json_encode(
             array(
-            'operationName' => $queryName,
-            'query' => $query,
-            'variables' => $variables)
+                'operationName' => $queryName,
+                'query' => $query,
+                'variables' => $variables
+            )
         );
-
         $this->logger->info("[GraphQL] Requesting $queryName");
-
         $request->post($payload);
-
         if (200 == $request->getStatus()) {
             return json_decode($request->getResponseBody())->data;
         } else {
