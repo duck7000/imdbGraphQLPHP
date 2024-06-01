@@ -411,7 +411,7 @@ class Title extends MdbBase
                     $thumb = $img . $parameter;
                 }
                 $this->recommendations[] = array(
-                    "title" => $this->titleCase($edge->node->titleText->text),
+                    "title" => $edge->node->titleText->text,
                     "imdbid" => str_replace('tt', '', $edge->node->id),
                     "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
                     "img" => $thumb,
@@ -1487,7 +1487,7 @@ class Title extends MdbBase
             $data = $this->graphQlGetAll("Soundtrack", "soundtrack", $query);
             foreach ($data as $edge) {
                 if (isset($edge->node->text) && $edge->node->text !== '') {
-                    $title = $this->titleCase(trim($edge->node->text));
+                    $title = trim($edge->node->text);
                 } else {
                     $title = 'Unknown';
                 }
@@ -1531,7 +1531,7 @@ class Title extends MdbBase
                                         $id = preg_replace('/[^0-9]+/', '', $href);
                                         $crediters[] = array(
                                             'creditType' => $creditType,
-                                            'name' => $this->titleCase(trim($anchors->item(0)->nodeValue)),
+                                            'name' => trim($anchors->item(0)->nodeValue),
                                             'nameId' => $id
                                         );
                                     } else {
@@ -1541,7 +1541,7 @@ class Title extends MdbBase
                                             $name = '';
                                         } else {
                                             $nameId = '';
-                                            $name = $this->titleCase(trim($value, "[] "));
+                                            $name = trim($value, "[] ");
                                         }
                                         $crediters[] = array(
                                             'creditType' => $creditType,
@@ -2929,41 +2929,6 @@ class Title extends MdbBase
             $endCursor = $data->title->{$fieldName}->pageInfo->endCursor;
         }
         return $edges;
-    }
-
-    /**
-     * Convert string to upper class words
-     * @param string $inputString Input test string
-     * Exceptions in lower case are words you don't want converted
-     * Exceptions all in upper case are any words you don't want converted to title case
-         *   but should be converted to upper case, e.g.:
-         *   king henry viii or king henry Viii should be King Henry VIII
-     * @return string: upper class words
-     */
-    protected function titleCase($inputString)
-    {
-        $delimiters = array(" ", "-", ".", "'", "O'", "Mc", "(");
-        $exceptions = array("I", "II", "III", "IV", "V", "VI", "GT");
-        $string = mb_convert_case($inputString, MB_CASE_TITLE, "UTF-8");
-        foreach ($delimiters as $dlnr => $delimiter) {
-            $words = explode($delimiter, $string);
-            $newwords = array();
-            foreach ($words as $wordnr => $word) {
-                if (in_array(mb_strtoupper($word, "UTF-8"), $exceptions)) {
-                    // check exceptions list for any words that should be in upper case
-                    $word = mb_strtoupper($word, "UTF-8");
-                } elseif (in_array(mb_strtolower($word, "UTF-8"), $exceptions)) {
-                    // check exceptions list for any words that should be in upper case
-                    $word = mb_strtolower($word, "UTF-8");
-                } elseif (!in_array($word, $exceptions)) {
-                    // convert to uppercase (non-utf8 only)
-                    $word = ucfirst($word);
-                }
-                array_push($newwords, $word);
-            }
-            $string = join($delimiter, $newwords);
-       }
-       return $string;
     }
 
     #----------------------------------------------------------[ imdbID redirect ]---
