@@ -87,11 +87,12 @@ class Title extends MdbBase
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
      * @param Config $config OPTIONAL override default config
+     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
      * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
-    public function __construct($id, Config $config = null, CacheInterface $cache = null)
+    public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null)
     {
-        parent::__construct($config, $cache);
+        parent::__construct($config, $logger, $cache);
         $this->setid($id);
     }
 
