@@ -2446,8 +2446,8 @@ class Title extends MdbBase
         EOF;
         $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
 
-        $this->mainTitle = $this->titleCase(trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))));
-        $this->mainOriginalTitle  = $this->titleCase(trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))));
+        $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
+        $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
         $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
         $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
         $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
