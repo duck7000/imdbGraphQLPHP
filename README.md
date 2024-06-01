@@ -1,18 +1,18 @@
-imdbphp6
+imdbGraphQLPHP
 =======
 
 PHP library for retrieving film and TV information from IMDb.<br>
 This library uses GraphQL API from imdb to get the data.<br>
 Thanks to @tBoothman for his groundwork to make this possible!<br><br>
 
-imdbphp6 is NOT a fork, it is based on imdbphp<br>
+imdbGraphQLPHP is NOT a fork, it is based on imdbphp<br>
 Retrieve all information from IMDb including films, TV series, TV episodes, people and coming soon releases.<br>
 Search for titles on IMDb.<br>
 Download film posters, actor, recommendations, foto's and episode images.<br>
 The results can be localized and cached.<br>
 Localization only seems to effect title, photo, plotoutline and recommendations (titles only). Check wiki homepage to enable.<br>
 There is a full list of all methods, descriptions and outputs in the wiki.
-https://github.com/duck7000/imdbphp6/wiki
+https://github.com/duck7000/imdbGraphQLPHP/wiki
 
 
 Quick Start

@@ -1,7 +1,7 @@
 <?php
 
 #############################################################################
-# IMDBPHP6                                       ed (github user: duck7000) #
+# imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (github user: duck7000)                                     #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -11,7 +11,7 @@
 namespace Imdb;
 
 /**
- * Configuration class for imdbphp6
+ * Configuration class for imdbGraphQLPHP
  * @author ed (github user: duck7000)
  */
 class Config

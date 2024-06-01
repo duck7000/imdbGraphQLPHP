@@ -1,6 +1,6 @@
 <?php
 #############################################################################
-# IMDBPHP6                                       ed (github user: duck7000) #
+# imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (github user: duck7000)                                     #
 # http://www.izzysoft.de/                                                   #
 # ------------------------------------------------------------------------- #

@@ -1,6 +1,6 @@
 <?php
 #############################################################################
-# IMDBPHP6                             (c) Giorgos Giagas & Itzchak Rehberg #
+# imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by Giorgos Giagas                                                 #
 # written extended & maintained by ed (github user: duck7000)               #
 # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #

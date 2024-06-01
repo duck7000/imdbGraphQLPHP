@@ -1,7 +1,7 @@
 <?php
 
 #############################################################################
-# IMDBPHP6                             (c) Ed                               #
+# imdbGraphQLPHP                             (c) Ed                         #
 # written extended & maintained by Ed                                       #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
