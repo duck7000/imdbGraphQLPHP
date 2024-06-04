@@ -35,6 +35,7 @@ class Request
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callback_CURLOPT_HEADERFUNCTION"));
         curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
+        curl_setopt($this->ch, CURLOPT_TIMEOUT, 30);
     }
 
     public function addHeaderLine($name, $value)
