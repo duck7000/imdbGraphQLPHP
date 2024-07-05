@@ -1526,7 +1526,7 @@ class Title extends MdbBase
                                     $anchors = $doc->getElementsByTagName('a');
                                     
                                     // check what $anchors contains
-                                    if (count($anchors) > 0) {
+                                    if ($anchors != null && $anchors->length > 0) {
                                         $href = $anchors->item(0)->attributes->getNamedItem('href')->nodeValue;
                                         $id = preg_replace('/[^0-9]+/', '', $href);
                                         $crediters[] = array(
