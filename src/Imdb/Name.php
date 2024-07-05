@@ -1,7 +1,7 @@
 <?php
 
 #############################################################################
-# imdbGraphQLPHP                                 ed (github user: duck7000) #
+# imdbGraphQLPHP                       (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
 # extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
 # written extended & maintained by Ed                                       #
@@ -13,6 +13,7 @@
 
 namespace Imdb;
 
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -24,12 +25,15 @@ use Psr\SimpleCache\CacheInterface;
 class Name extends MdbBase
 {
 
+    // "Name" page:
     protected $mainPhoto = null;
     protected $fullName = "";
     protected $birthday = array();
     protected $deathday = array();
     protected $professions = array();
     protected $popRank = array();
+
+    // "Bio" page:
     protected $birthName = "";
     protected $nickName = array();
     protected $akaName = array();
@@ -43,10 +47,14 @@ class Name extends MdbBase
     protected $bioQuotes = array();
     protected $bioTrademark = array();
     protected $bioSalary = array();
+
+    // "Publicity" page:
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubOtherWorks = array();
     protected $externalSites = array();
+
+    // "Credits" page:
     protected $awards = array();
     protected $creditKnownFor = array();
     protected $credits = array();
@@ -73,14 +81,14 @@ class Name extends MdbBase
     public function name()
     {
         $query = <<<EOF
-            query Name(\$id: ID!) {
-              name(id: \$id) {
-                nameText {
-                  text
-                }
-              }
-            }
-        EOF;
+query Name(\$id: ID!) {
+  name(id: \$id) {
+    nameText {
+      text
+    }
+  }
+}
+EOF;
         $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
         $this->fullName = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
         return $this->fullName;
@@ -95,15 +103,15 @@ class Name extends MdbBase
      */
     public function photo($thumb = true)
     {
-        $query = <<<EOF
-            query PrimaryImage(\$id: ID!) {
-              name(id: \$id) {
-                primaryImage {
-                  url
-                }
-              }
-            }
-        EOF;
+    $query = <<<EOF
+query PrimaryImage(\$id: ID!) {
+  name(id: \$id) {
+    primaryImage {
+      url
+    }
+  }
+}
+EOF;
         if ($this->mainPhoto === null) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if ($data->name->primaryImage->url != null) {
@@ -136,15 +144,15 @@ class Name extends MdbBase
      */
     public function birthname()
     {
-        $query = <<<EOF
-            query BirthName(\$id: ID!) {
-              name(id: \$id) {
-                birthName {
-                  text
-                }
-              }
-            }
-        EOF;
+    $query = <<<EOF
+query BirthName(\$id: ID!) {
+  name(id: \$id) {
+    birthName {
+      text
+    }
+  }
+}
+EOF;
         $data = $this->graphql->query($query, "BirthName", ["id" => "nm$this->imdbID"]);
         $this->birthName = isset($data->name->birthName->text) ? $data->name->birthName->text : '';
         return $this->birthName;
@@ -159,14 +167,14 @@ class Name extends MdbBase
     {
         if (empty($this->nickName)) {
             $query = <<<EOF
-                query NickName(\$id: ID!) {
-                  name(id: \$id) {
-                    nickNames {
-                      text
-                    }
-                  }
-                }
-            EOF;
+query NickName(\$id: ID!) {
+  name(id: \$id) {
+    nickNames {
+      text
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "NickName", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->nickNames as $nickName) {
                 if (!empty($nickName->text)) {
@@ -186,18 +194,18 @@ class Name extends MdbBase
     {
         if (empty($this->akaName)) {
             $query = <<<EOF
-                query AkaName(\$id: ID!) {
-                  name(id: \$id) {
-                    akas(first: 9999) {
-                      edges {
-                        node {
-                          text
-                        }
-                      }
-                    }
-                  }
-                }
-            EOF;
+query AkaName(\$id: ID!) {
+  name(id: \$id) {
+    akas(first: 9999) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
             if ($data->name->akas->edges != null) {
                 foreach ($data->name->akas->edges as $edge) {
@@ -220,21 +228,21 @@ class Name extends MdbBase
     {
         if (empty($this->birthday)) {
             $query = <<<EOF
-                query BirthDate(\$id: ID!) {
-                  name(id: \$id) {
-                    birthDate {
-                      dateComponents {
-                        day
-                        month
-                        year
-                      }
-                    }
-                    birthLocation {
-                      text
-                    }
-                  }
-                }
-            EOF;
+query BirthDate(\$id: ID!) {
+  name(id: \$id) {
+    birthDate {
+      dateComponents {
+        day
+        month
+        year
+      }
+    }
+    birthLocation {
+      text
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "BirthDate", ["id" => "nm$this->imdbID"]);
             $day = isset($data->name->birthDate->dateComponents->day) ? $data->name->birthDate->dateComponents->day : '';
             $monthInt = isset($data->name->birthDate->dateComponents->month) ? $data->name->birthDate->dateComponents->month : '';
@@ -266,25 +274,25 @@ class Name extends MdbBase
     {
         if (empty($this->deathday)) {
             $query = <<<EOF
-                query DeathDate(\$id: ID!) {
-                  name(id: \$id) {
-                    deathDate {
-                      dateComponents {
-                        day
-                        month
-                        year
-                      }
-                    }
-                    deathLocation {
-                      text
-                    }
-                    deathCause {
-                      text
-                    }
-                    deathStatus
-                  }
-                }
-            EOF;
+query DeathDate(\$id: ID!) {
+  name(id: \$id) {
+    deathDate {
+      dateComponents {
+        day
+        month
+        year
+      }
+    }
+    deathLocation {
+      text
+    }
+    deathCause {
+      text
+    }
+    deathStatus
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "DeathDate", ["id" => "nm$this->imdbID"]);
             $day = isset($data->name->deathDate->dateComponents->day) ? $data->name->deathDate->dateComponents->day : '';
             $monthInt = isset($data->name->deathDate->dateComponents->month) ? $data->name->deathDate->dateComponents->month : '';
@@ -318,16 +326,16 @@ class Name extends MdbBase
     {
         if (empty($this->professions)) {
             $query = <<<EOF
-                query Professions(\$id: ID!) {
-                  name(id: \$id) {
-                    primaryProfessions {
-                      category {
-                        text
-                      }
-                    }
-                  }
-                }
-            EOF;
+query Professions(\$id: ID!) {
+  name(id: \$id) {
+    primaryProfessions {
+      category {
+        text
+      }
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "Professions", ["id" => "nm$this->imdbID"]);
             if (isset($data->name->primaryProfessions) && $data->name->primaryProfessions != null) {
                 foreach ($data->name->primaryProfessions as $primaryProfession) {
@@ -350,26 +358,27 @@ class Name extends MdbBase
     {
         if (empty($this->popRank)) {
             $query = <<<EOF
-                query Rank(\$id: ID!) {
-                  name(id: \$id) {
-                    meterRanking {
-                      currentRank
-                      rankChange {
-                        changeDirection
-                        difference
-                      }
-                    }
-                  }
-                }
-            EOF;
+query Rank(\$id: ID!) {
+  name(id: \$id) {
+    meterRanking {
+      currentRank
+      rankChange {
+        changeDirection
+        difference
+      }
+    }
+  }
+}
+EOF;
+
             $data = $this->graphql->query($query, "Rank", ["id" => "nm$this->imdbID"]);
             if (isset($data->name->meterRanking)) {
                 $this->popRank['currentRank'] = isset($data->name->meterRanking->currentRank) ?
                                                         $data->name->meterRanking->currentRank : null;
-
+                                                        
                 $this->popRank['changeDirection'] = isset($data->name->meterRanking->rankChange->changeDirection) ?
                                                             $data->name->meterRanking->rankChange->changeDirection : null;
-
+                                                            
                 $this->popRank['difference'] = isset($data->name->meterRanking->rankChange->difference) ?
                                                        $data->name->meterRanking->rankChange->difference : null;
             } else {
@@ -388,18 +397,18 @@ class Name extends MdbBase
     {
         if (empty($this->bodyheight)) {
             $query = <<<EOF
-                query BodyHeight(\$id: ID!) {
-                  name(id: \$id) {
-                    height {
-                      displayableProperty {
-                        value {
-                          plainText
-                        }
-                      }
-                    }
-                  }
-                }
-            EOF;
+query BodyHeight(\$id: ID!) {
+  name(id: \$id) {
+    height {
+      displayableProperty {
+        value {
+          plainText
+        }
+      }
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "BodyHeight", ["id" => "nm$this->imdbID"]);
             if (isset($data->name->height->displayableProperty->value->plainText)) {
                 $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
@@ -427,52 +436,52 @@ class Name extends MdbBase
     {
         if (empty($this->spouses)) {
             $query = <<<EOF
-                query Spouses(\$id: ID!) {
-                  name(id: \$id) {
-                    spouses {
-                      spouse {
-                        name {
-                          id
-                        }
-                        asMarkdown {
-                          plainText
-                        }
-                      }
-                      timeRange {
-                        fromDate {
-                          dateComponents {
-                            day
-                            month
-                            year
-                          }
-                        }
-                        toDate {
-                          dateComponents {
-                            day
-                            month
-                            year
-                          }
-                        }
-                        displayableProperty {
-                          value {
-                            plainText
-                          }
-                        }
-                      }
-                      attributes {
-                        text
-                      }
-                      current
-                    }
-                  }
-                }
-            EOF;
+query Spouses(\$id: ID!) {
+  name(id: \$id) {
+    spouses {
+      spouse {
+        name {
+          id
+        }
+        asMarkdown {
+          plainText
+        }
+      }
+      timeRange {
+        fromDate {
+          dateComponents {
+            day
+            month
+            year
+          }
+        }
+        toDate {
+          dateComponents {
+            day
+            month
+            year
+          }
+        }
+        displayableProperty {
+          value {
+            plainText
+          }
+        }
+      }
+      attributes {
+        text
+      }
+      current
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
             if ($data != null && $data->name->spouses != null) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
                     $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
-
+                    
                     // Spouse id
                     $imdbId = '';
                     if ($spouse->spouse->name != null) {
@@ -480,7 +489,7 @@ class Name extends MdbBase
                             $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
                         }
                     }
-
+                    
                     // From date
                     $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
                     $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
@@ -495,7 +504,7 @@ class Name extends MdbBase
                         "mon" => $fromDateMonthInt,
                         "year" => $fromDateYear
                     );
-
+                    
                     // To date
                     $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
                     $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
@@ -510,10 +519,10 @@ class Name extends MdbBase
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
-
+                    
                     // date as plaintext
                     $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
-
+                    
                     // Comments and children
                     $comment = '';
                     $children = 0;
@@ -592,23 +601,23 @@ class Name extends MdbBase
     {
         if (empty($this->bioBio)) {
             $query = <<<EOF
-                query MiniBio(\$id: ID!) {
-                  name(id: \$id) {
-                    bios(first: 9999) {
-                      edges {
-                        node {
-                          text {
-                            plainText
-                          }
-                          author {
-                            plainText
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-            EOF;
+query MiniBio(\$id: ID!) {
+  name(id: \$id) {
+    bios(first: 9999) {
+      edges {
+        node {
+          text {
+            plainText
+          }
+          author {
+            plainText
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "MiniBio", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->bios->edges as $edge) {
                 $bio_bio["desc"] = isset($edge->node->text->plainText) ? $edge->node->text->plainText : '';
@@ -673,23 +682,23 @@ class Name extends MdbBase
     {
         if (empty($this->bioSalary)) {
             $query = <<<EOF
-                title {
-                  titleText {
-                    text
-                  }
-                  id
-                  releaseYear {
-                    year
-                  }
-                }
-                amount {
-                  amount
-                  currency
-                }
-                attributes {
+              title {
+                titleText {
                   text
                 }
-            EOF;
+                id
+                releaseYear {
+                  year
+                }
+              }
+              amount {
+                amount
+                currency
+              }
+              attributes {
+                text
+              }
+EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
@@ -735,17 +744,17 @@ class Name extends MdbBase
         if (empty($this->pubPrints)) {
             $filter = ', filter: {categories: ["namePrintBiography"]}';
             $query = <<<EOF
-                ... on NamePrintBiography {
-                  title {
+              ... on NamePrintBiography {
+                title {
                     text
-                  }
-                  authors {
-                    plainText
-                  }
-                  isbn
-                  publisher
                 }
-            EOF;
+                authors {
+                    plainText
+                }
+                isbn
+                publisher
+              }
+EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
@@ -784,33 +793,33 @@ class Name extends MdbBase
         if (empty($this->pubMovies)) {
             $filter = ', filter: {categories: ["nameFilmBiography"]}';
             $query = <<<EOF
-                ... on NameFilmBiography {
-                  title {
-                    titleText {
-                      text
-                    }
-                    id
-                    releaseYear {
-                      year
+              ... on NameFilmBiography {
+                title {
+                  titleText {
+                    text
+                  }
+                  id
+                  releaseYear {
+                    year
+                  }
+                  series {
+                    displayableEpisodeNumber {
+                      displayableSeason {
+                        text
+                      }
+                      episodeNumber {
+                        text
+                      }
                     }
                     series {
-                      displayableEpisodeNumber {
-                        displayableSeason {
-                          text
-                        }
-                        episodeNumber {
-                          text
-                        }
-                      }
-                      series {
-                        titleText {
-                          text
-                        }
+                      titleText {
+                        text
                       }
                     }
                   }
                 }
-            EOF;
+              }
+EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             if ($data != null) {
                 foreach ($data as $edge) {
@@ -824,7 +833,6 @@ class Name extends MdbBase
                         $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : '';
                         $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
                                                   $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : '';
-
                         $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
                                                    $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : '';
                     }
@@ -853,21 +861,20 @@ class Name extends MdbBase
     {
         if (empty($this->pubOtherWorks)) {
             $query = <<<EOF
-                category {
-                  text
-                }
-                fromDate
-                toDate
-                text {
-                  plainText
-                }
-            EOF;
+              category {
+                text
+              }
+              fromDate
+              toDate
+              text {
+                plainText
+              }
+EOF;
             $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
             if ($data != null) {
                 foreach ($data as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
-                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
-
+                    
                     // From date
                     $fromDateDay = isset($edge->node->fromDate->day) ? $edge->node->fromDate->day : null;
                     $fromDateMonth = isset($edge->node->fromDate->month) ? $edge->node->fromDate->month : null;
@@ -887,6 +894,9 @@ class Name extends MdbBase
                         "month" => $toDateMonth,
                         "year" => $toDateYear
                     );
+
+                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
+
                     $this->pubOtherWorks[] = array(
                         "category" => $category,
                         "fromDate" => $fromDate,
@@ -915,23 +925,26 @@ class Name extends MdbBase
             'sound' => 'sound',
             'misc' => 'misc'
         );
-
+        
         if (empty($this->externalSites)) {
+            
             foreach ($categoryIds as $categoryId) {
                 $this->externalSites[$categoryId] = array();
             }
+            
             $query = <<<EOF
-                label
-                url
-                externalLinkCategory {
-                  id
-                }
-                externalLinkLanguages {
-                  text
-                }
-            EOF;
+              label
+              url
+              externalLinkCategory {
+                id
+              }
+              externalLinkLanguages {
+                text
+              }
+EOF;
 
             $filter = ' filter: {excludeCategories: "review"}';
+
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
             foreach ($edges as $edge) {
                 $label = null;
@@ -1009,38 +1022,38 @@ class Name extends MdbBase
         $filter = ', sort: {by: PRESTIGIOUS, order: DESC}, filter: {wins: ' . $wins . $event . '}';
         if (empty($this->awards)) {
             $query = <<<EOF
-                award {
-                  event {
-                    text
-                  }
+              award {
+                event {
                   text
-                  category {
-                    text
-                  }
-                  eventEdition {
-                    year
-                  }
-                  notes {
-                    plainText
-                  }
                 }
-                isWinner
-                awardedEntities {
-                  ... on AwardedNames {
-                    secondaryAwardTitles {
-                      title {
-                        id
-                        titleText {
-                          text
-                        }
+                text
+                category {
+                  text
+                }
+                eventEdition {
+                  year
+                }
+                notes {
+                  plainText
+                }
+              }
+              isWinner
+              awardedEntities {
+                ... on AwardedNames {
+                  secondaryAwardTitles {
+                    title {
+                      id
+                      titleText {
+                        text
                       }
-                      note {
-                        plainText
-                      }
+                    }
+                    note {
+                      plainText
                     }
                   }
                 }
-            EOF;
+              }
+EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
@@ -1053,7 +1066,7 @@ class Name extends MdbBase
                 $awardIsWinner = $edge->node->isWinner;
                 $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
                 $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
-
+                
                 //credited titles
                 $titles = array();
                 if ($edge->node->awardedEntities->secondaryAwardTitles !== null) {
@@ -1068,6 +1081,7 @@ class Name extends MdbBase
                         );
                     }
                 }
+                
                 $this->awards[$eventName][] = array(
                     'awardYear' => $eventEditionYear,
                     'awardWinner' => $awardIsWinner,
@@ -1097,49 +1111,49 @@ class Name extends MdbBase
     {
         if (empty($this->creditKnownFor)) {
             $query = <<<EOF
-                query KnownFor(\$id: ID!) {
-                  name(id: \$id) {
-                    knownFor(first: 9999) {
-                      edges {
-                        node{
-                          credit {
-                            title {
-                              id
-                              titleText {
-                                text
-                              }
-                              releaseYear {
-                                year
-                                endYear
-                              }
-                            }
-                            ... on Cast {
-                              characters {
-                                name
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-            EOF;
+query KnownFor(\$id: ID!) {
+  name(id: \$id) {
+    knownFor(first: 9999) {
+      edges {
+        node{
+          credit {
+            title {
+              id
+              titleText {
+                text
+              }
+              releaseYear {
+                year
+                endYear
+              }
+            }
+            ... on Cast {
+              characters {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
             $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
             if ($data != null) {
                 foreach ($data->name->knownFor->edges as $edge) {
                     $title = isset($edge->node->credit->title->titleText->text) ?
                                    $edge->node->credit->title->titleText->text : '';
-
+                                   
                     $titleId = isset($edge->node->credit->title->id) ?
                                      str_replace('tt', '', $edge->node->credit->title->id) : '';
-
+                                     
                     $titleYear = isset($edge->node->credit->title->releaseYear->year) ?
                                        $edge->node->credit->title->releaseYear->year : null;
-
+                                       
                     $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
                                           $edge->node->credit->title->releaseYear->endYear : null;
-
+                                        
                     $characters = array();
                     if ($edge->node->credit->characters != null) {
                         foreach ($edge->node->credit->characters as $character) {
@@ -1229,39 +1243,41 @@ class Name extends MdbBase
             'stunt_coordinator' => 'stuntCoordinator',
             'accountant' => 'accountant'
         );
-
+        
         if (empty($this->credits)) {
+            
             foreach ($categoryIds as $categoryId) {
                 $this->credits[$categoryId] = array();
             }
+            
             $query = <<<EOF
-                category {
-                  id
-                }
-                title {
-                  id
-                  titleText {
-                    text
-                  }
-                  titleType {
-                    text
-                  }
-                  releaseYear {
-                    year
-                    endYear
-                  }
-                }
-                ... on Cast {
-                  characters {
-                    name
-                  }
-                }
-                ... on Crew {
-                  jobs {
-                    text
-                  }
-                }
-            EOF;
+          category {
+            id
+          }
+          title {
+            id
+            titleText {
+              text
+            }
+            titleType {
+              text
+            }
+            releaseYear {
+              year
+              endYear
+            }
+          }
+          ... on Cast {
+            characters {
+              name
+            }
+          }
+          ... on Crew {
+            jobs {
+              text
+            }
+          }
+EOF;
             $edges = $this->graphQlGetAll("Credits", "credits", $query);
             foreach ($edges as $edge) {
                 $characters = array();
@@ -1303,10 +1319,10 @@ class Name extends MdbBase
     protected function dataParse($name, $arrayName)
     {
         $query = <<<EOF
-            text {
-              plainText
-            }
-        EOF;
+          text {
+            plainText
+          }
+EOF;
         $data = $this->graphQlGetAll("Data", $name, $query);
         if ($data != null) {
             foreach ($data as $edge) {
@@ -1329,19 +1345,19 @@ class Name extends MdbBase
     {
         $filter = ', filter: {relationshipTypes: ' . $name . '}';
         $query = <<<EOF
-            relationName {
-              name {
-                id
-                nameText {
-                  text
-                }
+          relationName {
+            name {
+              id
+              nameText {
+                text
               }
-              nameText
             }
-            relationshipType {
-              text
-            }
-        EOF;
+            nameText
+          }
+          relationshipType {
+            text
+          }
+EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
         if ($data != null) {
             foreach ($data as $edge) {
@@ -1375,22 +1391,22 @@ class Name extends MdbBase
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
         $query = <<<EOF
-            query $queryName(\$id: ID!, \$after: ID) {
-              name(id: \$id) {
-                $fieldName(first: 9999, after: \$after$filter) {
-                  edges {
-                    node {
-                      $nodeQuery
-                    }
-                  }
-                  pageInfo {
-                    endCursor
-                    hasNextPage
-                  }
-                }
-              }
-            }
-        EOF;
+query $queryName(\$id: ID!, \$after: ID) {
+  name(id: \$id) {
+    $fieldName(first: 9999, after: \$after$filter) {
+      edges {
+        node {
+          $nodeQuery
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
 
@@ -1420,14 +1436,14 @@ class Name extends MdbBase
     public function checkRedirect()
     {
         $query = <<<EOF
-            query Redirect(\$id: ID!) {
-              name(id: \$id) {
-                meta {
-                  canonicalId
-                }
-              }
-            }
-        EOF;
+query Redirect(\$id: ID!) {
+  name(id: \$id) {
+    meta {
+      canonicalId
+    }
+  }
+}
+EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "nm$this->imdbID"]);
         $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
         if ($nameImdbId  != $this->imdbID) {
