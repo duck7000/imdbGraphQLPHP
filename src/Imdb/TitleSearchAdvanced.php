@@ -92,43 +92,43 @@ class TitleSearchAdvanced extends MdbBase
         }
 
         $query = <<<EOF
-            query advancedSearch{
-              advancedTitleSearch(
-                first: $amount, sort: {sortBy: $sortBy sortOrder: $sortOrder}
-                constraints: {
-                  titleTextConstraint: {searchTerm: $inputSearchTerm}
-                  genreConstraint: {allGenreIds: [$inputGenres]}
-                  titleTypeConstraint: {anyTitleTypeIds: [$inputTypes]}
-                  releaseDateConstraint: {releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}}
-                  creditedNameConstraint: {anyNameIds: [$inputCreditId]}
-                  originCountryConstraint: {anyCountries: [$inputCountryId]}
-                  languageConstraint: {anyLanguages: [$inputLanguageId]}
-                  explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
-                }
-              ) {
-                edges {
-                  node{
-                    title {
-                      id
-                      originalTitleText {
-                        text
-                      }
-                      titleText {
-                        text
-                      }
-                      titleType {
-                        text
-                      }
-                      releaseYear {
-                        year
-                        endYear
-                      }
-                    }
-                  }
-                }
-              }
-            }
-        EOF;
+query advancedSearch{
+  advancedTitleSearch(
+    first: $amount, sort: {sortBy: $sortBy sortOrder: $sortOrder}
+    constraints: {
+      titleTextConstraint: {searchTerm: $inputSearchTerm}
+      genreConstraint: {allGenreIds: [$inputGenres]}
+      titleTypeConstraint: {anyTitleTypeIds: [$inputTypes]}
+      releaseDateConstraint: {releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}}
+      creditedNameConstraint: {anyNameIds: [$inputCreditId]}
+      originCountryConstraint: {anyCountries: [$inputCountryId]}
+      languageConstraint: {anyLanguages: [$inputLanguageId]}
+      explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
+    }
+  ) {
+    edges {
+      node{
+        title {
+          id
+          originalTitleText {
+            text
+          }
+          titleText {
+            text
+          }
+          titleType {
+            text
+          }
+          releaseYear {
+            year
+            endYear
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
         $data = $this->graphql->query($query, "advancedSearch");
         foreach ($data->advancedTitleSearch->edges as $edge) {
             $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
