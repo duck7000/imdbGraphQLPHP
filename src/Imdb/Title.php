@@ -82,6 +82,7 @@ class Title extends MdbBase
     protected $colors = array();
     protected $aspectRatio = array();
     protected $cameras = array();
+    protected $featuredReviews = array();
     protected $faqs = array();
 
     /**
