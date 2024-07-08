@@ -998,6 +998,8 @@ EOF;
      *                                   [titleId] => 0000040
      *                                   [titleName] => 1408
      *                                   [titleNote] => screenplay/director
+     *                                   [titleFullImageUrl] => https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_.jpg
+     *                                   [titleThumbImageUrl] => https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_QL75_SX281_.jpg
      *                               )
      *
      *                       )
@@ -1046,6 +1048,9 @@ EOF;
                       titleText {
                         text
                       }
+                      primaryImage {
+                        url
+                      }
                     }
                     note {
                       plainText
@@ -1074,10 +1079,14 @@ EOF;
                         $titleName = isset($title->title->titleText->text) ? $title->title->titleText->text : '';
                         $titleId = isset($title->title->id) ? $title->title->id : '';
                         $titleNote = isset($title->note->plainText) ? $title->note->plainText : '';
+                        $titleFullImageUrl = isset($title->title->primaryImage->url) ? $title->title->primaryImage->url : '';
+                        $titleThumbImageUrl = !empty($titleFullImageUrl) ? str_replace('.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
                         $titles[] = array(
                             'titleId' => str_replace('tt', '', $titleId),
                             'titleName' => $titleName,
-                            'titleNote' => trim($titleNote, " ()")
+                            'titleNote' => trim($titleNote, " ()"),
+                            'titleFullImageUrl' => $titleFullImageUrl,
+                            'titleThumbImageUrl' => $titleThumbImageUrl
                         );
                     }
                 }
