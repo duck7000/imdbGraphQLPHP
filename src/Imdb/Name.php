@@ -1079,7 +1079,7 @@ EOF;
                         $titleName = isset($title->title->titleText->text) ? $title->title->titleText->text : '';
                         $titleId = isset($title->title->id) ? $title->title->id : '';
                         $titleNote = isset($title->note->plainText) ? $title->note->plainText : '';
-                        $titleFullImageUrl = isset($title->title->primaryImage->url) ? $title->title->primaryImage->url : '';
+                        $titleFullImageUrl = isset($title->title->primaryImage->url) ? str_replace('.jpg', '', $title->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
                         $titleThumbImageUrl = !empty($titleFullImageUrl) ? str_replace('.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
                         $titles[] = array(
                             'titleId' => str_replace('tt', '', $titleId),
