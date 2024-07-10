@@ -1113,7 +1113,7 @@ EOF;
 
     #============================================================[ /creditKnownFor ]===
     /** All prestigious title credits for this person
-     * @return array creditKnownFor array[0..n] of array[title, titleId, titleYear, titleEndYear, array titleCharacters]
+     * @return array creditKnownFor array[0..n] of array[title, titleId, titleYear, titleEndYear, titleFullImageUrl, titleThumbImageUrl, array titleCharacters]
      * @see IMDB person page /credits
      */
     public function creditKnownFor()
@@ -1134,6 +1134,9 @@ query KnownFor(\$id: ID!) {
               releaseYear {
                 year
                 endYear
+              }
+              primaryImage {
+                url
               }
             }
             ... on Cast {
@@ -1162,7 +1165,12 @@ EOF;
                                        
                     $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
                                           $edge->node->credit->title->releaseYear->endYear : null;
-                                        
+
+                    $titleFullImageUrl = isset($edge->node->credit->title->primaryImage->url) ?
+                                            str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
+                    $titleThumbImageUrl = !empty($titleFullImageUrl) ?
+                                            str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
+
                     $characters = array();
                     if ($edge->node->credit->characters != null) {
                         foreach ($edge->node->credit->characters as $character) {
@@ -1174,7 +1182,9 @@ EOF;
                         'titleId' => $titleId,
                         'titleYear' => $titleYear,
                         'titleEndYear' => $titleEndYear,
-                        'titleCharacters' => $characters
+                        'titleCharacters' => $characters,
+                        'titleFullImageUrl' => $titleFullImageUrl,
+                        'titleThumbImageUrl' => $titleThumbImageUrl
                     );
                 }
             } else {
