@@ -2647,6 +2647,9 @@ name {
     text
   }
   id
+  primaryImage {
+    url
+  }
 }
 ... on Crew {
   jobs {
@@ -2682,7 +2685,7 @@ EOF;
 
     #---------------------------------------------------------------[ credit helper ]---
     /** helper for stunts, thanks, visualEffects, specialEffects and producer
-     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[], episode array(total, year, endYear)])
+     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[], episode array(total, year, endYear)], titleFullImageUrl, titleThumbImageUrl)
      * @see IMDB page /fullcredits
      */
     private function creditHelper($data)
@@ -2715,6 +2718,10 @@ EOF;
                     $attributes[] = isset($attribute->text) ? $attribute->text : null;
                 }
             }
+            $titleFullImageUrl = isset($edge->node->name->primaryImage->url) ?
+                                    str_replace('.jpg', '', $edge->node->name->primaryImage->url) . 'QL100_SY1000_.jpg' : '';
+            $titleThumbImageUrl = !empty($titleFullImageUrl) ?
+                                    str_replace('QL100_SY1000_.jpg', '', $titleFullImageUrl) . 'QL75_SY98_.jpg' : '';
             $output[] = array(
                 'imdb' => $imdb,
                 'name' => $name,
@@ -2724,7 +2731,9 @@ EOF;
                     'total' => $totalEpisodes,
                     'year' => $year,
                     'endYear' => $endYear
-                    )
+                    ),
+                'titleFullImageUrl' => $titleFullImageUrl,
+                'titleThumbImageUrl' => $titleThumbImageUrl
             );
         }
         return $output;
