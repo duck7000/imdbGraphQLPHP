@@ -1197,7 +1197,7 @@ EOF;
     #-------------------------------------------------------[ Credits ]---
     /** Get all credits for a person
      * @return array[categoryId] of array('titleId: string, 'titleName: string, titleType: string,
-     *      year: int, endYear: int, characters: array(),jobs: array())
+     *      year: int, endYear: int, characters: array(),jobs: array(), titleFullImageUrl, titleThumbImageUrl,)
      * @see IMDB page /credits
      */
     public function credit()
@@ -1285,6 +1285,9 @@ EOF;
               year
               endYear
             }
+            primaryImage {
+              url
+            }
           }
           ... on Cast {
             characters {
@@ -1311,6 +1314,11 @@ EOF;
                         $jobs[] = $job->text;
                     }
                 }
+                $titleFullImageUrl = isset($edge->node->title->primaryImage->url) ?
+                                        str_replace('.jpg', '', $edge->node->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
+                $titleThumbImageUrl = !empty($titleFullImageUrl) ?
+                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
+
                 $this->credits[$categoryIds[$edge->node->category->id]][] = array(
                     'titleId' => str_replace('tt', '', $edge->node->title->id),
                     'titleName' => $edge->node->title->titleText->text,
@@ -1321,7 +1329,9 @@ EOF;
                     'endYear' => isset($edge->node->title->releaseYear->endYear) ?
                                        $edge->node->title->releaseYear->endYear : null,
                     'characters' => $characters,
-                    'jobs' => $jobs
+                    'jobs' => $jobs,
+                    'titleFullImageUrl' => $titleFullImageUrl,
+                    'titleThumbImageUrl' => $titleThumbImageUrl
                 );
             }
         }
