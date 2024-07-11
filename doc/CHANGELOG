@@ -2,6 +2,20 @@
 History for IMDBPHP6
 ====================
 
+v1.4.1
+-------------------
+* Title class added new method featuredReviews
+* Title class added new method isAdult
+* Title class added image url (full and thumb) to director, writer, composer, producer, cinematographer, stunts, thanks, visualEffects and specialEffects
+* Title and Name class fixed bug missing logger in __construct
+* Title class removed all references of titleCase method (didn't work right)
+* Request class added curl timeout setting to prevent endless loop
+* GraphQL class changed to throw exception instead of empty object if something goes wrong with imdb GraphQL api call
+* Title class soundtrack Fixed bug anchor link in creditSplit
+* Title, TitleSearch, TitleSearchAdvanced and Name class Fixed query bug (some users had problems with the chosen layout)
+* Title class fixed bug missing var featuredReviews
+* Name class added image url (full and thumb) to award, creditKnownFor and credit
+
 v1.4.0
 -------------------
 * Title and Name class changed almost all methods to use grapQlGetAll method so above 250 items can be fetched
