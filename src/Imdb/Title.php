@@ -454,7 +454,7 @@ EOF;
 
     #--------------------------------------------------------------[ Genre(s) ]---
     /** Get all genres the movie is registered for
-     * @return array genres (array[0..n] of strings)
+     * @return array genres (array[0..n] of mainGenre| string, subGenre| array())
      * @see IMDB page / (TitlePage)
      */
     public function genre()
@@ -468,14 +468,33 @@ query Genres(\$id: ID!) {
         genre {
           text
         }
+        subGenres {
+          keyword {
+            text {
+              text
+            }
+          }
+        }
       }
     }
   }
 }
 EOF;
             $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->titleGenres->genres as $edge) {
-                $this->genres[] = $edge->genre->text;
+
+            if (isset($data->title->titleGenres->genres) && !empty($data->title->titleGenres->genres)) {
+                foreach ($data->title->titleGenres->genres as $edge) {
+                    $subGenres = array();
+                    if (isset($edge->subGenres) && !empty($edge->subGenres)) {
+                        foreach ($edge->subGenres as $subGenre) {
+                            $subGenres[] = $subGenre->keyword->text->text;
+                        }
+                    }
+                    $this->genres[] = array(
+                        'mainGenre' => $edge->genre->text,
+                        'subGenre' => $subGenres
+                    );
+                }
             }
         }
         return $this->genres;
