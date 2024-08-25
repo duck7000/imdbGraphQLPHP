@@ -97,7 +97,8 @@ class GraphQL
                 "[GraphQL] Failed to retrieve query [{queryName}]. Response headers:{headers}. Response body:{body}",
                 array('queryName' => $queryName, 'headers' => $request->getLastResponseHeaders(), 'body' => $request->getResponseBody())
             );
-            throw new \Exception("Failed to retrieve query [$queryName]");
+            $errorId = $variables['id'];
+            throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$errorId]");
         }
     }
 }
