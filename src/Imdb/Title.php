@@ -487,12 +487,12 @@ EOF;
                     $subGenres = array();
                     if (isset($edge->subGenres) && !empty($edge->subGenres)) {
                         foreach ($edge->subGenres as $subGenre) {
-                            $subGenres[] = $subGenre->keyword->text->text;
+                            $subGenres[] = ucwords($subGenre->keyword->text->text);
                         }
                     }
                     $this->genres[] = array(
                         'mainGenre' => $edge->genre->text,
-                        'subGenre' => ucwords($subGenres)
+                        'subGenre' => $subGenres
                     );
                 }
             }
