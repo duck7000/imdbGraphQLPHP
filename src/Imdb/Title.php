@@ -492,7 +492,7 @@ EOF;
                     }
                     $this->genres[] = array(
                         'mainGenre' => $edge->genre->text,
-                        'subGenre' => $subGenres
+                        'subGenre' => ucwords($subGenres)
                     );
                 }
             }
