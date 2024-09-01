@@ -2,6 +2,14 @@
 History for imdbGraphQLPHP
 ====================
 
+v1.4.2
+-------------------
+* Fixed old name of this project in changelog
+* Added new class chart (all info is in wiki)
+* Title class added subGenre to genre method
+* Added ID to exception (if anything goes wrong it now displays ID)
+* Made subGenre upper class words just like mainGenre
+
 v1.4.1
 -------------------
 * Title class added new method featuredReviews
