@@ -72,6 +72,6 @@ Get the files with one of:
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= recommended 8.1 (it works from 7.2 - 8.3) Remember all versions < 8.0 are EOL!
+* PHP >= works from 7.2 - 8.3 Remember all versions < 8.0 are EOL!
 * PHP cURL extension
 * PHP json extension
