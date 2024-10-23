@@ -1,5 +1,5 @@
 {
-    "name": "duck7000/imdbGraphQLPHP",
+    "name": "duck7000/imdb-graphql-php",
     "type": "library",
     "description": "Library for retrieving film and tv information from IMDb through GraphQL",
     "keywords": ["IMDb","GraphQL", "PHP", "Movie"],
