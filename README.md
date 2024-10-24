@@ -68,6 +68,7 @@ Installation
 Download the latest version or latest git version and extract it to your webserver. Use one of the above methods to get some results
 
 Get the files with one of:
+* Composer Include the duck7000/imdb-graphql-php package.
 * Git clone. Checkout the latest release tag
 * [Zip/Tar download]
 
