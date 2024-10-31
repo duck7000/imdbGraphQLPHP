@@ -225,7 +225,7 @@ query Rating(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
-            if (isset($data->title->ratingsSummary->aggregateRating) && !empty($data->title->ratingsSummary->aggregateRating)) {
+            if (!empty($data->title->ratingsSummary->aggregateRating)) {
                 $this->mainRating = $data->title->ratingsSummary->aggregateRating;
             } else {
                 $this->mainRating = 0;
@@ -251,7 +251,7 @@ query RatingVotes(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
-        if (isset($data->title->ratingsSummary->voteCount) && !empty($data->title->ratingsSummary->voteCount)) {
+        if (!empty($data->title->ratingsSummary->voteCount)) {
             return $data->title->ratingsSummary->voteCount;
         } else {
             return 0;
@@ -276,8 +276,8 @@ query Metacritic(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
-        if (isset($data->title->metacritic->metascore->score)) {
-            if ($data->title->metacritic !== null) {
+        if (!empty($data->title->metacritic->metascore->score)) {
+            if (!empty($data->title->metacritic)) {
                 return $data->title->metacritic->metascore->score;
             } else {
                 return 0;
@@ -347,7 +347,7 @@ answer {
 isSpoiler
 EOF;
             $data = $this->graphQlGetAll("Faq", "faqs", $query, $filter);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data as $edge) {
                     $this->faqs[] = array(
                         'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : '',
@@ -402,7 +402,7 @@ EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
                 $thumb = '';
-                if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
+                if (!empty($edge->node->primaryImage->url)) {
                     $fullImageWidth = $edge->node->primaryImage->width;
                     $fullImageHeight = $edge->node->primaryImage->height;
                     $newImageWidth = 140;
@@ -485,7 +485,7 @@ EOF;
             if (!empty($data->title->titleGenres->genres)) {
                 foreach ($data->title->titleGenres->genres as $edge) {
                     $subGenres = array();
-                    if (!empty($edge->subGenres) && !empty($edge->subGenres)) {
+                    if (!empty($edge->subGenres)) {
                         foreach ($edge->subGenres as $subGenre) {
                             $subGenres[] = ucwords($subGenre->keyword->text->text);
                         }
@@ -918,7 +918,7 @@ EOF;
             
             // character
             $castCharacters = array();
-            if ($edge->node->characters != null) {
+            if (!empty($edge->node->characters)) {
                 foreach ($edge->node->characters as $keyCharacters => $character) {
                     $castCharacters[] = $character->name;
                 }
@@ -1812,7 +1812,7 @@ EOF;
                 $label = null;
                 $url = null;
                 $language = array();
-                if (isset($edge->node->url)) {
+                if (!empty($edge->node->url)) {
                     $url = $edge->node->url;
                     $label = $edge->node->label;
                 }
@@ -1853,7 +1853,7 @@ query ProductionBudget(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "ProductionBudget", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->productionBudget) && isset($data->title->productionBudget->budget->amount)) {
+            if (!empty($data->title->productionBudget) && !empty($data->title->productionBudget->budget->amount)) {
                 $this->productionBudget["amount"] = $data->title->productionBudget->budget->amount;
                 $this->productionBudget["currency"] = $data->title->productionBudget->budget->currency;
             } else {
@@ -2631,7 +2631,7 @@ EOF;
             $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
             $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
             $companyCountry = '';
-            if (!empty($edge->node->countries) && isset($edge->node->countries[0]->text)) {
+            if (!empty($edge->node->countries) && !empty($edge->node->countries[0]->text)) {
                 $companyCountry = $edge->node->countries[0]->text;
             }
             $companyAttribute = array();
@@ -2641,7 +2641,7 @@ EOF;
                 }
             }
             $companyYear = '';
-            if (!empty($edge->node->yearsInvolved) && isset($edge->node->yearsInvolved->year)) {
+            if (!empty($edge->node->yearsInvolved) && !empty($edge->node->yearsInvolved->year)) {
                 $companyYear = $edge->node->yearsInvolved->year;
             }
             $results[] = array(
@@ -2906,7 +2906,7 @@ EOF;
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
                 $type = isset($item->$valueType) ? $item->$valueType : '';
                 $attributes = array();
-                if ($item->attributes != null) {
+                if (!empty($item->attributes)) {
                     foreach ($item->attributes as $attribute) {
                         $attributes[] = $attribute->text;
                     }
