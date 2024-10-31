@@ -623,7 +623,7 @@ EOF;
                 $bio_bio["desc"] = isset($edge->node->text->plainText) ? $edge->node->text->plainText : '';
                 $bioAuthor = '';
                 if (!empty($edge->node->author)) {
-                    if (isset($edge->node->author->plainText)) {
+                    if (!empty($edge->node->author->plainText)) {
                         $bioAuthor = $edge->node->author->plainText;
                     }
                 }
@@ -710,7 +710,7 @@ EOF;
                     $comments = array();
                     if (!empty($edge->node->attributes)) {
                         foreach ($edge->node->attributes as $attribute) {
-                            if (isset($attribute->text)) {
+                            if (!empty($attribute->text)) {
                                 $comments[] = $attribute->text;
                             }
                         }
