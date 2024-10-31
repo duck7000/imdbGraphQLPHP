@@ -114,7 +114,7 @@ query PrimaryImage(\$id: ID!) {
 EOF;
         if ($this->mainPhoto === null) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
-            if ($data->name->primaryImage->url != null) {
+            if (!empty($data->name->primaryImage->url)) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
                 if ($thumb == true) {
                     $this->mainPhoto = $img . 'QL100_SY98_.jpg';
@@ -207,7 +207,7 @@ query AkaName(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
-            if ($data->name->akas->edges != null) {
+            if (!empty($data->name->akas->edges)) {
                 foreach ($data->name->akas->edges as $edge) {
                     $this->akaName[] = isset($edge->node->text) ? $edge->node->text : '';
                 }
@@ -337,7 +337,7 @@ query Professions(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Professions", ["id" => "nm$this->imdbID"]);
-            if (isset($data->name->primaryProfessions) && $data->name->primaryProfessions != null) {
+            if (!empty($data->name->primaryProfessions)) {
                 foreach ($data->name->primaryProfessions as $primaryProfession) {
                     $this->professions[] = isset($primaryProfession->category->text) ? $primaryProfession->category->text : '';
                 }
@@ -372,7 +372,7 @@ query Rank(\$id: ID!) {
 EOF;
 
             $data = $this->graphql->query($query, "Rank", ["id" => "nm$this->imdbID"]);
-            if (isset($data->name->meterRanking)) {
+            if (!empty($data->name->meterRanking)) {
                 $this->popRank['currentRank'] = isset($data->name->meterRanking->currentRank) ?
                                                         $data->name->meterRanking->currentRank : null;
                                                         
@@ -410,10 +410,10 @@ query BodyHeight(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "BodyHeight", ["id" => "nm$this->imdbID"]);
-            if (isset($data->name->height->displayableProperty->value->plainText)) {
+            if (!empty($data->name->height->displayableProperty->value->plainText)) {
                 $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
                 $this->bodyheight["imperial"] = trim($heightParts[0]);
-                if (isset($heightParts[1]) && !empty($heightParts[1])) {
+                if (!empty($heightParts[1])) {
                     $this->bodyheight["metric"] = trim($heightParts[1], " m)");
                 } else {
                     $this->bodyheight["metric"] = '';
@@ -477,15 +477,15 @@ query Spouses(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
-            if ($data != null && $data->name->spouses != null) {
+            if (!empty($data) && !empty($data->name->spouses)) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
                     $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
                     
                     // Spouse id
                     $imdbId = '';
-                    if ($spouse->spouse->name != null) {
-                        if (isset($spouse->spouse->name->id)) {
+                    if (!empty($spouse->spouse->name)) {
+                        if (!empty($spouse->spouse->name->id)) {
                             $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
                         }
                     }
@@ -526,7 +526,7 @@ EOF;
                     // Comments and children
                     $comment = '';
                     $children = 0;
-                    if ($spouse->attributes != null) {
+                    if (!empty($spouse->attributes)) {
                         foreach ($spouse->attributes as $key => $attribute) {
                             if (stripos($attribute->text, "child") !== false) {
                                 $children = (int) preg_replace('/[^0-9]/', '', $attribute->text);
@@ -622,7 +622,7 @@ EOF;
             foreach ($data->name->bios->edges as $edge) {
                 $bio_bio["desc"] = isset($edge->node->text->plainText) ? $edge->node->text->plainText : '';
                 $bioAuthor = '';
-                if ($edge->node->author != null) {
+                if (!empty($edge->node->author)) {
                     if (isset($edge->node->author->plainText)) {
                         $bioAuthor = $edge->node->author->plainText;
                     }
@@ -700,7 +700,7 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data as $edge) {
                     $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
                     $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
@@ -708,7 +708,7 @@ EOF;
                     $amount = isset($edge->node->amount->amount) ? $edge->node->amount->amount : '';
                     $currency = isset($edge->node->amount->currency) ? $edge->node->amount->currency : '';
                     $comments = array();
-                    if ($edge->node->attributes != null) {
+                    if (!empty($edge->node->attributes)) {
                         foreach ($edge->node->attributes as $attribute) {
                             if (isset($attribute->text)) {
                                 $comments[] = $attribute->text;
@@ -756,15 +756,15 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data as $edge) {
                     $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
                     $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
                     $publisher = isset($edge->node->publisher) ? $edge->node->publisher : '';
                     $authors = array();
-                    if ($edge->node->authors != null) {
+                    if (!empty($edge->node->authors)) {
                         foreach ($edge->node->authors as $author) {
-                            if (isset($author->plainText)) {
+                            if (!empty($author->plainText)) {
                                 $authors[] = $author->plainText;
                             }
                         }
@@ -821,7 +821,7 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data as $edge) {
                     $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
                     $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
@@ -829,7 +829,7 @@ EOF;
                     $filmSeriesSeason = '';
                     $filmSeriesEpisode = '';
                     $filmSeriesTitle = '';
-                    if ($edge->node->title->series != null) {
+                    if (!empty($edge->node->title->series)) {
                         $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : '';
                         $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
                                                   $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : '';
@@ -871,7 +871,7 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data as $edge) {
                     $category = isset($edge->node->category) ? $edge->node->category->text : null;
                     
@@ -950,11 +950,11 @@ EOF;
                 $label = null;
                 $url = null;
                 $language = array();
-                if (isset($edge->node->url)) {
+                if (!empty($edge->node->url)) {
                     $url = $edge->node->url;
                     $label = $edge->node->label;
                 }
-                if ($edge->node->externalLinkLanguages != null) {
+                if (!empty($edge->node->externalLinkLanguages)) {
                     foreach ($edge->node->externalLinkLanguages as $lang) {
                         $language[] = isset($lang->text) ? $lang->text : null;
                     }
@@ -1074,7 +1074,7 @@ EOF;
                 
                 //credited titles
                 $titles = array();
-                if ($edge->node->awardedEntities->secondaryAwardTitles !== null) {
+                if (!empty($edge->node->awardedEntities->secondaryAwardTitles)) {
                     foreach ($edge->node->awardedEntities->secondaryAwardTitles as $title) {
                         $titleName = isset($title->title->titleText->text) ? $title->title->titleText->text : '';
                         $titleId = isset($title->title->id) ? $title->title->id : '';
@@ -1152,7 +1152,7 @@ query KnownFor(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
-            if ($data != null) {
+            if (!empty($data)) {
                 foreach ($data->name->knownFor->edges as $edge) {
                     $title = isset($edge->node->credit->title->titleText->text) ?
                                    $edge->node->credit->title->titleText->text : '';
@@ -1172,7 +1172,7 @@ EOF;
                                             str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
 
                     $characters = array();
-                    if ($edge->node->credit->characters != null) {
+                    if (!empty($edge->node->credit->characters)) {
                         foreach ($edge->node->credit->characters as $character) {
                             $characters[] = $character->name;
                         }
@@ -1303,13 +1303,13 @@ EOF;
             $edges = $this->graphQlGetAll("Credits", "credits", $query);
             foreach ($edges as $edge) {
                 $characters = array();
-                if (isset($edge->node->characters) && $edge->node->characters != null) {
+                if (!empty($edge->node->characters)) {
                     foreach ($edge->node->characters as $character) {
                         $characters[] = $character->name;
                     }
                 }
                 $jobs = array();
-                if (isset($edge->node->jobs) && $edge->node->jobs != null) {
+                if (!empty($edge->node->jobs)) {
                     foreach ($edge->node->jobs as $job) {
                         $jobs[] = $job->text;
                     }
@@ -1353,9 +1353,9 @@ EOF;
           }
 EOF;
         $data = $this->graphQlGetAll("Data", $name, $query);
-        if ($data != null) {
+        if (!empty($data)) {
             foreach ($data as $edge) {
-                if (isset($edge->node->text->plainText)) {
+                if (!empty($edge->node->text->plainText)) {
                     $arrayName[] = $edge->node->text->plainText;
                 }
             }
@@ -1388,9 +1388,9 @@ EOF;
           }
 EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
-        if ($data != null) {
+        if (!empty($data)) {
             foreach ($data as $edge) {
-                if (isset($edge->node->relationName->name->id)) {
+                if (!empty($edge->node->relationName->name->id)) {
                     $relName = $edge->node->relationName->name->nameText->text;
                     $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
                 } else {
