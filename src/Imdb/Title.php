@@ -52,6 +52,7 @@ class Title extends MdbBase
     protected $mainEndYear = -1;
     protected $mainTop250 = -1;
     protected $mainRating = -1;
+    protected $mainRatingVotes = 0;
     protected $mainRank = array();
     protected $mainPhoto = array();
     protected $trailers = array();
@@ -239,12 +240,13 @@ EOF;
 
      /**
      * Return number of votes for this movie
-     * @return int or 0
+     * @return int
      * @see IMDB page / (TitlePage)
      */
     public function votes()
     {
-        $query = <<<EOF
+        if ($this->mainRatingVotes == 0) {
+            $query = <<<EOF
 query RatingVotes(\$id: ID!) {
   title(id: \$id) {
     ratingsSummary {
@@ -253,12 +255,12 @@ query RatingVotes(\$id: ID!) {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
-        if (!empty($data->title->ratingsSummary->voteCount)) {
-            return $data->title->ratingsSummary->voteCount;
-        } else {
-            return 0;
+            $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
+            if (!empty($data->title->ratingsSummary->voteCount)) {
+                $this->mainRatingVotes = $data->title->ratingsSummary->voteCount;
+            }
         }
+        return $this->mainRatingVotes;
     }
 
     /**
