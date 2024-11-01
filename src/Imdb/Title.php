@@ -13,6 +13,7 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Imdb\Image;
 
 /**
  * A title on IMDb
@@ -24,6 +25,7 @@ use Psr\SimpleCache\CacheInterface;
 class Title extends MdbBase
 {
 
+    protected $imageFunctions;
     protected $akas = array();
     protected $releaseDates = array();
     protected $countries = array();
@@ -95,6 +97,7 @@ class Title extends MdbBase
     {
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
+        $this->imageFunctions = new Image();
     }
 
     #-------------------------------------------------------------[ Title ]---
@@ -408,7 +411,7 @@ EOF;
                     $newImageWidth = 140;
                     $newImageHeight = 207;
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                    $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                     $thumb = $img . $parameter;
                 }
                 $this->recommendations[] = array(
@@ -950,7 +953,7 @@ EOF;
 
                 $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
 
-                $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                 $imgUrl = $img . $parameter;
             }
             
@@ -1245,7 +1248,7 @@ EOF;
 
                                 $img = str_replace('.jpg', '', $epImageUrl);
 
-                                $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                                 $imgUrl = $img . $parameter;
                             } else {
                                 $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
@@ -1992,7 +1995,7 @@ EOF;
                         $fullImageWidth = $edge->node->width;
                         $fullImageHeight = $edge->node->height;
                         // calculate crop value
-                        $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
+                        $cropParameter = $this->imageFunctions->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
 
 
                         // original source aspect ratio
@@ -2505,7 +2508,7 @@ EOF;
             $newImageWidth = 190;
             $newImageHeight = 281;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
             
             // thumb image
             $this->mainPosterThumb = $img . $parameter;
