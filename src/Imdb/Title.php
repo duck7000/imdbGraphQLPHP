@@ -51,7 +51,7 @@ class Title extends MdbBase
     protected $mainYear = -1;
     protected $mainEndYear = -1;
     protected $mainTop250 = -1;
-    protected $mainRating = -1;
+    protected $mainRating = 0;
     protected $mainRatingVotes = 0;
     protected $mainRank = array();
     protected $mainPhoto = array();
@@ -218,7 +218,7 @@ EOF;
      */
     public function rating()
     {
-        if ($this->mainRating == -1) {
+        if ($this->mainRating == 0) {
             $query = <<<EOF
 query Rating(\$id: ID!) {
   title(id: \$id) {
@@ -231,8 +231,6 @@ EOF;
             $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->ratingsSummary->aggregateRating)) {
                 $this->mainRating = $data->title->ratingsSummary->aggregateRating;
-            } else {
-                $this->mainRating = 0;
             }
         }
         return $this->mainRating;
