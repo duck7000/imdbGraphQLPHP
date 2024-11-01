@@ -291,7 +291,7 @@ EOF;
     #----------------------------------------------------------[ Popularity ]---
     /**
      * Get movie popularity rank
-     * @return array(currentRank: int, changeDirection: enum (string?), difference: int)
+     * @return array(currentRank: int, changeDirection: string, difference: int)
      * @see IMDB page / (TitlePage)
      */
     public function rank()
@@ -303,25 +303,22 @@ query Rank(\$id: ID!) {
     meterRanking {
       currentRank
       rankChange {
-      changeDirection
-      difference
+        changeDirection
+        difference
       }
     }
   }
 }
 EOF;
             $data = $this->graphql->query($query, "Rank", ["id" => "tt$this->imdbID"]);
-            if (isset($data->title->meterRanking)) {
-                $this->mainRank['currentRank'] = isset($data->title->meterRanking->currentRank) ?
-                                                        $data->title->meterRanking->currentRank : null;
+            if (!empty($data->title->meterRanking->currentRank)) {
+                $this->mainRank['currentRank'] = $data->title->meterRanking->currentRank;
 
                 $this->mainRank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
                                                             $data->title->meterRanking->rankChange->changeDirection : null;
 
                 $this->mainRank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
-                                                       $data->title->meterRanking->rankChange->difference : null;
-            } else {
-                return $this->mainRank;
+                                                       $data->title->meterRanking->rankChange->difference : -1;
             }
         }
         return $this->mainRank;
