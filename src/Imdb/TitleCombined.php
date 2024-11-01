@@ -10,6 +10,7 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Imdb\Image;
 
 /**
  * A title on IMDb
@@ -19,6 +20,7 @@ use Psr\SimpleCache\CacheInterface;
 class TitleCombined extends MdbBase
 {
 
+    protected $imageFunctions;
     protected $main = array();
     protected $mainCreditsPrincipal = array();
     protected $mainPoster = "";
@@ -44,6 +46,7 @@ class TitleCombined extends MdbBase
     {
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
+        $this->imageFunctions = new Image();
     }
 
     /**
@@ -251,7 +254,7 @@ EOF;
             $newImageWidth = 190;
             $newImageHeight = 281;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $parameter = $this->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
             
             // thumb image
             $this->mainPosterThumb = $img . $parameter;
@@ -261,89 +264,6 @@ EOF;
         }
     }
 
-    /**
-     * Calculate The total result parameter and determine if SX or SY is used
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @return string example 'QL100_SX190_CR0,15,190,281_.jpg'
-     * QL100 = Quality Level, 100 the highest, 0 the lowest quality
-     * SX190 = S (scale) X190 desired width
-     * CR = Crop (crop left and right, crop top and bottom, New width, New Height)
-     * @see IMDB page / (TitlePage)
-     */
-    private function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        // original source aspect ratio
-        $ratio_orig = $fullImageWidth / $fullImageHeight;
-
-        // new aspect ratio
-        $ratio_new = $newImageWidth / $newImageHeight;
-
-        // check if the image must be treated as SX or SY
-        if ($ratio_new < $ratio_orig) {
-            $cropParameter = $this->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL75_SY' . $newImageHeight . '_CR' . $cropParameter . ',0,' . $newImageWidth . ',' . $newImageHeight . '_.jpg';
-        } else {
-            $cropParameter = $this->thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            return 'QL75_SX' . $newImageWidth . '_CR0,' . $cropParameter . ',' . $newImageWidth .',' . $newImageHeight . '_.jpg';
-        }
-    }
-
-    /**
-     * Calculate if cropValue has to be round to previous or next even integer
-     * @parameter $totalPixelCropSize how much pixels in total need to be cropped
-     */
-    private function roundInteger($totalPixelCropSize)
-    {
-        if ((($totalPixelCropSize - floor($totalPixelCropSize)) < 0.5)) {
-            // Previous even integer
-            $num = 2 * round($totalPixelCropSize / 2.0);
-        } else {
-            // Next even integer
-            $num = ceil($totalPixelCropSize);
-            $num += $num % 2;
-        }
-        return $num;
-    }
-
-    /**
-     * Calculate HORIZONTAL (left and right) crop value for primary, cast, episode, recommendations and mainphoto images
-     * Output is for portrait images!
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @see IMDB page / (TitlePage)
-     */
-    private function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        $newScalefactor = $fullImageHeight / $newImageHeight;
-        $scaledWidth = $fullImageWidth / $newScalefactor;
-        $totalPixelCropSize = $scaledWidth - $newImageWidth;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
-        return $cropValue;
-    }
-
-    /**
-     * Calculate VERTICAL (Top and bottom)crop value for primary, cast, episode and recommendations images
-     * Output is for landscape images!
-     * @parameter $fullImageWidth the width in pixels of the large original image
-     * @parameter $fullImageHeight the height in pixels of the large original image
-     * @parameter $newImageWidth the width in pixels of the desired cropt/resized thumb image
-     * @parameter $newImageHeight the height in pixels of the desired cropt/resized thumb image
-     * @see IMDB page / (TitlePage)
-     */
-    private function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
-    {
-        $newScalefactor = $fullImageWidth / $newImageWidth;
-        $scaledHeight = $fullImageHeight / $newScalefactor;
-        $totalPixelCropSize = $scaledHeight - $newImageHeight;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
-        return $cropValue;
-    }
-    
     #--------------------------------------------------------------[ Genre(s) ]---
     /** Get all genres the movie is registered for
      * @return array genres (array[0..n] of mainGenre| string, subGenre| array())
@@ -368,7 +288,7 @@ EOF;
             }
         }
     }
-    
+
     #=====================================================[ /fullcredits page ]===
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
@@ -400,7 +320,7 @@ EOF;
             }
         }
     }
-    
+
     #----------------------------------------------------------[ imdbID redirect ]---
     /**
      * Check if imdbid is redirected to another id or not.
