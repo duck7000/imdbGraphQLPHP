@@ -53,6 +53,7 @@ class Title extends MdbBase
     protected $mainTop250 = -1;
     protected $mainRating = 0;
     protected $mainRatingVotes = 0;
+    protected $mainMetacritics = 0;
     protected $mainRank = array();
     protected $mainPhoto = array();
     protected $trailers = array();
@@ -263,11 +264,12 @@ EOF;
 
     /**
      * Rating out of 100 on metacritic
-     * @return int|0
+     * @return int
      */
     public function metacritic()
     {
-        $query = <<<EOF
+        if ($this->mainMetacritics == 0) {
+            $query = <<<EOF
 query Metacritic(\$id: ID!) {
   title(id: \$id) {
     metacritic {
@@ -278,16 +280,12 @@ query Metacritic(\$id: ID!) {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
-        if (!empty($data->title->metacritic->metascore->score)) {
-            if (!empty($data->title->metacritic)) {
-                return $data->title->metacritic->metascore->score;
-            } else {
-                return 0;
+            $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
+            if (!empty($data->title->metacritic->metascore->score)) {
+               $this->mainMetacritics = $data->title->metacritic->metascore->score;
             }
-        } else {
-            return 0;
         }
+        return $this->mainMetacritics;
     }
 
     #----------------------------------------------------------[ Popularity ]---
