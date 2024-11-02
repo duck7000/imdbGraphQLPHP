@@ -1737,9 +1737,9 @@ EOF;
                     'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
                                          $edge->node->associatedTitle->titleType->text : '',
                     'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
-                                    $edge->node->associatedTitle->releaseYear->year : null,
+                                    $edge->node->associatedTitle->releaseYear->year : -1,
                     'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
-                                       $edge->node->associatedTitle->releaseYear->endYear : null,
+                                       $edge->node->associatedTitle->releaseYear->endYear : -1,
                     'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
                                           $edge->node->associatedTitle->series->series->titleText->text : '',
                     'description' => isset($edge->node->description->plainText) ?
