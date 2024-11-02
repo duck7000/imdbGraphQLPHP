@@ -66,7 +66,6 @@ class Title extends MdbBase
     protected $mpaas = array();
     protected $plot = array();
     protected $seasonEpisodes = array();
-    protected $isOngoing = null;
     protected $soundtracks = array();
     protected $taglines = array();
     protected $trivias = array();
@@ -1266,29 +1265,6 @@ EOF;
             }
         }
         return $this->seasonEpisodes;
-    }
-
-    #-----------------------------------------------------------[ IsOngoing TV Series ]---
-     /**
-     * Boolean flag if this is a still running tv series or ended
-     * @return boolean: false if ended, true if still running or null (not a tv series)
-     */
-    public function isOngoing()
-    {
-        $query = <<<EOF
-query IsOngoing(\$id: ID!) {
-  title(id: \$id) {
-    episodes {
-      isOngoing
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "IsOngoing", ["id" => "tt$this->imdbID"]);
-        if (!empty($data->title->episodes)) {
-            $this->isOngoing = isset($data->title->episodes->isOngoing) ? $data->title->episodes->isOngoing : null;
-        }
-        return $this->isOngoing;
     }
 
     #===========================================================[ /goofs page ]===
