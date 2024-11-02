@@ -1919,7 +1919,9 @@ text {
 EOF;
             $data = $this->graphQlGetAll("AlternateVersions", "alternateVersions", $query);
             foreach ($data as $edge) {
-                $this->alternateversions[] = $edge->node->text->plainText;
+                if (!empty($edge->node->text->plainText)) {
+                    $this->alternateversions[] = $edge->node->text->plainText;
+                }
             }
         }
         return $this->alternateversions;
