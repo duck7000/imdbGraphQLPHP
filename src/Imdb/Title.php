@@ -412,9 +412,9 @@ EOF;
                 $this->recommendations[] = array(
                     "title" => $edge->node->titleText->text,
                     "imdbid" => str_replace('tt', '', $edge->node->id),
-                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
+                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : -1,
                     "img" => $thumb,
-                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
+                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : -1
                 );
             }
         }
