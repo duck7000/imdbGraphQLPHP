@@ -50,7 +50,7 @@ class Title extends MdbBase
     protected $mainOriginalTitle = "";
     protected $mainYear = -1;
     protected $mainEndYear = -1;
-    protected $mainTop250 = -1;
+    protected $mainTop250 = 0;
     protected $mainRating = 0;
     protected $mainRatingVotes = 0;
     protected $mainMetacritics = 0;
@@ -724,7 +724,7 @@ EOF;
      */
     public function top250()
     {
-        if ($this->mainTop250 == -1) {
+        if ($this->mainTop250 == 0) {
             $query = <<<EOF
 query TopRated(\$id: ID!) {
   title(id: \$id) {
@@ -739,8 +739,6 @@ EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
             if (isset($data->title->ratingsSummary->topRanking->rank) && $data->title->ratingsSummary->topRanking->rank <= 250) {
                 $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
-            } else {
-                $this->mainTop250 = 0;
             }
         }
         return $this->mainTop250;
