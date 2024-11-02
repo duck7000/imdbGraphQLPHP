@@ -1337,15 +1337,15 @@ displayableArticle {
 EOF;
             $data = $this->graphQlGetAll("Quotes", "quotes", $query);
             foreach ($data as $key => $edge) {
-                $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
-                foreach ($quoteParts as $quoteItem) {
-                    if (trim(strip_tags($quoteItem)) == '') {
-                        continue;
+                if (!empty($edge->node->displayableArticle->body->plaidHtml)) {
+                    $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
+                    foreach ($quoteParts as $quoteItem) {
+                        if (!empty(trim(strip_tags($quoteItem)))) {
+                            $this->quotes[$key][] = trim(strip_tags($quoteItem));
+                        }
                     }
-                    $this->quotes[$key][] = trim(strip_tags($quoteItem));
                 }
             }
-            
         }
         return $this->quotes;
     }
