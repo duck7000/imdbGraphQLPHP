@@ -1836,7 +1836,7 @@ EOF;
 
     #-------------------------------------------------------[ rankedLifetimeGrosses ]---
     /** Info about Grosses, ranked by amount
-     * @return array[] array[areatype, amount, currency]>
+     * @return array[] array[areatype: string, amount: int, currency: string]>
      * @see IMDB page /title
      */
     public function gross()
@@ -1864,17 +1864,12 @@ EOF;
             $data = $this->graphql->query($query, "RankedLifetimeGrosses", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
                 if (!empty($edge->node->boxOfficeAreaType->text)) {
-                    $areatype = $edge->node->boxOfficeAreaType->text;
-                    $amount = isset($edge->node->total->amount) ? $edge->node->total->amount : '';
-                    $currency = isset($edge->node->total->currency) ? $edge->node->total->currency : '';
-                } else {
-                    continue;
+                    $this->grosses[] = array(
+                        "areatype" => $edge->node->boxOfficeAreaType->text,
+                        "amount" => isset($edge->node->total->amount) ? $edge->node->total->amount : -1,
+                        "currency" => isset($edge->node->total->currency) ? $edge->node->total->currency : ''
+                    );
                 }
-                $this->grosses[] = array(
-                    "areatype" => $areatype,
-                    "amount" => $amount,
-                    "currency" => $currency
-                );
             }
         }
         return $this->grosses;
