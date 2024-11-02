@@ -364,7 +364,7 @@ EOF;
 
     /**
      * Get recommended movies (People who liked this...also liked)
-     * @return array<array{title: string, imdbid: number, rating: string| null, img: string|'', year: number|null}>
+     * @return array<array{title: string, imdbid: string, rating: int, img: string, year: int}>
      * @see IMDB page / (TitlePage)
      */
     public function recommendation()
