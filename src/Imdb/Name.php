@@ -146,7 +146,8 @@ EOF;
      */
     public function birthname()
     {
-    $query = <<<EOF
+        if (empty($this->birthName)) {
+            $query = <<<EOF
 query BirthName(\$id: ID!) {
   name(id: \$id) {
     birthName {
@@ -155,8 +156,11 @@ query BirthName(\$id: ID!) {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "BirthName", ["id" => "nm$this->imdbID"]);
-        $this->birthName = isset($data->name->birthName->text) ? $data->name->birthName->text : '';
+            $data = $this->graphql->query($query, "BirthName", ["id" => "nm$this->imdbID"]);
+            if (!empty($data->name->birthName->text)) {
+                $this->birthName = $data->name->birthName->text;
+            }
+        }
         return $this->birthName;
     }
 
