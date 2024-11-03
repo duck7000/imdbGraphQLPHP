@@ -2339,7 +2339,7 @@ EOF;
     #----------------------------------------------------------[ Movie Featured Reviews ]---
     /**
      * Get movie featured reviews (max 5 available)
-     * @return array[] of array(authorNickName| string, authorRating| int or null, summaryText| string, reviewText| string, submissionDate| iso date string)
+     * @return array[] of array(authorNickName| string, authorRating| int, summaryText| string, reviewText| string, submissionDate| iso date string)
      * @see IMDB page / (TitlePage)
      */
     public function featuredReview()
@@ -2375,7 +2375,7 @@ EOF;
                 foreach ($data->title->featuredReviews->edges as $edge) {
                 $this->featuredReviews[] = array(
                     'authorNickName' => isset($edge->node->author->nickName) ? $edge->node->author->nickName : null,
-                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : null,
+                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : -1,
                     'summaryText' => isset($edge->node->summary->originalText) ? $edge->node->summary->originalText : null,
                     'reviewText' => isset($edge->node->text->originalText->plainText) ? $edge->node->text->originalText->plainText : null,
                     'submissionDate' => isset($edge->node->submissionDate) ? $edge->node->submissionDate : null
