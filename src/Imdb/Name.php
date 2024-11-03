@@ -112,7 +112,7 @@ query PrimaryImage(\$id: ID!) {
   }
 }
 EOF;
-        if ($this->mainPhoto === null) {
+        if (empty($this->mainPhoto)) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if (!empty($data->name->primaryImage->url)) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
@@ -129,8 +129,6 @@ EOF;
                         $this->mainPhoto = $data->name->primaryImage->url;
                     }
                 }
-            } else {
-                return $this->mainPhoto;
             }
         }
         return $this->mainPhoto;
