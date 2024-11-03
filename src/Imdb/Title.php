@@ -87,6 +87,7 @@ class Title extends MdbBase
     protected $cameras = array();
     protected $featuredReviews = array();
     protected $faqs = array();
+    protected $isAdult = null;
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
@@ -2394,15 +2395,19 @@ EOF;
      */
     public function isAdult()
     {
-        $query = <<<EOF
+        if (empty($this->isAdult)) {
+            $query = <<<EOF
 query Adult(\$id: ID!) {
   title(id: \$id) {
     isAdult
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "Adult", ["id" => "tt$this->imdbID"]);
-        return $data->title->isAdult;
+            $data = $this->graphql->query($query, "Adult", ["id" => "tt$this->imdbID"]);
+            var_dump($data);
+            $this->isAdult = $data->title->isAdult;
+        }
+        return $this->isAdult;
     }
 
 
