@@ -2122,9 +2122,6 @@ query MainAward(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "MainAward", ["id" => "tt$this->imdbID"]);
-            $this->mainAwards['award'] = '';
-            $this->mainAwards['nominations'] = '';
-            $this->mainAwards['wins'] = '';
             if (!empty($data->title->prestigiousAwardSummary)) {
                 $this->mainAwards['award'] = $data->title->prestigiousAwardSummary->award->text;
                 $this->mainAwards['nominations'] = $data->title->prestigiousAwardSummary->nominations;
