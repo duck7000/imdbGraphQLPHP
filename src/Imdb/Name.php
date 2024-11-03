@@ -341,12 +341,10 @@ query Professions(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Professions", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->primaryProfessions)) {
-                foreach ($data->name->primaryProfessions as $primaryProfession) {
-                    $this->professions[] = isset($primaryProfession->category->text) ? $primaryProfession->category->text : '';
+            foreach ($data->name->primaryProfessions as $primaryProfession) {
+                if (!empty($primaryProfession->category->text)) {
+                    $this->professions[] = $primaryProfession->category->text;
                 }
-            } else {
-                return $this->professions;
             }
         }
         return $this->professions;
