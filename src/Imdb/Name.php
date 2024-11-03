@@ -213,12 +213,10 @@ query AkaName(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "AkaName", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->akas->edges)) {
-                foreach ($data->name->akas->edges as $edge) {
-                    $this->akaName[] = isset($edge->node->text) ? $edge->node->text : '';
+            foreach ($data->name->akas->edges as $edge) {
+                if (!empty($edge->node->text)) {
+                    $this->akaName[] = $edge->node->text;
                 }
-            } else {
-                return $this->akaName;
             }
         }
         return $this->akaName;
