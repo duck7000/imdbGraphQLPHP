@@ -353,7 +353,7 @@ EOF;
     #----------------------------------------------------------[ Popularity ]---
     /**
      * Get current popularity rank of a person
-     * @return array(currentRank: int, changeDirection: enum (string?), difference: int)
+     * @return array(currentRank: int, changeDirection: string, difference: int)
      * @see IMDB page / (NamePage)
      */
     public function rank()
@@ -374,17 +374,14 @@ query Rank(\$id: ID!) {
 EOF;
 
             $data = $this->graphql->query($query, "Rank", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->meterRanking)) {
-                $this->popRank['currentRank'] = isset($data->name->meterRanking->currentRank) ?
-                                                        $data->name->meterRanking->currentRank : null;
+            if (!empty($data->name->meterRanking->currentRank)) {
+                $this->popRank['currentRank'] = $data->name->meterRanking->currentRank;
                                                         
                 $this->popRank['changeDirection'] = isset($data->name->meterRanking->rankChange->changeDirection) ?
                                                             $data->name->meterRanking->rankChange->changeDirection : null;
                                                             
                 $this->popRank['difference'] = isset($data->name->meterRanking->rankChange->difference) ?
-                                                       $data->name->meterRanking->rankChange->difference : null;
-            } else {
-                return $this->popRank;
+                                                       $data->name->meterRanking->rankChange->difference : -1;
             }
         }
         return $this->popRank;
