@@ -107,7 +107,8 @@ EOF;
      */
     public function photo($thumb = true)
     {
-    $query = <<<EOF
+        if (empty($this->mainPhoto)) {
+            $query = <<<EOF
 query PrimaryImage(\$id: ID!) {
   name(id: \$id) {
     primaryImage {
@@ -116,7 +117,6 @@ query PrimaryImage(\$id: ID!) {
   }
 }
 EOF;
-        if (empty($this->mainPhoto)) {
             $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
             if (!empty($data->name->primaryImage->url)) {
                 $img = str_replace('.jpg', '', $data->name->primaryImage->url);
