@@ -2469,18 +2469,20 @@ query Poster(\$id: ID!) {
 EOF;
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
         if (!empty($data->title->primaryImage->url)) {
-            $fullImageWidth = $data->title->primaryImage->width;
-            $fullImageHeight = $data->title->primaryImage->height;
-            $newImageWidth = 190;
-            $newImageHeight = 281;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-            
-            // thumb image
-            $this->mainPosterThumb = $img . $parameter;
-            
+
             // full image
             $this->mainPoster = $img . 'QL100_SX1000_.jpg';
+
+            // thumb image
+            if (!empty($data->title->primaryImage->width) && !empty($data->title->primaryImage->height)) {
+                $fullImageWidth = $data->title->primaryImage->width;
+                $fullImageHeight = $data->title->primaryImage->height;
+                $newImageWidth = 190;
+                $newImageHeight = 281;
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                $this->mainPosterThumb = $img . $parameter;
+            }
         }
     }
 
