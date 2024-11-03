@@ -690,32 +690,28 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
-            if (!empty($data)) {
-                foreach ($data as $edge) {
-                    $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
-                    $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
-                    $year = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
-                    $amount = isset($edge->node->amount->amount) ? $edge->node->amount->amount : '';
-                    $currency = isset($edge->node->amount->currency) ? $edge->node->amount->currency : '';
-                    $comments = array();
-                    if (!empty($edge->node->attributes)) {
-                        foreach ($edge->node->attributes as $attribute) {
-                            if (!empty($attribute->text)) {
-                                $comments[] = $attribute->text;
-                            }
+            foreach ($data as $edge) {
+                $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
+                $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
+                $year = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
+                $amount = isset($edge->node->amount->amount) ? $edge->node->amount->amount : '';
+                $currency = isset($edge->node->amount->currency) ? $edge->node->amount->currency : '';
+                $comments = array();
+                if (!empty($edge->node->attributes)) {
+                    foreach ($edge->node->attributes as $attribute) {
+                        if (!empty($attribute->text)) {
+                            $comments[] = $attribute->text;
                         }
                     }
-                    $this->bioSalary[] = array(
-                        'imdb' => $imdbId,
-                        'name' => $title,
-                        'year' => $year,
-                        'amount' => $amount,
-                        'currency' => $currency,
-                        'comment' => $comments
-                    );
                 }
-            } else {
-                return $this->bioSalary;
+                $this->bioSalary[] = array(
+                    'imdb' => $imdbId,
+                    'name' => $title,
+                    'year' => $year,
+                    'amount' => $amount,
+                    'currency' => $currency,
+                    'comment' => $comments
+                );
             }
         }
         return $this->bioSalary;
