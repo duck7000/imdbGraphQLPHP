@@ -2237,7 +2237,7 @@ EOF;
             $nomineeCount = 0;
             foreach ($data as $edge) {
                 $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
-                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : '';
+                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : -1;
                 $awardName = isset($edge->node->award->text) ? $edge->node->award->text : '';
                 $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : '';
                 $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : '';
