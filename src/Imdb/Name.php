@@ -672,22 +672,22 @@ EOF;
     {
         if (empty($this->bioSalary)) {
             $query = <<<EOF
-              title {
-                titleText {
-                  text
-                }
-                id
-                releaseYear {
-                  year
-                }
-              }
-              amount {
-                amount
-                currency
-              }
-              attributes {
-                text
-              }
+title {
+  titleText {
+    text
+  }
+  id
+  releaseYear {
+    year
+  }
+}
+amount {
+  amount
+  currency
+}
+attributes {
+  text
+}
 EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
             foreach ($data as $edge) {
