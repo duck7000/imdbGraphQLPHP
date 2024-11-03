@@ -480,10 +480,12 @@ EOF;
                     
                     // Spouse id
                     $imdbId = '';
-                    if (!empty($spouse->spouse->name->id)) {
-                        $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
+                    if (!empty($spouse->spouse->name)) {
+                        if (!empty($spouse->spouse->name->id)) {
+                            $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
+                        }
                     }
-
+                    
                     // From date
                     $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
                     $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
@@ -498,7 +500,7 @@ EOF;
                         "mon" => $fromDateMonthInt,
                         "year" => $fromDateYear
                     );
-
+                    
                     // To date
                     $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
                     $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
@@ -513,10 +515,10 @@ EOF;
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
-
+                    
                     // date as plaintext
                     $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
-
+                    
                     // Comments and children
                     $comment = '';
                     $children = 0;
@@ -540,8 +542,6 @@ EOF;
                         'current' => $spouse->current
                     );
                 }
-            } else {
-                return $this->spouses;
             }
         }
         return $this->spouses;
