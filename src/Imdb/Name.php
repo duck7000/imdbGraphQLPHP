@@ -80,7 +80,8 @@ class Name extends MdbBase
      */
     public function name()
     {
-        $query = <<<EOF
+        if (empty($this->fullName)) {
+            $query = <<<EOF
 query Name(\$id: ID!) {
   name(id: \$id) {
     nameText {
@@ -89,8 +90,11 @@ query Name(\$id: ID!) {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
-        $this->fullName = isset($data->name->nameText->text) ? $data->name->nameText->text : '';
+            $data = $this->graphql->query($query, "Name", ["id" => "nm$this->imdbID"]);
+            if (!empty($data->name->nameText->text)) {
+                $this->fullName = $data->name->nameText->text;
+            }
+        }
         return $this->fullName;
     }
 
