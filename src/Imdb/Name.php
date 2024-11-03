@@ -477,19 +477,17 @@ query Spouses(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
-            if (!empty($data) && !empty($data->name->spouses)) {
+            if (!empty($data->name->spouses)) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
                     $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
                     
                     // Spouse id
                     $imdbId = '';
-                    if (!empty($spouse->spouse->name)) {
-                        if (!empty($spouse->spouse->name->id)) {
-                            $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
-                        }
+                    if (!empty($spouse->spouse->name->id)) {
+                        $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
                     }
-                    
+
                     // From date
                     $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
                     $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
@@ -504,7 +502,7 @@ EOF;
                         "mon" => $fromDateMonthInt,
                         "year" => $fromDateYear
                     );
-                    
+
                     // To date
                     $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
                     $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
@@ -519,10 +517,10 @@ EOF;
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
-                    
+
                     // date as plaintext
                     $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
-                    
+
                     // Comments and children
                     $comment = '';
                     $children = 0;
