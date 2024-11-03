@@ -2404,7 +2404,6 @@ query Adult(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Adult", ["id" => "tt$this->imdbID"]);
-            var_dump($data);
             $this->isAdult = $data->title->isAdult;
         }
         return $this->isAdult;
