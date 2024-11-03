@@ -389,7 +389,7 @@ EOF;
 
     #-----------------------------------------------------------[ Body Height ]---
     /** Get the body height
-     * @return array [imperial,metric] height in feet and inch (imperial) an meters (metric)
+     * @return array [imperial: string, metric: string (in meters)]
      * @see IMDB person page /bio
      */
     public function height()
@@ -412,13 +412,10 @@ EOF;
             if (!empty($data->name->height->displayableProperty->value->plainText)) {
                 $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
                 $this->bodyheight["imperial"] = trim($heightParts[0]);
+                $this->bodyheight["metric"] = '';
                 if (!empty($heightParts[1])) {
                     $this->bodyheight["metric"] = trim($heightParts[1], " m)");
-                } else {
-                    $this->bodyheight["metric"] = '';
                 }
-            } else {
-                return $this->bodyheight;
             }
         }
         return $this->bodyheight;
