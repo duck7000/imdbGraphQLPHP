@@ -719,6 +719,8 @@ EOF;
 
     #============================================================[ /publicity ]===
 
+    #============================================================[ /publicity ]===
+
     #-----------------------------------------------------------[ Print media ]---
     /** Print media about this person
      * @return array prints array[0..n] of array[title, author, place, publisher, isbn],
@@ -742,28 +744,24 @@ EOF;
               }
 EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
-            if (!empty($data)) {
-                foreach ($data as $edge) {
-                    $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
-                    $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
-                    $publisher = isset($edge->node->publisher) ? $edge->node->publisher : '';
-                    $authors = array();
-                    if (!empty($edge->node->authors)) {
-                        foreach ($edge->node->authors as $author) {
-                            if (!empty($author->plainText)) {
-                                $authors[] = $author->plainText;
-                            }
+            foreach ($data as $edge) {
+                $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
+                $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
+                $publisher = isset($edge->node->publisher) ? $edge->node->publisher : '';
+                $authors = array();
+                if (!empty($edge->node->authors)) {
+                    foreach ($edge->node->authors as $author) {
+                        if (!empty($author->plainText)) {
+                            $authors[] = $author->plainText;
                         }
                     }
-                    $this->pubPrints[] = array(
-                        "title" => $title,
-                        "author" => $authors,
-                        "publisher" => $publisher,
-                        "isbn" => $isbn
-                    );
                 }
-            } else {
-                return $this->pubPrints;
+                $this->pubPrints[] = array(
+                    "title" => $title,
+                    "author" => $authors,
+                    "publisher" => $publisher,
+                    "isbn" => $isbn
+                );
             }
         }
         return $this->pubPrints;
