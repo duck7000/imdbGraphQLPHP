@@ -2516,7 +2516,7 @@ EOF;
             $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
             $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
             $companyCountry = '';
-            if (!empty($edge->node->countries) && !empty($edge->node->countries[0]->text)) {
+            if (!empty($edge->node->countries[0]->text)) {
                 $companyCountry = $edge->node->countries[0]->text;
             }
             $companyAttribute = array();
@@ -2526,7 +2526,7 @@ EOF;
                 }
             }
             $companyYear = '';
-            if (!empty($edge->node->yearsInvolved) && !empty($edge->node->yearsInvolved->year)) {
+            if (!empty($edge->node->yearsInvolved->year)) {
                 $companyYear = $edge->node->yearsInvolved->year;
             }
             $results[] = array(
