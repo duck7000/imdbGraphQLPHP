@@ -986,45 +986,45 @@ EOF;
      */
     public function award($winsOnly = false, $event = "")
     {
-        $wins = $winsOnly === true ? 'WINS_ONLY' : 'null';
-        $event = !empty($event) ? ', events: "' . trim($event) . '"' : '';
-        $filter = ', sort: {by: PRESTIGIOUS, order: DESC}, filter: {wins: ' . $wins . $event . '}';
         if (empty($this->awards)) {
+            $wins = $winsOnly === true ? 'WINS_ONLY' : 'null';
+            $event = !empty($event) ? ', events: "' . trim($event) . '"' : '';
+            $filter = ', sort: {by: PRESTIGIOUS, order: DESC}, filter: {wins: ' . $wins . $event . '}';
             $query = <<<EOF
-              award {
-                event {
-                  text
-                }
-                text
-                category {
-                  text
-                }
-                eventEdition {
-                  year
-                }
-                notes {
-                  plainText
-                }
-              }
-              isWinner
-              awardedEntities {
-                ... on AwardedNames {
-                  secondaryAwardTitles {
-                    title {
-                      id
-                      titleText {
-                        text
-                      }
-                      primaryImage {
-                        url
-                      }
-                    }
-                    note {
-                      plainText
-                    }
-                  }
-                }
-              }
+award {
+  event {
+    text
+  }
+  text
+  category {
+    text
+  }
+  eventEdition {
+    year
+  }
+  notes {
+    plainText
+  }
+}
+isWinner
+awardedEntities {
+  ... on AwardedNames {
+    secondaryAwardTitles {
+      title {
+        id
+        titleText {
+          text
+        }
+        primaryImage {
+          url
+        }
+      }
+      note {
+        plainText
+      }
+    }
+  }
+}
 EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
@@ -1057,7 +1057,6 @@ EOF;
                         );
                     }
                 }
-                
                 $this->awards[$eventName][] = array(
                     'awardYear' => $eventEditionYear,
                     'awardWinner' => $awardIsWinner,
