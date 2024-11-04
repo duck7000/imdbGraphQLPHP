@@ -1313,16 +1313,14 @@ EOF;
     protected function dataParse($name, $arrayName)
     {
         $query = <<<EOF
-          text {
-            plainText
-          }
+text {
+  plainText
+}
 EOF;
         $data = $this->graphQlGetAll("Data", $name, $query);
-        if (!empty($data)) {
-            foreach ($data as $edge) {
-                if (!empty($edge->node->text->plainText)) {
-                    $arrayName[] = $edge->node->text->plainText;
-                }
+        foreach ($data as $edge) {
+            if (!empty($edge->node->text->plainText)) {
+                $arrayName[] = $edge->node->text->plainText;
             }
         }
         return $arrayName;
