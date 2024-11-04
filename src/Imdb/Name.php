@@ -841,51 +841,47 @@ EOF;
     {
         if (empty($this->pubOtherWorks)) {
             $query = <<<EOF
-              category {
-                text
-              }
-              fromDate
-              toDate
-              text {
-                plainText
-              }
+category {
+  text
+}
+fromDate
+toDate
+text {
+  plainText
+}
 EOF;
             $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
-            if (!empty($data)) {
-                foreach ($data as $edge) {
-                    $category = isset($edge->node->category) ? $edge->node->category->text : null;
-                    
-                    // From date
-                    $fromDateDay = isset($edge->node->fromDate->day) ? $edge->node->fromDate->day : null;
-                    $fromDateMonth = isset($edge->node->fromDate->month) ? $edge->node->fromDate->month : null;
-                    $fromDateYear = isset($edge->node->fromDate->year) ? $edge->node->fromDate->year : null;
-                    $fromDate = array(
-                        "day" => $fromDateDay,
-                        "month" => $fromDateMonth,
-                        "year" => $fromDateYear
-                    );
+            foreach ($data as $edge) {
+                $category = isset($edge->node->category) ? $edge->node->category->text : null;
+                
+                // From date
+                $fromDateDay = isset($edge->node->fromDate->day) ? $edge->node->fromDate->day : null;
+                $fromDateMonth = isset($edge->node->fromDate->month) ? $edge->node->fromDate->month : null;
+                $fromDateYear = isset($edge->node->fromDate->year) ? $edge->node->fromDate->year : null;
+                $fromDate = array(
+                    "day" => $fromDateDay,
+                    "month" => $fromDateMonth,
+                    "year" => $fromDateYear
+                );
 
-                    // To date
-                    $toDateDay = isset($edge->node->toDate->day) ? $edge->node->toDate->day : null;
-                    $toDateMonth = isset($edge->node->toDate->month) ? $edge->node->toDate->month : null;
-                    $toDateYear = isset($edge->node->toDate->year) ? $edge->node->toDate->year : null;
-                    $toDate = array(
-                        "day" => $toDateDay,
-                        "month" => $toDateMonth,
-                        "year" => $toDateYear
-                    );
+                // To date
+                $toDateDay = isset($edge->node->toDate->day) ? $edge->node->toDate->day : null;
+                $toDateMonth = isset($edge->node->toDate->month) ? $edge->node->toDate->month : null;
+                $toDateYear = isset($edge->node->toDate->year) ? $edge->node->toDate->year : null;
+                $toDate = array(
+                    "day" => $toDateDay,
+                    "month" => $toDateMonth,
+                    "year" => $toDateYear
+                );
 
-                    $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
+                $text = isset($edge->node->text->plainText) ? $edge->node->text->plainText : null;
 
-                    $this->pubOtherWorks[] = array(
-                        "category" => $category,
-                        "fromDate" => $fromDate,
-                        "toDate" => $toDate,
-                        "text" => $text
-                    );
-                }
-            } else {
-                return $this->pubOtherWorks;
+                $this->pubOtherWorks[] = array(
+                    "category" => $category,
+                    "fromDate" => $fromDate,
+                    "toDate" => $toDate,
+                    "text" => $text
+                );
             }
         }
         return $this->pubOtherWorks;
@@ -905,43 +901,34 @@ EOF;
             'sound' => 'sound',
             'misc' => 'misc'
         );
-        
         if (empty($this->externalSites)) {
-            
             foreach ($categoryIds as $categoryId) {
                 $this->externalSites[$categoryId] = array();
             }
-            
             $query = <<<EOF
-              label
-              url
-              externalLinkCategory {
-                id
-              }
-              externalLinkLanguages {
-                text
-              }
+label
+url
+externalLinkCategory {
+  id
+}
+externalLinkLanguages {
+  text
+}
 EOF;
-
             $filter = ' filter: {excludeCategories: "review"}';
-
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
             foreach ($edges as $edge) {
-                $label = null;
-                $url = null;
                 $language = array();
-                if (!empty($edge->node->url)) {
-                    $url = $edge->node->url;
-                    $label = $edge->node->label;
-                }
                 if (!empty($edge->node->externalLinkLanguages)) {
                     foreach ($edge->node->externalLinkLanguages as $lang) {
-                        $language[] = isset($lang->text) ? $lang->text : null;
+                        if (!empty($lang->text)) {
+                            $language[] = $lang->text;
+                        }
                     }
                 }
                 $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
-                    'label' => $label,
-                    'url' => $url,
+                    'label' => !empty($edge->node->label) ? $edge->node->label : null,
+                    'url' => !empty($edge->node->url) ? $edge->node->url : null,
                     'language' => $language
                 );
             }
