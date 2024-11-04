@@ -1337,36 +1337,29 @@ EOF;
     {
         $filter = ', filter: {relationshipTypes: ' . $name . '}';
         $query = <<<EOF
-          relationName {
-            name {
-              id
-              nameText {
-                text
-              }
-            }
-            nameText
-          }
-          relationshipType {
-            text
-          }
+relationName {
+  name {
+    id
+    nameText {
+      text
+    }
+  }
+  nameText
+}
+relationshipType {
+  text
+}
 EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
-        if (!empty($data)) {
-            foreach ($data as $edge) {
-                if (!empty($edge->node->relationName->name->id)) {
-                    $relName = $edge->node->relationName->name->nameText->text;
-                    $relNameId = str_replace('nm', '', $edge->node->relationName->name->id);
-                } else {
-                    $relName = $edge->node->relationName->nameText;
-                    $relNameId = '';
-                }
-                $relType = isset($edge->node->relationshipType->text) ? $edge->node->relationshipType->text : '';
-                $arrayName[] = array(
-                    'imdb' => $relNameId,
-                    'name' => $relName,
-                    'relType' => $relType
-                );
-            }
+        foreach ($data as $edge) {
+            $arrayName[] = array(
+                'imdb' => isset($edge->node->relationName->name->id) ?
+                                str_replace('nm', '', $edge->node->relationName->name->id) : '',
+                'name' => isset($edge->node->relationName->name->nameText->text) ?
+                                $edge->node->relationName->name->nameText->text : '',
+                'relType' => isset($edge->node->relationshipType->text) ?
+                                   $edge->node->relationshipType->text : ''
+            );
         }
         return $arrayName;
     }
