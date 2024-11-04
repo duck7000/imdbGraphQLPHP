@@ -1226,56 +1226,57 @@ EOF;
             'stunt_coordinator' => 'stuntCoordinator',
             'accountant' => 'accountant'
         );
-        
         if (empty($this->credits)) {
-            
             foreach ($categoryIds as $categoryId) {
                 $this->credits[$categoryId] = array();
             }
-            
             $query = <<<EOF
-          category {
-            id
-          }
-          title {
-            id
-            titleText {
-              text
-            }
-            titleType {
-              text
-            }
-            releaseYear {
-              year
-              endYear
-            }
-            primaryImage {
-              url
-            }
-          }
-          ... on Cast {
-            characters {
-              name
-            }
-          }
-          ... on Crew {
-            jobs {
-              text
-            }
-          }
+category {
+  id
+}
+title {
+  id
+  titleText {
+    text
+  }
+  titleType {
+    text
+  }
+  releaseYear {
+    year
+    endYear
+  }
+  primaryImage {
+    url
+  }
+}
+... on Cast {
+  characters {
+    name
+  }
+}
+... on Crew {
+  jobs {
+    text
+  }
+}
 EOF;
             $edges = $this->graphQlGetAll("Credits", "credits", $query);
             foreach ($edges as $edge) {
                 $characters = array();
                 if (!empty($edge->node->characters)) {
                     foreach ($edge->node->characters as $character) {
-                        $characters[] = $character->name;
+                        if (!empty($character->name)) {
+                            $characters[] = $character->name;
+                        }
                     }
                 }
                 $jobs = array();
                 if (!empty($edge->node->jobs)) {
                     foreach ($edge->node->jobs as $job) {
-                        $jobs[] = $job->text;
+                        if (!empty($job->text)) {
+                            $jobs[] = $job->text;
+                        }
                     }
                 }
                 $titleFullImageUrl = isset($edge->node->title->primaryImage->url) ?
