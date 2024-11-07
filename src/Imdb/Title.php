@@ -319,7 +319,7 @@ EOF;
                                                             $data->title->meterRanking->rankChange->changeDirection : null;
 
                 $this->mainRank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
-                                                       $data->title->meterRanking->rankChange->difference : -1;
+                                                       $data->title->meterRanking->rankChange->difference : null;
             }
         }
         return $this->mainRank;
@@ -349,8 +349,8 @@ EOF;
             if (!empty($data)) {
                 foreach ($data as $edge) {
                     $this->faqs[] = array(
-                        'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : '',
-                        'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : '',
+                        'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : null,
+                        'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : null,
                         'isSpoiler' => $edge->node->isSpoiler
                     );
                 }
@@ -413,9 +413,9 @@ EOF;
                 $this->recommendations[] = array(
                     "title" => $edge->node->titleText->text,
                     "imdbid" => str_replace('tt', '', $edge->node->id),
-                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : -1,
+                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
                     "img" => $thumb,
-                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : -1
+                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
                 );
             }
         }
@@ -603,7 +603,7 @@ EOF;
             $data = $this->graphQlGetAll("ReleaseDates", "releaseDates", $query);
             if (!empty($data)) {
                 foreach ($data as $edge) {
-                    $country = isset($edge->node->country->text) ? $edge->node->country->text : '';
+                    $country = isset($edge->node->country->text) ? $edge->node->country->text : null;
                     $attributes = array();
                     if (!empty($edge->node->attributes)) {
                         foreach ($edge->node->attributes as $attribute) {
@@ -708,8 +708,8 @@ EOF;
                     }
                 }
                 $this->mpaas[] = array(
-                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : '',
-                    "rating" => isset($edge->node->rating) ? $edge->node->rating : '',
+                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : null,
+                    "rating" => isset($edge->node->rating) ? $edge->node->rating : null,
                     "comment" => $comments
                 );
             }
@@ -773,7 +773,7 @@ EOF;
             foreach ($data->title->plots->edges as $key => $edge) {
                 $this->plot[] = array(
                     'plot' => $edge->node->plotText->plainText,
-                    'author' => isset($edge->node->author) ? $edge->node->author : ''
+                    'author' => isset($edge->node->author) ? $edge->node->author : null
                 );
             }
         }
@@ -850,8 +850,8 @@ EOF;
                 $temp = array();
                 foreach ($value->credits as $key => $credit) {
                     $temp[] = array(
-                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : '',
-                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : ''
+                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null,
+                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null
                     );
                     if ($key == 2) {
                         break;
@@ -910,8 +910,8 @@ name {
 EOF;
         $data = $this->graphQlGetAll("CreditQuery", "credits", $query, $filter);
         foreach ($data as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : null;
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : null;
             
             // character
             $castCharacters = array();
@@ -1194,9 +1194,9 @@ EOF;
                         $epNumber = '';
                         $imgUrl = '';
                         // Episode ImdbId
-                        $imdbId = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : '';
+                        $imdbId = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null;
                         // Episode Title
-                        $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : '';
+                        $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : null;
                         // Episode Airdate
                         $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : null;
                         $month = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month : null;
@@ -1223,7 +1223,7 @@ EOF;
                             $airDate .= $year;
                         }
                         // Episode Plot
-                        $plot = isset($edge->node->plot->plotText->plainText) ? $edge->node->plot->plotText->plainText : '';
+                        $plot = isset($edge->node->plot->plotText->plainText) ? $edge->node->plot->plotText->plainText : null;
                         // Episode Number
                         if (isset($edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber)) {
                             $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
@@ -1335,7 +1335,7 @@ EOF;
             foreach ($data as $edge) {
                 $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
                     'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                       $edge->node->displayableArticle->body->plainText : '',
+                                       $edge->node->displayableArticle->body->plainText : null,
                     'isSpoiler' => $edge->node->isSpoiler
                 );
             }
@@ -1431,7 +1431,7 @@ EOF;
                 }
                 $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
                     'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                       preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : '',
+                                       preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
                     'names' => $names,
                     'trademark' => isset($edge->node->trademark->plainText) ?
                                          $edge->node->trademark->plainText : null,
@@ -1617,7 +1617,7 @@ displayableProperty {
 EOF;
             $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $query);
             foreach ($data as $edge) {
-                $real = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
+                $real = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : null;
                 $movie = array();
                 if (!empty($edge->node->displayableProperty->qualifiersInMarkdownList)) {
                     foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $attribute) {
@@ -1758,15 +1758,15 @@ EOF;
                     'titleId' => str_replace('tt', '', $edge->node->associatedTitle->id),
                     'titleName' => $edge->node->associatedTitle->titleText->text,
                     'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
-                                         $edge->node->associatedTitle->titleType->text : '',
+                                         $edge->node->associatedTitle->titleType->text : null,
                     'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
-                                    $edge->node->associatedTitle->releaseYear->year : -1,
+                                    $edge->node->associatedTitle->releaseYear->year : null,
                     'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
-                                       $edge->node->associatedTitle->releaseYear->endYear : -1,
+                                       $edge->node->associatedTitle->releaseYear->endYear : null,
                     'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
-                                          $edge->node->associatedTitle->series->series->titleText->text : '',
+                                          $edge->node->associatedTitle->series->series->titleText->text : null,
                     'description' => isset($edge->node->description->plainText) ?
-                                           $edge->node->description->plainText : ''
+                                           $edge->node->description->plainText : null
                 );
             }
         }
@@ -1889,8 +1889,8 @@ EOF;
                 if (!empty($edge->node->boxOfficeAreaType->text)) {
                     $this->grosses[] = array(
                         "areatype" => $edge->node->boxOfficeAreaType->text,
-                        "amount" => isset($edge->node->total->amount) ? $edge->node->total->amount : -1,
-                        "currency" => isset($edge->node->total->currency) ? $edge->node->total->currency : ''
+                        "amount" => isset($edge->node->total->amount) ? $edge->node->total->amount : null,
+                        "currency" => isset($edge->node->total->currency) ? $edge->node->total->currency : null
                     );
                 }
             }
@@ -2259,11 +2259,11 @@ EOF;
             $winnerCount = 0;
             $nomineeCount = 0;
             foreach ($data as $edge) {
-                $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
-                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : -1;
-                $awardName = isset($edge->node->award->text) ? $edge->node->award->text : '';
-                $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : '';
-                $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : '';
+                $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : null;
+                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : null;
+                $awardName = isset($edge->node->award->text) ? $edge->node->award->text : null;
+                $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : null;
+                $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : null;
                 $awardIsWinner = $edge->node->isWinner;
                 $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
                 $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
@@ -2272,9 +2272,9 @@ EOF;
                 $persons = array();
                 if (!empty($edge->node->awardedEntities->secondaryAwardNames)) {
                     foreach ($edge->node->awardedEntities->secondaryAwardNames as $creditor) {
-                        $creditName = isset($creditor->name->nameText->text) ? $creditor->name->nameText->text : '';
-                        $creditId = isset($creditor->name->id) ? $creditor->name->id : '';
-                        $creditNote = isset($creditor->note->plainText) ? $creditor->note->plainText : '';
+                        $creditName = isset($creditor->name->nameText->text) ? $creditor->name->nameText->text : null;
+                        $creditId = isset($creditor->name->id) ? $creditor->name->id : null;
+                        $creditNote = isset($creditor->note->plainText) ? $creditor->note->plainText : null;
                         $persons[] = array(
                             'creditId' => str_replace('nm', '', $creditId),
                             'creditName' => $creditName,
@@ -2398,7 +2398,7 @@ EOF;
                 foreach ($data->title->featuredReviews->edges as $edge) {
                 $this->featuredReviews[] = array(
                     'authorNickName' => isset($edge->node->author->nickName) ? $edge->node->author->nickName : null,
-                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : -1,
+                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : null,
                     'summaryText' => isset($edge->node->summary->originalText) ? $edge->node->summary->originalText : null,
                     'reviewText' => isset($edge->node->text->originalText->plainText) ? $edge->node->text->originalText->plainText : null,
                     'submissionDate' => isset($edge->node->submissionDate) ? $edge->node->submissionDate : null
@@ -2463,8 +2463,8 @@ EOF;
 
         $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
         $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
-        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
-        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
+        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : null;
+        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null;
         $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
         if ($this->mainYear == "????") {
             $this->mainYear = "";
@@ -2538,9 +2538,9 @@ EOF;
         $data = $this->graphQlGetAll("CompanyCredits", "companyCredits", $query, $filter);
         $results = array();
         foreach ($data as $edge) {
-            $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : '';
-            $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : '';
-            $companyCountry = '';
+            $companyId = isset($edge->node->company->id) ? str_replace('co', '', $edge->node->company->id ) : null;
+            $companyName = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : null;
+            $companyCountry = null;
             if (!empty($edge->node->countries[0]->text)) {
                 $companyCountry = $edge->node->countries[0]->text;
             }
@@ -2550,7 +2550,7 @@ EOF;
                     $companyAttribute[] = $attribute->text;
                 }
             }
-            $companyYear = '';
+            $companyYear = null;
             if (!empty($edge->node->yearsInvolved->year)) {
                 $companyYear = $edge->node->yearsInvolved->year;
             }
@@ -2625,8 +2625,8 @@ EOF;
     {
         $output = array();
         foreach ($data as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : '';
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : '';
+            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : null;
+            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : null;
             $jobs = array();
             if (!empty($edge->node->jobs)) {
                 foreach ($edge->node->jobs as $value) {
@@ -2814,7 +2814,7 @@ EOF;
         $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
         if (!empty($data->title->technicalSpecifications->$type->items)) {
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
-                $type = isset($item->$valueType) ? $item->$valueType : '';
+                $type = isset($item->$valueType) ? $item->$valueType : null;
                 $attributes = array();
                 if (!empty($item->attributes)) {
                     foreach ($item->attributes as $attribute) {
