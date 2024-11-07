@@ -27,14 +27,14 @@ class Name extends MdbBase
 
     // "Name" page:
     protected $mainPhoto = null;
-    protected $fullName = "";
+    protected $fullName = null;
     protected $birthday = array();
     protected $deathday = array();
     protected $professions = array();
     protected $popRank = array();
 
     // "Bio" page:
-    protected $birthName = "";
+    protected $birthName = null;
     protected $nickName = array();
     protected $akaName = array();
     protected $bodyheight = array();
@@ -248,14 +248,14 @@ query BirthDate(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "BirthDate", ["id" => "nm$this->imdbID"]);
-            $day = isset($data->name->birthDate->dateComponents->day) ? $data->name->birthDate->dateComponents->day : '';
-            $monthInt = isset($data->name->birthDate->dateComponents->month) ? $data->name->birthDate->dateComponents->month : '';
-            $monthName = '';
+            $day = isset($data->name->birthDate->dateComponents->day) ? $data->name->birthDate->dateComponents->day : null;
+            $monthInt = isset($data->name->birthDate->dateComponents->month) ? $data->name->birthDate->dateComponents->month : null;
+            $monthName = null;
             if (!empty($monthInt)) {
                 $monthName = date("F", mktime(0, 0, 0, $monthInt, 10));
             }
-            $year = isset($data->name->birthDate->dateComponents->year) ? $data->name->birthDate->dateComponents->year : '';
-            $place = isset($data->name->birthLocation->text) ? $data->name->birthLocation->text : '';
+            $year = isset($data->name->birthDate->dateComponents->year) ? $data->name->birthDate->dateComponents->year : null;
+            $place = isset($data->name->birthLocation->text) ? $data->name->birthLocation->text : null;
             $this->birthday = array(
                 "day" => $day,
                 "month" => $monthName,
@@ -298,16 +298,16 @@ query DeathDate(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "DeathDate", ["id" => "nm$this->imdbID"]);
-            $day = isset($data->name->deathDate->dateComponents->day) ? $data->name->deathDate->dateComponents->day : '';
-            $monthInt = isset($data->name->deathDate->dateComponents->month) ? $data->name->deathDate->dateComponents->month : '';
-            $monthName = '';
+            $day = isset($data->name->deathDate->dateComponents->day) ? $data->name->deathDate->dateComponents->day : null;
+            $monthInt = isset($data->name->deathDate->dateComponents->month) ? $data->name->deathDate->dateComponents->month : null;
+            $monthName = null;
             if (!empty($monthInt)) {
                 $monthName = date("F", mktime(0, 0, 0, $monthInt, 10));
             }
-            $year = isset($data->name->deathDate->dateComponents->year) ? $data->name->deathDate->dateComponents->year : '';
-            $place = isset($data->name->deathLocation->text) ? $data->name->deathLocation->text : '';
-            $cause = isset($data->name->deathCause->text) ? $data->name->deathCause->text : '';
-            $status = isset($data->name->deathStatus) ? $data->name->deathStatus : '';
+            $year = isset($data->name->deathDate->dateComponents->year) ? $data->name->deathDate->dateComponents->year : null;
+            $place = isset($data->name->deathLocation->text) ? $data->name->deathLocation->text : null;
+            $cause = isset($data->name->deathCause->text) ? $data->name->deathCause->text : null;
+            $status = isset($data->name->deathStatus) ? $data->name->deathStatus : null;
             $this->deathday = array(
                 "day" => $day,
                 "month" => $monthName,
@@ -381,7 +381,7 @@ EOF;
                                                             $data->name->meterRanking->rankChange->changeDirection : null;
                                                             
                 $this->popRank['difference'] = isset($data->name->meterRanking->rankChange->difference) ?
-                                                       $data->name->meterRanking->rankChange->difference : -1;
+                                                       $data->name->meterRanking->rankChange->difference : null;
             }
         }
         return $this->popRank;
@@ -412,7 +412,7 @@ EOF;
             if (!empty($data->name->height->displayableProperty->value->plainText)) {
                 $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
                 $this->bodyheight["imperial"] = trim($heightParts[0]);
-                $this->bodyheight["metric"] = '';
+                $this->bodyheight["metric"] = null;
                 if (!empty($heightParts[1])) {
                     $this->bodyheight["metric"] = trim($heightParts[1], " m)");
                 }
@@ -476,10 +476,10 @@ EOF;
             if (!empty($data->name->spouses)) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
-                    $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : '';
+                    $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : null;
                     
                     // Spouse id
-                    $imdbId = '';
+                    $imdbId = null;
                     if (!empty($spouse->spouse->name)) {
                         if (!empty($spouse->spouse->name->id)) {
                             $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
@@ -487,13 +487,13 @@ EOF;
                     }
                     
                     // From date
-                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : '';
-                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : '';
-                    $fromDateMonthName = '';
+                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : null;
+                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : null;
+                    $fromDateMonthName = null;
                     if (!empty($fromDateMonthInt)) {
                         $fromDateMonthName = date("F", mktime(0, 0, 0, $fromDateMonthInt, 10));
                     }
-                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : '';
+                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : null;
                     $fromDate = array(
                         "day" => $fromDateDay,
                         "month" => $fromDateMonthName,
@@ -502,13 +502,13 @@ EOF;
                     );
                     
                     // To date
-                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : '';
-                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : '';
-                    $toDateMonthName = '';
+                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : null;
+                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : null;
+                    $toDateMonthName = null;
                     if (!empty($toDateMonthInt)) {
                         $toDateMonthName = date("F", mktime(0, 0, 0, $toDateMonthInt, 10));
                     }
-                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : '';
+                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : null;
                     $toDate = array(
                         "day" => $toDateDay,
                         "month" => $toDateMonthName,
@@ -517,10 +517,10 @@ EOF;
                     );
                     
                     // date as plaintext
-                    $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : '';
+                    $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : null;
                     
                     // Comments and children
-                    $comment = '';
+                    $comment = null;
                     $children = 0;
                     if (!empty($spouse->attributes)) {
                         foreach ($spouse->attributes as $key => $attribute) {
@@ -615,9 +615,9 @@ EOF;
             $data = $this->graphql->query($query, "MiniBio", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->bios->edges as $edge) {
                 $bio_bio["desc"] = isset($edge->node->text->plainText) ?
-                                         $edge->node->text->plainText : '';
+                                         $edge->node->text->plainText : null;
                 $bio_bio["author"] = isset($edge->node->author->plainText) ?
-                                           $edge->node->author->plainText : '';
+                                           $edge->node->author->plainText : null;
                 $this->bioBio[] = $bio_bio;
             }
         }
@@ -691,11 +691,11 @@ attributes {
 EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
             foreach ($data as $edge) {
-                $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
-                $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
-                $year = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
-                $amount = isset($edge->node->amount->amount) ? $edge->node->amount->amount : '';
-                $currency = isset($edge->node->amount->currency) ? $edge->node->amount->currency : '';
+                $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null;
+                $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null;
+                $year = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : null;
+                $amount = isset($edge->node->amount->amount) ? $edge->node->amount->amount : null;
+                $currency = isset($edge->node->amount->currency) ? $edge->node->amount->currency : null;
                 $comments = array();
                 if (!empty($edge->node->attributes)) {
                     foreach ($edge->node->attributes as $attribute) {
@@ -745,9 +745,9 @@ EOF;
 EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
             foreach ($data as $edge) {
-                $title = isset($edge->node->title->text) ? $edge->node->title->text : '';
-                $isbn = isset($edge->node->isbn) ? $edge->node->isbn : '';
-                $publisher = isset($edge->node->publisher) ? $edge->node->publisher : '';
+                $title = isset($edge->node->title->text) ? $edge->node->title->text : null;
+                $isbn = isset($edge->node->isbn) ? $edge->node->isbn : null;
+                $publisher = isset($edge->node->publisher) ? $edge->node->publisher : null;
                 $authors = array();
                 if (!empty($edge->node->authors)) {
                     foreach ($edge->node->authors as $author) {
@@ -806,18 +806,18 @@ EOF;
 EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             foreach ($data as $edge) {
-                $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
-                $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
-                $filmYear = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : '';
-                $filmSeriesSeason = '';
-                $filmSeriesEpisode = '';
-                $filmSeriesTitle = '';
+                $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null;
+                $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null;
+                $filmYear = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : null;
+                $filmSeriesSeason = null;
+                $filmSeriesEpisode = null;
+                $filmSeriesTitle = null;
                 if (!empty($edge->node->title->series)) {
-                    $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : '';
+                    $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : null;
                     $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
-                                              $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : '';
+                                              $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null;
                     $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
-                                               $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : '';
+                                               $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null;
                 }
                 $this->pubMovies[] = array(
                     "title" => $filmTitle,
@@ -1030,11 +1030,11 @@ EOF;
             $winnerCount = 0;
             $nomineeCount = 0;
             foreach ($data as $edge) {
-                $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : '';
-                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : '';
-                $awardName = isset($edge->node->award->text) ? $edge->node->award->text : '';
-                $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : '';
-                $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : '';
+                $eventName = isset($edge->node->award->event->text) ? $edge->node->award->event->text : null;
+                $eventEditionYear = isset($edge->node->award->eventEdition->year) ? $edge->node->award->eventEdition->year : null;
+                $awardName = isset($edge->node->award->text) ? $edge->node->award->text : null;
+                $awardCategory = isset($edge->node->award->category->text) ? $edge->node->award->category->text : null;
+                $awardNotes = isset($edge->node->award->notes->plainText) ? $edge->node->award->notes->plainText : null;
                 $awardIsWinner = $edge->node->isWinner;
                 $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
                 $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
@@ -1043,11 +1043,11 @@ EOF;
                 $titles = array();
                 if (!empty($edge->node->awardedEntities->secondaryAwardTitles)) {
                     foreach ($edge->node->awardedEntities->secondaryAwardTitles as $title) {
-                        $titleName = isset($title->title->titleText->text) ? $title->title->titleText->text : '';
-                        $titleId = isset($title->title->id) ? $title->title->id : '';
-                        $titleNote = isset($title->note->plainText) ? $title->note->plainText : '';
-                        $titleFullImageUrl = isset($title->title->primaryImage->url) ? str_replace('.jpg', '', $title->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
-                        $titleThumbImageUrl = !empty($titleFullImageUrl) ? str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
+                        $titleName = isset($title->title->titleText->text) ? $title->title->titleText->text : null;
+                        $titleId = isset($title->title->id) ? $title->title->id : null;
+                        $titleNote = isset($title->note->plainText) ? $title->note->plainText : null;
+                        $titleFullImageUrl = isset($title->title->primaryImage->url) ? str_replace('.jpg', '', $title->title->primaryImage->url) . 'QL100_SX1000_.jpg' : null;
+                        $titleThumbImageUrl = !empty($titleFullImageUrl) ? str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : null;
                         $titles[] = array(
                             'titleId' => str_replace('tt', '', $titleId),
                             'titleName' => $titleName,
@@ -1120,10 +1120,10 @@ EOF;
             $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->knownFor->edges as $edge) {
                 $title = isset($edge->node->credit->title->titleText->text) ?
-                               $edge->node->credit->title->titleText->text : '';
+                               $edge->node->credit->title->titleText->text : null;
 
                 $titleId = isset($edge->node->credit->title->id) ?
-                                 str_replace('tt', '', $edge->node->credit->title->id) : '';
+                                 str_replace('tt', '', $edge->node->credit->title->id) : null;
 
                 $titleYear = isset($edge->node->credit->title->releaseYear->year) ?
                                    $edge->node->credit->title->releaseYear->year : null;
@@ -1132,9 +1132,9 @@ EOF;
                                       $edge->node->credit->title->releaseYear->endYear : null;
 
                 $titleFullImageUrl = isset($edge->node->credit->title->primaryImage->url) ?
-                                        str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
+                                        str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url) . 'QL100_SX1000_.jpg' : null;
                 $titleThumbImageUrl = !empty($titleFullImageUrl) ?
-                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
+                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : null;
 
                 $characters = array();
                 if (!empty($edge->node->credit->characters)) {
@@ -1280,15 +1280,15 @@ EOF;
                     }
                 }
                 $titleFullImageUrl = isset($edge->node->title->primaryImage->url) ?
-                                        str_replace('.jpg', '', $edge->node->title->primaryImage->url) . 'QL100_SX1000_.jpg' : '';
+                                        str_replace('.jpg', '', $edge->node->title->primaryImage->url) . 'QL100_SX1000_.jpg' : null;
                 $titleThumbImageUrl = !empty($titleFullImageUrl) ?
-                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : '';
+                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : null;
 
                 $this->credits[$categoryIds[$edge->node->category->id]][] = array(
                     'titleId' => str_replace('tt', '', $edge->node->title->id),
                     'titleName' => $edge->node->title->titleText->text,
                     'titleType' => isset($edge->node->title->titleType->text) ?
-                                         $edge->node->title->titleType->text : '',
+                                         $edge->node->title->titleType->text : null,
                     'year' => isset($edge->node->title->releaseYear->year) ?
                                     $edge->node->title->releaseYear->year : null,
                     'endYear' => isset($edge->node->title->releaseYear->endYear) ?
@@ -1354,11 +1354,11 @@ EOF;
         foreach ($data as $edge) {
             $arrayName[] = array(
                 'imdb' => isset($edge->node->relationName->name->id) ?
-                                str_replace('nm', '', $edge->node->relationName->name->id) : '',
+                                str_replace('nm', '', $edge->node->relationName->name->id) : null,
                 'name' => isset($edge->node->relationName->name->nameText->text) ?
-                                $edge->node->relationName->name->nameText->text : '',
+                                $edge->node->relationName->name->nameText->text : null,
                 'relType' => isset($edge->node->relationshipType->text) ?
-                                   $edge->node->relationshipType->text : ''
+                                   $edge->node->relationshipType->text : null
             );
         }
         return $arrayName;
