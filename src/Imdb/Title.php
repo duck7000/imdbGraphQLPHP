@@ -42,12 +42,12 @@ class Title extends MdbBase
     protected $creditsCinematographer = array();
     protected $languages = array();
     protected $keywords = array();
-    protected $mainPoster = "";
-    protected $mainPosterThumb = "";
-    protected $mainPlotoutline = "";
-    protected $mainMovietype = "";
-    protected $mainTitle = "";
-    protected $mainOriginalTitle = "";
+    protected $mainPoster = null;
+    protected $mainPosterThumb = null;
+    protected $mainPlotoutline = null;
+    protected $mainMovietype = null;
+    protected $mainTitle = null;
+    protected $mainOriginalTitle = null;
     protected $mainYear = -1;
     protected $mainEndYear = -1;
     protected $mainTop250 = 0;
@@ -2467,7 +2467,7 @@ EOF;
         $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null;
         $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
         if ($this->mainYear == "????") {
-            $this->mainYear = "";
+            $this->mainYear = null;
         }
     }
 
