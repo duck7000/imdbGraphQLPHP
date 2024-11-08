@@ -607,7 +607,9 @@ EOF;
                     $attributes = array();
                     if (!empty($edge->node->attributes)) {
                         foreach ($edge->node->attributes as $attribute) {
-                            $attributes[] = $attribute->text;
+                            if (!empty($attribute->text)) {
+                                $attributes[] = $attribute->text;
+                            }
                         }
                     }
                     $this->releaseDates[] = array(
