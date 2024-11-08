@@ -114,7 +114,7 @@ EOF;
 
             // image url
             $imgUrl = null;
-            if (isset($edge->node->item->primaryImage->url) && $edge->node->item->primaryImage->url != null) {
+            if (!empty($edge->node->item->primaryImage->url)) {
                 if ($thumb == true) {
                     $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
                     $imgUrl = $img . 'QL75_UX140_.jpg';
