@@ -201,11 +201,11 @@ EOF;
             $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->runtimes->edges as $edge) {
                 $this->runtimes[] = array(
-                    "time" => $edge->node->seconds / 60,
-                    "annotations" => array_map(function ($attribute) {
+                    'time' => isset($edge->node->seconds) ? $edge->node->seconds / 60 : null,
+                    'annotations' => array_map(function ($attribute) {
                         return $attribute->text;
                     }, $edge->node->attributes),
-                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : null
+                    'country' => isset($edge->node->country->text) ? $edge->node->country->text : null
                 );
             }
         }
