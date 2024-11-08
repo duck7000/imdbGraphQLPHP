@@ -127,7 +127,7 @@ class Title extends MdbBase
      */
     public function title()
     {
-        if ($this->mainTitle == "") {
+        if (empty($this->mainTitle)) {
             $this->titleYear();
         }
         return $this->mainTitle;
@@ -139,7 +139,7 @@ class Title extends MdbBase
      */
     public function originalTitle()
     {
-        if ($this->mainOriginalTitle  == "") {
+        if (empty($this->mainOriginalTitle)) {
             $this->titleYear();
         }
         return $this->mainOriginalTitle ;
