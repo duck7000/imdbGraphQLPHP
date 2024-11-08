@@ -671,7 +671,7 @@ EOF;
                     }
                 }
                 $this->akas[] = array(
-                    'title' => ucwords($edge->node->text),
+                    'title' => isset($edge->node->text) ? ucwords($edge->node->text) : null,
                     'country' => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown',
                     'countryId' => isset($edge->node->country->id) ? $edge->node->country->id : null,
                     'language' => isset($edge->node->language->text) ? ucwords($edge->node->language->text) : null,
