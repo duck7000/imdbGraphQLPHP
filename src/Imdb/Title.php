@@ -813,7 +813,9 @@ query Taglines(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Taglines", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->taglines->edges as $edge) {
-                $this->taglines[] = $edge->node->text;
+                if (!empty($edge->node->text)) {
+                    $this->taglines[] = $edge->node->text;
+                }
             }
         }
         return $this->taglines;
