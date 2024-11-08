@@ -83,11 +83,11 @@ query {
 EOF;
         $data = $this->graphql->query($query);
         foreach ($data->comingSoon->edges as $edge) {
-            $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : '';
-            if ($title == '') {
+            $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : null;
+            if ($title == null) {
                 continue;
             }
-            $imdbid = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : '';
+            $imdbid = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null;
             
             //release date
             $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : null;
@@ -117,7 +117,7 @@ EOF;
             
             // image url
             $imgUrl = '';
-            if (isset($edge->node->primaryImage->url) && $edge->node->primaryImage->url != null) {
+            if (!empty($edge->node->primaryImage->url)) {
                 if ($thumb == true) {
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
                     $imgUrl = $img . 'QL75_UY74_CR41,0,50,74_.jpg';
