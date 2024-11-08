@@ -400,7 +400,7 @@ query Recommendations(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->moreLikeThisTitles->edges as $edge) {
-                $thumb = '';
+                $thumb = null;
                 if (!empty($edge->node->primaryImage->url)) {
                     $fullImageWidth = $edge->node->primaryImage->width;
                     $fullImageHeight = $edge->node->primaryImage->height;
@@ -411,11 +411,11 @@ EOF;
                     $thumb = $img . $parameter;
                 }
                 $this->recommendations[] = array(
-                    "title" => $edge->node->titleText->text,
-                    "imdbid" => str_replace('tt', '', $edge->node->id),
-                    "rating" => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
-                    "img" => $thumb,
-                    "year" => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
+                    'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
+                    'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
+                    'rating' => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
+                    'img' => $thumb,
+                    'year' => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
                 );
             }
         }
