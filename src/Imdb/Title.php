@@ -440,7 +440,9 @@ EOF;
             $data = $this->graphql->query($query, "Languages", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->spokenLanguages->spokenLanguages)) {
                 foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
-                    $this->languages[] = $language->text;
+                    if (!empty($language->text)) {
+                        $this->languages[] = $language->text;
+                    }
                 }
             }
             return $this->languages;
