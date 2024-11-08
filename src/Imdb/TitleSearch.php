@@ -85,10 +85,10 @@ query Search{
 EOF;
         $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
-            $imdbId = isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : '';
-            $title = isset($edge->node->entity->titleText->text) ? $edge->node->entity->titleText->text : '';
-            $originalTitle = isset($edge->node->entity->originalTitleText->text) ? $edge->node->entity->originalTitleText->text : '';
-            $movietype = isset($edge->node->entity->titleType->text) ? $edge->node->entity->titleType->text : '';
+            $imdbId = isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : null;
+            $title = isset($edge->node->entity->titleText->text) ? $edge->node->entity->titleText->text : null;
+            $originalTitle = isset($edge->node->entity->originalTitleText->text) ? $edge->node->entity->originalTitleText->text : null;
+            $movietype = isset($edge->node->entity->titleType->text) ? $edge->node->entity->titleType->text : null;
             $yearRange = '';
             if (isset($edge->node->entity->releaseYear->year)) {
                 $yearRange .= $edge->node->entity->releaseYear->year;
