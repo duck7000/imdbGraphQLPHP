@@ -665,9 +665,11 @@ EOF;
             }
             foreach ($data as $edge) {
                 $comments = array();
-                foreach ($edge->node->attributes as $attribute) {
-                    if (!empty($attribute->text)) {
-                        $comments[] = $attribute->text;
+                if (!empty($edge->node->attributes)) {
+                    foreach ($edge->node->attributes as $attribute) {
+                        if (!empty($attribute->text)) {
+                            $comments[] = $attribute->text;
+                        }
                     }
                 }
                 $this->akas[] = array(
