@@ -18,6 +18,7 @@ namespace Imdb;
  */
 class RecentTrailers extends MdbBase
 {
+
     /**
      * Get the latest trailers as seen on IMDb https://www.imdb.com/trailers/
      * @return
@@ -25,12 +26,14 @@ class RecentTrailers extends MdbBase
      *   (
      *      [0] => Array
      *          (
-     *              [videoId] =>       (string) like vi4205431065
+     *              [videoId] =>       (string) (without vi)
+     *              [titleId] =>       (string) (without tt)
      *              [title] =>         (string)
      *              [runtime] =>       (int) (in seconds)
      *              [playbackUrl] =>   (string) This url will playback in browser only)
      *              [thumbnailUrl] =>  (string) (thumbnail image of the trailer)
      *              [releaseDate] =>   (string) (date string: December 4, 2024)
+     *              [contentType] =>   (string ) like Trailer Season 1 [OV]
      *          )
      *  )
      */
@@ -45,6 +48,7 @@ query {
     videos {
       id
       primaryTitle {
+        id
         titleText {
           text
         }
@@ -63,24 +67,30 @@ query {
       thumbnail {
         url
       }
+      name {
+        value
+      }
     }
   } 
 }
 EOF;
         $data = $this->graphql->query($query);
         foreach ($data->recentVideos->videos as $edge) {
-            $id = isset($edge->id) ? $edge->id : null;
-            $playbackUrl = !empty($id) ? 'https://www.imdb.com/video/' . $id . '/' : null;
+            $id = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
+            $playbackUrl = !empty($id) ? 'https://www.imdb.com/video/vi' . $id . '/' : null;
             $list[] = array(
                 'videoId' => $id,
+                'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
                 'runtime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
                 'playbackUrl' => $playbackUrl,
                 'thumbnailUrl' => isset($edge->thumbnail->url) ? $edge->thumbnail->url : null,
                 'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
-                                       $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null
+                                       $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
+                'contentType' => isset($edge->name->value) ? $edge->name->value : null
             );
         }
         return $list;
     }
+
 }
