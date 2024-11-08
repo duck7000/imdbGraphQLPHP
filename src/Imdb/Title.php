@@ -504,7 +504,7 @@ EOF;
      */
     public function plotoutline()
     {
-        if ($this->mainPlotoutline == "") {
+        if (empty($this->mainPlotoutline)) {
             $query = <<<EOF
 query PlotOutline(\$id: ID!) {
   title(id: \$id) {
