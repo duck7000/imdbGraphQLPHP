@@ -23,12 +23,12 @@ class TitleCombined extends MdbBase
     protected $imageFunctions;
     protected $main = array();
     protected $mainCreditsPrincipal = array();
-    protected $mainPoster = "";
-    protected $mainPosterThumb = "";
-    protected $mainPlotoutline = "";
-    protected $mainMovietype = "";
-    protected $mainTitle = "";
-    protected $mainOriginalTitle = "";
+    protected $mainPoster = null;
+    protected $mainPosterThumb = null;
+    protected $mainPlotoutline = null;
+    protected $mainMovietype = null;
+    protected $mainTitle = null;
+    protected $mainOriginalTitle = null;
     protected $mainYear = -1;
     protected $mainEndYear = -1;
     protected $mainRating = 0;
@@ -198,15 +198,15 @@ EOF;
 
         $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
         $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
-        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : '';
-        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : '';
+        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : null;
+        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null;
         $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
         if ($this->mainYear == "????") {
-            $this->mainYear = "";
+            $this->mainYear = null;
         }
         $this->mainRuntime = isset($data->title->runtime->seconds) ? $data->title->runtime->seconds / 60 : 0;
         $this->mainRating = isset($data->title->ratingsSummary->aggregateRating) ? $data->title->ratingsSummary->aggregateRating : 0;
-        $this->mainPlotoutline = isset($data->title->plot->plotText->plainText) ? $data->title->plot->plotText->plainText : "";
+        $this->mainPlotoutline = isset($data->title->plot->plotText->plainText) ? $data->title->plot->plotText->plainText : null;
         $this->mainCanonicalId = $this->checkRedirect($data);
         
         // Image
@@ -248,7 +248,7 @@ EOF;
      */
     private function populatePoster($data)
     {
-        if (isset($data->title->primaryImage->url) && $data->title->primaryImage->url != null) {
+        if (!empty($data->title->primaryImage->url)) {
             $fullImageWidth = $data->title->primaryImage->width;
             $fullImageHeight = $data->title->primaryImage->height;
             $newImageWidth = 190;
@@ -272,10 +272,10 @@ EOF;
     private function genre($data)
     {
         if (empty($this->mainGenres)) {
-            if (isset($data->title->titleGenres->genres) && !empty($data->title->titleGenres->genres)) {
+            if (!empty($data->title->titleGenres->genres)) {
                 foreach ($data->title->titleGenres->genres as $edge) {
                     $subGenres = array();
-                    if (isset($edge->subGenres) && !empty($edge->subGenres)) {
+                    if (!empty($edge->subGenres)) {
                         foreach ($edge->subGenres as $subGenre) {
                             $subGenres[] = $subGenre->keyword->text->text;
                         }
@@ -309,8 +309,8 @@ EOF;
                 $temp = array();
                 foreach ($value->credits as $key => $credit) {
                     $temp[] = array(
-                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : '',
-                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : ''
+                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null,
+                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null
                     );
                     if ($key == 2) {
                         break;
