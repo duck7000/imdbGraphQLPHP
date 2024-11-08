@@ -47,8 +47,8 @@ query Search {
 EOF;
         $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
-            $nameId = isset($edge->node->entity->id) ? str_replace('nm', '', $edge->node->entity->id) : '';
-            $name = isset($edge->node->entity->nameText->text) ? $edge->node->entity->nameText->text : '';
+            $nameId = isset($edge->node->entity->id) ? str_replace('nm', '', $edge->node->entity->id) : null;
+            $name = isset($edge->node->entity->nameText->text) ? $edge->node->entity->nameText->text : null;
             $results[] = array(
                 'id' => $nameId,
                 'name' => $name
