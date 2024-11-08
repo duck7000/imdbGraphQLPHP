@@ -776,11 +776,14 @@ query Plots(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
+            var_dump($data);
             foreach ($data->title->plots->edges as $key => $edge) {
-                $this->plot[] = array(
-                    'plot' => isset($edge->node->plotText->plainText) ? $edge->node->plotText->plainText : null,
-                    'author' => isset($edge->node->author) ? $edge->node->author : null
-                );
+                if (!empty($edge->node->plotText->plainText)) {
+                    $this->plot[] = array(
+                        'plot' => $edge->node->plotText->plainText,
+                        'author' => isset($edge->node->author) ? $edge->node->author : null
+                    );
+                }
             }
         }
         return $this->plot;
