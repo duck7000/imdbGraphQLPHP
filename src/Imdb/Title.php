@@ -706,15 +706,17 @@ EOF;
             $data = $this->graphQlGetAll("Mpaa", "certificates", $query);
             foreach ($data as $edge) {
                 $comments = array();
-                foreach ($edge->node->attributes as $key => $attribute) {
-                    if (!empty($attribute->text)) {
-                        $comments[] = $attribute->text;
+                if (!empty($edge->node->attributes)) {
+                    foreach ($edge->node->attributes as $key => $attribute) {
+                        if (!empty($attribute->text)) {
+                            $comments[] = $attribute->text;
+                        }
                     }
                 }
                 $this->mpaas[] = array(
-                    "country" => isset($edge->node->country->text) ? $edge->node->country->text : null,
-                    "rating" => isset($edge->node->rating) ? $edge->node->rating : null,
-                    "comment" => $comments
+                    'country' => isset($edge->node->country->text) ? $edge->node->country->text : null,
+                    'rating' => isset($edge->node->rating) ? $edge->node->rating : null,
+                    'comment' => $comments
                 );
             }
         }
