@@ -346,16 +346,12 @@ answer {
 isSpoiler
 EOF;
             $data = $this->graphQlGetAll("Faq", "faqs", $query, $filter);
-            if (!empty($data)) {
-                foreach ($data as $edge) {
-                    $this->faqs[] = array(
-                        'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : null,
-                        'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : null,
-                        'isSpoiler' => $edge->node->isSpoiler
-                    );
-                }
-            } else {
-                return $this->faqs;
+            foreach ($data as $edge) {
+                $this->faqs[] = array(
+                    'question' => isset($edge->node->question->plainText) ? $edge->node->question->plainText : null,
+                    'answer' => isset($edge->node->answer->plainText) ? $edge->node->answer->plainText : null,
+                    'isSpoiler' => $edge->node->isSpoiler
+                );
             }
         }
         return $this->faqs;
