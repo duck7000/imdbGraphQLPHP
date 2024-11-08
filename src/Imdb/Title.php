@@ -778,7 +778,7 @@ EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->plots->edges as $key => $edge) {
                 $this->plot[] = array(
-                    'plot' => $edge->node->plotText->plainText,
+                    'plot' => isset($edge->node->plotText->plainText) ? $edge->node->plotText->plainText : null,
                     'author' => isset($edge->node->author) ? $edge->node->author : null
                 );
             }
