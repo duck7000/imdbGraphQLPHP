@@ -478,17 +478,17 @@ query Genres(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
-
             if (!empty($data->title->titleGenres->genres)) {
                 foreach ($data->title->titleGenres->genres as $edge) {
                     $subGenres = array();
                     if (!empty($edge->subGenres)) {
                         foreach ($edge->subGenres as $subGenre) {
-                            $subGenres[] = ucwords($subGenre->keyword->text->text);
+                            $subGenres[] = isset($subGenre->keyword->text->text) ?
+                                         ucwords($subGenre->keyword->text->text) : null;
                         }
                     }
                     $this->genres[] = array(
-                        'mainGenre' => $edge->genre->text,
+                        'mainGenre' => isset($edge->genre->text) ? $edge->genre->text : null,
                         'subGenre' => $subGenres
                     );
                 }
