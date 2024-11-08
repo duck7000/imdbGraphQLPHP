@@ -131,10 +131,10 @@ query advancedSearch{
 EOF;
         $data = $this->graphql->query($query, "advancedSearch");
         foreach ($data->advancedTitleSearch->edges as $edge) {
-            $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : '';
-            $originalTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
-            $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : '';
-            $movietype = isset($edge->node->title->titleType->text) ? $edge->node->title->titleType->text : '';
+            $imdbId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null;
+            $originalTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null;
+            $title = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null;
+            $movietype = isset($edge->node->title->titleType->text) ? $edge->node->title->titleType->text : null;
             $yearRange = '';
             if (isset($edge->node->title->releaseYear->year)) {
                 $yearRange .= $edge->node->title->releaseYear->year;
