@@ -14,7 +14,7 @@ class TitleSearchAdvanced extends MdbBase
 {
 
     /**
-     * Advanced Search IMDb on genres, titleTypes, creditId, startDate, endDate, countryId, languageId
+     * Advanced Search IMDb on genres, titleTypes, creditId, startDate, endDate, countryId, languageId, $keywords
      * 
      * @param string $searchTerm input searchTerm to search for specific titleText
      *
