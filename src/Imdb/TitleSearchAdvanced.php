@@ -37,6 +37,8 @@ class TitleSearchAdvanced extends MdbBase
      * @param string $countryId iso 3166 country code like "US" or "US,DE" (separate by comma)
      * 
      * @param string $languageId iso 639 Language code like "en" or "en,de" (separate by comma)
+     * 
+     * @param string $keywords like "sex" or "sex,drugs" (separate by comma)
      *
      * @return Title[] array of Titles
      * array[]
@@ -54,7 +56,8 @@ class TitleSearchAdvanced extends MdbBase
         $startDate = '',
         $endDate = '',
         $countryId = '',
-        $languageId = ''
+        $languageId = '',
+        $keywords = ''
     )
     {
 
@@ -72,6 +75,8 @@ class TitleSearchAdvanced extends MdbBase
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
         $inputCountryId = $this->checkItems($countryId);
         $inputLanguageId = $this->checkItems($languageId);
+        $inputKeywords = $this->checkItems($keywords);
+
         // check releasedate valid or not, array() otherwise
         if ($inputReleaseDates === false) {
             return $results;
@@ -85,7 +90,8 @@ class TitleSearchAdvanced extends MdbBase
             $inputReleaseDates["startDate"] == "null" &&
             $inputReleaseDates["endDate"] == "null" &&
             empty($inputCountryId) &&
-            empty($inputLanguageId)
+            empty($inputLanguageId) &&
+            empty($inputKeywords)
             )
         {
             return $results;
@@ -104,6 +110,7 @@ query advancedSearch{
       originCountryConstraint: {anyCountries: [$inputCountryId]}
       languageConstraint: {anyLanguages: [$inputLanguageId]}
       explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}
+      keywordConstraint: {anyKeywords: [$inputKeywords]}
     }
   ) {
     edges {
