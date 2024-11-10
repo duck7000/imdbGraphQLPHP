@@ -184,6 +184,13 @@ class Config
      */
     public $sortOrder = "ASC";
 
+    #========================================================[ KeywordSearch options ]===
+    /**
+     * amount of search results
+     * @var int (range: 1-9999)
+     */
+    public $keywordSearchAmount = 250;
+
     /**
      * Enable debug mode?
      * @var boolean
