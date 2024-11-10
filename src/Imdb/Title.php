@@ -1250,8 +1250,8 @@ EOF;
                                 $epImageUrl = $edge->node->primaryImage->url;
                                 $fullImageWidth = $edge->node->primaryImage->width;
                                 $fullImageHeight = $edge->node->primaryImage->height;
-                                $newImageWidth = 224;
-                                $newImageHeight = 126;
+                                $newImageWidth = $this->config->episodeThumbnailWidth;
+                                $newImageHeight = $this->config->episodeThumbnailHeight;
 
                                 $img = str_replace('.jpg', '', $epImageUrl);
 

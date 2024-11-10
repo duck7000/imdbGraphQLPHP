@@ -231,6 +231,21 @@ class Config
      */
     public $castThumbnailHeight = 44;
 
+    #----------------------------------------[Episodes thumbnail]---
+    /**
+     * episode() thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $episodeThumbnailWidth = 224;
+
+    /**
+     * episode() thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $episodeThumbnailHeight = 126;
+
     #========================================================[ Debug options ]===
     /**
      * Enable debug mode?
