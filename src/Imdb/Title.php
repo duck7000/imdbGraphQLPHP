@@ -2512,8 +2512,8 @@ EOF;
             if (!empty($data->title->primaryImage->width) && !empty($data->title->primaryImage->height)) {
                 $fullImageWidth = $data->title->primaryImage->width;
                 $fullImageHeight = $data->title->primaryImage->height;
-                $newImageWidth = 190;
-                $newImageHeight = 281;
+                $newImageWidth = $this->config->photoThumbnailWidth;
+                $newImageHeight = $this->config->photoThumbnailHeight;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                 $this->mainPosterThumb = $img . $parameter;
             }

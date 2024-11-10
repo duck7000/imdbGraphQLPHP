@@ -190,7 +190,25 @@ class Config
      * @var int (range: 1-9999)
      */
     public $keywordSearchAmount = 250;
+    
+    #========================================================[ Thumbnail options ]===
 
+    #--------------------------------------------------------[Photo thumbnail]---
+    /**
+     * Photo() thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $photoThumbnailWidth = 190;
+    
+    /**
+     * Photo() thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $photoThumbnailHeight = 281;
+
+    #========================================================[ Debug options ]===
     /**
      * Enable debug mode?
      * @var boolean
