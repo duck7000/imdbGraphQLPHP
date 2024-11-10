@@ -400,8 +400,8 @@ EOF;
                 if (!empty($edge->node->primaryImage->url)) {
                     $fullImageWidth = $edge->node->primaryImage->width;
                     $fullImageHeight = $edge->node->primaryImage->height;
-                    $newImageWidth = 140;
-                    $newImageHeight = 207;
+                    $newImageWidth = $this->config->recommendationThumbnailWidth;
+                    $newImageHeight = $this->config->recommendationThumbnailHeight;
                     $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
                     $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                     $thumb = $img . $parameter;

@@ -184,29 +184,37 @@ class Config
      */
     public $sortOrder = "ASC";
 
-    #========================================================[ KeywordSearch options ]===
-    /**
-     * amount of search results
-     * @var int (range: 1-9999)
-     */
-    public $keywordSearchAmount = 250;
-    
     #========================================================[ Thumbnail options ]===
 
-    #--------------------------------------------------------[Photo thumbnail]---
+    #---------------------------------------[Photo thumbnail]---
     /**
-     * Photo() thumbnail width
+     * photo() thumbnail width
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
     public $photoThumbnailWidth = 190;
     
     /**
-     * Photo() thumbnail height
+     * photo() thumbnail height
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
     public $photoThumbnailHeight = 281;
+    
+    #----------------------------------------[Recommendation thumbnail]---
+    /**
+     * recommendation() thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $recommendationThumbnailWidth = 140;
+    
+    /**
+     * recommendation() thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $recommendationThumbnailHeight = 207;
 
     #========================================================[ Debug options ]===
     /**
