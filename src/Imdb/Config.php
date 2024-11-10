@@ -246,6 +246,21 @@ class Config
      */
     public $episodeThumbnailHeight = 126;
 
+    #----------------------------------------[mainphoto thumbnail]---
+    /**
+     * mainphoto() thumbnail width
+     * @var int pixels
+     * Keep ratio square!
+     */
+    public $mainphotoThumbnailWidth = 100;
+
+    /**
+     * mainphoto() thumbnail height
+     * @var int pixels
+     * Keep ratio square!
+     */
+    public $mainphotoThumbnailHeight = 100;
+
     #========================================================[ Debug options ]===
     /**
      * Enable debug mode?

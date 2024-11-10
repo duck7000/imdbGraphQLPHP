@@ -1994,9 +1994,10 @@ EOF;
                     if ($thumb === true) {
                         $fullImageWidth = $edge->node->width;
                         $fullImageHeight = $edge->node->height;
+                        $newImageWidth = $this->config->mainphotoThumbnailWidth;
+                        $newImageHeight = $this->config->mainphotoThumbnailHeight;
                         // calculate crop value
-                        $cropParameter = $this->imageFunctions->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, 100, 100);
-
+                        $cropParameter = $this->imageFunctions->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
 
                         // original source aspect ratio
                         $ratio_orig = $fullImageWidth / $fullImageHeight;
