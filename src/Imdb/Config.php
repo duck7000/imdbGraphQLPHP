@@ -193,14 +193,14 @@ class Config
      * Keep ratio in mind, square thumbnails don't work
      */
     public $photoThumbnailWidth = 190;
-    
+
     /**
      * photo() thumbnail height
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
     public $photoThumbnailHeight = 281;
-    
+
     #----------------------------------------[Recommendation thumbnail]---
     /**
      * recommendation() thumbnail width
@@ -208,13 +208,28 @@ class Config
      * Keep ratio in mind, square thumbnails don't work
      */
     public $recommendationThumbnailWidth = 140;
-    
+
     /**
      * recommendation() thumbnail height
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
     public $recommendationThumbnailHeight = 207;
+
+    #----------------------------------------[Cast thumbnail]---
+    /**
+     * cast() thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $castThumbnailWidth = 32;
+
+    /**
+     * cast() thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $castThumbnailHeight = 44;
 
     #========================================================[ Debug options ]===
     /**
