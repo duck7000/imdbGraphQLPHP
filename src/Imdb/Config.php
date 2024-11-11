@@ -95,6 +95,8 @@ class Config
      */
     public $language = "de-DE";
 
+    #========================================================[ TitleSearch options ]===
+
     // TitleSearch amount of results
     public $titleSearchAmount = 10;
 
