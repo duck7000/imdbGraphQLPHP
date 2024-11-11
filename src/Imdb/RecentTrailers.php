@@ -10,6 +10,8 @@
 
 namespace Imdb;
 
+use Imdb\Image;
+
 /**
  * Obtains information about the latest trailers as seen on https://www.imdb.com/trailers/
  * max 100 items will be returned (more is not possible)
@@ -18,6 +20,10 @@ namespace Imdb;
  */
 class RecentTrailers extends MdbBase
 {
+
+    protected $imageFunctions;
+    protected $thumbUrl = null;
+    protected $videoId = null;
 
     /**
      * Get the latest trailers as seen on IMDb https://www.imdb.com/trailers/
@@ -31,7 +37,7 @@ class RecentTrailers extends MdbBase
      *              [title] =>         (string)
      *              [runtime] =>       (int) (in seconds)
      *              [playbackUrl] =>   (string) This url will playback in browser only)
-     *              [thumbnailUrl] =>  (string) (thumbnail image of the trailer)
+     *              [thumbnailUrl] =>  (string) (thumbnail (140x207) image of the title)
      *              [releaseDate] =>   (string) (date string: December 4, 2024)
      *              [contentType] =>   (string ) like Trailer Season 1 [OV]
      *          )
@@ -59,13 +65,14 @@ query {
             }
           }
         }
+        primaryImage {
+          url
+          width
+          height
+        }
       }
       runtime {
-        unit
         value
-      }
-      thumbnail {
-        url
       }
       name {
         value
@@ -76,15 +83,22 @@ query {
 EOF;
         $data = $this->graphql->query($query);
         foreach ($data->recentVideos->videos as $edge) {
-            $id = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
-            $playbackUrl = !empty($id) ? 'https://www.imdb.com/video/vi' . $id . '/' : null;
+            if (!empty($edge->primaryTitle->primaryImage->url)) {
+                $this->imageFunctions = new Image();
+                $fullImageWidth = $edge->primaryTitle->primaryImage->width;
+                $fullImageHeight = $edge->primaryTitle->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->primaryTitle->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 140, 207);
+                $this->thumbUrl = $img . $parameter;
+            }
+            $this->videoId = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
             $list[] = array(
-                'videoId' => $id,
+                'videoId' => $this->videoId,
                 'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
                 'runtime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
-                'playbackUrl' => $playbackUrl,
-                'thumbnailUrl' => isset($edge->thumbnail->url) ? $edge->thumbnail->url : null,
+                'playbackUrl' => !empty($this->videoId) ? 'https://www.imdb.com/video/vi' . $this->videoId . '/' : null,
+                'thumbnailUrl' => $this->thumbUrl,
                 'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
                                        $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
                 'contentType' => isset($edge->name->value) ? $edge->name->value : null
