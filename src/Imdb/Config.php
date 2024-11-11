@@ -261,6 +261,21 @@ class Config
      */
     public $mainphotoThumbnailHeight = 100;
 
+    #---------------------------------------[Name class Photo thumbnail]---
+    /**
+     * photo() thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $namePhotoThumbnailWidth = 140;
+
+    /**
+     * photo() thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $namePhotoThumbnailHeight = 207;
+
     #========================================================[ Debug options ]===
     /**
      * Enable debug mode?

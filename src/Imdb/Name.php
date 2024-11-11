@@ -15,6 +15,7 @@ namespace Imdb;
 
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Imdb\Image;
 
 /**
  * A person on IMDb
@@ -26,7 +27,9 @@ class Name extends MdbBase
 {
 
     // "Name" page:
-    protected $mainPhoto = null;
+    protected $imageFunctions;
+    protected $mainPoster = null;
+    protected $mainPosterThumb = null;
     protected $fullName = null;
     protected $birthday = array();
     protected $deathday = array();
@@ -69,6 +72,7 @@ class Name extends MdbBase
     {
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
+        $this->imageFunctions = new Image();
     }
 
     #=============================================================[ Main Page ]===
@@ -99,43 +103,27 @@ EOF;
     }
 
     #--------------------------------------------------------[ Photo specific ]---
-    /** Get cover photo
-     * @param boolean $thumb true: thumbnail (67x98 pixels, default), false: large (max height 1000 pixels)
-     * @note if thumb url 404 or 401 the full image url is returned!
-     * @return mixed photo (string url if found, empty string otherwise)
-     * @see IMDB person page / (Main page)
+    /**
+     * Get the main photo image url for thumbnail or full size
+     * @param boolean $thumb get the thumbnail (140x207 pixels) or large (max 1000 pixels)
+     * @return string|false photo (string URL if found, FALSE otherwise)
+     * @see IMDB page / (NamePage)
      */
     public function photo($thumb = true)
     {
-        if (empty($this->mainPhoto)) {
-            $query = <<<EOF
-query PrimaryImage(\$id: ID!) {
-  name(id: \$id) {
-    primaryImage {
-      url
-    }
-  }
-}
-EOF;
-            $data = $this->graphql->query($query, "PrimaryImage", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->primaryImage->url)) {
-                $img = str_replace('.jpg', '', $data->name->primaryImage->url);
-                if ($thumb == true) {
-                    $this->mainPhoto = $img . 'QL100_SY98_.jpg';
-                    $headers = get_headers($this->mainPhoto);
-                    if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-                        $this->mainPhoto = $data->name->primaryImage->url;
-                    }
-                } else {
-                    $this->mainPhoto = $img . 'QL100_SY1000_.jpg';
-                    $headers = get_headers($this->mainPhoto);
-                    if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-                        $this->mainPhoto = $data->name->primaryImage->url;
-                    }
-                }
-            }
+        if (empty($this->mainPoster)) {
+            $this->populatePoster();
         }
-        return $this->mainPhoto;
+        if (!$thumb && empty($this->mainPoster)) {
+            return false;
+        }
+        if ($thumb && empty($this->mainPosterThumb)) {
+            return false;
+        }
+        if ($thumb) {
+            return $this->mainPosterThumb;
+        }
+        return $this->mainPoster;
     }
 
     #==================================================================[ /bio ]===
@@ -1304,6 +1292,43 @@ EOF;
     }
 
     #========================================================[ Helper functions ]===
+
+    #========================================================[ photo/poster ]===
+    /**
+     * Setup cover photo (thumbnail and big variant)
+     * @see IMDB page / (NamePage)
+     */
+    private function populatePoster()
+    {
+        $query = <<<EOF
+query Poster(\$id: ID!) {
+  name(id: \$id) {
+    primaryImage {
+      url
+      width
+      height
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Poster", ["id" => "nm$this->imdbID"]);
+        if (!empty($data->name->primaryImage->url)) {
+            $img = str_replace('.jpg', '', $data->name->primaryImage->url);
+
+            // full image
+            $this->mainPoster = $img . 'QL100_SX1000_.jpg';
+
+            // thumb image
+            if (!empty($data->name->primaryImage->width) && !empty($data->name->primaryImage->height)) {
+                $fullImageWidth = $data->name->primaryImage->width;
+                $fullImageHeight = $data->name->primaryImage->height;
+                $newImageWidth = $this->config->namePhotoThumbnailWidth;
+                $newImageHeight = $this->config->namePhotoThumbnailHeight;
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                $this->mainPosterThumb = $img . $parameter;
+            }
+        }
+    }
 
     #-----------------------------------------[ Helper for Trivia, Quotes and Trademarks ]---
     /** Parse Trivia, Quotes and Trademarks
