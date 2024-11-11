@@ -22,8 +22,6 @@ class RecentTrailers extends MdbBase
 {
 
     protected $imageFunctions;
-    protected $thumbUrl = null;
-    protected $videoId = null;
 
     /**
      * Get the latest trailers as seen on IMDb https://www.imdb.com/trailers/
@@ -83,22 +81,23 @@ query {
 EOF;
         $data = $this->graphql->query($query);
         foreach ($data->recentVideos->videos as $edge) {
+            $thumbUrl = null;
+            $videoId = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
             if (!empty($edge->primaryTitle->primaryImage->url)) {
                 $this->imageFunctions = new Image();
                 $fullImageWidth = $edge->primaryTitle->primaryImage->width;
                 $fullImageHeight = $edge->primaryTitle->primaryImage->height;
                 $img = str_replace('.jpg', '', $edge->primaryTitle->primaryImage->url);
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 140, 207);
-                $this->thumbUrl = $img . $parameter;
+                $thumbUrl = $img . $parameter;
             }
-            $this->videoId = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
             $list[] = array(
-                'videoId' => $this->videoId,
+                'videoId' => $videoId,
                 'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
                 'runtime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
-                'playbackUrl' => !empty($this->videoId) ? 'https://www.imdb.com/video/vi' . $this->videoId . '/' : null,
-                'thumbnailUrl' => $this->thumbUrl,
+                'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
                                        $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
                 'contentType' => isset($edge->name->value) ? $edge->name->value : null
