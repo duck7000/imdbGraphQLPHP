@@ -188,7 +188,7 @@ class Config
 
     #========================================================[ Thumbnail options ]===
 
-    #---------------------------------------[Photo thumbnail]---
+    #---------------------------------------[Title class Photo thumbnail]---
     /**
      * photo() thumbnail width
      * @var int pixels
@@ -203,7 +203,7 @@ class Config
      */
     public $photoThumbnailHeight = 281;
 
-    #----------------------------------------[Recommendation thumbnail]---
+    #----------------------------------------[Title class Recommendation thumbnail]---
     /**
      * recommendation() thumbnail width
      * @var int pixels
@@ -218,7 +218,7 @@ class Config
      */
     public $recommendationThumbnailHeight = 207;
 
-    #----------------------------------------[Cast thumbnail]---
+    #----------------------------------------[Title class Cast thumbnail]---
     /**
      * cast() thumbnail width
      * @var int pixels
@@ -233,7 +233,7 @@ class Config
      */
     public $castThumbnailHeight = 44;
 
-    #----------------------------------------[Episodes thumbnail]---
+    #----------------------------------------[Title class Episodes thumbnail]---
     /**
      * episode() thumbnail width
      * @var int pixels
@@ -248,7 +248,7 @@ class Config
      */
     public $episodeThumbnailHeight = 126;
 
-    #----------------------------------------[mainphoto thumbnail]---
+    #----------------------------------------[Title class mainphoto thumbnail]---
     /**
      * mainphoto() thumbnail width
      * @var int pixels
@@ -277,6 +277,21 @@ class Config
      * Keep ratio in mind, square thumbnails don't work
      */
     public $namePhotoThumbnailHeight = 207;
+
+    #---------------------------------------[Trailers class Photo thumbnail]---
+    /**
+     * ALL methods thumbnail width
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $thumbnailWidth = 140;
+
+    /**
+     * ALL methods thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $thumbnailHeight = 207;
 
     #========================================================[ Debug options ]===
     /**

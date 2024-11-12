@@ -22,6 +22,8 @@ class Trailers extends MdbBase
 {
 
     protected $imageFunctions;
+    protected $newImageWidth;
+    protected $newImageHeight;
     protected $recentVideoResults = array();
     protected $trendingVideoResults = array();
 
@@ -34,6 +36,8 @@ class Trailers extends MdbBase
     {
         parent::__construct($config, $logger, $cache);
         $this->imageFunctions = new Image();
+        $this->newImageWidth = $this->config->thumbnailWidth;
+        $this->newImageHeight = $this->config->thumbnailHeight;
     }
 
     /**
@@ -100,7 +104,7 @@ EOF;
                 $fullImageWidth = $edge->primaryTitle->primaryImage->width;
                 $fullImageHeight = $edge->primaryTitle->primaryImage->height;
                 $img = str_replace('.jpg', '', $edge->primaryTitle->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 140, 207);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
             $this->recentVideoResults[] = array(
@@ -183,7 +187,7 @@ EOF;
                 $fullImageWidth = $edge->primaryImage->width;
                 $fullImageHeight = $edge->primaryImage->height;
                 $img = str_replace('.jpg', '', $edge->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 140, 207);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
             $this->trendingVideoResults[] = array(
