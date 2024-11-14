@@ -101,6 +101,12 @@ class Config
     public $titleSearchAmount = 10;
 
 
+    #========================================================[ KeywordSearch options ]===
+
+    // TitleSearch amount of results
+    public $keywordSearchAmount = 20;
+
+
     #========================================================[ TitleSearchAdvanced options ]===
     /**
      * amount of search results
