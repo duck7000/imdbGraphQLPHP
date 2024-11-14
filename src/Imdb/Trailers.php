@@ -16,6 +16,7 @@ use Imdb\Image;
 /**
  * Obtains information about trailers as seen on https://www.imdb.com/trailers/
  * https://www.imdb.com/trailers/
+ * @Note thumbnail width and height are set in config, one setting for all methods!
  * @author Ed (github user: duck7000)
  */
 class Trailers extends MdbBase
