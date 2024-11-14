@@ -10,13 +10,17 @@
 
 namespace Imdb;
 
+/**
+ * Keyword Search Class
+ * @author Ed (github user: duck7000)
+ */
 class KeywordSearch extends MdbBase
 {
 
     /**
-     * Search IMDb for titles matching $searchTerms
+     * Search IMDb for titles matching $keywords
      * @param string $keywords input keywords, ("nihilism" or "sex drugs")
-     * 
+     *
      * @return array[]
      * Array
      * (
@@ -31,13 +35,13 @@ class KeywordSearch extends MdbBase
     public function searchKeyword($keywords)
     {
         $results = array();
-        $inputKeywords = $this->checkItems($keywords);
-        $amount = $this->config->keywordSearchAmount;
 
         // check if $keywords is empty, return empty array
         if (empty(trim($keywords))) {
             return $results;
         }
+        $inputKeywords = '"' . trim($keywords) . '"';
+        $amount = $this->config->keywordSearchAmount;
 
         $query = <<<EOF
 query Search {
@@ -77,21 +81,6 @@ EOF;
             );
         }
         return $results;
-    }
-
-    #========================================================[ Helper functions]===
-    /**
-     * Check searchTerm
-     * @param string $searchTerm
-     * @return $searchTerm or null double quoted
-     */
-    private function checkItems($keywords)
-    {
-        if (empty(trim($keywords))) {
-            return "null";
-        } else {
-            return '"' . trim($keywords) . '"';
-        }
     }
 
 }
