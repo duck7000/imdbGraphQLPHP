@@ -96,15 +96,13 @@ class Config
     public $language = "de-DE";
 
     #========================================================[ TitleSearch options ]===
-
     // TitleSearch amount of results
     public $titleSearchAmount = 10;
 
 
     #========================================================[ KeywordSearch options ]===
-
     // TitleSearch amount of results
-    public $keywordSearchAmount = 20;
+    public $keywordSearchAmount = 30;
 
 
     #========================================================[ TitleSearchAdvanced options ]===
