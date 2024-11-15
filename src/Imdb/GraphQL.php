@@ -97,7 +97,10 @@ class GraphQL
                 "[GraphQL] Failed to retrieve query [{queryName}]. Response headers:{headers}. Response body:{body}",
                 array('queryName' => $queryName, 'headers' => $request->getLastResponseHeaders(), 'body' => $request->getResponseBody())
             );
-            $errorId = $variables['id'];
+            $errorId = 'Not Used'; // Some classes don't use imdbId like Chart, Trailers, Calendar and KeywordSearch
+            if (!empty($variables['id'])) {
+                $errorId = $variables['id'];
+            }
             throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$errorId]");
         }
     }
