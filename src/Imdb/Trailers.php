@@ -62,7 +62,7 @@ class Trailers extends MdbBase
     public function recentVideo()
     {
         $query = <<<EOF
-query {
+query RecentVideo {
   recentVideos(
     limit: 100
     queryFilter: {contentTypes: TRAILER}
@@ -97,7 +97,7 @@ query {
   } 
 }
 EOF;
-        $data = $this->graphql->query($query);
+        $data = $this->graphql->query($query, "RecentVideo");
         foreach ($data->recentVideos->videos as $edge) {
             $thumbUrl = null;
             $videoId = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
@@ -144,7 +144,7 @@ EOF;
     public function trendingVideo()
     {
         $query = <<<EOF
-query {
+query TrendingVideo {
   trendingTitles(limit: 250) {
     titles {
       id
@@ -177,7 +177,7 @@ query {
   } 
 }
 EOF;
-        $data = $this->graphql->query($query);
+        $data = $this->graphql->query($query, "TrendingVideo");
         foreach ($data->trendingTitles->titles as $edge) {
             $thumbUrl = null;
             $videoId = isset($edge->latestTrailer->id) ? str_replace('vi', '', $edge->latestTrailer->id) : null;
