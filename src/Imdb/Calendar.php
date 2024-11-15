@@ -37,7 +37,7 @@ class Calendar extends MdbBase
         $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($startDate)) );
         
         $query = <<<EOF
-query {
+query ComingSoon {
     comingSoon(
       first: 9999
       comingSoonType: $type
@@ -81,7 +81,7 @@ query {
   }
 }
 EOF;
-        $data = $this->graphql->query($query);
+        $data = $this->graphql->query($query, "ComingSoon");
         foreach ($data->comingSoon->edges as $edge) {
             $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : null;
             if ($title == null) {
