@@ -44,7 +44,7 @@ class KeywordSearch extends MdbBase
         $amount = $this->config->keywordSearchAmount;
 
         $query = <<<EOF
-query Search {
+query SearchKeyword {
   mainSearch(
     first: $amount
     options: {
@@ -71,7 +71,7 @@ query Search {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "Search");
+        $data = $this->graphql->query($query, "SearchKeyword");
         foreach ($data->mainSearch->edges as $key => $edge) {
             $keywordId = isset($edge->node->entity->id) ? str_replace('kw', '', $edge->node->entity->id) : null;
             $keywordText = isset($edge->node->entity->text->text) ? $edge->node->entity->text->text : null;
