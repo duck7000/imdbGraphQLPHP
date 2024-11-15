@@ -297,6 +297,21 @@ class Config
      */
     public $thumbnailHeight = 207;
 
+    #---------------------------------------[Calendar class thumbnail]---
+    /**
+     * All methods thumbnail width
+     * @var int pixels
+     * Keep ratio in mind square thumbnails don't work
+     */
+    public $calendarThumbnailWidth = 50;
+
+    /**
+     * All methods thumbnail height
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $calendarThumbnailHeight = 74;
+
     #========================================================[ Debug options ]===
     /**
      * Enable debug mode?
