@@ -1377,6 +1377,9 @@ relationshipType {
 EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
         foreach ($data as $edge) {
+            if (empty($edge->node->relationName->name) && empty($edge->node->relationName->nameText)) {
+                continue;
+            }
             if (!empty($edge->node->relationName->name)) {
                 $id = isset($edge->node->relationName->name->id) ?
                             str_replace('nm', '', $edge->node->relationName->name->id) : null;
