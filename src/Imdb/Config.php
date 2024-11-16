@@ -294,7 +294,7 @@ class Config
      */
     public $namePhotoThumbnailHeight = 207;
 
-    #---------------------------------------[Trailers class Photo thumbnail]---
+    #---------------------------------------[Trailers and Chart class Photo thumbnail]---
     /**
      * ALL methods thumbnail width
      * Default value: 140

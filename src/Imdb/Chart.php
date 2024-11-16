@@ -10,36 +10,51 @@
 
 namespace Imdb;
 
+use Psr\SimpleCache\CacheInterface;
+use Imdb\Image;
+
 /**
- * Obtains information about top250 lists as seen on IMDb
+ * Obtains information about chart lists as seen on IMDb
  * https://www.imdb.com/chart
+ * @Note thumbnail width and height are set in config, one setting for all methods!
  * @author Ed (github user: duck7000)
  */
 class Chart extends MdbBase
 {
+
+    protected $imageFunctions;
+    protected $newImageWidth;
+    protected $newImageHeight;
+    protected $top250TitleResults = array();
+    protected $top250NameResults = array();
+    protected $mostPopularNameResults = array();
+    protected $mostPopularTitleResults = array();
+
     /**
-     * Get top250 lists as seen on IMDb https://www.imdb.com/chart
+     * @param Config $config OPTIONAL override default config
+     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     */
+    public function __construct(Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null)
+    {
+        parent::__construct($config, $logger, $cache);
+        $this->imageFunctions = new Image();
+        $this->newImageWidth = $this->config->thumbnailWidth;
+        $this->newImageHeight = $this->config->thumbnailHeight;
+    }
+
+    /**
+     * Get top250 titles lists as seen on IMDb https://www.imdb.com/chart
      * @parameter $listType This defines different kind of lists like top250 Movie or TV
      * possible values for $listType:
      *  BOTTOM_100
      *      Overall IMDb Bottom 100 Feature List
-     *  TOP_50_BENGALI
-     *      Top 50 Bengali Feature List
-     *  TOP_50_MALAYALAM
-     *      Top 50 Malayalam Feature List
-     *  TOP_50_TAMIL
-     *      Top 50 Tamil Feature List
-     *  TOP_50_TELUGU
-     *      Top 50 Telugu Feature List
      *  TOP_250
      *      Overall IMDb Top 250 Feature List
      *  TOP_250_ENGLISH
      *      Top 250 English Feature List
-     *  TOP_250_INDIA
-     *      Top 250 Indian Feature List
      *  TOP_250_TV
      *      Overall IMDb Top 250 TV List
-     * @parameter $thumb This defines if imgUrl contains thumb or full image, full image is large in size! (Thumb is 140x207)
      * @return
      * Array
      *   (
@@ -47,20 +62,20 @@ class Chart extends MdbBase
      *          (
      *              [title] =>          (string) Breaking Bad
      *              [imdbid] =>         (string) 0903747
-     *              [year] =>           (int)2008
-     *              [rank] =>           (int)1
+     *              [year] =>           (int) 2008
+     *              [rank] =>           (int) 1
      *              [rating] =>         (float) 9.5
-     *              [votes] =>          (int)2178109
-     *              [runtimeSeconds] => (int)2700
+     *              [votes] =>          (int) 2178109
+     *              [runtimeSeconds] => (int) 2700
      *              [runtimeText] =>    (string) 45m
-     *              [imgUrl] =>         (string) https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_QL75_UX140_.jpg
+     *              [imgUrl] =>         (string) (140x207 set in config)
      *          )
      *  )
      */
-    public function top250List($listType = "TOP_250", $thumb = true)
+    public function top250Title($listType = "TOP_250")
     {
         $query = <<<EOF
-query {
+query Top250Title {
   titleChartRankings(
     first: 250
     input: {rankingsChartType: $listType}
@@ -84,6 +99,8 @@ query {
           }
           primaryImage {
             url
+            width
+            height
           }
           runtime {
             seconds
@@ -99,42 +116,369 @@ query {
   }
 }
 EOF;
-        $data = $this->graphql->query($query);
-
+        $data = $this->graphql->query($query, "Top250Title");
         foreach ($data->titleChartRankings->edges as $edge) {
-            $title = isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null;
-            $imdbid = isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null;
-            $year = isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null;
-            $rank = isset($edge->node->item->ratingsSummary->topRanking->rank) ? $edge->node->item->ratingsSummary->topRanking->rank : null;
-            $rating = isset($edge->node->item->ratingsSummary->aggregateRating) ? $edge->node->item->ratingsSummary->aggregateRating : null;
-            $votes = isset($edge->node->item->ratingsSummary->voteCount) ? $edge->node->item->ratingsSummary->voteCount : null;
-            $runtimeSeconds = isset($edge->node->item->runtime->seconds) ? $edge->node->item->runtime->seconds : null;
-            $runtimeText = isset($edge->node->item->runtime->displayableProperty->value->plainText) ?
-                                 $edge->node->item->runtime->displayableProperty->value->plainText : null;
-
-            // image url
-            $imgUrl = null;
+            $thumbUrl = null;
             if (!empty($edge->node->item->primaryImage->url)) {
-                if ($thumb == true) {
-                    $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
-                    $imgUrl = $img . 'QL75_UX140_.jpg';
-                } else {
-                    $imgUrl = $edge->node->item->primaryImage->url;
-                }
+                $fullImageWidth = $edge->node->item->primaryImage->width;
+                $fullImageHeight = $edge->node->item->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $thumbUrl = $img . $parameter;
             }
-
-            $list[] = array(
-                'title' => $title,
-                'imdbid' => $imdbid,
-                'year' => $year,
-                'rank' => $rank,
-                'rating' => $rating,
-                'votes' => $votes,
-                'runtimeSeconds' => $runtimeSeconds,
-                'runtimeText' => $runtimeText,
-                'imgUrl' => $imgUrl
+            $this->top250TitleResults[] = array(
+                'title' => isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null,
+                'imdbid' => isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null,
+                'year' => isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null,
+                'rank' => isset($edge->node->item->ratingsSummary->topRanking->rank) ?
+                                $edge->node->item->ratingsSummary->topRanking->rank : null,
+                'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
+                                  $edge->node->item->ratingsSummary->aggregateRating : null,
+                'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
+                                 $edge->node->item->ratingsSummary->voteCount : null,
+                'runtimeSeconds' => isset($edge->node->item->runtime->seconds) ?
+                                          $edge->node->item->runtime->seconds : null,
+                'runtimeText' => isset($edge->node->item->runtime->displayableProperty->value->plainText) ?
+                                       $edge->node->item->runtime->displayableProperty->value->plainText : null,
+                'imgUrl' => $thumbUrl
             );
         }
-        return $list;
+        return $this->top250TitleResults;
     }
+
+    /**
+     * Get top250 Names lists (Not seen on IMDb afaik)
+     * @return
+     * Array
+     *   (
+     *      [0] => Array
+     *          (
+     *              [name] =>       (string) jenifer lopez
+     *              [imdbid] =>     (string) 0903747
+     *              [rank] =>       (int)1
+     *              [credits] =>    (array)
+     *                  [0] => Actress
+     *                  [1] => Producer
+     *                  [2] => Director
+     *                  [3] => Writer
+     *                  [4] => Self
+     *                  [5] => Thanks
+     *              [knownFor] =>   (array)
+     *                  [id] => 2258337
+     *                  [title] => Eega
+     *                  [year] => 2012
+     *              [imgUrl] =>     (string) (140x207 set in config)
+     *          )
+     *  )
+     */
+    public function top250Name()
+    {
+        $query = <<<EOF
+query Top250Name {
+  nameChartRankings(
+  first: 250
+  input: {rankingsChartType: INDIA_STAR_METER}
+  ) {
+    edges {
+      node {
+        rank
+        item {
+          nameText {
+            text
+          }
+          id
+          creditSummary {
+            categories {
+              category {
+                text
+              }
+            }
+          }
+          knownFor(first: 1) {
+            edges {
+              node {
+                title {
+                  id
+                  titleText {
+                    text
+                  }
+                  releaseYear {
+                    year
+                  }
+                }
+              }
+            }
+          }
+          primaryImage {
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Top250Name");
+        foreach ($data->nameChartRankings->edges as $edge) {
+            $thumbUrl = null;
+            $credits = array();
+            $knownFor = array();
+            if (!empty($edge->node->item->primaryImage->url)) {
+                $fullImageWidth = $edge->node->item->primaryImage->width;
+                $fullImageHeight = $edge->node->item->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $thumbUrl = $img . $parameter;
+            }
+            if (!empty($edge->node->item->knownFor->edges)) {
+                $knownFor = array(
+                    'id' => isset($edge->node->item->knownFor->edges[0]->node->title->id) ?
+                                  str_replace('tt', '', $edge->node->item->knownFor->edges[0]->node->title->id) : null,
+                    'title' => isset($edge->node->item->knownFor->edges[0]->node->title->titleText->text) ?
+                                     $edge->node->item->knownFor->edges[0]->node->title->titleText->text : null,
+                    'year' => isset($edge->node->item->knownFor->edges[0]->node->title->releaseYear->year) ?
+                                    $edge->node->item->knownFor->edges[0]->node->title->releaseYear->year : null
+                );
+            }
+            if (!empty($edge->node->item->creditSummary->categories)) {
+                foreach ($edge->node->item->creditSummary->categories as $item) {
+                    if (!empty($item->category->text)) {
+                        $credits[] = $item->category->text;
+                    }
+                }
+            }
+            $this->top250NameResults[] = array(
+                'name' => isset($edge->node->item->nameText->text) ? $edge->node->item->nameText->text : null,
+                'imdbid' => isset($edge->node->item->id) ? str_replace('nm', '', $edge->node->item->id) : null,
+                'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
+                'credits' => $credits,
+                'knownFor' => $knownFor,
+                'imgUrl' => $thumbUrl
+            );
+        }
+        return $this->top250NameResults;
+    }
+
+    /**
+     * Get most popular Names lists as seen on https://imdb.com/chart/starmeter
+     * @return
+     * Array
+     *   (
+     *      [0] => Array
+     *          (
+     *              [name] =>       (string) jenifer lopez
+     *              [imdbid] =>     (string) 0903747
+     *              [rank] =>       (int)1
+     *              [credits] =>    (array)
+     *                  [0] => Actress
+     *                  [1] => Producer
+     *                  [2] => Director
+     *                  [3] => Writer
+     *                  [4] => Self
+     *                  [5] => Thanks
+     *              [knownFor] =>   (array)
+     *                  [id] => 2258337
+     *                  [title] => Eega
+     *                  [year] => 2012
+     *              [imgUrl] =>     (string) (140x207 set in config)
+     *          )
+     *  )
+     */
+    public function mostPopularName()
+    {
+        $query = <<<EOF
+query MostPopularName {
+  chartNames(
+    first: 100
+    chart: {chartType: MOST_POPULAR_NAMES}
+    sort: {sortBy: POPULARITY, sortOrder: ASC}
+  ) {
+    edges {
+      node {
+        id
+        nameText {
+          text
+        }
+        creditCategories {
+          category {
+            text
+          }
+        }
+        knownFor(first: 1) {
+          edges {
+            node {
+              title {
+                id
+                titleText {
+                  text
+                }
+                releaseYear{
+                  year
+                }
+              }
+            }
+          }
+        }
+        primaryImage {
+          url
+          width
+          height
+        }
+        meterRanking {
+          currentRank
+          rankChange {
+            difference
+            changeDirection
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "MostPopularName");
+        foreach ($data->chartNames->edges as $edge) {
+            $thumbUrl = null;
+            $credits = array();
+            $knownFor = array();
+            if (!empty($edge->node->primaryImage->url)) {
+                $fullImageWidth = $edge->node->primaryImage->width;
+                $fullImageHeight = $edge->node->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $thumbUrl = $img . $parameter;
+            }
+            if (!empty($edge->node->knownFor->edges)) {
+                $knownFor = array(
+                    'id' => isset($edge->node->knownFor->edges[0]->node->title->id) ?
+                                  str_replace('tt', '', $edge->node->knownFor->edges[0]->node->title->id) : null,
+                    'title' => isset($edge->node->knownFor->edges[0]->node->title->titleText->text) ?
+                                     $edge->node->knownFor->edges[0]->node->title->titleText->text : null,
+                    'year' => isset($edge->node->knownFor->edges[0]->node->title->releaseYear->year) ?
+                                    $edge->node->knownFor->edges[0]->node->title->releaseYear->year : null
+                );
+            }
+            if (!empty($edge->node->creditCategories)) {
+                foreach ($edge->node->creditCategories as $item) {
+                    if (!empty($item->category->text)) {
+                        $credits[] = $item->category->text;
+                    }
+                }
+            }
+            $this->mostPopularNameResults[] = array(
+                'name' => isset($edge->node->nameText->text) ? $edge->node->nameText->text : null,
+                'imdbid' => isset($edge->node->id) ? str_replace('nm', '', $edge->node->id) : null,
+                'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
+                'credits' => $credits,
+                'knownFor' => $knownFor,
+                'imgUrl' => $thumbUrl
+            );
+        }
+        return $this->mostPopularNameResults;
+    }
+
+    /**
+     * Get most popular Titles lists as seen on https://imdb.com/chart/moviemeter
+     * @parameter $listType This defines different kind of lists like Movie or TV
+     * possible values for $listType:
+     *  LOWEST_RATED_MOVIES
+     *      Lowest Rated IMDb Bottom List
+     *  MOST_POPULAR_MOVIES
+     *      Most Popular IMDb Movies List
+     *  MOST_POPULAR_TV_SHOWS
+     *      Most Popular IMDb TV List
+     *  TOP_RATED_MOVIES
+     *      Top Rated IMDb Movies List
+     *  TOP_RATED_ENGLISH_MOVIES
+     *      Top Rated English IMDb Movies List
+     *  TOP_RATED_TV_SHOWS
+     *      Top Rated IMDb TV List
+     * @return
+     * Array
+     *   (
+     *      [0] => Array
+     *          (
+     *          [title] =>              (string) The Substance
+     *          [imdbid] =>             (string) 17526714
+     *          [year] =>               (int) 2024
+     *          [runtimeSeconds] =>     (int) 8460
+     *          [runtimeText] =>        (string) 2h 21m
+     *          [rank] =>               (int) 1
+     *          [rating] =>             (float) 7.5
+     *          [votes] =>              (int) 124556
+     *          [imgUrl] =>             (string) (140x207 set in config)
+     *          )
+     *  )
+     */
+    public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES")
+    {
+        $query = <<<EOF
+query MostPopularTitle {
+  chartTitles(
+    first: 9999
+    chart: {chartType: $listType}
+    sort: {sortBy: RANKING, sortOrder: ASC}
+  ) {
+    edges {
+      currentRank
+      node {
+        id
+        titleText {
+          text
+        }
+        releaseYear {
+          year
+        }
+        runtime {
+          seconds
+          displayableProperty {
+            value {
+              plainText
+            }
+          }
+        }
+       ratingsSummary {
+          aggregateRating
+          voteCount
+        }
+        primaryImage {
+          url
+          width
+          height
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "MostPopularTitle");
+        foreach ($data->chartTitles->edges as $edge) {
+            $thumbUrl = null;
+            if (!empty($edge->node->primaryImage->url)) {
+                $fullImageWidth = $edge->node->primaryImage->width;
+                $fullImageHeight = $edge->node->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $thumbUrl = $img . $parameter;
+            }
+            $this->mostPopularTitleResults[] = array(
+                'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
+                'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
+                'year' => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null,
+                'runtimeSeconds' => isset($edge->node->runtime->seconds) ? $edge->node->runtime->seconds : null,
+                'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
+                                       $edge->node->runtime->displayableProperty->value->plainText : null,
+                'rank' => isset($edge->currentRank) ? $edge->currentRank : null,
+                'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
+                                  $edge->node->ratingsSummary->aggregateRating : null,
+                'votes' => isset($edge->node->ratingsSummary->voteCount) ?
+                                  $edge->node->ratingsSummary->voteCount : null,
+                'imgUrl' => $thumbUrl
+            );
+        }
+        return $this->mostPopularTitleResults;
+    }
+
 }
