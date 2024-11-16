@@ -195,6 +195,7 @@ class Config
     #---------------------------------------[Title class Photo thumbnail]---
     /**
      * photo() thumbnail width
+     * Default value: 190
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -202,6 +203,7 @@ class Config
 
     /**
      * photo() thumbnail height
+     * Default value: 281
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -210,6 +212,7 @@ class Config
     #----------------------------------------[Title class Recommendation thumbnail]---
     /**
      * recommendation() thumbnail width
+     * Default value: 140
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -217,6 +220,7 @@ class Config
 
     /**
      * recommendation() thumbnail height
+     * Default value: 207
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -225,6 +229,7 @@ class Config
     #----------------------------------------[Title class Cast thumbnail]---
     /**
      * cast() thumbnail width
+     * Default value: 32
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -232,6 +237,7 @@ class Config
 
     /**
      * cast() thumbnail height
+     * Default value: 44
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -240,6 +246,7 @@ class Config
     #----------------------------------------[Title class Episodes thumbnail]---
     /**
      * episode() thumbnail width
+     * Default value: 224
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -247,6 +254,7 @@ class Config
 
     /**
      * episode() thumbnail height
+     * Default value: 126
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -255,6 +263,7 @@ class Config
     #----------------------------------------[Title class mainphoto thumbnail]---
     /**
      * mainphoto() thumbnail width
+     * Default value: 100
      * @var int pixels
      * Keep ratio square!
      */
@@ -262,6 +271,7 @@ class Config
 
     /**
      * mainphoto() thumbnail height
+     * Default value: 100
      * @var int pixels
      * Keep ratio square!
      */
@@ -270,6 +280,7 @@ class Config
     #---------------------------------------[Name class Photo thumbnail]---
     /**
      * photo() thumbnail width
+     * Default value: 140
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -277,6 +288,7 @@ class Config
 
     /**
      * photo() thumbnail height
+     * Default value: 207
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -285,6 +297,7 @@ class Config
     #---------------------------------------[Trailers class Photo thumbnail]---
     /**
      * ALL methods thumbnail width
+     * Default value: 140
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -292,6 +305,7 @@ class Config
 
     /**
      * ALL methods thumbnail height
+     * Default value: 207
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
@@ -300,6 +314,7 @@ class Config
     #---------------------------------------[Calendar class thumbnail]---
     /**
      * All methods thumbnail width
+     * Default value: 50
      * @var int pixels
      * Keep ratio in mind square thumbnails don't work
      */
@@ -307,6 +322,7 @@ class Config
 
     /**
      * All methods thumbnail height
+     * Default value: 74
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
