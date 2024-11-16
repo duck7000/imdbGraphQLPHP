@@ -1377,11 +1377,19 @@ relationshipType {
 EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
         foreach ($data as $edge) {
+            if (!empty($edge->node->relationName->name)) {
+                $id = isset($edge->node->relationName->name->id) ?
+                            str_replace('nm', '', $edge->node->relationName->name->id) : null;
+                $name = isset($edge->node->relationName->name->nameText->text) ?
+                              $edge->node->relationName->name->nameText->text : null;
+            } else {
+                $id = null;
+                $name = isset($edge->node->relationName->nameText) ?
+                              $edge->node->relationName->nameText : null;
+            }
             $arrayName[] = array(
-                'imdb' => isset($edge->node->relationName->name->id) ?
-                                str_replace('nm', '', $edge->node->relationName->name->id) : null,
-                'name' => isset($edge->node->relationName->name->nameText->text) ?
-                                $edge->node->relationName->name->nameText->text : null,
+                'imdb' => $id,
+                'name' => $name,
                 'relType' => isset($edge->node->relationshipType->text) ?
                                    $edge->node->relationshipType->text : null
             );
