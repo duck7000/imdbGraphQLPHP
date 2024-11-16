@@ -2,6 +2,28 @@
 History for imdbGraphQLPHP
 ====================
 
+v1.4.3
+-------------------
+* Name class uses image calculation functions from Image class to create thumbnails.
+* Name and Title class thumbnail width and height are now in config (see docblocks)
+* Name class photo() if there is no image url this returns false instead of null.
+* Added new Trailers class (all info in wiki)
+* Trailers class thumbnail width and height are now in config (see docblocks)
+* Added new KeywordSearch class you can use this to search titles with a specific keyword (info in wiki)
+* Added keywordConstraint to TitleSearchAdvanced class it is now possible to search on keyword(s)
+* Name class children(), parents() and relatives() fixed bug if there is no id there also was no name
+* Name class children(), parents() and relatives() fixed bug if name and nameText object are both null will be skipped as this has no value
+* Complete overhaul of Calendar class (there are user changes!, see #85)
+    * Thumbnail width and height are now set in config, default 50x74. Keep ratio in mind when changing.
+    * Thumb parameter is removed, only thumbnail url is returned but you can set it as large as you want but keep ratio in mind.
+    * Thumbnails are now produced by image processing functions from Image class to provide perfect thumbnails.
+    * Release date is now a iso date string: month-day-year, separate date parts are removed.
+    * output array is now categorized by release date e.g. released date is the index key.
+    * Release date is removed from output array as it is now the index key.
+    * fixed a bug when the title has Untitled IFC in the name, this will be skipped just as imdb does on the calendar page
+    * Added a few extra data checks (no user changes)
+
+
 v1.4.2
 -------------------
 * Fixed old name of this project in changelog
