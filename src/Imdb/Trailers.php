@@ -133,14 +133,14 @@ EOF;
      *   (
      *      [0] => Array
      *          (
-     *              [videoId] =>       (string) (without vi)
-     *              [titleId] =>       (string) (without tt)
-     *              [title] =>         (string)
-     *              [runtime] =>       (string) (02:26)
-     *              [playbackUrl] =>   (string) This url will playback in browser only)
-     *              [thumbnailUrl] =>  (string) (thumbnail (140x207)image of the title)
-     *              [releaseDate] =>   (string) (date string: December 4, 2024)
-     *              [contentType] =>   (string ) like Trailer Season 1 [OV]
+     *              [videoId] =>            (string) (without vi)
+     *              [titleId] =>            (string) (without tt)
+     *              [title] =>              (string)
+     *              [trailerRuntime] =>     (string) (02:26)
+     *              [playbackUrl] =>        (string) This url will playback in browser only)
+     *              [thumbnailUrl] =>       (string) (thumbnail (140x207)image of the title)
+     *              [releaseDate] =>        (string) (date string: December 4, 2024)
+     *              [contentType] =>        (string ) like Trailer Season 1 [OV]
      *          )
      *  )
      */
@@ -198,7 +198,7 @@ EOF;
                 'videoId' => $videoId,
                 'titleId' => isset($edge->id) ? str_replace('tt', '', $edge->id) : null,
                 'title' => isset($edge->titleText->text) ? $edge->titleText->text : null,
-                'runtime' => isset($edge->latestTrailer->runtime->value) ? $this->convert($edge->latestTrailer->runtime->value) : null,
+                'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ? $this->convert($edge->latestTrailer->runtime->value) : null,
                 'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
