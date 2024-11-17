@@ -52,7 +52,7 @@ class Trailers extends MdbBase
      *              [titleId] =>                    (string) (without tt)
      *              [title] =>                      (string)
      *              [trailerCreateDate] =>          (string iso date) 2024-11-17T13:16:18.708Z
-     *              [trailerRuntime] =>             (int) (in seconds)
+     *              [trailerRuntime] =>             (string) (02:26)
      *              [playbackUrl] =>                (string) This url will playback in browser only)
      *              [thumbnailUrl] =>               (string) (thumbnail (140x207) image of the title)
      *              [releaseDate] =>                (string) (date string: December 4, 2024)
@@ -115,7 +115,7 @@ EOF;
                 'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
                 'trailerCreateDate' => isset($edge->createdDate) ? $edge->createdDate : null,
-                'trailerRuntime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
+                'trailerRuntime' => isset($edge->runtime->value) ? $this->convert($edge->runtime->value) : null,
                 'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
@@ -136,7 +136,7 @@ EOF;
      *              [videoId] =>       (string) (without vi)
      *              [titleId] =>       (string) (without tt)
      *              [title] =>         (string)
-     *              [runtime] =>       (int) (in seconds)
+     *              [runtime] =>       (string) (02:26)
      *              [playbackUrl] =>   (string) This url will playback in browser only)
      *              [thumbnailUrl] =>  (string) (thumbnail (140x207)image of the title)
      *              [releaseDate] =>   (string) (date string: December 4, 2024)
@@ -198,7 +198,7 @@ EOF;
                 'videoId' => $videoId,
                 'titleId' => isset($edge->id) ? str_replace('tt', '', $edge->id) : null,
                 'title' => isset($edge->titleText->text) ? $edge->titleText->text : null,
-                'runtime' => isset($edge->latestTrailer->runtime->value) ? $edge->latestTrailer->runtime->value : null,
+                'runtime' => isset($edge->latestTrailer->runtime->value) ? $this->convert($edge->latestTrailer->runtime->value) : null,
                 'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
@@ -207,6 +207,17 @@ EOF;
             );
         }
         return $this->trendingVideoResults;
+    }
+
+    /**
+     * Convert seconds to minutes:seconds
+     * @return string minutes:seconds
+     */
+    private function convert($seconds)
+    {
+        $min = floor($seconds / 60);
+        $sec = $seconds % 60;
+        return sprintf("%02d:%02d", $min, $sec);
     }
 
 }
