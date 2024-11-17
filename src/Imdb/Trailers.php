@@ -48,14 +48,15 @@ class Trailers extends MdbBase
      *   (
      *      [0] => Array
      *          (
-     *              [videoId] =>       (string) (without vi)
-     *              [titleId] =>       (string) (without tt)
-     *              [title] =>         (string)
-     *              [runtime] =>       (int) (in seconds)
-     *              [playbackUrl] =>   (string) This url will playback in browser only)
-     *              [thumbnailUrl] =>  (string) (thumbnail (140x207) image of the title)
-     *              [releaseDate] =>   (string) (date string: December 4, 2024)
-     *              [contentType] =>   (string ) like Trailer Season 1 [OV]
+     *              [videoId] =>            (string) (without vi)
+     *              [titleId] =>            (string) (without tt)
+     *              [title] =>              (string)
+     *              [trailerCreateDate] =>  (string iso date) 2024-11-17T13:16:18.708Z
+     *              [runtime] =>            (int) (in seconds)
+     *              [playbackUrl] =>        (string) This url will playback in browser only)
+     *              [thumbnailUrl] =>       (string) (thumbnail (140x207) image of the title)
+     *              [releaseDate] =>        (string) (date string: December 4, 2024)
+     *              [contentType] =>        (string ) like Trailer Season 1 [OV]
      *          )
      *  )
      */
@@ -69,6 +70,7 @@ query RecentVideo {
   ) {
     videos {
       id
+      createdDate
       primaryTitle {
         id
         titleText {
@@ -112,6 +114,7 @@ EOF;
                 'videoId' => $videoId,
                 'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
+                'trailerCreateDate' => isset($edge->createdDate) ? $edge->createdDate : null,
                 'runtime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
                 'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
