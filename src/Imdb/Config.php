@@ -192,7 +192,7 @@ class Config
 
     #========================================================[ Thumbnail options ]===
 
-    #---------------------------------------[Title class Photo thumbnail]---
+    #---------------------------------------[Title and TitleCombined class Photo thumbnail]---
     /**
      * photo() thumbnail width
      * Default value: 190

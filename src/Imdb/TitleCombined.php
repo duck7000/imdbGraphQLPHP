@@ -21,6 +21,8 @@ class TitleCombined extends MdbBase
 {
 
     protected $imageFunctions;
+    protected $newImageWidth;
+    protected $newImageHeight;
     protected $main = array();
     protected $mainCreditsPrincipal = array();
     protected $mainPoster = null;
@@ -47,6 +49,8 @@ class TitleCombined extends MdbBase
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
         $this->imageFunctions = new Image();
+        $this->newImageWidth = $this->config->photoThumbnailWidth;
+        $this->newImageHeight = $this->config->photoThumbnailHeight;
     }
 
     /**
@@ -251,10 +255,8 @@ EOF;
         if (!empty($data->title->primaryImage->url)) {
             $fullImageWidth = $data->title->primaryImage->width;
             $fullImageHeight = $data->title->primaryImage->height;
-            $newImageWidth = 190;
-            $newImageHeight = 281;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
             
             // thumb image
             $this->mainPosterThumb = $img . $parameter;
