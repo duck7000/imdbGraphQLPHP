@@ -2,7 +2,21 @@
 History for imdbGraphQLPHP
 ====================
 
-v1.4.3
+v1.4.5
+-------------------
+* Chart class, complete overhaul and added new methods:
+    * thumbnails are now produced by Image class functions to create perfect thumbnails
+    * Thumbnail width and height are now set in config, default: 140x207, for all methods!
+    * $thumb is removed, only thumbnail urls are returned but it can be any size you want, keep ratio in mind
+    * Method name top250List is changed to top250Title as it better suits what it is.
+    * New methods top250Name(), mostPopularName() and mostPopularTitle() are added, all info is/will be in wiki
+* Title class removed leftover debug info
+* Trailers class all methods, added trailerCreateDate to ouput array
+* Trailers class all methods, renamed runtime to trailerRuntime to make it clear it is runtime from trailer not title
+* TitleCombined class, thumbnail width and height are now in config, keep ratio in mind when changing
+
+
+v1.4.4
 -------------------
 * Name class uses image calculation functions from Image class to create thumbnails.
 * Name and Title class thumbnail width and height are now in config (see docblocks)
