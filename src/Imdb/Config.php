@@ -105,6 +105,11 @@ class Config
     public $keywordSearchAmount = 30;
 
 
+    #========================================================[ CompanySearch options ]===
+    // CompanySearch amount of results
+    public $companySearchAmount = 30;
+
+
     #========================================================[ TitleSearchAdvanced options ]===
     /**
      * amount of search results

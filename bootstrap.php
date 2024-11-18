@@ -18,3 +18,6 @@ require_once __DIR__ . '/src/Imdb/TitleCombined.php';
 require_once __DIR__ . '/src/Imdb/TitleSearch.php';
 require_once __DIR__ . '/src/Imdb/TitleSearchAdvanced.php';
 require_once __DIR__ . '/src/Imdb/KeywordSearch.php';
+require_once __DIR__ . '/src/Imdb/Company.php';
+require_once __DIR__ . '/src/Imdb/CompanySearch.php';
+
