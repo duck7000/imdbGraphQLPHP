@@ -136,6 +136,7 @@ EOF;
      *              [videoId] =>            (string) (without vi)
      *              [titleId] =>            (string) (without tt)
      *              [title] =>              (string)
+     *              [trailerCreateDate] =>  (string iso date) 2024-11-17T13:16:18.708Z
      *              [trailerRuntime] =>     (int) (in seconds!)
      *              [playbackUrl] =>        (string) This url will playback in browser only)
      *              [thumbnailUrl] =>       (string) (thumbnail (140x207)image of the title)
@@ -167,6 +168,7 @@ query TrendingVideo {
         height
       }
       latestTrailer {
+        createdDate
         id
         runtime {
           value
@@ -198,6 +200,7 @@ EOF;
                 'videoId' => $videoId,
                 'titleId' => isset($edge->id) ? str_replace('tt', '', $edge->id) : null,
                 'title' => isset($edge->titleText->text) ? $edge->titleText->text : null,
+                'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ? $edge->latestTrailer->createdDate : null,
                 'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ? $edge->latestTrailer->runtime->value : null,
                 'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
