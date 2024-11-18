@@ -23,6 +23,7 @@ class Calendar extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
+    protected $calendar = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -156,7 +157,7 @@ EOF;
                 $imgUrl = $img . $parameter;
             }
 
-            $calendar[$releaseDate][] = array(
+            $this->calendar[$releaseDate][] = array(
                 "title" => $title,
                 "imdbid" => $imdbid,
                 "genres" => $genres,
@@ -164,6 +165,6 @@ EOF;
                 "imgUrl" => $imgUrl
             );
         }
-        return $calendar;
+        return $this->calendar;
     }
 }
