@@ -57,7 +57,7 @@ class Calendar extends MdbBase
      *              [cast] => Array
      *                  [0] =>      (string) Dwayne Johnson
      *                  [1] =>      (string) Chris Evans
-     *              [imgUrl] => (string) https://m.media-amazon.com/images/M/MV5Bc@._V1_QL75_SX50_CR0,0,50,74_.jpg
+     *              [imgUrl] => (string) https://m.media-amazon.com/images/M/MV5Bc@._V1_QL75_SX50_CR0,0,140,207_.jpg
      */
     public function comingSoon($region = "US", $type = "MOVIE", $startDateOverride = 0, $filter = "true")
     {

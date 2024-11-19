@@ -323,7 +323,7 @@ class Config
      * @var int pixels
      * Keep ratio in mind square thumbnails don't work
      */
-    public $calendarThumbnailWidth = 50;
+    public $calendarThumbnailWidth = 140;
 
     /**
      * All methods thumbnail height
@@ -331,7 +331,7 @@ class Config
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
-    public $calendarThumbnailHeight = 74;
+    public $calendarThumbnailHeight = 207;
 
     #========================================================[ Debug options ]===
     /**
