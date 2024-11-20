@@ -71,7 +71,7 @@ class GraphQL
      */
     private function doRequest($query, $queryName = null, $variables = array())
     {
-        $request = new Request('https://api.graphql.imdb.com/');
+        $request = new Request('https://api.graphql.imdb.com/', $this->config);
         $request->addHeaderLine("Content-Type", "application/json");
         if ($this->config->useLocalization === true) {
             if (!empty($this->config->country)) {

@@ -333,11 +333,17 @@ class Config
      */
     public $calendarThumbnailHeight = 207;
 
-    #========================================================[ Debug options ]===
+    #========================================================[ Debug / Expert options ]===
     /**
      * Enable debug mode?
      * @var boolean
      */
     public $debug = false;
+
+    /**
+     * Set curlopt_timout, this is the time out if curl has a connection problem
+     * @var int
+     */
+    public $CURLOPT_TIMEOUT = 30;
 
 }
