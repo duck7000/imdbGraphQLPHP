@@ -24,6 +24,7 @@ class Calendar extends MdbBase
     protected $newImageWidth;
     protected $newImageHeight;
     protected $calendar = array();
+    protected $calendarStreaming = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -167,4 +168,193 @@ EOF;
         }
         return $this->calendar;
     }
+
+    /**
+     * Get upcoming releases from big streaming providers for current month.
+     * See https://www.imdb.com/list/ls549391228/ (Netflix)
+     * @parameter $listProviderId This is the streaming provider list id like "549391228" (without ls)
+     * Possible providerIds:
+     *      549391228 (Netflix)
+     *      549615961 (HBO MAX)
+     *      549641648 (Prime Video)
+     *      549359815 (Disney+)
+     *      549124072 (Hulu)
+     *      544306775 (TV and Streaming Calendar)
+     * @config options
+     *      $streamSortBy, $streamSortOrder, $calendarThumbnailWidth, $calendarThumbnailHeight
+     * 
+     * @return array ()
+     *  [listId] =>                 (string) 549391228 (without ls)
+     *  [listName] =>               (string) What's New on Netflix in November 2024
+     *  [listCreateDate] =>         (string)2024-10-23T21:14:59Z
+     *  [listLastModifiedDate ] =>  (string)2024-10-23T21:42:30Z
+     *  [items] => Array()
+     *      [0] => Array()
+     *          [id] =>             (string) 33130884 (without tt)
+     *          [title] =>          (string) Barbie Mysteries: The Great Horse Chase
+     *          [type] =>           (string) TV Series
+     *          [year] =>           (int) 2024
+     *          [description] =>    (string) Season 1 Available November 1
+     *          [runtime] =>        (int) 1320 (Seconds!)
+     *          [rating] =>         (float) 6.7
+     *          [votes] =>          (int) 36
+     *          [metacritic] =>     (int) 75
+     *          [plot] =>           (string) Barbie "Brooklyn" Roberts and Barbie "Malibu" Roberts embark on an adventure-packed journey across Europe to rescue two stolen horses.
+     *          [thumbUrl] =>       (string) https://m.media-amazon.com/images/M/MV5BOTg3MDg2ZTYtMjgzNy00MmViLWJjOWItYzQ4YWNmOWQ1ZGM0XkEyXkFqcGc@._V1_QL75_SX140_CR0,2,140,207_.jpg
+     *          [credits] => Array() categorized by index like Stars and Director max 3 elements in each category
+     *              [Director] => Array()
+     *                  [0] => Array()
+     *                      [nameId] => (string) 4638466 (without nm)
+     *                      [name] =>   (string) Joanna Pardos
+     *              [Stars] => Array()
+     *                  [0] => Array()
+     *                      [nameId] => (string) 0046033 (without nm)
+     *                      [name] =>   (string) Diedrich Bader
+     *                  [1] => Array()
+     *                      [nameId] => (string) 1312566 (without nm)
+     *                      [name] =>   (string) Kari Wahlgren
+     *                  [2] => Array()
+     *                      [nameId] => (string) 1293885 (without nm)
+     *                      [name] =>   (string) Bobby Moynihan
+     */
+    public function comingSoonStreaming($listProviderId)
+    {
+        $sortBy = $this->config->streamSortBy;
+        $sortOrder = $this->config->streamSortOrder;
+
+        $query = <<<EOF
+query ComingSoonStreaming {
+  list(id: "ls$listProviderId") {
+    createdDate
+    id
+    lastModifiedDate
+    name {
+      originalText
+    }
+    items(
+      first: 250
+      sort: {by: $sortBy, order: $sortOrder}
+    ) {
+      edges {
+        node {
+          description {
+            originalText {
+              plainText
+            }
+          }
+          item {
+            ... on Title {
+              id
+              titleText {
+                text
+              }
+              releaseYear {
+                year
+              }
+              titleType {
+                text
+              }
+              runtime {
+                seconds
+              }
+              ratingsSummary {
+                aggregateRating
+                voteCount
+              }
+              metacritic {
+                metascore {
+                  score
+                }
+              }
+              plot {
+                plotText {
+                  plainText
+                }
+              }
+              principalCredits(filter: {categories: ["cast", "director"]}) {
+                category {
+                  text
+                }
+                credits(limit: 3) {
+                  name {
+                    id
+                    nameText {
+                      text
+                    }
+                  }
+                }
+              }
+              primaryImage {
+                url
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "ComingSoonStreaming", ["id" => "ls$listProviderId"]);
+        $items = array();
+        foreach ($data->list->items->edges as $edge) {
+
+            // image url
+            $imgUrl = null;
+            if (!empty($edge->node->item->primaryImage->url)) {
+                $fullImageWidth = $edge->node->item->primaryImage->width;
+                $fullImageHeight = $edge->node->item->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $imgUrl = $img . $parameter;
+            }
+
+            // PrincipalCredits
+            $credits = array();
+            if (!empty($edge->node->item->principalCredits)) {
+                foreach ($edge->node->item->principalCredits as $principalCredit) {
+                    $category = $principalCredit->category->text;
+                    $temp = array();
+                    foreach ($principalCredit->credits as $credit) {
+                        $temp[] = array(
+                            'nameId' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null,
+                            'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null
+                        );
+                    }
+                    $credits[$category] = $temp;
+                }
+            }
+
+            $items[] = array(
+                'id' => isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null,
+                'title' => isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null,
+                'type' => isset($edge->node->item->titleType->text) ? $edge->node->item->titleType->text : null,
+                'year' => isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null,
+                'description' => isset($edge->node->description->originalText->plainText) ?
+                                       $edge->node->description->originalText->plainText : null,
+                'runtime' => isset($edge->node->item->runtime->seconds) ? $edge->node->item->runtime->seconds : null,
+                'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
+                                  $edge->node->item->ratingsSummary->aggregateRating : null,
+                'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
+                                 $edge->node->item->ratingsSummary->voteCount : null,
+                'metacritic' => isset($edge->node->item->metacritic->metascore->score) ?
+                                      $edge->node->item->metacritic->metascore->score : null,
+                'plot' => isset($edge->node->item->plot->plotText->plainText) ?
+                                $edge->node->item->plot->plotText->plainText : null,
+                'thumbUrl' => $imgUrl,
+                'credits' => $credits
+            );
+        }
+        $this->calendarStreaming = array(
+            'listId' => isset($data->list->id) ? str_replace('ls', '', $data->list->id) : null,
+            'listName' => isset($data->list->name->originalText) ? $data->list->name->originalText : null,
+            'listCreateDate' => isset($data->list->createdDate) ? $data->list->createdDate : null,
+            'listLastModifiedDate ' => isset($data->list->lastModifiedDate) ? $data->list->lastModifiedDate : null,
+            'items' => $items
+        );
+        return $this->calendarStreaming;
+    }
+
 }

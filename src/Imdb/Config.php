@@ -319,7 +319,7 @@ class Config
     #---------------------------------------[Calendar class thumbnail]---
     /**
      * All methods thumbnail width
-     * Default value: 50
+     * Default value: 140
      * @var int pixels
      * Keep ratio in mind square thumbnails don't work
      */
@@ -327,7 +327,7 @@ class Config
 
     /**
      * All methods thumbnail height
-     * Default value: 74
+     * Default value: 207
      * @var int pixels
      * Keep ratio in mind, square thumbnails don't work
      */
