@@ -180,6 +180,7 @@ EOF;
      *      549359815 (Disney+)
      *      549124072 (Hulu)
      *      549641648 (Amazon Prime)
+     *      549617029 (Paramount+)
      *      544306775 (TV and Streaming Calendar)
      * @config options
      *      $streamSortBy, $streamSortOrder, $calendarThumbnailWidth, $calendarThumbnailHeight
