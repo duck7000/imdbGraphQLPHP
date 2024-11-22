@@ -64,6 +64,7 @@ class Title extends MdbBase
     protected $recommendations = array();
     protected $runtimes = array();
     protected $mpaas = array();
+    protected $parentsGuide = array();
     protected $plot = array();
     protected $seasonEpisodes = array();
     protected $soundtracks = array();
@@ -721,6 +722,82 @@ EOF;
             }
         }
         return $this->mpaas;
+    }
+
+    #-------------------------------------------------------[ ParentsGuide ]---
+    /** Info for parents like Violence, Drugs. Alcohol etc
+     * @param $spoil boolean if true spoilers are also included.
+     * @return array categorized array of array()
+     *  [nudity] => Array
+     *      [severity] =>           (string) None (like mild,severe,none etc)
+     *      [severityVotedFor] =>   (int) 34 (how many people voted for this severity)
+     *      [totalSeverityVotes] => (int) 64 (total amount of voters)
+     *      [guideItems] => Array()
+     *          [0] => Array()
+     *              [isSpoiler] => (boolean) (true: include spoilers, false: exclude spoilers)
+     *              [guideText] => (string) A couple in swimwear are seen lying in a sexualised pose together.
+     * @see IMDB page /parentsguide
+     */
+    public function parentsGuide($spoil = false)
+    {
+        $filter = '';
+        if ($spoiler === false) {
+            $filter = '(filter: {spoilers: EXCLUDE_SPOILERS})';
+        }
+
+        $query = <<<EOF
+query ParentsGuide (\$id: ID!) {
+  title(id: \$id) {
+    parentsGuide {
+      categories $filter {
+        category {
+          id
+        }
+        severity {
+          text
+          votedFor
+        }
+        totalSeverityVotes
+        guideItems(first: 9999) {
+          edges {
+            node {
+              isSpoiler
+              text {
+                plainText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "ParentsGuide", ["id" => "tt$this->imdbID"]);
+        foreach ($data->title->parentsGuide->categories as $category) {
+
+            // guideItems
+            $guideItems = array();
+            if (!empty($category->guideItems->edges)) {
+                foreach ($category->guideItems->edges as $edge) {
+                    $guideItems[] = array(
+                        'isSpoiler' => $edge->node->isSpoiler,
+                        'guideText' => isset($edge->node->text->plainText) ?
+                                             $edge->node->text->plainText : null
+                    );
+                }
+            }
+            $this->parentsGuide[strtolower($category->category->id)] = array(
+                'severity' => isset($category->severity->text) ?
+                                    $category->severity->text : null,
+                'severityVotedFor' => isset($category->severity->votedFor) ?
+                                            $category->severity->votedFor : null,
+                'totalSeverityVotes' => isset($category->totalSeverityVotes) ?
+                                              $category->totalSeverityVotes : null,
+                'guideItems' => $guideItems
+            );
+        }
+        return $this->parentsGuide;
     }
 
     #----------------------------------------------[ Position in the "Top250" ]---
