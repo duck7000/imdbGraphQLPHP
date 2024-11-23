@@ -734,14 +734,14 @@ EOF;
      *      [totalSeverityVotes] => (int) 64 (total amount of voters)
      *      [guideItems] => Array()
      *          [0] => Array()
-     *              [isSpoiler] => (boolean) (true: include spoilers, false: exclude spoilers)
+     *              [isSpoiler] => (boolean) (indicates if entry is a spoiler or not)
      *              [guideText] => (string) A couple in swimwear are seen lying in a sexualised pose together.
      * @see IMDB page /parentsguide
      */
     public function parentsGuide($spoil = false)
     {
         $filter = '';
-        if ($spoiler === false) {
+        if ($spoil === false) {
             $filter = '(filter: {spoilers: EXCLUDE_SPOILERS})';
         }
 
