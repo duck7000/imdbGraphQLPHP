@@ -240,6 +240,42 @@ class Config
      */
     public $nameSortOrder = "ASC";
 
+
+    #========================================================[ Calendar options ]===
+    /**
+     * Sort by options
+     * @var string with double quotes (Default: LIST_ORDER)
+     * Possible values:
+     *
+     * LIST_ORDER
+     *      Sort titles based on their list order
+     *
+     * CREATED_DATE
+     *      Sort titles based on their created date
+     *
+     * MODIFIED_DATE
+     *      Sort titles based on their modified date
+     *
+     * POPULARITY
+     *      Sort Names based on their starMeterCurrentWeekRank
+     *      ASC: Lower popularity score means that the name is more popular, so the most popular names will be first.
+     *
+     */
+    public $streamSortBy = "LIST_ORDER";
+
+    /**
+     * Sort order options (Default: ASC
+     * @var ENUM
+     * Possible values:
+     *
+     * ASC
+     *      Ascending order e.g. 1,2,3
+     *
+     * DESC
+     *      Descending order e.g. 3,2,1
+     */
+    public $streamSortOrder = "ASC";
+
     #========================================================[ Thumbnail options ]===
 
     #---------------------------------------[Title and TitleCombined class Photo thumbnail]---
