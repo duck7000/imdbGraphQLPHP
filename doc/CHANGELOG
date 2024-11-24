@@ -2,6 +2,14 @@
 History for imdbGraphQLPHP
 ====================
 
+v1.4.6
+-------------------
+* Added Company and CompanySearch class, now it is possible to search and get company info (even imdbPro stuff!)
+* Calendar class, raised thumbnail width and height to 140x20
+* Added CURLOPT_TIMEOUT to config, you can set the timeout value.
+* Calendar class, added comingSoonStreaming method, you can get editors lists of streaming providers
+* Title class, added new method parentsGuide() get info about sex, drugs, profanity etc
+
 v1.4.5
 -------------------
 * Chart class, complete overhaul and added new methods:
