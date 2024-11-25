@@ -57,6 +57,7 @@ class Title extends MdbBase
     protected $mainRank = array();
     protected $mainPhoto = array();
     protected $trailers = array();
+    protected $videos = array();
     protected $mainAwards = array();
     protected $awards = array();
     protected $genres = array();
@@ -2209,6 +2210,102 @@ EOF;
             }
         }
         return $this->trailers;
+    }
+
+    #-------------------------------------------------[ Video ]---
+    /**
+     * Get all video URL's and images from videogallery page
+     * @return categorized array videos
+     *     [Trailer] => Array
+     *          [0] => Array()
+     *              [id] => 4030506521
+     *              [name] => A Clockwork Orange
+     *              [runtime] => 130
+     *              [description] => Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
+     *              [titleName] => A Clockwork Orange
+     *              [titleYear] => 1971
+     *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/
+     *              [imageUrl] => https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
+     *      [Clip] => Array()
+     *          [0] => Array()
+     *              [id] => 815316505
+     *              [name] => 'The Platform' & Future Films From the IMDb Top 250
+     *              [runtime] => 244
+     *              [description] => On this IMDbrief, we break down our favorite movies from the IMDb Top 250 that boldly look to what might lie ahead.
+     *              [titleName] => 'The Platform' & Future Films From the IMDb Top 250
+     *              [titleYear] => 2020
+     *              [playbackUrl] => https://www.imdb.com/video/vi815316505/
+     *              [imageUrl] => https://m.media-amazon.com/images/M/MV5BMW8@._V1_QL75_UX500_CR0,0,500,281_.jpg
+     */
+    public function video()
+    {
+        if (empty($this->videos)) {
+            $query = <<<EOF
+query Video(\$id: ID!) {
+  title(id: \$id) {
+    primaryVideos(first:9999) {
+      edges {
+        node {
+          id
+          name {
+            value
+          }
+          runtime {
+            value
+          }
+          contentType {
+            displayName {
+              value
+            }
+          }
+          description {
+            value
+          }
+          thumbnail {
+            url
+            width
+            height
+          }
+          primaryTitle {
+            titleText {
+              text
+            }
+            releaseYear {
+              year
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->primaryVideos->edges as $edge) {
+                $thumbUrl = null;
+                $videoId = isset($edge->node->id) ? str_replace('vi', '', $edge->node->id) : null;
+                if (!empty($edge->node->thumbnail->url)) {
+                    $fullImageWidth = $edge->node->thumbnail->width;
+                    $fullImageHeight = $edge->node->thumbnail->height;
+                    $img = str_replace('.jpg', '', $edge->node->thumbnail->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                    $thumbUrl = $img . $parameter;
+                }
+                $this->videos[$edge->node->contentType->displayName->value][] = array(
+                    'id' => $videoId,
+                    'name' => isset($edge->node->name->value) ? $edge->node->name->value : null,
+                    'runtime' => isset($edge->node->runtime->value) ? $edge->node->runtime->value : null,
+                    'description' => isset($edge->node->description->value) ? $edge->node->description->value : null,
+                    'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
+                                     $edge->node->primaryTitle->titleText->text : null,
+                    'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
+                                         $edge->node->primaryTitle->releaseYear->year : null,
+                    'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'imageUrl' => $thumbUrl
+                );
+            }
+        }
+        return $this->videos;
     }
 
     #-------------------------------------------------------[ Main Awards ]---
