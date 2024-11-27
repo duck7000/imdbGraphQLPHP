@@ -266,8 +266,13 @@ EOF;
         if ($constraint == '{') {
             return false;
         }
+
         // Adult constraint included
-        $constraint .= 'explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}}';
+        $constraint .= 'explicitContentConstraint: {explicitContentFilter: INCLUDE_ADULT}';
+
+        // end constraints
+        $constraint .= '}';
+
         return $constraint;
     }
 
