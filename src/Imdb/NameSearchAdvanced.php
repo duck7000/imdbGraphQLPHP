@@ -289,7 +289,7 @@ EOF;
 
     /**
      * Check if input birthday is not empty and valid
-     * @param string $date iso date string ('--04-024')
+     * @param string $date iso date string ('--04-24')
      * @return $date|string
      */
     private function checkBirthDay($birthDate)
