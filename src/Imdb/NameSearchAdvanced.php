@@ -320,6 +320,8 @@ EOF;
                     } else {
                         $constraint .= '}';
                     }
+                } else {
+                    return false;
                 }
             } else {
                 if (!empty($startDate) && $this->validateDate($startDate) !== false) {
@@ -338,6 +340,8 @@ EOF;
                     // birthday only
                     if (!empty($birthDay) && $this->checkBirthDay($birthDay) !== false) {
                         $constraint .= 'birthday:"' . $birthDay . '"}';
+                    } else {
+                        return false;
                     }
                 }
             }
