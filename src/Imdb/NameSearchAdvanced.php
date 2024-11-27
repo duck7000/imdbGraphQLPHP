@@ -360,6 +360,8 @@ EOF;
             if (!empty($startDate) && !empty($endDate)) {
                 if ($this->validateDate($startDate) !== false && $this->validateDate($endDate) !== false) {
                     $constraint .= 'deathDateRange: {start:"' . $startDate . '"end:"' . $endDate . '"}}';
+                } else {
+                    return false;
                 }
             } else {
                 if (!empty($startDate) && $this->validateDate($startDate) !== false) {
@@ -367,6 +369,8 @@ EOF;
                 } else {
                     if ($this->validateDate($endDate) !== false) {
                         $constraint .= 'deathDateRange: {end:"' . $endDate . '"}}';
+                    } else {
+                        return false;
                     }
                 }
             }
