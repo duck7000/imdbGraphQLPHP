@@ -2143,23 +2143,19 @@ query Video(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->primaryVideos->edges as $edge) {
-                // check if url and contentType is set and contentType = Trailer
-                if (!isset($edge->node->playbackURLs[0]->url) ||
-                    !isset($edge->node->contentType->displayName->value) ||
-                    $edge->node->contentType->displayName->value !== "Trailer") {
+                // check if contentType is set and contentType = Trailer
+                if (isset($edge->node->contentType->displayName->value) && $edge->node->contentType->displayName->value !== "Trailer") {
                     continue;
                 }
-
-                // Video ID
-                $videoId = explode("/", parse_url($edge->node->playbackURLs[0]->url, PHP_URL_PATH));
-
                 // Embed URL
-                $embedUrl = "https://www.imdb.com/video/imdb/" . $videoId[1] . "/imdb/embed";
-
-                // Check if embed URL not == 404 or 401
-                $headers = get_headers($embedUrl);
-                if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
-                    continue;
+                $embedUrl = null;
+                if (!empty($edge->node->id)) {
+                    $embedUrl = "https://www.imdb.com/video/imdb/" . $edge->node->id . "/imdb/embed";
+                    // Check if embed URL not == 404 or 401
+                    $headers = get_headers($embedUrl);
+                    if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+                        continue;
+                    }
                 }
                 $thumbUrl = '';
                 if (!empty($edge->node->thumbnail->url)) {
