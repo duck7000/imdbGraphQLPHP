@@ -159,11 +159,11 @@ EOF;
             }
 
             $this->calendar[$releaseDate][] = array(
-                "title" => $title,
-                "imdbid" => $imdbid,
-                "genres" => $genres,
-                "cast" => $cast,
-                "imgUrl" => $imgUrl
+                'title' => $title,
+                'imdbid' => $imdbid,
+                'genres' => $genres,
+                'cast' => $cast,
+                'imgUrl' => $imgUrl
             );
         }
         return $this->calendar;
