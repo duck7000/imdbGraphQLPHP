@@ -2114,9 +2114,7 @@ query Video(\$id: ID!) {
     primaryVideos(first: 9999) {
       edges {
         node {
-          playbackURLs {
-            url
-          }
+          id
           thumbnail {
             url
             width
