@@ -2101,11 +2101,23 @@ EOF;
     #-------------------------------------------------[ Trailer ]---
     /**
      * Get video URL's and images from videogallery page (Trailers only)
-     * @param $amount determine how many trailers are returned, default: 1
-     * @return array trailers (array[string videoUrl,string videoImageUrl])
-     * videoUrl is a embeded url that is tested to work in iframe (won't work in html5 <video>)
+     * @param $amount (int)determine how many trailers are returned, default: 1
+     * @param $customThumb boolean default: true
+     *      true: old style imdb custom thumb (fixed 200x150)
+     *      false: new style (fixed 500x281)
+     * @return array()
+     *      [0] array()
+     *          [id] =>             (string) (without vi) 4030506521
+     *          [name] =>           (string) (name of trailer) e.g. A Clockwork Orange
+     *          [runtime] =>        (int)    (in seconds!) 130 
+     *          [description] =>    (string) (description text of this trailer)
+     *          [titleName] =>      (string) (name of Title) e.g. A Clockwork Orange
+     *          [titleYear] =>      (int)    1971
+     *          [playbackUrl] =>    (string) https://www.imdb.com/video/vi4030506521/
+     *          [imageUrl] =>       (string) (affected by $customThumb)
+     * videoUrl is an embeded url that is tested to work in iframe (won't work in html5 <video>)
      */
-    public function trailer($amount = 1)
+    public function trailer($amount = 1, $customThumb = true)
     {
         if (empty($this->trailers)) {
             $query = <<<EOF
@@ -2115,6 +2127,9 @@ query Video(\$id: ID!) {
       edges {
         node {
           id
+          name {
+            value
+          }
           thumbnail {
             url
             width
@@ -2128,9 +2143,15 @@ query Video(\$id: ID!) {
               value
             }
           }
+          description {
+            value
+          }
           primaryTitle {
             titleText {
               text
+            }
+            releaseYear {
+              year
             }
           }
         }
@@ -2141,7 +2162,7 @@ query Video(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->primaryVideos->edges as $edge) {
-                // check if contentType is set and contentType = Trailer
+                // check contentType is set and contentType == Trailer
                 if (isset($edge->node->contentType->displayName->value) && $edge->node->contentType->displayName->value !== "Trailer") {
                     continue;
                 }
@@ -2155,48 +2176,50 @@ EOF;
                         continue;
                     }
                 }
+                $titleName = isset($edge->node->primaryTitle->titleText->text) ?
+                                   $edge->node->primaryTitle->titleText->text : null;
+                $runtime = isset($edge->node->runtime->value) ? $edge->node->runtime->value : null;
+                $thumbnailUrl = isset($edge->node->thumbnail->url) ? $edge->node->thumbnail->url : null;
                 $thumbUrl = '';
-                if (!empty($edge->node->thumbnail->url)) {
-                    // Runtime
-                    $runtime = $edge->node->runtime->value;
-                    $minutes = sprintf("%02d", ($runtime / 60));
-                    $seconds = sprintf("%02d", $runtime % 60);
-
-                    // Title
-                    $title = rawurlencode(rawurlencode($edge->node->primaryTitle->titleText->text));
-
-                    // calculate if the source image is HD aspect ratio or not
-                    $fullImageWidth = $edge->node->thumbnail->width;
-                    $fullImageHeight = $edge->node->thumbnail->height;
-                    $HDicon = 'PIimdb-HDIconMiniWhite,BottomLeft,4,-2_';
-                    $margin = '24';
-                    $aspectRatio = $fullImageWidth / $fullImageHeight;
-                    if ($aspectRatio < 1.77) {
-                        $HDicon = '';
-                        $margin = '4';
-                    } elseif ($fullImageWidth < 1280) {
-                        $HDicon = '';
-                        $margin = '4';
-                    } elseif ($fullImageHeight < 720) {
-                        $HDicon = '';
-                        $margin = '4';
+                if (!empty($thumbnailUrl)) {
+                    //CustomThumb
+                    if ($customThumb !== false) {
+                        $timeString = '';
+                        if (!empty($runtime)) {
+                            $timeString .= sprintf("%02d", ($runtime / 60)) . '%253A' . sprintf("%02d", $runtime % 60);
+                        }
+                        $title = '';
+                        if (!empty($titleName)) {
+                            $title = rawurlencode(rawurlencode($titleName));
+                        }
+                        $thumbUrl = str_replace('.jpg', '', $thumbnailUrl);
+                        $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_'
+                                     . 'PIimdb-blackband-204-14,TopLeft,0,0_'
+                                     . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
+                                     . 'PIimdb-bluebutton-big,BottomRight,-1,-1_'
+                                     . 'ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
+                                     . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_'
+                                     . 'ZA' . $timeString .',164,1,14,36,verdenab,7,255,255,255,1_'
+                                     . 'ZA' . $title . ',4,138,14,176,arialbd,7,255,255,255,1_.jpg';
+                    } else {
+                        // New style thumb
+                        if (!empty($thumbnailUrl)) {
+                            $fullImageWidth = $edge->node->thumbnail->width;
+                            $fullImageHeight = $edge->node->thumbnail->height;
+                            $img = str_replace('.jpg', '', $thumbnailUrl);
+                            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                            $thumbUrl = $img . $parameter;
+                        }
                     }
-
-                    // Thumbnail URL
-                    $thumbUrl = str_replace('.jpg', '', $edge->node->thumbnail->url);
-                    $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_'
-                                 . 'PIimdb-blackband-204-14,TopLeft,0,0_'
-                                 . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
-                                 . 'PIimdb-bluebutton-big,BottomRight,-1,-1_'
-                                 . 'ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
-                                 . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_'
-                                 . 'ZA' . $minutes . '%253A' . $seconds .',164,1,14,36,verdenab,7,255,255,255,1_'
-                                 . $HDicon
-                                 . 'ZA' . $title . ',' . $margin . ',138,14,176,arialbd,7,255,255,255,1_.jpg';
-
                 }
                 if (count($this->trailers) < $amount) {
                     $this->trailers[] = array(
+                        'name' => isset($edge->node->name->value) ? $edge->node->name->value : null,
+                        'runtime' => $runtime,
+                        'description' => isset($edge->node->description->value) ? $edge->node->description->value : null,
+                        'titleName' => $titleName,
+                        'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
+                                             $edge->node->primaryTitle->releaseYear->year : null,
                         'videoUrl' => $embedUrl,
                         'videoImageUrl' => $thumbUrl
                     );
