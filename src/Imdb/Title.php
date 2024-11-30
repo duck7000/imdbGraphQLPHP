@@ -1869,18 +1869,7 @@ EOF;
      */
     public function extSites()
     {
-        $categoryIds = array(
-            'official' => 'official',
-            'video' => 'video',
-            'photo' => 'photo',
-            'sound' => 'sound',
-            'misc' => 'misc'
-        );
-
         if (empty($this->externalSites)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->externalSites[$categoryId] = array();
-            }
             $query = <<<EOF
 label
 url
@@ -1906,7 +1895,7 @@ EOF;
                         $language[] = isset($lang->text) ? $lang->text : null;
                     }
                 }
-                $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
+                $this->externalSites[$edge->node->externalLinkCategory->id][] = array(
                     'label' => $label,
                     'url' => $url,
                     'language' => $language
