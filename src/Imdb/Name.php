@@ -1121,6 +1121,7 @@ EOF;
                 $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
                                       $edge->node->credit->title->releaseYear->endYear : null;
                 $titleThumbImageUrl = null;
+                $titleFullImageUrl = null;
                 if (!empty($edge->node->credit->title->primaryImage->url)) {
                     $img = str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url);
                     // full image
@@ -1281,6 +1282,7 @@ EOF;
                     }
                 }
                 $titleThumbImageUrl = null;
+                $titleFullImageUrl = null;
                 if (!empty($edge->node->title->primaryImage->url)) {
                     $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
                     // full image
