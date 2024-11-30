@@ -1316,7 +1316,7 @@ EOF;
             $img = str_replace('.jpg', '', $data->name->primaryImage->url);
 
             // full image
-            $this->mainPoster = $img . 'QL100_SX1000_.jpg';
+            $this->mainPoster = $img . 'QL100_UX1000_.jpg';
 
             // thumb image
             if (!empty($data->name->primaryImage->width) && !empty($data->name->primaryImage->height)) {
