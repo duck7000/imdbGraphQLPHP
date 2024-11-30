@@ -1091,6 +1091,8 @@ query KnownFor(\$id: ID!) {
               }
               primaryImage {
                 url
+                width
+                height
               }
             }
             ... on Cast {
@@ -1118,12 +1120,21 @@ EOF;
 
                 $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
                                       $edge->node->credit->title->releaseYear->endYear : null;
-
-                $titleFullImageUrl = isset($edge->node->credit->title->primaryImage->url) ?
-                                        str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url) . 'QL100_SX1000_.jpg' : null;
-                $titleThumbImageUrl = !empty($titleFullImageUrl) ?
-                                        str_replace('QL100_SX1000_.jpg', '', $titleFullImageUrl) . 'QL75_SX281_.jpg' : null;
-
+                $titleThumbImageUrl = null;
+                if (!empty($edge->node->credit->title->primaryImage->url)) {
+                    $img = str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url);
+                    // full image
+                    $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                    // thumb image
+                    if (!empty($edge->node->credit->title->primaryImage->width) && !empty($edge->node->credit->title->primaryImage->height)) {
+                        $fullImageWidth = $edge->node->credit->title->primaryImage->width;
+                        $fullImageHeight = $edge->node->credit->title->primaryImage->height;
+                        $newImageWidth = 140;
+                        $newImageHeight = 207;
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                        $titleThumbImageUrl = $img . $parameter;
+                    }
+                }
                 $characters = array();
                 if (!empty($edge->node->credit->characters)) {
                     foreach ($edge->node->credit->characters as $character) {
