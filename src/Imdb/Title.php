@@ -2043,7 +2043,9 @@ EOF;
     /**
      * Get image URLs for (default 6) pictures from photo page
      * @param $amount, int for how many images, max = 9999
-     * @param $thumb boolean, true: thumbnail cropped from center 100x100 pixels false: untouched max 1000 pixels
+     * @param $thumb boolean
+     *      true: height is always the same (set in config), width is variable!
+     *      false: untouched max width 1000 pixels
      * @return array [0..n] of string image source
      */
     public function mainphoto($amount = 6, $thumb = true)
@@ -2071,33 +2073,19 @@ EOF;
                     if ($thumb === true) {
                         $fullImageWidth = $edge->node->width;
                         $fullImageHeight = $edge->node->height;
-                        $newImageWidth = $this->config->mainphotoThumbnailWidth;
                         $newImageHeight = $this->config->mainphotoThumbnailHeight;
-                        // calculate crop value
-                        $cropParameter = $this->imageFunctions->thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-
-                        // original source aspect ratio
-                        $ratio_orig = $fullImageWidth / $fullImageHeight;
-                        // new aspect ratio
-                        $ratio_new = 100 / 100;
-
-                        if ($ratio_new < $ratio_orig) {
-                            // Landscape (Y)
-                            $orientation = 'Y';
-                        } else {
-                            // portrait (X)
-                            $orientation = 'X';
-                        }
-                        $this->mainPhoto[] = $imgUrl . 'QL75_S' . $orientation . '100_CR' . $cropParameter . ',0,100,100_AL_.jpg';
+                        // calculate new width
+                        $newImageWidth = $this->imageFunctions->thumbUrlNewWidth($fullImageWidth, $fullImageHeight, $newImageHeight);
+                        $this->mainPhoto[] = $imgUrl . 'QL75_UX' . $newImageWidth . '_.jpg';
                     } else {
-                        $this->mainPhoto[] = $imgUrl . 'QL100_SY1000_.jpg';
+                        $this->mainPhoto[] = $imgUrl . 'QL100_UX1000_.jpg';
                     }
                 }
             }
         }
         return $this->mainPhoto;
     }
-    
+
     #-------------------------------------------------[ Trailer ]---
     /**
      * Get video URL's and images from videogallery page (Trailers only)

@@ -348,18 +348,9 @@ class Config
 
     #----------------------------------------[Title class mainphoto thumbnail]---
     /**
-     * mainphoto() thumbnail width
-     * Default value: 100
-     * @var int pixels
-     * Keep ratio square!
-     */
-    public $mainphotoThumbnailWidth = 100;
-
-    /**
      * mainphoto() thumbnail height
      * Default value: 100
      * @var int pixels
-     * Keep ratio square!
      */
     public $mainphotoThumbnailHeight = 100;
 
