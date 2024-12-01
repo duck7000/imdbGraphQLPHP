@@ -1775,7 +1775,7 @@ EOF;
      */
     public function otherCompany()
     {
-        if (empty($this->ccompCreditsOther)) {
+        if (empty($this->compCreditsOther)) {
             $this->compCreditsOther = $this->companyCredits("miscellaneous");
         }
         return $this->compCreditsOther;
