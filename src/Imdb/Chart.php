@@ -381,6 +381,12 @@ EOF;
 
     /**
      * Get most popular Titles lists as seen on https://imdb.com/chart/moviemeter
+     * @parameter $genreId This filters the results on a genreId like "Horror"
+     * GenreIDs: Action, Adult, Adventure, Animation, Biography, Comedy, Crime,
+     *           Documentary, Drama, Family, Fantasy, Film-Noir, Game-Show,
+     *           History, Horror, Music, Musical, Mystery, News, Reality-TV,
+     *           Romance, Sci-Fi, Short, Sport, Talk-Show, Thriller, War, Western
+     * 
      * @parameter $listType This defines different kind of lists like Movie or TV
      * possible values for $listType:
      *  LOWEST_RATED_MOVIES
@@ -395,6 +401,7 @@ EOF;
      *      Top Rated English IMDb Movies List
      *  TOP_RATED_TV_SHOWS
      *      Top Rated IMDb TV List
+     * 
      * @return
      * Array
      *   (
@@ -406,25 +413,38 @@ EOF;
      *          [runtimeSeconds] =>     (int) 8460
      *          [runtimeText] =>        (string) 2h 21m
      *          [rank] =>               (int) 1
+     *          [genre] =>              (array) every index an genre
      *          [rating] =>             (float) 7.5
      *          [votes] =>              (int) 124556
      *          [imgUrl] =>             (string) (140x207 set in config)
      *          )
      *  )
      */
-    public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES")
+    public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
+        $filter = '';
+        if (!empty($genreId)) {
+            $filter = 'filter:{genreConstraint:{allGenreIds:["' . $genreId . '"]}}';
+        }
+
         $query = <<<EOF
 query MostPopularTitle {
   chartTitles(
     first: 9999
     chart: {chartType: $listType}
-    sort: {sortBy: RANKING, sortOrder: ASC}
+    sort: {sortBy: RANKING, sortOrder: ASC}$filter
   ) {
     edges {
       currentRank
       node {
         id
+        titleGenres {
+          genres {
+            genre {
+              text
+            }
+          }
+        }
         titleText {
           text
         }
@@ -439,7 +459,7 @@ query MostPopularTitle {
             }
           }
         }
-       ratingsSummary {
+        ratingsSummary {
           aggregateRating
           voteCount
         }
@@ -463,6 +483,14 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
+            $genres = array();
+            if (!empty($edge->node->titleGenres->genres)) {
+                foreach ($edge->node->titleGenres->genres as $genre) {
+                    if (!empty($genre->genre->text)) {
+                        $genres[] = $genre->genre->text;
+                    }
+                }
+            }
             $this->mostPopularTitleResults[] = array(
                 'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
                 'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
@@ -471,6 +499,7 @@ EOF;
                 'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
                                        $edge->node->runtime->displayableProperty->value->plainText : null,
                 'rank' => isset($edge->currentRank) ? $edge->currentRank : null,
+                'genre' => $genres,
                 'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
                                   $edge->node->ratingsSummary->aggregateRating : null,
                 'votes' => isset($edge->node->ratingsSummary->voteCount) ?
