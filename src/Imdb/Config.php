@@ -422,6 +422,23 @@ class Config
      */
     public $nameSearchAdvancedThumbnailHeight = 207;
 
+    #---------------------------------------[TitleSearchAdvanced class thumbnail]---
+    /**
+     * All methods thumbnail width
+     * Default value: 140
+     * @var int pixels
+     * Keep ratio in mind square thumbnails don't work
+     */
+    public $titleSearchAdvancedThumbnailWidth = 140;
+
+    /**
+     * All methods thumbnail height
+     * Default value: 207
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $titleSearchAdvancedThumbnailHeight = 207;
+
     #========================================================[ Debug / Expert options ]===
     /**
      * Enable debug mode?
