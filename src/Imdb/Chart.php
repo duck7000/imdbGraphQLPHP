@@ -422,9 +422,11 @@ EOF;
      */
     public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
-        $filter = '';
         if (!empty($genreId)) {
-            $filter = 'filter:{genreConstraint:{allGenreIds:["' . $genreId . '"]}}';
+            $filter = 'filter:{genreConstraint:{allGenreIds:["' . $genreId . '"]}'
+                    . 'explicitContentConstraint:{explicitContentFilter:INCLUDE_ADULT}}';
+        } else {
+            $filter = 'filter:{explicitContentConstraint:{explicitContentFilter:INCLUDE_ADULT}}';
         }
 
         $query = <<<EOF
