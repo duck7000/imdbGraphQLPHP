@@ -422,11 +422,9 @@ EOF;
      */
     public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
+        $filter = '';
         if (!empty($genreId)) {
-            $filter = 'filter:{genreConstraint:{allGenreIds:["' . $genreId . '"]}'
-                    . 'explicitContentConstraint:{explicitContentFilter:INCLUDE_ADULT}}';
-        } else {
-            $filter = 'filter:{explicitContentConstraint:{explicitContentFilter:INCLUDE_ADULT}}';
+            $filter = 'genreConstraint:{allGenreIds:["' . $genreId . '"]}';
         }
 
         $query = <<<EOF
@@ -434,7 +432,8 @@ query MostPopularTitle {
   chartTitles(
     first: 9999
     chart: {chartType: $listType}
-    sort: {sortBy: RANKING, sortOrder: ASC}$filter
+    sort: {sortBy: RANKING, sortOrder: ASC}
+    filter:{explicitContentConstraint:{explicitContentFilter:INCLUDE_ADULT}$filter}
   ) {
     edges {
       currentRank
