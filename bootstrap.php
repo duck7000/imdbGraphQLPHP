@@ -10,6 +10,7 @@ require_once __DIR__ . '/src/Imdb/GraphQL.php';
 require_once __DIR__ . '/src/Imdb/MdbBase.php';
 require_once __DIR__ . '/src/Imdb/Calendar.php';
 require_once __DIR__ . '/src/Imdb/Chart.php';
+require_once __DIR__ . '/src/Imdb/News.php';
 require_once __DIR__ . '/src/Imdb/Trailers.php';
 require_once __DIR__ . '/src/Imdb/Name.php';
 require_once __DIR__ . '/src/Imdb/NameSearch.php';
