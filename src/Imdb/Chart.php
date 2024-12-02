@@ -29,6 +29,7 @@ class Chart extends MdbBase
     protected $top250NameResults = array();
     protected $mostPopularNameResults = array();
     protected $mostPopularTitleResults = array();
+    protected $boxOfficeResults = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -509,6 +510,133 @@ EOF;
             );
         }
         return $this->mostPopularTitleResults;
+    }
+
+    /**
+     * Get topBoxWeekend list as seen on https://www.imdb.com/chart/boxoffice/
+     * max 10 results! more is not possible
+     * Thumbnail is set in config for the whole class, default 140x207
+     * @return
+     * Array
+     *      [weekendStartDate] => 2024-11-29
+     *      [weekendEndDate] => 2024-12-01
+     *      [titles] => Array
+     *          [0] => Array()
+     *              [title] =>                  (string)
+     *              [id] =>                     (string) 13622970
+     *              [rating] =>                 (float) 7.1
+     *              [votes] =>                  (int) 17669
+     *              [LifetimeGrossAmount] =>    (int) 221000000
+     *              [LifetimeGrossCurrency] =>  (string) USD
+     *              [weekendGrossAmount] =>     (int) 135500000
+     *              [weekendGrossCurrency] =>   (string) USD
+     *              [weeksReleased] =>          (int)
+     *              [imgUrl] =>                 (string)
+     */
+    public function topBoxOffice()
+    {
+        $query = <<<EOF
+query BoxOffice{
+  boxOfficeWeekendChart(limit: 10) {
+    entries {
+      title {
+        id
+        titleText {
+          text
+        }
+        releaseDate {
+          day
+          month
+          year
+        }
+        ratingsSummary {
+          aggregateRating
+          voteCount
+        }
+        primaryImage {
+          url
+          width
+          height
+        }
+        lifetimeGross(boxOfficeArea: DOMESTIC) {
+          total {
+            amount
+            currency
+          }
+        }
+      }
+      weekendGross {
+        total {
+          amount
+          currency
+        }
+      }
+    }
+    weekendEndDate
+    weekendStartDate
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "BoxOffice");
+        foreach ($data->boxOfficeWeekendChart->entries as $edge) {
+            $thumbUrl = null;
+            if (!empty($edge->title->primaryImage->url)) {
+                $fullImageWidth = $edge->title->primaryImage->width;
+                $fullImageHeight = $edge->title->primaryImage->height;
+                $img = str_replace('.jpg', '', $edge->title->primaryImage->url);
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                $thumbUrl = $img . $parameter;
+            }
+            $weeks = null;
+            if (!empty($edge->title->releaseDate->day) && !empty($edge->title->releaseDate->month) && !empty($edge->title->releaseDate->year)) {
+                $startDate = $edge->title->releaseDate->month . '/' .
+                             $edge->title->releaseDate->day . '/' .
+                             $edge->title->releaseDate->year;
+                $weeks = $this->datediffInWeeks($startDate, date('m/d/Y'));
+            }
+            $results[] = array(
+                'title' => isset($edge->title->titleText->text) ? $edge->title->titleText->text : null,
+                'id' => isset($edge->title->id) ? str_replace('tt', '', $edge->title->id) : null,
+                'rating' => isset($edge->title->ratingsSummary->aggregateRating) ?
+                                  $edge->title->ratingsSummary->aggregateRating : null,
+                'votes' => isset($edge->title->ratingsSummary->voteCount) ?
+                                 $edge->title->ratingsSummary->voteCount : null,
+                'LifetimeGrossAmount' => isset($edge->title->lifetimeGross->total->amount) ?
+                                               $edge->title->lifetimeGross->total->amount : null,
+                'LifetimeGrossCurrency' => isset($edge->title->lifetimeGross->total->currency) ?
+                                                 $edge->title->lifetimeGross->total->currency : null,
+                'weekendGrossAmount' => isset($edge->weekendGross->total->amount) ?
+                                              $edge->weekendGross->total->amount : null,
+                'weekendGrossCurrency' => isset($edge->weekendGross->total->currency) ?
+                                                $edge->weekendGross->total->currency : null,
+                'weeksReleased' => $weeks,
+                'imgUrl' => $thumbUrl
+            );
+        }
+        $this->boxOfficeResults = array(
+            'weekendStartDate' => isset($data->boxOfficeWeekendChart->weekendStartDate) ?
+                                        $data->boxOfficeWeekendChart->weekendStartDate : null,
+            'weekendEndDate' => isset($data->boxOfficeWeekendChart->weekendEndDate) ?
+                                      $data->boxOfficeWeekendChart->weekendEndDate : null,
+            'titles' => $results
+        );
+        return $this->boxOfficeResults;
+    }
+
+    #========================================================[ Helper functions]===
+
+    /**
+     * Get amount of weeks between input date and current date
+     * @param string $startDate like '1/2/2013' (month/day/year)
+     * @param string $endDate current date! like '1/2/2013' (month/day/year)
+     * @return int number of weeks
+     */
+    function datediffInWeeks($startDate, $endDate)
+    {
+        if($startDate > $endDate) return $this->datediffInWeeks($endDate, $startDate);
+        $first = \DateTime::createFromFormat('m/d/Y', $startDate);
+        $second = \DateTime::createFromFormat('m/d/Y', $endDate);
+        return ceil($first->diff($second)->days/7);
     }
 
 }
