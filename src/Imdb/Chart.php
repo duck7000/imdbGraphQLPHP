@@ -25,11 +25,6 @@ class Chart extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $top250TitleResults = array();
-    protected $top250NameResults = array();
-    protected $mostPopularNameResults = array();
-    protected $mostPopularTitleResults = array();
-    protected $boxOfficeResults = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -75,6 +70,7 @@ class Chart extends MdbBase
      */
     public function top250Title($listType = "TOP_250")
     {
+        $top250TitleResults = array();
         $query = <<<EOF
 query Top250Title {
   titleChartRankings(
@@ -127,7 +123,7 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
-            $this->top250TitleResults[] = array(
+            $top250TitleResults[] = array(
                 'title' => isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null,
                 'imdbid' => isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null,
                 'year' => isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null,
@@ -144,7 +140,7 @@ EOF;
                 'imgUrl' => $thumbUrl
             );
         }
-        return $this->top250TitleResults;
+        return $top250TitleResults;
     }
 
     /**
@@ -174,6 +170,7 @@ EOF;
      */
     public function top250Name()
     {
+        $top250NameResults = array();
         $query = <<<EOF
 query Top250Name {
   nameChartRankings(
@@ -250,7 +247,7 @@ EOF;
                     }
                 }
             }
-            $this->top250NameResults[] = array(
+            $top250NameResults[] = array(
                 'name' => isset($edge->node->item->nameText->text) ? $edge->node->item->nameText->text : null,
                 'imdbid' => isset($edge->node->item->id) ? str_replace('nm', '', $edge->node->item->id) : null,
                 'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
@@ -259,7 +256,7 @@ EOF;
                 'imgUrl' => $thumbUrl
             );
         }
-        return $this->top250NameResults;
+        return $top250NameResults;
     }
 
     /**
@@ -289,6 +286,7 @@ EOF;
      */
     public function mostPopularName()
     {
+        $mostPopularNameResults = array();
         $query = <<<EOF
 query MostPopularName {
   chartNames(
@@ -368,7 +366,7 @@ EOF;
                     }
                 }
             }
-            $this->mostPopularNameResults[] = array(
+            $mostPopularNameResults[] = array(
                 'name' => isset($edge->node->nameText->text) ? $edge->node->nameText->text : null,
                 'imdbid' => isset($edge->node->id) ? str_replace('nm', '', $edge->node->id) : null,
                 'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
@@ -377,7 +375,7 @@ EOF;
                 'imgUrl' => $thumbUrl
             );
         }
-        return $this->mostPopularNameResults;
+        return $mostPopularNameResults;
     }
 
     /**
@@ -423,6 +421,7 @@ EOF;
      */
     public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
+        $mostPopularTitleResults = array();
         $filter = '';
         if (!empty($genreId)) {
             $filter = 'genreConstraint:{allGenreIds:["' . $genreId . '"]}';
@@ -493,7 +492,7 @@ EOF;
                     }
                 }
             }
-            $this->mostPopularTitleResults[] = array(
+            $mostPopularTitleResults[] = array(
                 'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
                 'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
                 'year' => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null,
@@ -509,7 +508,7 @@ EOF;
                 'imgUrl' => $thumbUrl
             );
         }
-        return $this->mostPopularTitleResults;
+        return $mostPopularTitleResults;
     }
 
     /**
@@ -535,6 +534,7 @@ EOF;
      */
     public function topBoxOffice()
     {
+        $boxOfficeResults = array();
         $query = <<<EOF
 query BoxOffice{
   boxOfficeWeekendChart(limit: 10) {
@@ -613,14 +613,14 @@ EOF;
                 'imgUrl' => $thumbUrl
             );
         }
-        $this->boxOfficeResults = array(
+        $boxOfficeResults = array(
             'weekendStartDate' => isset($data->boxOfficeWeekendChart->weekendStartDate) ?
                                         $data->boxOfficeWeekendChart->weekendStartDate : null,
             'weekendEndDate' => isset($data->boxOfficeWeekendChart->weekendEndDate) ?
                                       $data->boxOfficeWeekendChart->weekendEndDate : null,
             'titles' => $results
         );
-        return $this->boxOfficeResults;
+        return $boxOfficeResults;
     }
 
     #========================================================[ Helper functions]===
