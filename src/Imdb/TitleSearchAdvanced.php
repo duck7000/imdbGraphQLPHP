@@ -23,7 +23,6 @@ class TitleSearchAdvanced extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $results = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -90,6 +89,7 @@ class TitleSearchAdvanced extends MdbBase
     )
     {
 
+        $results = array();
         $constraints = $this->buildConstraints(
             $searchTerm,
             $genres,
@@ -103,7 +103,7 @@ class TitleSearchAdvanced extends MdbBase
             $companyId
         );
         if (empty($constraints)) {
-            return $this->results;
+            return $results;
         }
 
         $amount = $this->config->titleSearchAdvancedAmount;
@@ -166,7 +166,7 @@ EOF;
                 $imgUrl = $img . $parameter;
             }
 
-            $this->results[] = array(
+            $results[] = array(
                 'imdbid' => isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null,
                 'originalTitle' => isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null,
                 'title' => isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null,
@@ -175,7 +175,7 @@ EOF;
                 'imgUrl' => $imgUrl
             );
         }
-        return $this->results;
+        return $results;
     }
 
     #========================================================[ Helper functions]===
