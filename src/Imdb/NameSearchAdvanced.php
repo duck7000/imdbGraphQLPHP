@@ -86,6 +86,7 @@ class NameSearchAdvanced extends MdbBase
     {
 
         $results = array();
+        $names = array();
         $constraints = $this->buildConstraints(
             $searchTerm,
             $birthDay,
@@ -209,11 +210,13 @@ EOF;
                 'imgUrl' => $imgUrl
             );
         }
-        $results = array(
-            'totalFoundResults' => isset($data->advancedNameSearch->total) ?
-                                         $data->advancedNameSearch->total : null,
-            'names' => $names
-        );
+        if (!empty($names)) {
+            $results = array(
+                'totalFoundResults' => isset($data->advancedNameSearch->total) ?
+                                             $data->advancedNameSearch->total : null,
+                'names' => $names
+            );
+        }
         return $results;
     }
 
