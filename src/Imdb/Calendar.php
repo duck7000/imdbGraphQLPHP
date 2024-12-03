@@ -23,8 +23,6 @@ class Calendar extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $calendar = array();
-    protected $calendarStreaming = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -62,6 +60,7 @@ class Calendar extends MdbBase
      */
     public function comingSoon($region = "US", $type = "MOVIE", $startDateOverride = 0, $filter = "true")
     {
+        $calendar = array();
         $startDate = date("Y-m-d");
         if ($startDateOverride != 0) {
             $startDate = date('Y-m-d', strtotime($startDateOverride . ' day', strtotime($startDate)) );
@@ -158,7 +157,7 @@ EOF;
                 $imgUrl = $img . $parameter;
             }
 
-            $this->calendar[$releaseDate][] = array(
+            $calendar[$releaseDate][] = array(
                 'title' => $title,
                 'imdbid' => $imdbid,
                 'genres' => $genres,
@@ -166,7 +165,7 @@ EOF;
                 'imgUrl' => $imgUrl
             );
         }
-        return $this->calendar;
+        return $calendar;
     }
 
     /**
@@ -221,6 +220,7 @@ EOF;
      */
     public function comingSoonStreaming($listProviderId)
     {
+        $calendarStreaming = array();
         $sortBy = $this->config->streamSortBy;
         $sortOrder = $this->config->streamSortOrder;
 
@@ -349,14 +349,14 @@ EOF;
                 'credits' => $credits
             );
         }
-        $this->calendarStreaming = array(
+        $calendarStreaming = array(
             'listId' => isset($data->list->id) ? str_replace('ls', '', $data->list->id) : null,
             'listName' => isset($data->list->name->originalText) ? $data->list->name->originalText : null,
             'listCreateDate' => isset($data->list->createdDate) ? $data->list->createdDate : null,
             'listLastModifiedDate ' => isset($data->list->lastModifiedDate) ? $data->list->lastModifiedDate : null,
             'items' => $items
         );
-        return $this->calendarStreaming;
+        return $calendarStreaming;
     }
 
 }
