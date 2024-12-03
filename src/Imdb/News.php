@@ -25,7 +25,6 @@ class News extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $newsListItems = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -71,6 +70,7 @@ class News extends MdbBase
      */
     public function newsList($listType = "MOVIE")
     {
+        $newsListItems = array();
         $query = <<<EOF
 query News{
   news(first: 250, category: $listType) {
@@ -112,7 +112,7 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
-            $this->newsListItems[] = array(
+            $newsListItems[] = array(
                 'id' => isset($edge->node->id) ? str_replace('ni', '', $edge->node->id) : null,
                 'title' => isset($edge->node->articleTitle->plainText) ? $edge->node->articleTitle->plainText : null,
                 'author' => isset($edge->node->byline) ? $edge->node->byline : null,
@@ -124,7 +124,7 @@ EOF;
                 'thumbnailUrl' => $thumbUrl
             );
         }
-        return $this->newsListItems;
+        return $newsListItems;
     }
 
 }
