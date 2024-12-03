@@ -25,8 +25,6 @@ class Trailers extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $recentVideoResults = array();
-    protected $trendingVideoResults = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -62,6 +60,7 @@ class Trailers extends MdbBase
      */
     public function recentVideo()
     {
+        $recentVideoResults = array();
         $query = <<<EOF
 query RecentVideo {
   recentVideos(
@@ -110,7 +109,7 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
-            $this->recentVideoResults[] = array(
+            $recentVideoResults[] = array(
                 'videoId' => $videoId,
                 'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
                 'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
@@ -123,7 +122,7 @@ EOF;
                 'contentType' => isset($edge->name->value) ? $edge->name->value : null
             );
         }
-        return $this->recentVideoResults;
+        return $recentVideoResults;
     }
     
     /**
@@ -147,6 +146,7 @@ EOF;
      */
     public function trendingVideo()
     {
+        $trendingVideoResults = array();
         $query = <<<EOF
 query TrendingVideo {
   trendingTitles(limit: 250) {
@@ -196,7 +196,7 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $thumbUrl = $img . $parameter;
             }
-            $this->trendingVideoResults[] = array(
+            $trendingVideoResults[] = array(
                 'videoId' => $videoId,
                 'titleId' => isset($edge->id) ? str_replace('tt', '', $edge->id) : null,
                 'title' => isset($edge->titleText->text) ? $edge->titleText->text : null,
@@ -209,7 +209,7 @@ EOF;
                 'contentType' => isset($edge->latestTrailer->name->value) ? $edge->latestTrailer->name->value : null
             );
         }
-        return $this->trendingVideoResults;
+        return $trendingVideoResults;
     }
 
 }
