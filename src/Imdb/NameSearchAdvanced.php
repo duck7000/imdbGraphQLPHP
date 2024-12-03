@@ -96,7 +96,7 @@ class NameSearchAdvanced extends MdbBase
             $birthPlace
         );
         if (empty($constraints)) {
-            return $this->results;
+            return $results;
         }
         
         $amount = $this->config->nameSearchAdvancedAmount;
