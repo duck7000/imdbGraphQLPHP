@@ -20,8 +20,6 @@ use Psr\SimpleCache\CacheInterface;
 class Company extends MdbBase
 {
 
-    protected $companyResults = array();
-
     /**
      * @param Config $config OPTIONAL override default config
      * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
@@ -78,6 +76,7 @@ class Company extends MdbBase
      */
     public function companyInfo($companyId)
     {
+        $companyResults = array();
         $query = <<<EOF
 query Company {
   company(id: "$companyId") {
@@ -264,7 +263,7 @@ EOF;
         }
 
         // Results
-        $this->companyResults = array(
+        $companyResults = array(
             'id' => isset($data->company->id) ? str_replace('co', '', $data->company->id) : null,
             'name' => isset($data->company->companyText->text) ? $data->company->companyText->text : null,
             'country' => isset($data->company->country->text) ? $data->company->country->text : null,
@@ -274,7 +273,7 @@ EOF;
             'knownFor' => $knownFor,
             'affiliations' => $affiliations
         );
-        return $this->companyResults;
+        return $companyResults;
     }
 
 }
