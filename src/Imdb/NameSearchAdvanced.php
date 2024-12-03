@@ -22,7 +22,6 @@ class NameSearchAdvanced extends MdbBase
     protected $imageFunctions;
     protected $newImageWidth;
     protected $newImageHeight;
-    protected $results = array();
 
     /**
      * @param Config $config OPTIONAL override default config
@@ -85,6 +84,8 @@ class NameSearchAdvanced extends MdbBase
         $birthPlace = ''
     )
     {
+
+        $results = array();
         $constraints = $this->buildConstraints(
             $searchTerm,
             $birthDay,
@@ -208,12 +209,12 @@ EOF;
                 'imgUrl' => $imgUrl
             );
         }
-        $this->results = array(
+        $results = array(
             'totalFoundResults' => isset($data->advancedNameSearch->total) ?
                                          $data->advancedNameSearch->total : null,
             'names' => $names
         );
-        return $this->results;
+        return $results;
     }
 
     #========================================================[ Helper functions]===
