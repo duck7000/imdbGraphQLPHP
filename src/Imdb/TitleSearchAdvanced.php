@@ -73,7 +73,12 @@ class TitleSearchAdvanced extends MdbBase
      *      ['title']           string      title from the found title
      *      ['year']            string      year or year span from the found title
      *      ['movietype']       string      titleType from the found title
-     *      [imgUrl] =>         string      https://m.media-amazon.com/images/M/MVqcGc@._V1_QL75_UY207_CR114,0,140,207_.jpg
+     *      [runtime] =>        string      In seconds!
+     *      [rating] =>         float
+     *      [voteCount] =>      int
+     *      [metacritic] =>     int
+     *      [plot] =>           string
+     *      [imgUrl] =>         string
      */
     public function advancedSearch(
         $searchTerm = '',
@@ -90,6 +95,7 @@ class TitleSearchAdvanced extends MdbBase
     {
 
         $results = array();
+        $titles = array();
         $constraints = $this->buildConstraints(
             $searchTerm,
             $genres,
@@ -116,6 +122,7 @@ query advancedSearch{
     first: $amount, sort: {sortBy: $sortBy sortOrder: $sortOrder}
     constraints: $constraints
   ) {
+    total
     edges {
       node{
         title {
@@ -137,6 +144,23 @@ query advancedSearch{
             url
             width
             height
+          }
+          runtime {
+            seconds
+          }
+          ratingsSummary {
+            aggregateRating
+            voteCount
+          }
+          plot {
+            plotText {
+              plainText
+            }
+          }
+          metacritic {
+            metascore {
+              score
+            }
           }
         }
       }
@@ -166,13 +190,34 @@ EOF;
                 $imgUrl = $img . $parameter;
             }
 
-            $results[] = array(
-                'imdbid' => isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null,
-                'originalTitle' => isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null,
-                'title' => isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null,
+            $titles[] = array(
+                'imdbid' => isset($edge->node->title->id) ?
+                                  str_replace('tt', '', $edge->node->title->id) : null,
+                'originalTitle' => isset($edge->node->title->titleText->text) ?
+                                         $edge->node->title->titleText->text : null,
+                'title' => isset($edge->node->title->titleText->text) ?
+                                 $edge->node->title->titleText->text : null,
                 'year' => $yearRange,
-                'movietype' => isset($edge->node->title->titleType->text) ? $edge->node->title->titleType->text : null,
+                'movietype' => isset($edge->node->title->titleType->text) ?
+                                     $edge->node->title->titleType->text : null,
+                'runtime' => isset($edge->node->title->runtime->seconds) ?
+                                   $edge->node->title->runtime->seconds : null,
+                'rating' => isset($edge->node->title->ratingsSummary->aggregateRating) ?
+                                  $edge->node->title->ratingsSummary->aggregateRating : null,
+                'voteCount' => isset($edge->node->title->ratingsSummary->voteCount) ?
+                                     $edge->node->title->ratingsSummary->voteCount : null,
+                'metacritic' => isset($edge->node->title->metacritic->metascore->score) ?
+                                      $edge->node->title->metacritic->metascore->score : null,
+                'plot' => isset($edge->node->title->plot->plotText->plainText) ?
+                                $edge->node->title->plot->plotText->plainText : null,
                 'imgUrl' => $imgUrl
+            );
+        }
+        if (!empty($titles)) {
+            $results = array(
+                'totalFoundResults' => isset($data->advancedNameSearch->total) ?
+                                             $data->advancedNameSearch->total : null,
+                'titles' => $titles
             );
         }
         return $results;
