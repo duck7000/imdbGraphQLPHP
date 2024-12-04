@@ -91,6 +91,7 @@ class Title extends MdbBase
     protected $featuredReviews = array();
     protected $faqs = array();
     protected $isAdult = null;
+    protected $watchOption = array();
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
@@ -2609,6 +2610,71 @@ EOF;
             $this->isAdult = $data->title->isAdult;
         }
         return $this->isAdult;
+    }
+
+    #----------------------------------------------------------[ Watch Option ]---
+    /**
+     * watch options by category for this title
+     * @Note: (DEC 2024) Only Amazon providers are returned, no others!
+     * @return categorized array()
+     *  [rent/buy] => Array
+     *      [0] => Array
+     *          [providerId] =>     (string) amzn1.imdb.w2w.provider.prime_video
+     *          [providerName] =>   (string) Prime Video
+     *          [logoUrl] =>        (string) (PNG!) https://m.media-amazon.com/images/M/4c6e._V1_QL100_UX250_.png
+     */
+    public function watchOption()
+    {
+        if (empty($this->watchOption)) {
+            $query = <<<EOF
+query WatchOption(\$id: ID!) {
+  title(id: \$id) {
+    watchOptionsByCategory(limit: 250) {
+      categorizedWatchOptionsList {
+        categoryName {
+          value
+        }
+        watchOptions(limit: 250) {
+          provider {
+            id
+            name {
+              value
+            }
+            logos {
+              icon {
+                url
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "WatchOption", ["id" => "tt$this->imdbID"]);
+            foreach ($data->title->watchOptionsByCategory->categorizedWatchOptionsList as $item) {
+                $watchOptions = array();
+                if (!empty($item->watchOptions)) {
+                    foreach ($item->watchOptions as $option) {
+                        $logoUrl = null;
+                        if (!empty($option->provider->logos->icon->url)) {
+                            $img = str_replace('.png', '', $option->provider->logos->icon->url);
+                            $logoUrl = $img . 'QL100_UX250_.png';
+                        }
+                        $watchOptions[] = array(
+                            'providerId' => isset($option->provider->id) ? $option->provider->id : null,
+                            'providerName' => isset($option->provider->name->value) ? $option->provider->name->value : null,
+                            'logoUrl' => $logoUrl
+                        );
+                    }
+                }
+                $this->watchOption[strtolower($item->categoryName->value)] = $watchOptions;
+            }
+        }
+        return $this->watchOption;
     }
 
 
