@@ -412,11 +412,15 @@ EOF;
                     $thumb = $img . $parameter;
                 }
                 $this->recommendations[] = array(
-                    'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
-                    'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
-                    'rating' => isset($edge->node->ratingsSummary->aggregateRating) ? $edge->node->ratingsSummary->aggregateRating : null,
+                    'title' => isset($edge->node->titleText->text) ?
+                                     $edge->node->titleText->text : null,
+                    'imdbid' => isset($edge->node->id) ?
+                                      str_replace('tt', '', $edge->node->id) : null,
+                    'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
+                                      $edge->node->ratingsSummary->aggregateRating : null,
                     'img' => $thumb,
-                    'year' => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null
+                    'year' => isset($edge->node->releaseYear->year) ?
+                                    $edge->node->releaseYear->year : null
                 );
             }
         }
