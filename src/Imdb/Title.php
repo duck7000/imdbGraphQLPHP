@@ -497,7 +497,8 @@ EOF;
                         }
                     }
                     $this->genres[] = array(
-                        'mainGenre' => isset($edge->genre->text) ? $edge->genre->text : null,
+                        'mainGenre' => isset($edge->genre->text) ?
+                                             $edge->genre->text : null,
                         'subGenre' => $subGenres
                     );
                 }
