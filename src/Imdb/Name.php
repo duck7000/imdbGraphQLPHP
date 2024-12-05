@@ -1299,21 +1299,19 @@ EOF;
                 $titleFullImageUrl = null;
                 if (!empty($edge->node->title->primaryImage->url)) {
                     $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
-                    // full image
                     $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                    // thumb image
-                    if (!empty($edge->node->title->primaryImage->width) && !empty($edge->node->title->primaryImage->height)) {
-                        $fullImageWidth = $edge->node->title->primaryImage->width;
-                        $fullImageHeight = $edge->node->title->primaryImage->height;
-                        $newImageWidth = 140;
-                        $newImageHeight = 207;
-                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                        $titleThumbImageUrl = $img . $parameter;
-                    }
+                    $fullImageWidth = $edge->node->title->primaryImage->width;
+                    $fullImageHeight = $edge->node->title->primaryImage->height;
+                    $newImageWidth = 140;
+                    $newImageHeight = 207;
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                    $titleThumbImageUrl = $img . $parameter;
                 }
                 $this->credits[$categoryIds[$edge->node->category->id]][] = array(
-                    'titleId' => str_replace('tt', '', $edge->node->title->id),
-                    'titleName' => $edge->node->title->titleText->text,
+                    'titleId' => isset($edge->node->title->id) ?
+                                       str_replace('tt', '', $edge->node->title->id) : null,
+                    'titleName' => isset($edge->node->title->titleText->text) ?
+                                         $edge->node->title->titleText->text : null,
                     'titleType' => isset($edge->node->title->titleType->text) ?
                                          $edge->node->title->titleType->text : null,
                     'year' => isset($edge->node->title->releaseYear->year) ?
