@@ -464,8 +464,8 @@ EOF;
             if (!empty($data->name->spouses)) {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse name
-                    $name = isset($spouse->spouse->asMarkdown->plainText) ? $spouse->spouse->asMarkdown->plainText : null;
-                    
+                    $name = isset($spouse->spouse->asMarkdown->plainText) ?
+                                  $spouse->spouse->asMarkdown->plainText : null;
                     // Spouse id
                     $imdbId = null;
                     if (!empty($spouse->spouse->name)) {
@@ -473,40 +473,43 @@ EOF;
                             $imdbId = str_replace('nm', '', $spouse->spouse->name->id);
                         }
                     }
-                    
                     // From date
-                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ? $spouse->timeRange->fromDate->dateComponents->day : null;
-                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ? $spouse->timeRange->fromDate->dateComponents->month : null;
+                    $fromDateDay = isset($spouse->timeRange->fromDate->dateComponents->day) ?
+                                         $spouse->timeRange->fromDate->dateComponents->day : null;
+                    $fromDateMonthInt = isset($spouse->timeRange->fromDate->dateComponents->month) ?
+                                              $spouse->timeRange->fromDate->dateComponents->month : null;
                     $fromDateMonthName = null;
                     if (!empty($fromDateMonthInt)) {
                         $fromDateMonthName = date("F", mktime(0, 0, 0, $fromDateMonthInt, 10));
                     }
-                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ? $spouse->timeRange->fromDate->dateComponents->year : null;
+                    $fromDateYear = isset($spouse->timeRange->fromDate->dateComponents->year) ?
+                                          $spouse->timeRange->fromDate->dateComponents->year : null;
                     $fromDate = array(
                         "day" => $fromDateDay,
                         "month" => $fromDateMonthName,
                         "mon" => $fromDateMonthInt,
                         "year" => $fromDateYear
                     );
-                    
                     // To date
-                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ? $spouse->timeRange->toDate->dateComponents->day : null;
-                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ? $spouse->timeRange->toDate->dateComponents->month : null;
+                    $toDateDay = isset($spouse->timeRange->toDate->dateComponents->day) ?
+                                       $spouse->timeRange->toDate->dateComponents->day : null;
+                    $toDateMonthInt = isset($spouse->timeRange->toDate->dateComponents->month) ?
+                                            $spouse->timeRange->toDate->dateComponents->month : null;
                     $toDateMonthName = null;
                     if (!empty($toDateMonthInt)) {
                         $toDateMonthName = date("F", mktime(0, 0, 0, $toDateMonthInt, 10));
                     }
-                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ? $spouse->timeRange->toDate->dateComponents->year : null;
+                    $toDateYear = isset($spouse->timeRange->toDate->dateComponents->year) ?
+                                        $spouse->timeRange->toDate->dateComponents->year : null;
                     $toDate = array(
                         "day" => $toDateDay,
                         "month" => $toDateMonthName,
                         "mon" => $toDateMonthInt,
                         "year" => $toDateYear
                     );
-                    
                     // date as plaintext
-                    $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ? $spouse->timeRange->displayableProperty->value->plainText : null;
-                    
+                    $dateText = isset($spouse->timeRange->displayableProperty->value->plainText) ?
+                                      $spouse->timeRange->displayableProperty->value->plainText : null;
                     // Comments and children
                     $comment = null;
                     $children = 0;
