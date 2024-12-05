@@ -1516,4 +1516,30 @@ EOF;
         }
     }
 
+    #----------------------------------------------------------[ Award filter helper ]---
+    /**
+     * Build award filter string
+     * @param $winsOnly boolean
+     * @param $event string eventId
+     * @return string $filter
+     */
+    public function awardFilter($winsOnly, $event)
+    {
+        $filter = ', sort: {by: PRESTIGIOUS, order: DESC}';
+        if (!empty($event) || $winsOnly === true) {
+            $filter .= ', filter:{';
+            if ($winsOnly === true) {
+                $filter .= 'wins:WINS_ONLY';
+                if (empty($event)) {
+                    $filter .= '}';
+                } else {
+                    $filter .= ', events:"' . trim($event) . '"}';
+                }
+            } else {
+                $filter .= 'events:"' . trim($event) . '"}';
+            }
+        }
+        return $filter;
+    }
+
 }
