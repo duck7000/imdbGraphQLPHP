@@ -802,14 +802,18 @@ EOF;
 EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             foreach ($data as $edge) {
-                $filmTitle = isset($edge->node->title->titleText->text) ? $edge->node->title->titleText->text : null;
-                $filmId = isset($edge->node->title->id) ? str_replace('tt', '', $edge->node->title->id) : null;
-                $filmYear = isset($edge->node->title->releaseYear->year) ? $edge->node->title->releaseYear->year : null;
+                $filmTitle = isset($edge->node->title->titleText->text) ?
+                                   $edge->node->title->titleText->text : null;
+                $filmId = isset($edge->node->title->id) ?
+                                str_replace('tt', '', $edge->node->title->id) : null;
+                $filmYear = isset($edge->node->title->releaseYear->year) ?
+                                  $edge->node->title->releaseYear->year : null;
                 $filmSeriesSeason = null;
                 $filmSeriesEpisode = null;
                 $filmSeriesTitle = null;
                 if (!empty($edge->node->title->series)) {
-                    $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ? $edge->node->title->series->series->titleText->text : null;
+                    $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ?
+                                             $edge->node->title->series->series->titleText->text : null;
                     $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
                                               $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null;
                     $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
