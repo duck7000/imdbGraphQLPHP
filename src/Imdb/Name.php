@@ -1134,32 +1134,17 @@ query KnownFor(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "KnownFor", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->knownFor->edges as $edge) {
-                $title = isset($edge->node->credit->title->titleText->text) ?
-                               $edge->node->credit->title->titleText->text : null;
-
-                $titleId = isset($edge->node->credit->title->id) ?
-                                 str_replace('tt', '', $edge->node->credit->title->id) : null;
-
-                $titleYear = isset($edge->node->credit->title->releaseYear->year) ?
-                                   $edge->node->credit->title->releaseYear->year : null;
-
-                $titleEndYear = isset($edge->node->credit->title->releaseYear->endYear) ?
-                                      $edge->node->credit->title->releaseYear->endYear : null;
                 $titleThumbImageUrl = null;
                 $titleFullImageUrl = null;
                 if (!empty($edge->node->credit->title->primaryImage->url)) {
                     $img = str_replace('.jpg', '', $edge->node->credit->title->primaryImage->url);
-                    // full image
                     $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                    // thumb image
-                    if (!empty($edge->node->credit->title->primaryImage->width) && !empty($edge->node->credit->title->primaryImage->height)) {
-                        $fullImageWidth = $edge->node->credit->title->primaryImage->width;
-                        $fullImageHeight = $edge->node->credit->title->primaryImage->height;
-                        $newImageWidth = 140;
-                        $newImageHeight = 207;
-                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                        $titleThumbImageUrl = $img . $parameter;
-                    }
+                    $fullImageWidth = $edge->node->credit->title->primaryImage->width;
+                    $fullImageHeight = $edge->node->credit->title->primaryImage->height;
+                    $newImageWidth = 140;
+                    $newImageHeight = 207;
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                    $titleThumbImageUrl = $img . $parameter;
                 }
                 $characters = array();
                 if (!empty($edge->node->credit->characters)) {
@@ -1170,10 +1155,14 @@ EOF;
                     }
                 }
                 $this->creditKnownFor[] = array(
-                    'title' => $title,
-                    'titleId' => $titleId,
-                    'titleYear' => $titleYear,
-                    'titleEndYear' => $titleEndYear,
+                    'title' => isset($edge->node->credit->title->titleText->text) ?
+                                     $edge->node->credit->title->titleText->text : null,
+                    'titleId' => isset($edge->node->credit->title->id) ?
+                                       str_replace('tt', '', $edge->node->credit->title->id) : null,
+                    'titleYear' => isset($edge->node->credit->title->releaseYear->year) ?
+                                         $edge->node->credit->title->releaseYear->year : null,
+                    'titleEndYear' => isset($edge->node->credit->title->releaseYear->endYear) ?
+                                            $edge->node->credit->title->releaseYear->endYear : null,
                     'titleCharacters' => $characters,
                     'titleFullImageUrl' => $titleFullImageUrl,
                     'titleThumbImageUrl' => $titleThumbImageUrl
