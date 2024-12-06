@@ -613,7 +613,6 @@ EOF;
             $data = $this->graphQlGetAll("ReleaseDates", "releaseDates", $query);
             if (!empty($data)) {
                 foreach ($data as $edge) {
-                    $country = isset($edge->node->country->text) ? $edge->node->country->text : null;
                     $attributes = array();
                     if (!empty($edge->node->attributes)) {
                         foreach ($edge->node->attributes as $attribute) {
@@ -623,10 +622,14 @@ EOF;
                         }
                     }
                     $this->releaseDates[] = array(
-                        'country' => $country,
-                        'day' => $edge->node->day,
-                        'month' => $edge->node->month,
-                        'year' => $edge->node->year,
+                        'country' => isset($edge->node->country->text) ?
+                                           $edge->node->country->text : null,
+                        'day' => isset($edge->node->day) ?
+                                       $edge->node->day : null,
+                        'month' => isset($edge->node->month) ?
+                                         $edge->node->month : null,
+                        'year' => isset($edge->node->year) ?
+                                       $edge->node->year : null,
                         'attributes' => $attributes
                     );
                 }
