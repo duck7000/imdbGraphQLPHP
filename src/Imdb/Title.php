@@ -994,7 +994,7 @@ EOF;
     public function cast()
     {
         if (empty($this->creditsCast)) {
-            $filter = ', filter: { categories: ["cast"] }';
+            $filter = ', filter:{categories:["cast"]}';
             $query = <<<EOF
 name {
   nameText {
@@ -1018,25 +1018,19 @@ name {
 EOF;
             $data = $this->graphQlGetAll("CreditQuery", "credits", $query, $filter);
             foreach ($data as $edge) {
-                $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : null;
-                $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : null;
-
-                // character
                 $castCharacters = array();
                 if (!empty($edge->node->characters)) {
-                    foreach ($edge->node->characters as $keyCharacters => $character) {
+                    foreach ($edge->node->characters as $character) {
                         if (!empty($character->name)) {
                             $castCharacters[] = $character->name;
                         }
                     }
                 }
-
-                // comment, name_alias and credited
                 $comments = array();
                 $name_alias = null;
                 $credited = true;
                 if (!empty($edge->node->attributes)) {
-                    foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                    foreach ($edge->node->attributes as $attribute) {
                         if (!empty($attribute->text)) {
                             if (strpos($attribute->text, "as ") !== false) {
                                 $name_alias = trim(ltrim($attribute->text, "as"));
@@ -1048,8 +1042,6 @@ EOF;
                         }
                     }
                 }
-
-                // image url
                 $imgUrl = null;
                 if (!empty($edge->node->name->primaryImage->url)) {
                     $fullImageWidth = $edge->node->name->primaryImage->width;
@@ -1060,10 +1052,11 @@ EOF;
                     $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                     $imgUrl = $img . $parameter;
                 }
-
                 $this->creditsCast[] = array(
-                    'imdb' => $imdb,
-                    'name' => $name,
+                    'imdb' => isset($edge->node->name->id) ?
+                                    str_replace('nm', '', $edge->node->name->id) : null,
+                    'name' => isset($edge->node->name->nameText->text) ?
+                                    $edge->node->name->nameText->text : null,
                     'name_alias' => $name_alias,
                     'credited' => $credited,
                     'character' => $castCharacters,
