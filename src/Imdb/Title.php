@@ -686,11 +686,16 @@ EOF;
                     }
                 }
                 $this->akas[] = array(
-                    'title' => isset($edge->node->text) ? ucwords($edge->node->text) : null,
-                    'country' => isset($edge->node->country->text) ? ucwords($edge->node->country->text) : 'Unknown',
-                    'countryId' => isset($edge->node->country->id) ? $edge->node->country->id : null,
-                    'language' => isset($edge->node->language->text) ? ucwords($edge->node->language->text) : null,
-                    'languageId' => isset($edge->node->language->id) ? $edge->node->language->id : null,
+                    'title' => isset($edge->node->text) ?
+                                     ucwords($edge->node->text) : null,
+                    'country' => isset($edge->node->country->text) ?
+                                       ucwords($edge->node->country->text) : 'Unknown',
+                    'countryId' => isset($edge->node->country->id) ?
+                                         $edge->node->country->id : null,
+                    'language' => isset($edge->node->language->text) ?
+                                        ucwords($edge->node->language->text) : null,
+                    'languageId' => isset($edge->node->language->id) ?
+                                          $edge->node->language->id : null,
                     'comment' => $comments
                 );
             }
