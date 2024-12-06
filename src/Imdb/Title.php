@@ -930,7 +930,7 @@ EOF;
 query PrincipalCredits(\$id: ID!) {
   title(id: \$id) {
     principalCredits {
-      credits {
+      credits(limit: 3) {
         name {
           nameText {
             text
@@ -947,23 +947,27 @@ query PrincipalCredits(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->principalCredits as $value){
-                $cat = $value->credits[0]->category->text;
-                if ($cat == "Actor" || $cat == "Actress") {
-                    $category = "Star";
-                } else {
-                    $category = $cat;
-                }
-                $temp = array();
-                foreach ($value->credits as $key => $credit) {
-                    $temp[] = array(
-                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null,
-                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null
-                    );
-                    if ($key == 2) {
-                        break;
+                $category = 'Unknown';
+                $credits = array();
+                if (!empty($value->credits[0]->category->text)) {
+                    $category = $value->credits[0]->category->text;
+                    if ($category == "Actor" || $category == "Actress") {
+                        $category = "Star";
                     }
                 }
-                $this->creditsPrincipal[$category] = $temp;
+                if (!empty($value->credits)) {
+                    foreach ($value->credits as $credit) {
+                        $credits[] = array(
+                            'name' => isset($credit->name->nameText->text) ?
+                                            $credit->name->nameText->text : null,
+                            'imdbid' => isset($credit->name->id) ?
+                                              str_replace('nm', '', $credit->name->id) : null
+                        );
+                    }
+                } elseif ($category == 'Unknown') {
+                        continue;
+                }
+                $this->creditsPrincipal[$category] = $credits;
             }
         }
         return $this->creditsPrincipal;
