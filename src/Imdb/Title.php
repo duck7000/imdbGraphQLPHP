@@ -838,8 +838,10 @@ query TopRated(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
-            if (isset($data->title->ratingsSummary->topRanking->rank) && $data->title->ratingsSummary->topRanking->rank <= 250) {
-                $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
+            if (!empty($data->title->ratingsSummary->topRanking->rank)) {
+                if ($data->title->ratingsSummary->topRanking->rank <= 250) {
+                    $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
+                }
             }
         }
         return $this->mainTop250;
