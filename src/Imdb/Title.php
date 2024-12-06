@@ -794,8 +794,6 @@ query ParentsGuide (\$id: ID!) {
 EOF;
         $data = $this->graphql->query($query, "ParentsGuide", ["id" => "tt$this->imdbID"]);
         foreach ($data->title->parentsGuide->categories as $category) {
-
-            // guideItems
             $guideItems = array();
             if (!empty($category->guideItems->edges)) {
                 foreach ($category->guideItems->edges as $edge) {
