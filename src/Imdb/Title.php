@@ -2128,8 +2128,10 @@ EOF;
                 }
                 $titleName = isset($edge->node->primaryTitle->titleText->text) ?
                                    $edge->node->primaryTitle->titleText->text : null;
-                $runtime = isset($edge->node->runtime->value) ? $edge->node->runtime->value : null;
-                $thumbnailUrl = isset($edge->node->thumbnail->url) ? $edge->node->thumbnail->url : null;
+                $runtime = isset($edge->node->runtime->value) ?
+                                 $edge->node->runtime->value : null;
+                $thumbnailUrl = isset($edge->node->thumbnail->url) ?
+                                      $edge->node->thumbnail->url : null;
                 $thumbUrl = '';
                 if (!empty($thumbnailUrl)) {
                     //CustomThumb
@@ -2164,9 +2166,11 @@ EOF;
                 }
                 if (count($this->trailers) < $amount) {
                     $this->trailers[] = array(
-                        'name' => isset($edge->node->name->value) ? $edge->node->name->value : null,
+                        'name' => isset($edge->node->name->value) ?
+                                        $edge->node->name->value : null,
                         'runtime' => $runtime,
-                        'description' => isset($edge->node->description->value) ? $edge->node->description->value : null,
+                        'description' => isset($edge->node->description->value) ?
+                                               $edge->node->description->value : null,
                         'titleName' => $titleName,
                         'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
                                              $edge->node->primaryTitle->releaseYear->year : null,
