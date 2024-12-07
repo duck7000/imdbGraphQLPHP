@@ -1968,11 +1968,9 @@ keyword {
 }
 EOF;
             $data = $this->graphQlGetAll("Keywords", "keywords", $query);
-            if (!empty($data)) {
-                foreach ($data as $edge) {
-                    if (!empty($edge->node->keyword->text->text)) {
-                        $this->keywords[] = $edge->node->keyword->text->text;
-                    }
+            foreach ($data as $edge) {
+                if (!empty($edge->node->keyword->text->text)) {
+                    $this->keywords[] = $edge->node->keyword->text->text;
                 }
             }
         }
