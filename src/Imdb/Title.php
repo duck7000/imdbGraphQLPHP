@@ -1939,10 +1939,10 @@ EOF;
             foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
                 if (!empty($edge->node->boxOfficeAreaType->text)) {
                     $this->grosses[] = array(
-                        "areatype" => $edge->node->boxOfficeAreaType->text,
-                        "amount" => isset($edge->node->total->amount) ?
+                        'areatype' => $edge->node->boxOfficeAreaType->text,
+                        'amount' => isset($edge->node->total->amount) ?
                                           $edge->node->total->amount : null,
-                        "currency" => isset($edge->node->total->currency) ?
+                        'currency' => isset($edge->node->total->currency) ?
                                             $edge->node->total->currency : null
                     );
                 }
