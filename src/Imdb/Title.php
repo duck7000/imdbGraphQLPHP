@@ -1940,8 +1940,10 @@ EOF;
                 if (!empty($edge->node->boxOfficeAreaType->text)) {
                     $this->grosses[] = array(
                         "areatype" => $edge->node->boxOfficeAreaType->text,
-                        "amount" => isset($edge->node->total->amount) ? $edge->node->total->amount : null,
-                        "currency" => isset($edge->node->total->currency) ? $edge->node->total->currency : null
+                        "amount" => isset($edge->node->total->amount) ?
+                                          $edge->node->total->amount : null,
+                        "currency" => isset($edge->node->total->currency) ?
+                                            $edge->node->total->currency : null
                     );
                 }
             }
