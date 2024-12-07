@@ -1676,15 +1676,17 @@ displayableProperty {
 EOF;
             $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $query);
             foreach ($data as $edge) {
-                $real = isset($edge->node->displayableProperty->value->plainText) ? $edge->node->displayableProperty->value->plainText : null;
                 $movie = array();
                 if (!empty($edge->node->displayableProperty->qualifiersInMarkdownList)) {
                     foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $attribute) {
-                        $movie[] = $attribute->plainText;
+                        if (!empty($attribute->plainText)) {
+                            $movie[] = $attribute->plainText;
+                        }
                     }
                 }
                 $this->locations[] = array(
-                    'real' => $real,
+                    'real' => isset($edge->node->displayableProperty->value->plainText) ?
+                                    $edge->node->displayableProperty->value->plainText : null,
                     'movie' => $movie
                 );
                 
