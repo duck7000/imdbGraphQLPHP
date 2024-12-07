@@ -1855,21 +1855,19 @@ EOF;
             $filter = ' filter: {excludeCategories: "review"}';
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
             foreach ($edges as $edge) {
-                $label = null;
-                $url = null;
                 $language = array();
-                if (!empty($edge->node->url)) {
-                    $url = $edge->node->url;
-                    $label = $edge->node->label;
-                }
                 if (!empty($edge->node->externalLinkLanguages)) {
                     foreach ($edge->node->externalLinkLanguages as $lang) {
-                        $language[] = isset($lang->text) ? $lang->text : null;
+                        if (!empty($lang->text)) {
+                            $language[] = $lang->text;
+                        }
                     }
                 }
                 $this->externalSites[$edge->node->externalLinkCategory->id][] = array(
-                    'label' => $label,
-                    'url' => $url,
+                    'label' => isset($edge->node->label) ?
+                                     $edge->node->label : null,
+                    'url' => isset($edge->node->url) ?
+                                   $edge->node->url : null,
                     'language' => $language
                 );
             }
