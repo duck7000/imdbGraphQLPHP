@@ -1898,8 +1898,11 @@ query ProductionBudget(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "ProductionBudget", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->productionBudget->budget->amount)) {
-                $this->productionBudget["amount"] = $data->title->productionBudget->budget->amount;
-                $this->productionBudget["currency"] = $data->title->productionBudget->budget->currency;
+                $this->productionBudget = array(
+                    'amount' => $data->title->productionBudget->budget->amount,
+                    'currency' => isset($data->title->productionBudget->budget->currency) ?
+                                        $data->title->productionBudget->budget->currency : null
+                );
             }
         }
         return $this->productionBudget;
