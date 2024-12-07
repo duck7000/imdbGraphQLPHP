@@ -1227,34 +1227,28 @@ EOF;
     #--------------------------------------------------------[ Episodes Array ]---
     /**
      * Get the series episode(s)
-     * @return array episodes (array[0..n] of array[0..m] of array[imdbid,title,airdate,airdateParts array(day,month,year),plot,season,episode,imgUrl])
+     * @return array episodes
      * array(1) {
      *   [1]=>
      *   array(13) {
-     *       [1]=> //can be seasonnumber, year or -1 (Unknown)
+     *       [1]=>          //can be seasonnumber, year or -1 (Unknown)
      *       array(6) {
-     *       ["imdbid"]=>
-     *       string(7) "1495166"
-     *       ["title"]=>
-     *       string(5) "Pilot"
-     *       ["airdate"]=>
-     *       string(11) "7 jun. 2010"
+     *       ["imdbid"]=>   string "1495166"
+     *       ["title"]=>    string "Pilot"
+     *       ["airdate"]=>  string "7 jun. 2010"
      *       [airdateParts] => Array
      *                   (
-     *                       [day] => 7
-     *                       [month] => 6
-     *                       [year] => 2010
+     *                       [day] =>   int 7
+     *                       [month] => int 6
+     *                       [year] =>  int 2010
      *                   )
-     *       ["plot"]=>
-     *       string(648) "Admirably unselfish fireman Joe Tucker takes charge when he and six others..
-     *       ["episode"]=>
-     *       string(1) "1" //can be seasonnumber or -1 (Unknown)
-     *       ["imgUrl"]=>
-     *       string(108) "https://m.media-amazon.com/images/M/MV5BMjM3NjI2MDA2OF5BMl5BanBnXkFtZTgwODgwNjEyMjE@._V1_UY126_UX224_AL_.jpg"
+     *       ["plot"]=>     string
+     *       ["episode"]=>  string //can be episodenumber or -1 (Unknown)
+     *       ["imgUrl"]=>   string
      *       }
      *   }
      * @see IMDB page /episodes
-     * @param $thumb boolean true: thumbnail (cropped from center 224x126), false: large (max 1000 pixels)
+     * @param $thumb boolean true: thumbnail (cropped from center 224x126), false: large (max width 1000 pixels)
      * @param $yearbased This gives user control if returned episodes are yearbased or season based
      * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
      */
@@ -1268,96 +1262,58 @@ EOF;
                     return $this->seasonEpisodes;
                 }
                 foreach ($seasonsData as $edge) {
-                    if (strlen((string)$edge->node->text) === 4) {
-                        // year based Tv Series
-                        $seasonYear = $edge->node->text;
-                        $filter = 'filter: { releasedOnOrAfter: { day: 1, month: 1, year: ' . $seasonYear . '}, releasedOnOrBefore: { day: 31, month: 12, year: ' . $seasonYear . '}}';
-                    } else {
-                        $seasonYear = $edge->node->text;
-                        // To fetch data from unknown seasons/years
-                        if ($edge->node->text == "Unknown") { //this is intended capitol
-                            $SeasonUnknown = "unknown"; //this is intended not capitol
-                            $seasonFilter = "";
-                            $seasonYear = -1;
-                        } else {
-                            $seasonFilter = $edge->node->text;
-                            $SeasonUnknown = "";
-                        }
-                        $filter = 'filter: { includeSeasons: ["' . $seasonFilter . '", "' . $SeasonUnknown . '"] }';
+                    if (empty($edge->node->text)) {
+                        return $this->seasonEpisodes;
                     }
-                    
+                    $seasonYear = $edge->node->text;
+                    $filter = $this->buildFilter($seasonYear);
+                    if ($seasonYear == "Unknown") { //this is intended capitol
+                        $seasonYear = -1;
+                    }
                     // Get all episodes
                     $episodesData = $this->graphQlGetAllEpisodes($filter);
-                    
                     $episodes = array();
-                    foreach ($episodesData as $keyEp => $edge) {
-                        // vars
-                        $airDate = '';
-                        $epNumber = '';
-                        $imgUrl = '';
-                        // Episode ImdbId
-                        $imdbId = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null;
-                        // Episode Title
-                        $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : null;
-                        // Episode Airdate
-                        $day = isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day : null;
-                        $month = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month : null;
-                        $year = isset($edge->node->releaseDate->year) ? $edge->node->releaseDate->year : null;
+                    foreach ($episodesData as $edge) {
                         $dateParts = array(
-                            'day' => $day,
-                            'month' => $month,
-                            'year' => $year
+                            'day' => isset($edge->node->releaseDate->day) ?
+                                           $edge->node->releaseDate->day : null,
+                            'month' => isset($edge->node->releaseDate->month) ?
+                                             $edge->node->releaseDate->month : null,
+                            'year' => isset($edge->node->releaseDate->year) ?
+                                            $edge->node->releaseDate->year : null
                         );
-                        // return airdate as string.
-                        if (!empty($day)) {
-                            $airDate .= $day;
-                            if (!empty($month)) {
-                                $airDate .= ' ';
-                            }
-                        }
-                        if (!empty($month)) {
-                            $airDate .= date('M', mktime(0, 0, 0, $month, 10)) . '.';
-                            if (!empty($year)) {
-                                $airDate .= ' ';
-                            }
-                        }
-                        if (!empty($year)) {
-                            $airDate .= $year;
-                        }
-                        // Episode Plot
-                        $plot = isset($edge->node->plot->plotText->plainText) ? $edge->node->plot->plotText->plainText : null;
-                        // Episode Number
+                        $airDate = $this->buildDateString($dateParts);
+                        $epNumber = null;
                         if (isset($edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber)) {
                             $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
-                            // Unknown episodes get a number to keep them seperate.
+                            // Unknown episodes get a number to keep them separate.
                             if ($epNumber == "unknown") {
                                 $epNumber = -1;
                             }
                         }
-                        // Episode Image
+                        $imgUrl = null;
                         if (!empty($edge->node->primaryImage->url)) {
+                            $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
                             if ($thumb == true) {
-                                $epImageUrl = $edge->node->primaryImage->url;
                                 $fullImageWidth = $edge->node->primaryImage->width;
                                 $fullImageHeight = $edge->node->primaryImage->height;
                                 $newImageWidth = $this->config->episodeThumbnailWidth;
                                 $newImageHeight = $this->config->episodeThumbnailHeight;
-
-                                $img = str_replace('.jpg', '', $epImageUrl);
-
                                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                                 $imgUrl = $img . $parameter;
                             } else {
-                                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                $imgUrl = $img . 'QL100_SY1000_.jpg';
+                                $imgUrl = $img . 'QL100_SX1000_.jpg';
                             }
                         }
                         $episode = array(
-                                'imdbid' => $imdbId,
-                                'title' => $title,
+                                'imdbid' => isset($edge->node->id) ?
+                                                  str_replace('tt', '', $edge->node->id) : null,
+                                'title' => isset($edge->node->titleText->text) ?
+                                                 $edge->node->titleText->text : null,
                                 'airdate' => $airDate,
                                 'airdateParts' => $dateParts,
-                                'plot' => $plot,
+                                'plot' => isset($edge->node->plot->plotText->plainText) ?
+                                                $edge->node->plot->plotText->plainText : null,
                                 'season' => $seasonYear,
                                 'episode' => $epNumber,
                                 'imgUrl' => $imgUrl
