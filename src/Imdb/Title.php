@@ -2930,6 +2930,32 @@ EOF;
         return $output;
     }
 
+    #----------------------------------------------------------[ Episode build filter]---
+    /**
+     * Build filter constraint for episode()
+     * @param $seasonYear node->text from season or year
+     * @return string $filter
+     */
+    public function buildFilter($seasonYear)
+    {
+        if (strlen((string)$seasonYear) === 4) {
+            // year based Tv Series
+            $filter = 'filter:{releasedOnOrAfter:{day:1,month:1,year:' . $seasonYear . '},'
+                              . 'releasedOnOrBefore:{day:31,month:12,year:' . $seasonYear . '}}';
+        } else {
+            // To fetch data from unknown seasons/years
+            if ($seasonYear == "Unknown") { //this is intended capitol
+                $SeasonUnknown = "unknown"; //this is intended not capitol
+                $seasonFilter = "";
+            } else {
+                $seasonFilter = $seasonYear;
+                $SeasonUnknown = "";
+            }
+            $filter = 'filter:{includeSeasons:["' . $seasonFilter . '","' . $SeasonUnknown . '"]}';
+        }
+        return $filter;
+    }
+
     #========================================================[ Season Year check ]===
     /** Check if TV Series season or year based
      * @return array $data based on years or seasons
@@ -3161,6 +3187,33 @@ EOF;
         } else {
             return false;
         }
+    }
+
+    #----------------------------------------------------------[ Build date string for Episode() ]---
+    /**
+     * build date string for episode()
+     * @param array $date input date array(['day'], ['month'], ['year'])
+     * @return string $airDate e.g. '20 jan. 2008'
+     */
+    private function buildDateString($date)
+    {
+        $airDate = null;
+        if (!empty($date['day'])) {
+            $airDate .= $date['day'];
+            if (!empty($date['month'])) {
+                $airDate .= ' ';
+            }
+        }
+        if (!empty($date['month'])) {
+            $airDate .= date('M', mktime(0, 0, 0, $date['month'], 10)) . '.';
+            if (!empty($date['year'])) {
+                $airDate .= ' ';
+            }
+        }
+        if (!empty($date['year'])) {
+            $airDate .= $date['year'];
+        }
+        return $airDate;
     }
 
 }
