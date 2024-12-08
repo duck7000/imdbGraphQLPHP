@@ -2714,12 +2714,12 @@ EOF;
 
         $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
         $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
-        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : null;
-        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null;
-        $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
-        if ($this->mainYear == "????") {
-            $this->mainYear = null;
-        }
+        $this->mainMovietype = isset($data->title->titleType->text) ?
+                                     $data->title->titleType->text : null;
+        $this->mainYear = isset($data->title->releaseYear->year) ?
+                                $data->title->releaseYear->year : null;
+        $this->mainEndYear = isset($data->title->releaseYear->endYear) ?
+                                   $data->title->releaseYear->endYear : null;
     }
 
     #========================================================[ photo/poster ]===
