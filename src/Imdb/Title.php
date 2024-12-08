@@ -2668,8 +2668,10 @@ EOF;
                             $logoUrl = $img . 'QL100_UX250_.png';
                         }
                         $watchOptions[] = array(
-                            'providerId' => isset($option->provider->id) ? $option->provider->id : null,
-                            'providerName' => isset($option->provider->name->value) ? $option->provider->name->value : null,
+                            'providerId' => isset($option->provider->id) ?
+                                                  $option->provider->id : null,
+                            'providerName' => isset($option->provider->name->value) ?
+                                                    $option->provider->name->value : null,
                             'logoUrl' => $logoUrl
                         );
                     }
