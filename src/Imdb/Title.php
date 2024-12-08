@@ -2743,10 +2743,8 @@ EOF;
         $data = $this->graphql->query($query, "Poster", ["id" => "tt$this->imdbID"]);
         if (!empty($data->title->primaryImage->url)) {
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-
             // full image
             $this->mainPoster = $img . 'QL100_SX1000_.jpg';
-
             // thumb image
             if (!empty($data->title->primaryImage->width) && !empty($data->title->primaryImage->height)) {
                 $fullImageWidth = $data->title->primaryImage->width;
