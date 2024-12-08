@@ -2576,11 +2576,16 @@ EOF;
             if (!empty($data->title->featuredReviews->edges)) {
                 foreach ($data->title->featuredReviews->edges as $edge) {
                 $this->featuredReviews[] = array(
-                    'authorNickName' => isset($edge->node->author->nickName) ? $edge->node->author->nickName : null,
-                    'authorRating' => isset($edge->node->authorRating) ? $edge->node->authorRating : null,
-                    'summaryText' => isset($edge->node->summary->originalText) ? $edge->node->summary->originalText : null,
-                    'reviewText' => isset($edge->node->text->originalText->plainText) ? $edge->node->text->originalText->plainText : null,
-                    'submissionDate' => isset($edge->node->submissionDate) ? $edge->node->submissionDate : null
+                    'authorNickName' => isset($edge->node->author->nickName) ?
+                                              $edge->node->author->nickName : null,
+                    'authorRating' => isset($edge->node->authorRating) ?
+                                            $edge->node->authorRating : null,
+                    'summaryText' => isset($edge->node->summary->originalText) ?
+                                           $edge->node->summary->originalText : null,
+                    'reviewText' => isset($edge->node->text->originalText->plainText) ?
+                                          $edge->node->text->originalText->plainText : null,
+                    'submissionDate' => isset($edge->node->submissionDate) ?
+                                              $edge->node->submissionDate : null
                     );
                 }
             }
