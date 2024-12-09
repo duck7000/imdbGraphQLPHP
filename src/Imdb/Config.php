@@ -250,7 +250,9 @@ class Config
     public $nameSortOrder = "ASC";
 
 
-    #========================================================[ Calendar options ]===
+    #========================================================[ Calendar class options ]===
+
+    #---------------------------------------comingSoonStreaming]---
     /**
      * Sort by options
      * @var string with double quotes (Default: LIST_ORDER)
