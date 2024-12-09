@@ -1079,7 +1079,7 @@ EOF;
         if (!empty($this->creditsDirector)) {
             return $this->creditsDirector;
         }
-        $directorData = $this->creditHelper($this->creditsQuery("director"));
+        $directorData = $this->creditHelper("director");
         
         return $this->creditsDirector = $directorData;
     }
@@ -1095,7 +1095,7 @@ EOF;
         if (!empty($this->creditsCinematographer)) {
             return $this->creditsCinematographer;
         }
-        $cinematographerData = $this->creditHelper($this->creditsQuery("cinematographer"));
+        $cinematographerData = $this->creditHelper("cinematographer");
         
         return $this->creditsCinematographer = $cinematographerData;
     }
@@ -1110,8 +1110,8 @@ EOF;
         if (!empty($this->creditsWriter)) {
             return $this->creditsWriter;
         }
-        $data = $this->creditHelper($this->creditsQuery("writer"));
-        return $this->creditsWriter = $data;
+        $writerData = $this->creditHelper("writer");
+        return $this->creditsWriter = $writerData;
     }
 
     #-------------------------------------------------------------[ Producers ]---
@@ -1124,8 +1124,8 @@ EOF;
         if (!empty($this->creditsProducer)) {
             return $this->creditsProducer;
         }
-        $data = $this->creditHelper($this->creditsQuery("producer"));
-        return $this->creditsProducer = $data;
+        $producerData = $this->creditHelper("producer");
+        return $this->creditsProducer = $producerData;
     }
 
     #-------------------------------------------------------------[ Composers ]---
@@ -1138,7 +1138,7 @@ EOF;
         if (!empty($this->creditsComposer)) {
             return $this->creditsComposer;
         }
-        $composerData = $this->creditHelper($this->creditsQuery("composer"));
+        $composerData = $this->creditHelper("composer");
         return $this->creditsComposer = $composerData;
     }
     
@@ -1152,8 +1152,8 @@ EOF;
         if (!empty($this->creditsStunts)) {
             return $this->creditsStunts;
         }
-        $data = $this->creditHelper($this->creditsQuery("stunts"));
-        return $this->creditsStunts = $data;
+        $stuntsData = $this->creditHelper("stunts");
+        return $this->creditsStunts = $stuntsData;
     }
     
     #-------------------------------------------------------------[ Thanks ]---
@@ -1166,8 +1166,8 @@ EOF;
         if (!empty($this->creditsThanks)) {
             return $this->creditsThanks;
         }
-        $data = $this->creditHelper($this->creditsQuery("thanks"));
-        return $this->creditsThanks = $data;
+        $thanksData = $this->creditHelper("thanks");
+        return $this->creditsThanks = $thanksData;
     }
     
     #-------------------------------------------------------------[ Visual Effects ]---
@@ -1180,8 +1180,8 @@ EOF;
         if (!empty($this->creditsVisualEffects)) {
             return $this->creditsVisualEffects;
         }
-        $data = $this->creditHelper($this->creditsQuery("visual_effects"));
-        return $this->creditsVisualEffects = $data;
+        $visualEffectsData = $this->creditHelper("visual_effects");
+        return $this->creditsVisualEffects = $visualEffectsData;
     }
     
         #-------------------------------------------------------------[ Special Effects ]---
@@ -1194,8 +1194,8 @@ EOF;
         if (!empty($this->creditsSpecialEffects)) {
             return $this->creditsSpecialEffects;
         }
-        $data = $this->creditHelper($this->creditsQuery("special_effects"));
-        return $this->creditsSpecialEffects = $data;
+        $specialEffectsData = $this->creditHelper("special_effects");
+        return $this->creditsSpecialEffects = $specialEffectsData;
     }
 
     #====================================================[ /crazycredits page ]===
@@ -2810,14 +2810,17 @@ EOF;
     }
 
     #========================================================[ Crew Category ]===
-    /** create query and fetch data from category
-     * @param string $crewCategory (producer, writer, composer or director)
-     * @return array data (array[0..n] of objects)
-     * @see used by the methods director, writer, producer, composer
+    #---------------------------------------------------------------[ credit helper ]---
+    /** helper for stunts, thanks, visualEffects, specialEffects, producer,
+     *      writer, director, composer, cinematographer
+     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[],
+     *      episode array(total, year, endYear)], titleFullImageUrl, titleThumbImageUrl)
+     * @see IMDB page /fullcredits
      */
-    private function creditsQuery($crewCategory)
+    private function creditHelper($crewCategory)
     {
         $filter = ', filter: { categories: ["' .$crewCategory . '"] }';
+        $output = array();
         $query = <<<EOF
 name {
   nameText {
@@ -2826,6 +2829,8 @@ name {
   id
   primaryImage {
     url
+    width
+    height
   }
 }
 ... on Crew {
@@ -2836,19 +2841,7 @@ name {
     text
   }
   episodeCredits(first: 9999) {
-    edges {
-      node {
-        title {
-          series {
-            displayableEpisodeNumber {
-              episodeNumber {
-                text
-              }
-            }
-          }
-        }
-      }
-    }
+    total
     yearRange {
       year
       endYear
@@ -2857,60 +2850,56 @@ name {
 }
 EOF;
         $data = $this->graphQlGetAll("CreditCrew", "credits", $query, $filter);
-        return $data;
-    }
-
-    #---------------------------------------------------------------[ credit helper ]---
-    /** helper for stunts, thanks, visualEffects, specialEffects and producer
-     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[], episode array(total, year, endYear)], titleFullImageUrl, titleThumbImageUrl)
-     * @see IMDB page /fullcredits
-     */
-    private function creditHelper($data)
-    {
-        $output = array();
         foreach ($data as $edge) {
-            $name = isset($edge->node->name->nameText->text) ? $edge->node->name->nameText->text : null;
-            $imdb = isset($edge->node->name->id) ? str_replace('nm', '', $edge->node->name->id) : null;
             $jobs = array();
             if (!empty($edge->node->jobs)) {
                 foreach ($edge->node->jobs as $value) {
-                    $jobs[] = $value->text;
-                }
-            }
-            $totalEpisodes = 0;
-            $year = null;
-            $endYear = null;
-            if (!empty($edge->node->episodeCredits)) {
-                $totalEpisodes = count($edge->node->episodeCredits->edges);
-                if (!empty($edge->node->episodeCredits->yearRange->year)) {
-                    $year = $edge->node->episodeCredits->yearRange->year;
-                    if (!empty($edge->node->episodeCredits->yearRange->endYear)) {
-                        $endYear = $edge->node->episodeCredits->yearRange->endYear;
+                    if (!empty($value->text)) {
+                        $jobs[] = $value->text;
                     }
                 }
+            }
+            $episodes = array();
+            if (!empty($edge->node->episodeCredits)) {
+                $episodes = array(
+                    'total' => isset($edge->node->episodeCredits->total) ?
+                                     $edge->node->episodeCredits->total : null,
+                    'year' => isset($edge->node->episodeCredits->yearRange->year) ?
+                                    $edge->node->episodeCredits->yearRange->year : null,
+                    'endYear' => isset($edge->node->episodeCredits->yearRange->endYear) ?
+                                       $edge->node->episodeCredits->yearRange->endYear : null
+                );
             }
             $attributes = array();
             if (!empty($edge->node->attributes)) {
                 foreach ($edge->node->attributes as $keyAttributes => $attribute) {
-                    $attributes[] = isset($attribute->text) ? $attribute->text : null;
+                    if (!empty($attribute->text)) {
+                        $attributes[] = $attribute->text;
+                    }
                 }
             }
-            $titleFullImageUrl = isset($edge->node->name->primaryImage->url) ?
-                                    str_replace('.jpg', '', $edge->node->name->primaryImage->url) . 'QL100_SY1000_.jpg' : '';
-            $titleThumbImageUrl = !empty($titleFullImageUrl) ?
-                                    str_replace('QL100_SY1000_.jpg', '', $titleFullImageUrl) . 'QL75_SY98_.jpg' : '';
+            $nameThumbImageUrl = null;
+            $nameFullImageUrl = null;
+            if (!empty($edge->node->name->primaryImage->url)) {
+                $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
+                $nameFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                $fullImageWidth = $edge->node->name->primaryImage->width;
+                $fullImageHeight = $edge->node->name->primaryImage->height;
+                $newImageWidth = 140;
+                $newImageHeight = 207;
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                $nameThumbImageUrl = $img . $parameter;
+            }
             $output[] = array(
-                'imdb' => $imdb,
-                'name' => $name,
+                'imdb' => isset($edge->node->name->id) ?
+                                str_replace('nm', '', $edge->node->name->id) : null,
+                'name' => isset($edge->node->name->nameText->text) ?
+                                $edge->node->name->nameText->text : null,
                 'jobs' => $jobs,
                 'attributes' => $attributes,
-                'episode' => array(
-                    'total' => $totalEpisodes,
-                    'year' => $year,
-                    'endYear' => $endYear
-                    ),
-                'titleFullImageUrl' => $titleFullImageUrl,
-                'titleThumbImageUrl' => $titleThumbImageUrl
+                'episode' => $episodes,
+                'titleFullImageUrl' =>$nameFullImageUrl,
+                'titleThumbImageUrl' => $nameThumbImageUrl
             );
         }
         return $output;
