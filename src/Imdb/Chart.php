@@ -124,9 +124,12 @@ EOF;
                 $thumbUrl = $img . $parameter;
             }
             $top250TitleResults[] = array(
-                'title' => isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null,
-                'imdbid' => isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null,
-                'year' => isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null,
+                'title' => isset($edge->node->item->titleText->text) ?
+                                 $edge->node->item->titleText->text : null,
+                'imdbid' => isset($edge->node->item->id) ?
+                                  str_replace('tt', '', $edge->node->item->id) : null,
+                'year' => isset($edge->node->item->releaseYear->year) ?
+                                $edge->node->item->releaseYear->year : null,
                 'rank' => isset($edge->node->item->ratingsSummary->topRanking->rank) ?
                                 $edge->node->item->ratingsSummary->topRanking->rank : null,
                 'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
