@@ -609,8 +609,10 @@ EOF;
                 $weeks = $this->datediffInWeeks($startDate, date('m/d/Y'));
             }
             $results[] = array(
-                'title' => isset($edge->title->titleText->text) ? $edge->title->titleText->text : null,
-                'id' => isset($edge->title->id) ? str_replace('tt', '', $edge->title->id) : null,
+                'title' => isset($edge->title->titleText->text) ?
+                                 $edge->title->titleText->text : null,
+                'id' => isset($edge->title->id) ?
+                              str_replace('tt', '', $edge->title->id) : null,
                 'rating' => isset($edge->title->ratingsSummary->aggregateRating) ?
                                   $edge->title->ratingsSummary->aggregateRating : null,
                 'votes' => isset($edge->title->ratingsSummary->voteCount) ?
