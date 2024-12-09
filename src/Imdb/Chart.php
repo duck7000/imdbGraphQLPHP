@@ -251,9 +251,12 @@ EOF;
                 }
             }
             $top250NameResults[] = array(
-                'name' => isset($edge->node->item->nameText->text) ? $edge->node->item->nameText->text : null,
-                'imdbid' => isset($edge->node->item->id) ? str_replace('nm', '', $edge->node->item->id) : null,
-                'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
+                'name' => isset($edge->node->item->nameText->text) ?
+                                $edge->node->item->nameText->text : null,
+                'imdbid' => isset($edge->node->item->id) ?
+                                  str_replace('nm', '', $edge->node->item->id) : null,
+                'rank' => isset($edge->node->rank) ?
+                                $edge->node->rank : null,
                 'credits' => $credits,
                 'knownFor' => $knownFor,
                 'imgUrl' => $thumbUrl
