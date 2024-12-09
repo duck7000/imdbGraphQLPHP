@@ -373,9 +373,12 @@ EOF;
                 }
             }
             $mostPopularNameResults[] = array(
-                'name' => isset($edge->node->nameText->text) ? $edge->node->nameText->text : null,
-                'imdbid' => isset($edge->node->id) ? str_replace('nm', '', $edge->node->id) : null,
-                'rank' => isset($edge->node->rank) ? $edge->node->rank : null,
+                'name' => isset($edge->node->nameText->text) ?
+                                $edge->node->nameText->text : null,
+                'imdbid' => isset($edge->node->id) ?
+                                  str_replace('nm', '', $edge->node->id) : null,
+                'rank' => isset($edge->node->rank) ?
+                                $edge->node->rank : null,
                 'credits' => $credits,
                 'knownFor' => $knownFor,
                 'imgUrl' => $thumbUrl
