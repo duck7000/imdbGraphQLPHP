@@ -96,17 +96,26 @@ class Config
     public $language = "de-DE";
 
     #========================================================[ TitleSearch options ]===
-    // TitleSearch amount of results
+    /**
+     * amount of search results for Title search
+     * @var int default: 10
+     */
     public $titleSearchAmount = 10;
 
 
     #========================================================[ KeywordSearch options ]===
-    // TitleSearch amount of results
+    /**
+     * amount of search results for Keyword search
+     * @var int default: 30
+     */
     public $keywordSearchAmount = 30;
 
 
     #========================================================[ CompanySearch options ]===
-    // CompanySearch amount of results
+    /**
+     * amount of search results for Company search
+     * @var int default: 30
+     */
     public $companySearchAmount = 30;
 
 
