@@ -502,18 +502,23 @@ EOF;
                 }
             }
             $mostPopularTitleResults[] = array(
-                'title' => isset($edge->node->titleText->text) ? $edge->node->titleText->text : null,
-                'imdbid' => isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null,
-                'year' => isset($edge->node->releaseYear->year) ? $edge->node->releaseYear->year : null,
-                'runtimeSeconds' => isset($edge->node->runtime->seconds) ? $edge->node->runtime->seconds : null,
+                'title' => isset($edge->node->titleText->text) ?
+                                 $edge->node->titleText->text : null,
+                'imdbid' => isset($edge->node->id) ?
+                                  str_replace('tt', '', $edge->node->id) : null,
+                'year' => isset($edge->node->releaseYear->year) ?
+                                $edge->node->releaseYear->year : null,
+                'runtimeSeconds' => isset($edge->node->runtime->seconds) ?
+                                          $edge->node->runtime->seconds : null,
                 'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
                                        $edge->node->runtime->displayableProperty->value->plainText : null,
-                'rank' => isset($edge->currentRank) ? $edge->currentRank : null,
+                'rank' => isset($edge->currentRank) ?
+                                $edge->currentRank : null,
                 'genre' => $genres,
                 'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
                                   $edge->node->ratingsSummary->aggregateRating : null,
                 'votes' => isset($edge->node->ratingsSummary->voteCount) ?
-                                  $edge->node->ratingsSummary->voteCount : null,
+                                 $edge->node->ratingsSummary->voteCount : null,
                 'imgUrl' => $thumbUrl
             );
         }
