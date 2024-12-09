@@ -3073,15 +3073,17 @@ EOF;
         $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
         if (!empty($data->title->technicalSpecifications->$type->items)) {
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
-                $type = isset($item->$valueType) ? $item->$valueType : null;
                 $attributes = array();
                 if (!empty($item->attributes)) {
                     foreach ($item->attributes as $attribute) {
-                        $attributes[] = $attribute->text;
+                        if (!empty($attribute->text)) {
+                            $attributes[] = $attribute->text;
+                        }
                     }
                 }
                 $arrayName[] = array(
-                    'type' => $type,
+                    'type' => isset($item->$valueType) ?
+                                    $item->$valueType : null,
                     'attributes' => $attributes
                 );
             }
