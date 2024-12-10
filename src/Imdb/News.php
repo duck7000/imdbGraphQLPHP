@@ -113,14 +113,22 @@ EOF;
                 $thumbUrl = $img . $parameter;
             }
             $newsListItems[] = array(
-                'id' => isset($edge->node->id) ? str_replace('ni', '', $edge->node->id) : null,
-                'title' => isset($edge->node->articleTitle->plainText) ? $edge->node->articleTitle->plainText : null,
-                'author' => isset($edge->node->byline) ? $edge->node->byline : null,
-                'date' => isset($edge->node->date) ? $edge->node->date : null,
-                'extUrl' => isset($edge->node->externalUrl) ? $edge->node->externalUrl : null,
-                'exturlLabel' => isset($edge->node->source->homepage->label) ? $edge->node->source->homepage->label : null,
-                'textHtml' => isset($edge->node->text->plaidHtml) ? $edge->node->text->plaidHtml : null,
-                'textText' => isset($edge->node->text->plainText) ? $edge->node->text->plainText : null,
+                'id' => isset($edge->node->id) ?
+                              str_replace('ni', '', $edge->node->id) : null,
+                'title' => isset($edge->node->articleTitle->plainText) ?
+                                 $edge->node->articleTitle->plainText : null,
+                'author' => isset($edge->node->byline) ?
+                                  $edge->node->byline : null,
+                'date' => isset($edge->node->date) ?
+                                $edge->node->date : null,
+                'extUrl' => isset($edge->node->externalUrl) ?
+                                  $edge->node->externalUrl : null,
+                'exturlLabel' => isset($edge->node->source->homepage->label) ?
+                                       $edge->node->source->homepage->label : null,
+                'textHtml' => isset($edge->node->text->plaidHtml) ?
+                                    $edge->node->text->plaidHtml : null,
+                'textText' => isset($edge->node->text->plainText) ?
+                                    $edge->node->text->plainText : null,
                 'thumbnailUrl' => $thumbUrl
             );
         }
