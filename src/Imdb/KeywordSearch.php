@@ -73,11 +73,17 @@ query SearchKeyword {
 EOF;
         $data = $this->graphql->query($query, "SearchKeyword");
         foreach ($data->mainSearch->edges as $key => $edge) {
-            $keywordId = isset($edge->node->entity->id) ? str_replace('kw', '', $edge->node->entity->id) : null;
-            $keywordText = isset($edge->node->entity->text->text) ? $edge->node->entity->text->text : null;
+            $keywordText = isset($edge->node->entity->text->text) ?
+                                 $edge->node->entity->text->text : null;
+            if (empty($keywordText)) {
+                continue;
+            }
+            $keywordText = lcfirst(str_replace(' ', '', ucwords($keywordText, ' ')));
             $results[$keywordText] = array(
-                'keywordId' => $keywordId,
-                'totalTitles' => isset($edge->node->entity->titles->total) ? $edge->node->entity->titles->total : null
+                'keywordId' => isset($edge->node->entity->id) ?
+                                     str_replace('kw', '', $edge->node->entity->id) : null,
+                'totalTitles' => isset($edge->node->entity->titles->total) ?
+                                       $edge->node->entity->titles->total : null
             );
         }
         return $results;
