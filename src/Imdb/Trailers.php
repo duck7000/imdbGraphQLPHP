@@ -101,7 +101,8 @@ EOF;
         $data = $this->graphql->query($query, "RecentVideo");
         foreach ($data->recentVideos->videos as $edge) {
             $thumbUrl = null;
-            $videoId = isset($edge->id) ? str_replace('vi', '', $edge->id) : null;
+            $videoId = isset($edge->id) ?
+                             str_replace('vi', '', $edge->id) : null;
             if (!empty($edge->primaryTitle->primaryImage->url)) {
                 $fullImageWidth = $edge->primaryTitle->primaryImage->width;
                 $fullImageHeight = $edge->primaryTitle->primaryImage->height;
