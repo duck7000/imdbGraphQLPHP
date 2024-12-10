@@ -2,6 +2,33 @@
 History for imdbGraphQLPHP
 ====================
 
+v1.5.0
+-------------------
+* Added NameSearchAdvanced class
+* Calendar class comingSoonSteaming() fixed bug missing config options
+* ImageFunctions class, changed scale to match (SY to UY) and (SX to UX) to prevent scaling and white space in thumbnails
+* Added video() to Title class gets all video urls without trailers
+* Title class trailer() added missing id
+* Title class trailer() fixed bug runtime
+* Title class trailer() added new info to output array
+* Title class mainPhoto() changed thumbnails and setting in config
+* Name class credit() and creditKnownFor() changed thumbnail size to 140x207
+* Name class added missing thumbnail vars
+* TitleSearchAdvanced changed $creditId and $companyId without nm or co
+* Title class otherCompany() fxed typo
+* Chart class mostPopularTitle() added filter on genre parameter
+* Chart class mostPopularTitle() added include adult constraint to include adult titles
+* Added new class News this will get latest news
+* Chart class added new method topBoxOffice()
+* NameSearchAdvanced class fixed bug $names not set if there are no results
+* TitleSearchAdvanced class added more info to the output array
+* Title class added new method watchOption()
+* Name class award(), code restructure and bug fixes
+* Name class credit() code restructured and bug fix
+* Title class episode() code restructured, change: full img max width 1000px instead height
+* Title class award() added images
+* Title class trailer() Added parameter $customThumb, old style image url or the new style
+
 v1.4.6
 -------------------
 * Added Company and CompanySearch class, now it is possible to search and get company info (even imdbPro stuff!)
