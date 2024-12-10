@@ -116,17 +116,24 @@ query ComingSoon {
 EOF;
         $data = $this->graphql->query($query, "ComingSoon");
         foreach ($data->comingSoon->edges as $edge) {
-            $title = isset($edge->node->titleText->text) ? $edge->node->titleText->text : null;
-            if ($title === null || stripos($title, "Untitled IFC") !== false) {
+            $title = isset($edge->node->titleText->text) ?
+                           $edge->node->titleText->text : null;
+            if ($title === null) {
                 continue;
             }
-            $imdbid = isset($edge->node->id) ? str_replace('tt', '', $edge->node->id) : null;
-
             //release date
-            $releaseDate = isset($edge->node->releaseDate->month) ? $edge->node->releaseDate->month . '-' : null;
-            $releaseDate .= isset($edge->node->releaseDate->day) ? $edge->node->releaseDate->day . '-' : null;
-            $releaseDate .= isset($edge->node->releaseDate->year) ? $edge->node->releaseDate->year : null;
-
+            $dateParts = array(
+                'month' => isset($edge->node->releaseDate->month) ?
+                                 $edge->node->releaseDate->month : null,
+                'day' => isset($edge->node->releaseDate->day) ?
+                               $edge->node->releaseDate->day : null,
+                'year' => isset($edge->node->releaseDate->year) ?
+                                $edge->node->releaseDate->year : null
+            );
+            $releaseDate = $this->buildDateString($dateParts);
+            if ($releaseDate === false) {
+                continue;
+            }
             // Genres
             $genres = array();
             if (!empty($edge->node->titleGenres->genres)) {
@@ -136,7 +143,6 @@ EOF;
                     }
                 }
             }
-
             // Cast
             $cast = array();
             if (!empty($edge->node->principalCredits[0]->credits)) {
@@ -146,7 +152,6 @@ EOF;
                     }
                 }
             }
-
             // image url
             $imgUrl = null;
             if (!empty($edge->node->primaryImage->url)) {
@@ -156,10 +161,10 @@ EOF;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 $imgUrl = $img . $parameter;
             }
-
             $calendar[$releaseDate][] = array(
                 'title' => $title,
-                'imdbid' => $imdbid,
+                'imdbid' => isset($edge->node->id) ?
+                                  str_replace('tt', '', $edge->node->id) : null,
                 'genres' => $genres,
                 'cast' => $cast,
                 'imgUrl' => $imgUrl
