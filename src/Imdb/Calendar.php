@@ -326,8 +326,10 @@ EOF;
                     $temp = array();
                     foreach ($principalCredit->credits as $credit) {
                         $temp[] = array(
-                            'nameId' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null,
-                            'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null
+                            'nameId' => isset($credit->name->id) ?
+                                              str_replace('nm', '', $credit->name->id) : null,
+                            'name' => isset($credit->name->nameText->text) ?
+                                            $credit->name->nameText->text : null
                         );
                     }
                     $credits[$category] = $temp;
@@ -335,13 +337,18 @@ EOF;
             }
 
             $items[] = array(
-                'id' => isset($edge->node->item->id) ? str_replace('tt', '', $edge->node->item->id) : null,
-                'title' => isset($edge->node->item->titleText->text) ? $edge->node->item->titleText->text : null,
-                'type' => isset($edge->node->item->titleType->text) ? $edge->node->item->titleType->text : null,
-                'year' => isset($edge->node->item->releaseYear->year) ? $edge->node->item->releaseYear->year : null,
+                'id' => isset($edge->node->item->id) ?
+                              str_replace('tt', '', $edge->node->item->id) : null,
+                'title' => isset($edge->node->item->titleText->text) ?
+                                 $edge->node->item->titleText->text : null,
+                'type' => isset($edge->node->item->titleType->text) ?
+                                $edge->node->item->titleType->text : null,
+                'year' => isset($edge->node->item->releaseYear->year) ?
+                                $edge->node->item->releaseYear->year : null,
                 'description' => isset($edge->node->description->originalText->plainText) ?
                                        $edge->node->description->originalText->plainText : null,
-                'runtime' => isset($edge->node->item->runtime->seconds) ? $edge->node->item->runtime->seconds : null,
+                'runtime' => isset($edge->node->item->runtime->seconds) ?
+                                   $edge->node->item->runtime->seconds : null,
                 'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
                                   $edge->node->item->ratingsSummary->aggregateRating : null,
                 'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
@@ -355,10 +362,14 @@ EOF;
             );
         }
         $calendarStreaming = array(
-            'listId' => isset($data->list->id) ? str_replace('ls', '', $data->list->id) : null,
-            'listName' => isset($data->list->name->originalText) ? $data->list->name->originalText : null,
-            'listCreateDate' => isset($data->list->createdDate) ? $data->list->createdDate : null,
-            'listLastModifiedDate ' => isset($data->list->lastModifiedDate) ? $data->list->lastModifiedDate : null,
+            'listId' => isset($data->list->id) ?
+                              str_replace('ls', '', $data->list->id) : null,
+            'listName' => isset($data->list->name->originalText) ?
+                                $data->list->name->originalText : null,
+            'listCreateDate' => isset($data->list->createdDate) ?
+                                      $data->list->createdDate : null,
+            'listLastModifiedDate ' => isset($data->list->lastModifiedDate) ?
+                                             $data->list->lastModifiedDate : null,
             'items' => $items
         );
         return $calendarStreaming;
