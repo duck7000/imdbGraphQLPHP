@@ -35,7 +35,7 @@ class CompanySearch extends MdbBase
     public function searchCompany($company)
     {
         $results = array();
-        
+
         // check if $company is empty, return empty array
         if (empty(trim($company))) {
             return $results;
@@ -78,11 +78,11 @@ EOF;
         foreach ($data->mainSearch->edges as $key => $edge) {
             $results[] = array(
                 'id' => isset($edge->node->entity->id) ?
-                                     str_replace('co', '', $edge->node->entity->id) : null,
+                              str_replace('co', '', $edge->node->entity->id) : null,
                 'name' => isset($edge->node->entity->companyText->text) ?
-                                       $edge->node->entity->companyText->text : null,
+                                $edge->node->entity->companyText->text : null,
                 'country' => isset($edge->node->entity->country->text) ?
-                                       $edge->node->entity->country->text : null,
+                                   $edge->node->entity->country->text : null,
                 'type' => isset($edge->node->entity->companyTypes[0]->text) ?
                                 $edge->node->entity->companyTypes[0]->text : null
             );
