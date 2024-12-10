@@ -188,15 +188,20 @@ EOF;
                 if (!empty($staff->node->summary->employment)) {
                     foreach ($staff->node->summary->employment as $list) {
                         $employments[] = array(
-                            'employmentTitle' => isset($list->title->text) ? $list->title->text : null,
-                            'occupation' => isset($list->occupation->text) ? $list->occupation->text : null,
-                            'branch' => isset($list->branch->text) ? $list->branch->text : null
+                            'employmentTitle' => isset($list->title->text) ?
+                                                       $list->title->text : null,
+                            'occupation' => isset($list->occupation->text) ?
+                                                  $list->occupation->text : null,
+                            'branch' => isset($list->branch->text) ?
+                                              $list->branch->text : null
                         );
                     }
                 }
                 $keyStaff[] = array(
-                    'id' => isset($staff->node->name->id) ? str_replace('nm', '', $staff->node->name->id) : null,
-                    'name' => isset($staff->node->name->nameText->text) ? $staff->node->name->nameText->text : null,
+                    'id' => isset($staff->node->name->id) ?
+                                  str_replace('nm', '', $staff->node->name->id) : null,
+                    'name' => isset($staff->node->name->nameText->text) ?
+                                    $staff->node->name->nameText->text : null,
                     'employments' => $employments
                 );
             }
@@ -212,8 +217,10 @@ EOF;
                 if (!empty($title->node->summary->jobs)) {
                     foreach ($title->node->summary->jobs as $job) {
                         $jobs[] = array(
-                            'category' => isset($job->category->text) ? $job->category->text : null,
-                            'job' => isset($job->job->text) ? $job->job->text : null
+                            'category' => isset($job->category->text) ?
+                                                $job->category->text : null,
+                            'job' => isset($job->job->text) ?
+                                           $job->job->text : null
                         );
                     }
                 }
@@ -228,12 +235,16 @@ EOF;
                     }
                 }
                 $knownFor[] = array(
-                    'id' => isset($title->node->title->id) ? str_replace('tt', '', $title->node->title->id) : null,
-                    'name' => isset($title->node->title->titleText->text) ? $title->node->title->titleText->text : null,
+                    'id' => isset($title->node->title->id) ?
+                                  str_replace('tt', '', $title->node->title->id) : null,
+                    'name' => isset($title->node->title->titleText->text) ?
+                                    $title->node->title->titleText->text : null,
                     'jobs' =>  $jobs,
                     'countries' => $countries,
-                    'year' => isset($title->node->summary->yearRange->year) ? $title->node->summary->yearRange->year : null,
-                    'endYear' => isset($title->node->summary->yearRange->endYear) ? $title->node->summary->yearRange->endYear : null
+                    'year' => isset($title->node->summary->yearRange->year) ?
+                                    $title->node->summary->yearRange->year : null,
+                    'endYear' => isset($title->node->summary->yearRange->endYear) ?
+                                       $title->node->summary->yearRange->endYear : null
                 );
             }
         }
@@ -245,7 +256,8 @@ EOF;
                     $affiliations[] = array(
                         'companyName' => isset($affiliation->node->company->companyText->text) ?
                                                $affiliation->node->company->companyText->text : null,
-                        'description' => isset($affiliation->node->text) ? $affiliation->node->text : null
+                        'description' => isset($affiliation->node->text) ?
+                                               $affiliation->node->text : null
                     );
             }
         }
@@ -264,9 +276,12 @@ EOF;
 
         // Results
         $companyResults = array(
-            'id' => isset($data->company->id) ? str_replace('co', '', $data->company->id) : null,
-            'name' => isset($data->company->companyText->text) ? $data->company->companyText->text : null,
-            'country' => isset($data->company->country->text) ? $data->company->country->text : null,
+            'id' => isset($data->company->id) ?
+                          str_replace('co', '', $data->company->id) : null,
+            'name' => isset($data->company->companyText->text) ?
+                            $data->company->companyText->text : null,
+            'country' => isset($data->company->country->text) ?
+                               $data->company->country->text : null,
             'meterRanking' => $meterRanking,
             'type' => $companyTypes,
             'keyStaff' => $keyStaff,
