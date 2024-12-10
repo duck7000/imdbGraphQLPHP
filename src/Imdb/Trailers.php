@@ -192,7 +192,8 @@ EOF;
         $data = $this->graphql->query($query, "TrendingVideo");
         foreach ($data->trendingTitles->titles as $edge) {
             $thumbUrl = null;
-            $videoId = isset($edge->latestTrailer->id) ? str_replace('vi', '', $edge->latestTrailer->id) : null;
+            $videoId = isset($edge->latestTrailer->id) ?
+                             str_replace('vi', '', $edge->latestTrailer->id) : null;
             if (empty($videoId)) {
                 continue;
             }
@@ -205,15 +206,21 @@ EOF;
             }
             $trendingVideoResults[] = array(
                 'videoId' => $videoId,
-                'titleId' => isset($edge->id) ? str_replace('tt', '', $edge->id) : null,
-                'title' => isset($edge->titleText->text) ? $edge->titleText->text : null,
-                'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ? $edge->latestTrailer->createdDate : null,
-                'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ? $edge->latestTrailer->runtime->value : null,
-                'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                'titleId' => isset($edge->id) ?
+                                   str_replace('tt', '', $edge->id) : null,
+                'title' => isset($edge->titleText->text) ?
+                                 $edge->titleText->text : null,
+                'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ?
+                                             $edge->latestTrailer->createdDate : null,
+                'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ?
+                                          $edge->latestTrailer->runtime->value : null,
+                'playbackUrl' => !empty($videoId) ?
+                                        'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
                                        $edge->releaseDate->displayableProperty->value->plainText : null,
-                'contentType' => isset($edge->latestTrailer->name->value) ? $edge->latestTrailer->name->value : null
+                'contentType' => isset($edge->latestTrailer->name->value) ?
+                                       $edge->latestTrailer->name->value : null
             );
         }
         return $trendingVideoResults;
