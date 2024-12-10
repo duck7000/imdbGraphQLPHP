@@ -111,15 +111,21 @@ EOF;
             }
             $recentVideoResults[] = array(
                 'videoId' => $videoId,
-                'titleId' => isset($edge->primaryTitle->id) ? str_replace('tt', '', $edge->primaryTitle->id) : null,
-                'title' => isset($edge->primaryTitle->titleText->text) ? $edge->primaryTitle->titleText->text : null,
-                'trailerCreateDate' => isset($edge->createdDate) ? $edge->createdDate : null,
-                'trailerRuntime' => isset($edge->runtime->value) ? $edge->runtime->value : null,
-                'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                'titleId' => isset($edge->primaryTitle->id) ?
+                                   str_replace('tt', '', $edge->primaryTitle->id) : null,
+                'title' => isset($edge->primaryTitle->titleText->text) ?
+                                 $edge->primaryTitle->titleText->text : null,
+                'trailerCreateDate' => isset($edge->createdDate) ?
+                                             $edge->createdDate : null,
+                'trailerRuntime' => isset($edge->runtime->value) ?
+                                          $edge->runtime->value : null,
+                'playbackUrl' => !empty($videoId) ?
+                                        'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                 'thumbnailUrl' => $thumbUrl,
                 'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
                                        $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
-                'contentType' => isset($edge->name->value) ? $edge->name->value : null
+                'contentType' => isset($edge->name->value) ?
+                                       $edge->name->value : null
             );
         }
         return $recentVideoResults;
