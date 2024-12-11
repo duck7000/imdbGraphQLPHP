@@ -24,19 +24,6 @@ class TitleCombined extends MdbBase
     protected $newImageWidth;
     protected $newImageHeight;
     protected $main = array();
-    protected $mainCreditsPrincipal = array();
-    protected $mainPoster = null;
-    protected $mainPosterThumb = null;
-    protected $mainPlotoutline = null;
-    protected $mainMovietype = null;
-    protected $mainTitle = null;
-    protected $mainOriginalTitle = null;
-    protected $mainYear = -1;
-    protected $mainEndYear = -1;
-    protected $mainRating = 0;
-    protected $mainGenres = array();
-    protected $mainRuntime = 0;
-    protected $mainCanonicalId = false;
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
@@ -180,7 +167,7 @@ query TitleCombinedMain(\$id: ID!) {
       }
     }
     principalCredits {
-      credits {
+      credits(limit: 3) {
         name {
           nameText {
             text
@@ -199,44 +186,29 @@ query TitleCombinedMain(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "TitleCombinedMain", ["id" => "tt$this->imdbID"]);
-
-        $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
-        $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
-        $this->mainMovietype = isset($data->title->titleType->text) ? $data->title->titleType->text : null;
-        $this->mainYear = isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null;
-        $this->mainEndYear = isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null;
-        if ($this->mainYear == "????") {
-            $this->mainYear = null;
-        }
-        $this->mainRuntime = isset($data->title->runtime->seconds) ? $data->title->runtime->seconds / 60 : 0;
-        $this->mainRating = isset($data->title->ratingsSummary->aggregateRating) ? $data->title->ratingsSummary->aggregateRating : 0;
-        $this->mainPlotoutline = isset($data->title->plot->plotText->plainText) ? $data->title->plot->plotText->plainText : null;
-        $this->mainCanonicalId = $this->checkRedirect($data);
-        
-        // Image
-        $this->populatePoster($data);
-
-        // Genres
-        $this->genre($data);
-
-        // Credits
-        $this->principalCredits($data);
-
         $this->main = array(
-            'title' => $this->mainTitle,
-            'originalTitle' => $this->mainOriginalTitle,
+            'title' => isset($data->title->titleText->text) ?
+                             trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))) : null,
+            'originalTitle' => isset($data->title->originalTitleText->text) ?
+                                     trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null,
             'imdbid' => $this->imdbID,
-            'reDirectId' => $this->mainCanonicalId,
-            'movieType' => $this->mainMovietype,
-            'year' => $this->mainYear,
-            'endYear' => $this->mainEndYear,
-            'imgThumb' => $this->mainPosterThumb,
-            'imgFull' => $this->mainPoster,
-            'runtime' => $this->mainRuntime,
-            'rating' => $this->mainRating,
-            'genre' => $this->mainGenres,
-            'plotoutline' => $this->mainPlotoutline,
-            'credits' => $this->mainCreditsPrincipal
+            'reDirectId' => $this->checkRedirect($data),
+            'movieType' => isset($data->title->titleType->text) ?
+                                 $data->title->titleType->text : null,
+            'year' => isset($data->title->releaseYear->year) ?
+                            $data->title->releaseYear->year : null,
+            'endYear' => isset($data->title->releaseYear->endYear) ?
+                               $data->title->releaseYear->endYear : null,
+            'imgThumb' => $this->populatePoster($data, true),
+            'imgFull' => $this->populatePoster($data, false),
+            'runtime' => isset($data->title->runtime->seconds) ?
+                               $data->title->runtime->seconds / 60 : 0,
+            'rating' => isset($data->title->ratingsSummary->aggregateRating) ?
+                              $data->title->ratingsSummary->aggregateRating : 0,
+            'genre' => $this->genre($data),
+            'plotoutline' => isset($data->title->plot->plotText->plainText) ?
+                                   $data->title->plot->plotText->plainText : null,
+            'credits' => $this->principalCredits($data)
         );
         return $this->main;
     }
@@ -250,19 +222,20 @@ EOF;
      * Setup cover photo (thumbnail and big variant)
      * @see IMDB page / (TitlePage)
      */
-    private function populatePoster($data)
+    private function populatePoster($data, $thumb)
     {
         if (!empty($data->title->primaryImage->url)) {
-            $fullImageWidth = $data->title->primaryImage->width;
-            $fullImageHeight = $data->title->primaryImage->height;
             $img = str_replace('.jpg', '', $data->title->primaryImage->url);
-            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-            
-            // thumb image
-            $this->mainPosterThumb = $img . $parameter;
-            
-            // full image
-            $this->mainPoster = $img . 'QL100_SX1000_.jpg';
+            if ($thumb === true) {
+                $fullImageWidth = $data->title->primaryImage->width;
+                $fullImageHeight = $data->title->primaryImage->height;
+                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                return $img . $parameter;
+            } else {
+                return $img . 'QL100_SX1000_.jpg';
+            }
+        } else {
+            return null;
         }
     }
 
@@ -273,21 +246,25 @@ EOF;
      */
     private function genre($data)
     {
-        if (empty($this->mainGenres)) {
-            if (!empty($data->title->titleGenres->genres)) {
-                foreach ($data->title->titleGenres->genres as $edge) {
-                    $subGenres = array();
-                    if (!empty($edge->subGenres)) {
-                        foreach ($edge->subGenres as $subGenre) {
+        if (!empty($data->title->titleGenres->genres)) {
+            foreach ($data->title->titleGenres->genres as $edge) {
+                $subGenres = array();
+                if (!empty($edge->subGenres)) {
+                    foreach ($edge->subGenres as $subGenre) {
+                        if (!empty($subGenre->keyword->text->text)) {
                             $subGenres[] = $subGenre->keyword->text->text;
                         }
                     }
-                    $this->mainGenres[] = array(
-                        'mainGenre' => $edge->genre->text,
-                        'subGenre' => $subGenres
-                    );
                 }
+                $mainGenres[] = array(
+                    'mainGenre' => isset($edge->genre->text) ?
+                                         $edge->genre->text : null,
+                    'subGenre' => $subGenres
+                );
             }
+            return $mainGenres;
+        } else {
+            return array();
         }
     }
 
@@ -300,27 +277,32 @@ EOF;
     */
     private function principalCredits($data)
     {
-        if (empty($this->mainCreditsPrincipal)) {
-            foreach ($data->title->principalCredits as $value){
-                $cat = $value->credits[0]->category->text;
-                if ($cat == "Actor" || $cat == "Actress") {
+        $creditsPrincipal = array();
+        var_dump($data->title->principalCredits);
+        foreach ($data->title->principalCredits as $value){
+            $category = 'Unknown';
+            $credits = array();
+            if (!empty($value->credits[0]->category->text)) {
+                $category = $value->credits[0]->category->text;
+                if ($category == "Actor" || $category == "Actress") {
                     $category = "Star";
-                } else {
-                    $category = $cat;
                 }
-                $temp = array();
-                foreach ($value->credits as $key => $credit) {
-                    $temp[] = array(
-                        'name' => isset($credit->name->nameText->text) ? $credit->name->nameText->text : null,
-                        'imdbid' => isset($credit->name->id) ? str_replace('nm', '', $credit->name->id) : null
-                    );
-                    if ($key == 2) {
-                        break;
-                    }
-                }
-                $this->mainCreditsPrincipal[$category] = $temp;
             }
+            if (!empty($value->credits)) {
+                foreach ($value->credits as $credit) {
+                    $credits[] = array(
+                        'name' => isset($credit->name->nameText->text) ?
+                                        $credit->name->nameText->text : null,
+                        'imdbid' => isset($credit->name->id) ?
+                                          str_replace('nm', '', $credit->name->id) : null
+                    );
+                }
+            } elseif ($category == 'Unknown') {
+                    continue;
+            }
+            $creditsPrincipal[$category] = $credits;
         }
+        return $creditsPrincipal;
     }
 
     #----------------------------------------------------------[ imdbID redirect ]---
@@ -339,6 +321,8 @@ EOF;
         if ($titleImdbId  != $this->imdbID) {
             // todo write to log?
             return $titleImdbId;
+        } else {
+            return false;
         }
     }
 
