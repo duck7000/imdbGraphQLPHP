@@ -2,7 +2,7 @@
 
 #############################################################################
 # imdbGraphQLPHP                             (c) Ed                         #
-# written extended & maintained by Ed                                       #
+# written by ed (github user: duck7000)                                     #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
 # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -10,26 +10,31 @@
 
 namespace Imdb;
 
-
 /**
- * Search for people on IMDb
- * @author Izzy (izzysoft AT qumran DOT org)
- * @copyright 2008-2009 by Itzchak Rehberg and IzzySoft
+ * Search for names on IMDb
  */
 class NameSearch extends MdbBase
 
 {
     /**
-     * Search IMDb for titles matching $searchTerms
+     * Search IMDb for names matching $searchTerms
      * @param string $searchTerms
-     * @return Title[] array of Titles
+     * @return array of names
      */
     public function search($searchTerms)
     {
+        $amount = $this->config->nameSearchAmount;
         $results = array();
         $query = <<<EOF
 query Search {
-  mainSearch(first: 10, options: {searchTerm: "$searchTerms", type: NAME, includeAdult: true}) {
+  mainSearch(
+    first: $amount
+    options:{
+      searchTerm: "$searchTerms"
+      type: NAME
+      includeAdult: true
+      }
+    ) {
     edges {
       node {
         entity {
@@ -37,6 +42,27 @@ query Search {
             id
             nameText {
               text
+            }
+            knownFor(first: 1) {
+              edges {
+                node{
+                  credit {
+                    title {
+                      titleText {
+                        text
+                      }
+                      releaseYear {
+                        year
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            primaryProfessions(limit: 1) {
+              category {
+                text
+              }
             }
           }
         }
@@ -47,11 +73,20 @@ query Search {
 EOF;
         $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
-            $nameId = isset($edge->node->entity->id) ? str_replace('nm', '', $edge->node->entity->id) : null;
-            $name = isset($edge->node->entity->nameText->text) ? $edge->node->entity->nameText->text : null;
+            $creditKnownFor = array(
+                'title' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text) ?
+                                 $edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text : null,
+                'titleYear' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year) ?
+                                     $edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year : null
+            );
             $results[] = array(
-                'id' => $nameId,
-                'name' => $name
+                'id' => isset($edge->node->entity->id) ?
+                              str_replace('nm', '', $edge->node->entity->id) : null,
+                'name' => isset($edge->node->entity->nameText->text) ?
+                                $edge->node->entity->nameText->text : null,
+                'knownFor' => $creditKnownFor,
+                'primaryProfession' => isset($edge->node->entity->primaryProfessions[0]->category->text) ?
+                                             $edge->node->entity->primaryProfessions[0]->category->text : null
             );
         }
         return $results;

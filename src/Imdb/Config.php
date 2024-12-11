@@ -103,6 +103,14 @@ class Config
     public $titleSearchAmount = 10;
 
 
+    #========================================================[ NameSearch options ]===
+    /**
+     * amount of search results for Name search
+     * @var int default: 10
+     */
+    public $nameSearchAmount = 10;
+
+
     #========================================================[ KeywordSearch options ]===
     /**
      * amount of search results for Keyword search
