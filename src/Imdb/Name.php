@@ -33,6 +33,7 @@ class Name extends MdbBase
     protected $fullName = null;
     protected $birthday = array();
     protected $deathday = array();
+    protected $age = null;
     protected $professions = array();
     protected $popRank = array();
 
@@ -307,6 +308,31 @@ EOF;
             );
         }
         return $this->deathday;
+    }
+
+    #------------------------------------------------------------------[ Age ]---
+    /** Get the age of the person
+     * @return int age
+     * @see IMDB person page / (Main page)
+     */
+    public function age()
+    {
+        if (empty($this->age)) {
+            $query = <<<EOF
+query Age(\$id: ID!) {
+  name(id: \$id) {
+    age {
+      value
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "Age", ["id" => "nm$this->imdbID"]);
+            if (!empty($data->name->age->value)) {
+                $this->age = $data->name->age->value;
+            }
+        }
+        return $this->age;
     }
 
     #-----------------------------------------------------------[ Primary Professions ]---
