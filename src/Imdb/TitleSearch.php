@@ -16,7 +16,7 @@ class TitleSearch extends MdbBase
     /**
      * Search IMDb for titles matching $searchTerms
      * @param string $searchTerms
-     * @param string $types input search types like MOVIE or MOVIE,TV (separate by comma if more then one)
+     * @param string $types input search types like "MOVIE" or "MOVIE,TV" (separate by comma if more then one)
      * Default for $types: null (search within all types)
      * Possible values for $types:
      *  MOVIE
@@ -27,8 +27,8 @@ class TitleSearch extends MdbBase
      *  TV_EPISODE
      *  VIDEO_GAME
      * 
-     * @param string $startDate search from startDate til present date, iso date ("1975-01-01")
-     * @param string $endDate search from endDate and earlier, iso date ("1975-01-01")
+     * @param string $startDate search from startDate til present date, iso date (year-month-day) ("1975-01-01")
+     * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
      * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * 
      * @return Title[] array of Titles
@@ -54,8 +54,11 @@ query Search{
       includeAdult: true
       titleSearchOptions: {
         type: [$types]
-        releaseDateRange: {start: $inputReleaseDates[startDate] end: $inputReleaseDates[endDate]}
+        releaseDateRange: {
+          start: $inputReleaseDates[startDate]
+          end: $inputReleaseDates[endDate]
         }
+      }
     }
   ) {
     edges {
@@ -85,11 +88,7 @@ query Search{
 EOF;
         $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
-            $imdbId = isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : null;
-            $title = isset($edge->node->entity->titleText->text) ? $edge->node->entity->titleText->text : null;
-            $originalTitle = isset($edge->node->entity->originalTitleText->text) ? $edge->node->entity->originalTitleText->text : null;
-            $movietype = isset($edge->node->entity->titleType->text) ? $edge->node->entity->titleType->text : null;
-            $yearRange = '';
+            $yearRange = null;
             if (isset($edge->node->entity->releaseYear->year)) {
                 $yearRange .= $edge->node->entity->releaseYear->year;
                 if (isset($edge->node->entity->releaseYear->endYear)) {
@@ -97,11 +96,15 @@ EOF;
                 }
             }
             $results[] = array(
-                'imdbid' => $imdbId,
-                'title' => $title,
-                'originalTitle' => $originalTitle,
+                'imdbid' => isset($edge->node->entity->id) ?
+                                  str_replace('tt', '', $edge->node->entity->id) : null,
+                'title' => isset($edge->node->entity->titleText->text) ?
+                                 $edge->node->entity->titleText->text : null,
+                'originalTitle' => isset($edge->node->entity->originalTitleText->text) ?
+                                         $edge->node->entity->originalTitleText->text : null,
                 'year' => $yearRange,
-                'movietype' => $movietype
+                'movietype' => isset($edge->node->entity->titleType->text) ?
+                                     $edge->node->entity->titleType->text : null
             );
         }
         return $results;
@@ -109,6 +112,7 @@ EOF;
 
 
     #========================================================[ Helper functions]===
+
     /**
      * Check if provided date is valid
      * @param string $date input date
@@ -165,4 +169,5 @@ EOF;
             }
         }
     }
+
 }
