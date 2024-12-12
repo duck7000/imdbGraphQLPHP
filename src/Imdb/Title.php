@@ -92,6 +92,7 @@ class Title extends MdbBase
     protected $faqs = array();
     protected $isAdult = null;
     protected $watchOption = array();
+    protected $status = null;
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
@@ -2680,6 +2681,32 @@ EOF;
             }
         }
         return $this->watchOption;
+    }
+
+    #----------------------------------------------------------[ Production Status ]---
+    /**
+     * Get current production status of a title e.g. Released, In Development, Pre-Production, Complete, Production etc
+     * @return string status
+     */
+    public function productionStatus()
+    {
+        if (empty($this->status)) {
+            $query = <<<EOF
+query ProductionStatus(\$id: ID!) {
+  title(id: \$id) {
+    productionStatus {
+      currentProductionStage {
+        text
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "ProductionStatus", ["id" => "tt$this->imdbID"]);
+            $this->status = isset($data->title->productionStatus->currentProductionStage->text) ? 
+                                  $data->title->productionStatus->currentProductionStage->text : null;
+        }
+        return $this->status;
     }
 
 
