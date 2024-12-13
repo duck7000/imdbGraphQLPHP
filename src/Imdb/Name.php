@@ -632,11 +632,12 @@ query MiniBio(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "MiniBio", ["id" => "nm$this->imdbID"]);
             foreach ($data->name->bios->edges as $edge) {
-                $bio_bio["desc"] = isset($edge->node->text->plainText) ?
-                                         $edge->node->text->plainText : null;
-                $bio_bio["author"] = isset($edge->node->author->plainText) ?
-                                           $edge->node->author->plainText : null;
-                $this->bioBio[] = $bio_bio;
+                $this->bioBio[] = array(
+                    'desc' => isset($edge->node->text->plainText) ?
+                                    $edge->node->text->plainText : null,
+                    'author' => isset($edge->node->author->plainText) ?
+                                      $edge->node->author->plainText : null
+                );
             }
         }
         return $this->bioBio;
