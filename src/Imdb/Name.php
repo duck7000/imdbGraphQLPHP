@@ -883,7 +883,8 @@ EOF;
         return $this->pubPortrayal;
     }
 
-    #----------------------------------------------------[ Other Works ]---
+    #============================================================[ /OtherWorks ]===
+
     /** Other works of this person
      * @return array pubOtherWorks array[0..n] of array[category, fromDate array(day, month,year), toDate array(day, month,year), text]
      * @see IMDB person page /otherworks
