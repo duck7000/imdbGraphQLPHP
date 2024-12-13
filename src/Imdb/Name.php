@@ -709,16 +709,6 @@ attributes {
 EOF;
             $data = $this->graphQlGetAll("Salaries", "titleSalaries", $query);
             foreach ($data as $edge) {
-                $title = isset($edge->node->title->titleText->text) ?
-                               $edge->node->title->titleText->text : null;
-                $imdbId = isset($edge->node->title->id) ?
-                                str_replace('tt', '', $edge->node->title->id) : null;
-                $year = isset($edge->node->title->releaseYear->year) ?
-                              $edge->node->title->releaseYear->year : null;
-                $amount = isset($edge->node->amount->amount) ?
-                                $edge->node->amount->amount : null;
-                $currency = isset($edge->node->amount->currency) ?
-                                  $edge->node->amount->currency : null;
                 $comments = array();
                 if (!empty($edge->node->attributes)) {
                     foreach ($edge->node->attributes as $attribute) {
@@ -728,11 +718,16 @@ EOF;
                     }
                 }
                 $this->bioSalary[] = array(
-                    'imdb' => $imdbId,
-                    'name' => $title,
-                    'year' => $year,
-                    'amount' => $amount,
-                    'currency' => $currency,
+                    'imdb' => isset($edge->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->title->id) : null,
+                    'name' => isset($edge->node->title->titleText->text) ?
+                                    $edge->node->title->titleText->text : null,
+                    'year' => isset($edge->node->title->releaseYear->year) ?
+                                    $edge->node->title->releaseYear->year : null,
+                    'amount' => isset($edge->node->amount->amount) ?
+                                      $edge->node->amount->amount : null,
+                    'currency' => isset($edge->node->amount->currency) ?
+                                        $edge->node->amount->currency : null,
                     'comment' => $comments
                 );
             }
