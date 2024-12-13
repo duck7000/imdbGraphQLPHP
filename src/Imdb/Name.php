@@ -55,6 +55,7 @@ class Name extends MdbBase
     // "Publicity" page:
     protected $pubPrints = array();
     protected $pubMovies = array();
+    protected $pubPortrayal = array();
     protected $pubOtherWorks = array();
     protected $externalSites = array();
 
@@ -856,6 +857,43 @@ EOF;
             }
         }
         return $this->pubMovies;
+    }
+
+    #-----------------------------------------------------------[ Portrayal]---
+    /** Portrayal listings about this person
+     * @return array portrayal array[0..n] of array[title, id, year]
+     * @see IMDB person page /publicity
+     */
+    public function pubportrayal()
+    {
+        if (empty($this->pubPortrayal)) {
+            $filter = ', filter: {categories: ["namePortrayal"]}';
+            $query = <<<EOF
+... on NamePortrayal {
+  title {
+    titleText {
+      text
+    }
+    id
+    releaseYear {
+      year
+    }
+  }
+}
+EOF;
+            $data = $this->graphQlGetAll("PubPortrayal", "publicityListings", $query, $filter);
+            foreach ($data as $edge) {
+                $this->pubPortrayal[] = array(
+                    'title' => isset($edge->node->title->titleText->text) ?
+                                     $edge->node->title->titleText->text : null,
+                    'id' => isset($edge->node->title->id) ?
+                                  str_replace('tt', '', $edge->node->title->id) : null,
+                    'year' => isset($edge->node->title->releaseYear->year) ?
+                                    $edge->node->title->releaseYear->year : null
+                );
+            }
+        }
+        return $this->pubPortrayal;
     }
 
     #----------------------------------------------------[ Other Works ]---
