@@ -742,8 +742,6 @@ EOF;
 
     #============================================================[ /publicity ]===
 
-    #============================================================[ /publicity ]===
-
     #-----------------------------------------------------------[ Print media ]---
     /** Print media about this person
      * @return array prints array[0..n] of array[title, author, place, publisher, isbn],
@@ -905,39 +903,31 @@ text {
 EOF;
             $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
             foreach ($data as $edge) {
-                $category = isset($edge->node->category) ?
-                                  $edge->node->category->text : null;
                 // From date
-                $fromDateDay = isset($edge->node->fromDate->day) ?
-                                     $edge->node->fromDate->day : null;
-                $fromDateMonth = isset($edge->node->fromDate->month) ?
-                                       $edge->node->fromDate->month : null;
-                $fromDateYear = isset($edge->node->fromDate->year) ?
-                                    $edge->node->fromDate->year : null;
                 $fromDate = array(
-                    "day" => $fromDateDay,
-                    "month" => $fromDateMonth,
-                    "year" => $fromDateYear
+                    "day" => isset($edge->node->fromDate->day) ?
+                                   $edge->node->fromDate->day : null,
+                    "month" => isset($edge->node->fromDate->month) ?
+                                     $edge->node->fromDate->month : null,
+                    "year" => isset($edge->node->fromDate->year) ?
+                                    $edge->node->fromDate->year : null
                 );
                 // To date
-                $toDateDay = isset($edge->node->toDate->day) ?
-                                   $edge->node->toDate->day : null;
-                $toDateMonth = isset($edge->node->toDate->month) ?
-                                     $edge->node->toDate->month : null;
-                $toDateYear = isset($edge->node->toDate->year) ?
-                                    $edge->node->toDate->year : null;
                 $toDate = array(
-                    "day" => $toDateDay,
-                    "month" => $toDateMonth,
-                    "year" => $toDateYear
+                    "day" => isset($edge->node->toDate->day) ?
+                                   $edge->node->toDate->day : null,
+                    "month" => isset($edge->node->toDate->month) ?
+                                     $edge->node->toDate->month : null,
+                    "year" => isset($edge->node->toDate->year) ?
+                                    $edge->node->toDate->year : null
                 );
-                $text = isset($edge->node->text->plainText) ?
-                              $edge->node->text->plainText : null;
                 $this->pubOtherWorks[] = array(
-                    "category" => $category,
+                    "category" => isset($edge->node->category) ?
+                                        $edge->node->category->text : null,
                     "fromDate" => $fromDate,
                     "toDate" => $toDate,
-                    "text" => $text
+                    "text" => isset($edge->node->text->plainText) ?
+                                    $edge->node->text->plainText : null
                 );
             }
         }
