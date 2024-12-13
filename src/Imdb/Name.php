@@ -768,9 +768,6 @@ EOF;
 EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
             foreach ($data as $edge) {
-                $title = isset($edge->node->title->text) ? $edge->node->title->text : null;
-                $isbn = isset($edge->node->isbn) ? $edge->node->isbn : null;
-                $publisher = isset($edge->node->publisher) ? $edge->node->publisher : null;
                 $authors = array();
                 if (!empty($edge->node->authors)) {
                     foreach ($edge->node->authors as $author) {
@@ -780,10 +777,13 @@ EOF;
                     }
                 }
                 $this->pubPrints[] = array(
-                    "title" => $title,
+                    "title" => isset($edge->node->title->text) ?
+                                     $edge->node->title->text : null,
                     "author" => $authors,
-                    "publisher" => $publisher,
-                    "isbn" => $isbn
+                    "publisher" => isset($edge->node->publisher) ?
+                                         $edge->node->publisher : null,
+                    "isbn" => isset($edge->node->isbn) ?
+                                    $edge->node->isbn : null
                 );
             }
         }
@@ -829,30 +829,19 @@ EOF;
 EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
             foreach ($data as $edge) {
-                $filmTitle = isset($edge->node->title->titleText->text) ?
-                                   $edge->node->title->titleText->text : null;
-                $filmId = isset($edge->node->title->id) ?
-                                str_replace('tt', '', $edge->node->title->id) : null;
-                $filmYear = isset($edge->node->title->releaseYear->year) ?
-                                  $edge->node->title->releaseYear->year : null;
-                $filmSeriesSeason = null;
-                $filmSeriesEpisode = null;
-                $filmSeriesTitle = null;
-                if (!empty($edge->node->title->series)) {
-                    $filmSeriesTitle = isset($edge->node->title->series->series->titleText->text) ?
-                                             $edge->node->title->series->series->titleText->text : null;
-                    $filmSeriesSeason = isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
-                                              $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null;
-                    $filmSeriesEpisode = isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
-                                               $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null;
-                }
                 $this->pubMovies[] = array(
-                    "title" => $filmTitle,
-                    "id" => $filmId,
-                    "year" => $filmYear,
-                    "seriesTitle" => $filmSeriesTitle,
-                    "seriesSeason" => $filmSeriesSeason,
-                    "seriesEpisode" => $filmSeriesEpisode,
+                    "title" => isset($edge->node->title->titleText->text) ?
+                                     $edge->node->title->titleText->text : null,
+                    "id" => isset($edge->node->title->id) ?
+                                  str_replace('tt', '', $edge->node->title->id) : null,
+                    "year" => isset($edge->node->title->releaseYear->year) ?
+                                    $edge->node->title->releaseYear->year : null,
+                    "seriesTitle" => isset($edge->node->title->series->series->titleText->text) ?
+                                           $edge->node->title->series->series->titleText->text : null,
+                    "seriesSeason" => isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
+                                            $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null,
+                    "seriesEpisode" => isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
+                                             $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null,
                 );
             }
         }
