@@ -975,8 +975,10 @@ EOF;
                     }
                 }
                 $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
-                    'label' => !empty($edge->node->label) ? $edge->node->label : null,
-                    'url' => !empty($edge->node->url) ? $edge->node->url : null,
+                    'label' => !empty($edge->node->label) ?
+                                      $edge->node->label : null,
+                    'url' => !empty($edge->node->url) ?
+                                    $edge->node->url : null,
                     'language' => $language
                 );
             }
@@ -1100,7 +1102,8 @@ EOF;
                             $titleThumbImageUrl = $img . $parameter;
                         }
                         $titles[] = array(
-                            'titleId' => isset($title->title->id) ? str_replace('tt', '', $title->title->id) : null,
+                            'titleId' => isset($title->title->id) ?
+                                               str_replace('tt', '', $title->title->id) : null,
                             'titleName' => isset($title->title->titleText->text) ?
                                                  $title->title->titleText->text : null,
                             'titleNote' => isset($title->note->plainText) ?
