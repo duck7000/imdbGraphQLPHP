@@ -288,24 +288,25 @@ query DeathDate(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "DeathDate", ["id" => "nm$this->imdbID"]);
-            $day = isset($data->name->deathDate->dateComponents->day) ? $data->name->deathDate->dateComponents->day : null;
-            $monthInt = isset($data->name->deathDate->dateComponents->month) ? $data->name->deathDate->dateComponents->month : null;
+            $monthInt = isset($data->name->deathDate->dateComponents->month) ?
+                              $data->name->deathDate->dateComponents->month : null;
             $monthName = null;
             if (!empty($monthInt)) {
                 $monthName = date("F", mktime(0, 0, 0, $monthInt, 10));
             }
-            $year = isset($data->name->deathDate->dateComponents->year) ? $data->name->deathDate->dateComponents->year : null;
-            $place = isset($data->name->deathLocation->text) ? $data->name->deathLocation->text : null;
-            $cause = isset($data->name->deathCause->text) ? $data->name->deathCause->text : null;
-            $status = isset($data->name->deathStatus) ? $data->name->deathStatus : null;
             $this->deathday = array(
-                "day" => $day,
+                "day" => isset($data->name->deathDate->dateComponents->day) ?
+                               $data->name->deathDate->dateComponents->day : null,
                 "month" => $monthName,
                 "mon" => $monthInt,
-                "year" => $year,
-                "place" => $place,
-                "cause" => $cause,
-                "status" => $status
+                "year" => isset($data->name->deathDate->dateComponents->year) ?
+                                $data->name->deathDate->dateComponents->year : null,
+                "place" => isset($data->name->deathLocation->text) ?
+                                 $data->name->deathLocation->text : null,
+                "cause" => isset($data->name->deathCause->text) ?
+                                 $data->name->deathCause->text : null,
+                "status" => isset($data->name->deathStatus) ?
+                                  $data->name->deathStatus : null
             );
         }
         return $this->deathday;
