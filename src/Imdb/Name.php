@@ -56,7 +56,11 @@ class Name extends MdbBase
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubPortrayal = array();
+
+    // "OtherWorks" page:
     protected $otherWorks = array();
+
+    // "External Sites" page:
     protected $externalSites = array();
 
     // "Credits" page:
