@@ -2215,7 +2215,7 @@ EOF;
             $query = <<<EOF
 query Video(\$id: ID!) {
   title(id: \$id) {
-    primaryVideos(first:9999) {
+    videoStrip(first:9999) {
       edges {
         node {
           id
@@ -2253,7 +2253,7 @@ query Video(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->primaryVideos->edges as $edge) {
+            foreach ($data->title->videoStrip->edges as $edge) {
                 $thumbUrl = null;
                 $videoId = isset($edge->node->id) ? str_replace('vi', '', $edge->node->id) : null;
                 if (!empty($edge->node->thumbnail->url)) {
