@@ -390,13 +390,13 @@ EOF;
 
             $data = $this->graphql->query($query, "Rank", ["id" => "nm$this->imdbID"]);
             if (!empty($data->name->meterRanking->currentRank)) {
-                $this->popRank['currentRank'] = $data->name->meterRanking->currentRank;
-                                                        
-                $this->popRank['changeDirection'] = isset($data->name->meterRanking->rankChange->changeDirection) ?
-                                                            $data->name->meterRanking->rankChange->changeDirection : null;
-                                                            
-                $this->popRank['difference'] = isset($data->name->meterRanking->rankChange->difference) ?
-                                                       $data->name->meterRanking->rankChange->difference : null;
+                $this->popRank = array(
+                    'currentRank' => $data->name->meterRanking->currentRank,
+                    'changeDirection' => isset($data->name->meterRanking->rankChange->changeDirection) ?
+                                               $data->name->meterRanking->rankChange->changeDirection : null,
+                    'difference' => isset($data->name->meterRanking->rankChange->difference) ?
+                                          $data->name->meterRanking->rankChange->difference : null
+                );
             }
         }
         return $this->popRank;
