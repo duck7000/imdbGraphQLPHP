@@ -238,20 +238,21 @@ query BirthDate(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "BirthDate", ["id" => "nm$this->imdbID"]);
-            $day = isset($data->name->birthDate->dateComponents->day) ? $data->name->birthDate->dateComponents->day : null;
-            $monthInt = isset($data->name->birthDate->dateComponents->month) ? $data->name->birthDate->dateComponents->month : null;
+            $monthInt = isset($data->name->birthDate->dateComponents->month) ?
+                              $data->name->birthDate->dateComponents->month : null;
             $monthName = null;
             if (!empty($monthInt)) {
                 $monthName = date("F", mktime(0, 0, 0, $monthInt, 10));
             }
-            $year = isset($data->name->birthDate->dateComponents->year) ? $data->name->birthDate->dateComponents->year : null;
-            $place = isset($data->name->birthLocation->text) ? $data->name->birthLocation->text : null;
             $this->birthday = array(
-                "day" => $day,
+                "day" => isset($data->name->birthDate->dateComponents->day) ?
+                               $data->name->birthDate->dateComponents->day : null,
                 "month" => $monthName,
                 "mon" => $monthInt,
-                "year" => $year,
-                "place" => $place
+                "year" => isset($data->name->birthDate->dateComponents->year) ?
+                                $data->name->birthDate->dateComponents->year : null,
+                "place" => isset($data->name->birthLocation->text) ?
+                                 $data->name->birthLocation->text : null
             );
         }
         return $this->birthday;
