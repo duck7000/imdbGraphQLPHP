@@ -404,7 +404,7 @@ EOF;
 
     #-----------------------------------------------------------[ Body Height ]---
     /** Get the body height
-     * @return array [imperial: string, metric: string (in meters)]
+     * @return array [imperial: array[feet (int), inches (float)], metric: int (in centimeters)]
      * @see IMDB person page /bio
      */
     public function height()
@@ -414,23 +414,27 @@ EOF;
 query BodyHeight(\$id: ID!) {
   name(id: \$id) {
     height {
-      displayableProperty {
-        value {
-          plainText
-        }
+      measurement {
+        value
       }
     }
   }
 }
 EOF;
             $data = $this->graphql->query($query, "BodyHeight", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->height->displayableProperty->value->plainText)) {
-                $heightParts = explode("(", $data->name->height->displayableProperty->value->plainText);
-                $this->bodyheight["imperial"] = trim($heightParts[0]);
-                $this->bodyheight["metric"] = null;
-                if (!empty($heightParts[1])) {
-                    $this->bodyheight["metric"] = trim($heightParts[1], " m)");
-                }
+            if (!empty($data->name->height->measurement->value)) {
+                $value = $data->name->height->measurement->value;
+                $inchesTotal = $value * 0.393701;
+                $feet = intval($inchesTotal / 12);
+                $inches = $inchesTotal - ($feet * 12);
+                $imperial = array(
+                    'feet' => $feet,
+                    'inches' => $inches
+                );
+                $this->bodyheight = array(
+                    'imperial' => $imperial,
+                    'metric' => $value
+                );
             }
         }
         return $this->bodyheight;
