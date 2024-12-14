@@ -903,7 +903,7 @@ text {
   plainText
 }
 EOF;
-            $data = $this->graphQlGetAll("PubOther", "otherWorks", $query);
+            $data = $this->graphQlGetAll("OtherWorks", "otherWorks", $query);
             foreach ($data as $edge) {
                 // From date
                 $fromDate = array(
