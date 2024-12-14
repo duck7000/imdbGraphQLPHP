@@ -56,7 +56,7 @@ class Name extends MdbBase
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubPortrayal = array();
-    protected $pubOtherWorks = array();
+    protected $otherWorks = array();
     protected $externalSites = array();
 
     // "Credits" page:
@@ -886,9 +886,9 @@ EOF;
      * @return array pubOtherWorks array[0..n] of array[category, fromDate array(day, month,year), toDate array(day, month,year), text]
      * @see IMDB person page /otherworks
      */
-    public function pubother()
+    public function otherWorks()
     {
-        if (empty($this->pubOtherWorks)) {
+        if (empty($this->otherWorks)) {
             $query = <<<EOF
 category {
   text
@@ -919,7 +919,7 @@ EOF;
                     "year" => isset($edge->node->toDate->year) ?
                                     $edge->node->toDate->year : null
                 );
-                $this->pubOtherWorks[] = array(
+                $this->otherWorks[] = array(
                     "category" => isset($edge->node->category) ?
                                         $edge->node->category->text : null,
                     "fromDate" => $fromDate,
@@ -929,7 +929,7 @@ EOF;
                 );
             }
         }
-        return $this->pubOtherWorks;
+        return $this->otherWorks;
     }
 
     #-------------------------------------------------------[ External sites ]---
