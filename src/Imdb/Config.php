@@ -365,7 +365,7 @@ class Config
      */
     public $episodeThumbnailHeight = 126;
 
-    #----------------------------------------[Title class mainphoto thumbnail]---
+    #----------------------------------------[Title and Name class mainphoto thumbnail]---
     /**
      * mainphoto() thumbnail height
      * Default value: 100

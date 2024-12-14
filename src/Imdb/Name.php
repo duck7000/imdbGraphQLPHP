@@ -36,6 +36,7 @@ class Name extends MdbBase
     protected $age = null;
     protected $professions = array();
     protected $popRank = array();
+    protected $mainPhoto = array();
 
     // "Bio" page:
     protected $birthName = null;
@@ -1085,6 +1086,53 @@ EOF;
             }
         }
         return $this->externalSites;
+    }
+
+    #-------------------------------------------------[ Main images ]---
+    /**
+     * Get image URLs for (default 6) pictures from photo page
+     * @param $amount, int for how many images, max = 9999
+     * @param $thumb boolean
+     *      true: height is always the same (set in config), width is variable!
+     *      false: untouched max width 1000 pixels
+     * @return array [0..n] of string image source
+     */
+    public function mainphoto($amount = 6, $thumb = true)
+    {
+        if (empty($this->mainPhoto)) {
+            $query = <<<EOF
+query MainPhoto(\$id: ID!) {
+  name(id: \$id) {
+    images(first: $amount) {
+      edges {
+        node {
+          url
+          width
+          height
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "MainPhoto", ["id" => "nm$this->imdbID"]);
+            foreach ($data->name->images->edges as $edge) {
+                if (!empty($edge->node->url)) {
+                    $imgUrl = str_replace('.jpg', '', $edge->node->url);
+                    if ($thumb === true) {
+                        $fullImageWidth = $edge->node->width;
+                        $fullImageHeight = $edge->node->height;
+                        $newImageHeight = $this->config->mainphotoThumbnailHeight;
+                        // calculate new width
+                        $newImageWidth = $this->imageFunctions->thumbUrlNewWidth($fullImageWidth, $fullImageHeight, $newImageHeight);
+                        $this->mainPhoto[] = $imgUrl . 'QL75_UX' . $newImageWidth . '_.jpg';
+                    } else {
+                        $this->mainPhoto[] = $imgUrl . 'QL100_UX1000_.jpg';
+                    }
+                }
+            }
+        }
+        return $this->mainPhoto;
     }
 
     #-------------------------------------------------------[ Awards ]---
