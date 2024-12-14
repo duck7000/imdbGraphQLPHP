@@ -56,6 +56,10 @@ class Name extends MdbBase
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubPortrayal = array();
+    protected $pubArticle = array();
+    protected $pubInterview = array();
+    protected $pubMagazine = array();
+    protected $pubPictorial = array();
 
     // "OtherWorks" page:
     protected $otherWorks = array();
@@ -882,6 +886,102 @@ EOF;
             }
         }
         return $this->pubPortrayal;
+    }
+
+    #----------------------------------------------------------------[ Article ]---
+    /** Get the Publicity Articles of this name
+     * @return array()
+     *      [publication] =>    (string)
+     *      [regionId] =>       (string)
+     *      [title] =>          (string)
+     *      [date] => Array()
+     *          [day] =>    (int)
+     *          [month] =>  (int)
+     *          [year] =>   (int)
+     *      [reference] =>      (string)
+     *      [authors] => Array()
+     *          [0] => (string)
+     * @see IMDB person page /publicity
+     */
+    public function pubarticle()
+    {
+        if (empty($this->pubArticle)) {
+            $results = $this->pubOtherListing("PublicityArticle");
+        }
+        $this->pubArticle = $results;
+        return $this->pubArticle;
+    }
+
+    #----------------------------------------------------------------[ Interview ]---
+    /** Get the Publicity Interviews of this name
+     * @return array()
+     *      [publication] =>    (string)
+     *      [regionId] =>       (string)
+     *      [title] =>          (string)
+     *      [date] => Array()
+     *          [day] =>    (int)
+     *          [month] =>  (int)
+     *          [year] =>   (int)
+     *      [reference] =>      (string)
+     *      [authors] => Array()
+     *          [0] => (string)
+     * @see IMDB person page /publicity
+     */
+    public function pubinterview()
+    {
+        if (empty($this->pubInterview)) {
+            $results = $this->pubOtherListing("PublicityInterview");
+        }
+        $this->pubInterview = $results;
+        return $this->pubInterview;
+    }
+
+    #----------------------------------------------------------------[ Magazines ]---
+    /** Get the Publicity Magazines of this name
+     * @return array()
+     *      [publication] =>    (string)
+     *      [regionId] =>       (string)
+     *      [title] =>          (string)
+     *      [date] => Array()
+     *          [day] =>    (int)
+     *          [month] =>  (int)
+     *          [year] =>   (int)
+     *      [reference] =>      (string)
+     *      [authors] => Array()
+     *          [0] => (string)
+     * @see IMDB person page /publicity
+     */
+    public function pubmagazine()
+    {
+        if (empty($this->pubMagazine)) {
+            $results = $this->pubOtherListing("PublicityMagazineCover");
+        }
+        $this->pubMagazine = $results;
+        return $this->pubMagazine;
+    }
+
+    #----------------------------------------------------------------[ Pictorial ]---
+    /** Get the Publicity Pictoryials of this name
+     * @return array()
+     *      [publication] =>    (string)
+     *      [regionId] =>       (string)
+     *      [title] =>          (string)
+     *      [date] => Array()
+     *          [day] =>    (int)
+     *          [month] =>  (int)
+     *          [year] =>   (int)
+     *      [reference] =>      (string)
+     *      [authors] => Array()
+     *          [0] => (string)
+     * @see IMDB person page /publicity
+     */
+    public function pubpictorial()
+    {
+        if (empty($this->pubPictorial)) {
+            $results = $this->pubOtherListing("PublicityPictorial");
+        }
+        $this->pubPictorial = $results;
+        return $this->pubPictorial;
     }
 
     #============================================================[ /OtherWorks ]===
