@@ -2,6 +2,44 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.0.0
+-------------------
+* Name class new methods added
+    mainPhoto()
+    video()
+    puparticle()
+    pubinterview()
+    pubmagazine()
+    pubpictorial()
+    pubportrayal()
+    age()
+    news()
+* Name class renamed pubother() to otherWorks as this is not under publicity listing but on its own page
+* Name class changed height()
+    Metric is now int|float( in centimeters)
+    imperial is now separated in feet and inches, both as int|float
+    values are not rounded
+* Title class added new methods
+    productionStatus()
+    news()
+* NameSearch class changes
+    Added knownFor and primaryProfession to the output array
+    Added nameSearchAmount to config, you can now set this limit in there, default: 10
+* Title class helper creditHelper() changes, used by: producer, composer, writer, director, cinematographer, stunts, thanks, visualEffects, specialEffects
+    thumbnail now use imagefunctions for perfect thumbnails
+    thumbnail size is raised to 140x207
+    The episode information from writer() is accurate but it is in total, not per specific job
+* Title class episode() changed full image max width instead of max height of 1000px
+* Title and Name class award() changes
+    Fixed bug titleNotes and Id warning if there was no id or notes
+    Thumbnail now uses image functions from Image class for perfect thumbnails
+    Thumbnail size raised to 140x207
+    Title class award() added thumbnail images
+* Title class added watchOption() and fixed bug slash in category name
+* Title class video() fixed bug that not all videos are found
+* KeywordSearch class fixed bug spaces in array index, and made category name camelCase
+* Calendar class comingSoon() fixed bug in releaseDate
+
 v1.5.0
 -------------------
 * Added NameSearchAdvanced class
