@@ -38,6 +38,7 @@ class Name extends MdbBase
     protected $popRank = array();
     protected $mainPhoto = array();
     protected $videos = array();
+    protected $news = array();
 
     // "Bio" page:
     protected $birthName = null;
@@ -1619,6 +1620,95 @@ EOF;
             }
         }
         return $this->videos;
+    }
+
+    #----------------------------------------------------------[ News ]---
+    /**
+     * Get news items about this name, max 100 items!
+     * @return array of array()
+     *      [id] =>                 (string)
+     *      [title] =>              (string) e.g. The best movies on Netflix right now
+     *      [author] =>             (string) e.g. The A.V. Club
+     *      [date] =>               (string) e.g. 2024-12-01T02:00:00Z
+     *      [extUrl] =>             (string) e.g. https://www.avclub.com/1842540580
+     *      [extHomepageUrl] =>     (string) e.g. http://www.avclub.com/content/home
+     *      [extHomepageLabel] =>   (string) e.g. avclub.com
+     *      [textHtml] =>           (string) (including html)
+     *      [textText] =>           (string)
+     *      [thumbnailUrl] =>       (string)
+     */
+    public function news()
+    {
+        if (empty($this->news)) {
+            $query = <<<EOF
+query News(\$id: ID!) {
+  name(id: \$id) {
+    news(first: 100) {
+      edges {
+        node {
+          id
+          articleTitle {
+            plainText
+          }
+          byline
+          date
+          externalUrl
+          image {
+            url
+            width
+            height
+          }
+          source {
+            description
+            homepage {
+              label
+              url
+            }
+          }
+          text {
+            plainText
+            plaidHtml
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+            $data = $this->graphql->query($query, "News", ["id" => "nm$this->imdbID"]);
+            foreach ($data->name->news->edges as $edge) {
+                $thumbUrl = null;
+                if (!empty($edge->node->image->url)) {
+                    $fullImageWidth = $edge->node->image->width;
+                    $fullImageHeight = $edge->node->image->height;
+                    $img = str_replace('.jpg', '', $edge->node->image->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                    $thumbUrl = $img . $parameter;
+                }
+                $this->news[] = array(
+                    'id' => isset($edge->node->id) ?
+                                  str_replace('ni', '', $edge->node->id) : null,
+                    'title' => isset($edge->node->articleTitle->plainText) ?
+                                     $edge->node->articleTitle->plainText : null,
+                    'author' => isset($edge->node->byline) ?
+                                      $edge->node->byline : null,
+                    'date' => isset($edge->node->date) ?
+                                    $edge->node->date : null,
+                    'extUrl' => isset($edge->node->externalUrl) ?
+                                      $edge->node->externalUrl : null,
+                    'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
+                                              $edge->node->source->homepage->url : null,
+                    'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
+                                           $edge->node->source->homepage->label : null,
+                    'textHtml' => isset($edge->node->text->plaidHtml) ?
+                                        $edge->node->text->plaidHtml : null,
+                    'textText' => isset($edge->node->text->plainText) ?
+                                        $edge->node->text->plainText : null,
+                    'thumbnailUrl' => $thumbUrl
+                );
+            }
+        }
+        return $this->news;
     }
 
     #========================================================[ Helper functions ]===
