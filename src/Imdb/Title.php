@@ -932,7 +932,7 @@ EOF;
     #=====================================================[ /fullcredits page ]===
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
-    * Get the PrincipalCredits for this title (limited to 3)
+    * Get the PrincipalCredits for this title (limited to 3 items per category)
     * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
     * Not all categories are always available
     */
