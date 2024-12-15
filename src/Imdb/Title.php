@@ -320,13 +320,13 @@ query Rank(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Rank", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->meterRanking->currentRank)) {
-                $this->mainRank['currentRank'] = $data->title->meterRanking->currentRank;
-
-                $this->mainRank['changeDirection'] = isset($data->title->meterRanking->rankChange->changeDirection) ?
-                                                            $data->title->meterRanking->rankChange->changeDirection : null;
-
-                $this->mainRank['difference'] = isset($data->title->meterRanking->rankChange->difference) ?
-                                                       $data->title->meterRanking->rankChange->difference : null;
+                $this->mainRank = array(
+                    'currentRank' => $data->title->meterRanking->currentRank,
+                    'changeDirection' => isset($data->title->meterRanking->rankChange->changeDirection) ?
+                                               $data->title->meterRanking->rankChange->changeDirection : null,
+                    'difference' => isset($data->title->meterRanking->rankChange->difference) ?
+                                          $data->title->meterRanking->rankChange->difference : null
+                );
             }
         }
         return $this->mainRank;
