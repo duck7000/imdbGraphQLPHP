@@ -2843,8 +2843,10 @@ query TitleYear(\$id: ID!) {
 EOF;
         $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
 
-        $this->mainTitle = trim(str_replace('"', ':', trim($data->title->titleText->text, '"')));
-        $this->mainOriginalTitle  = trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"')));
+        $this->mainTitle = isset($data->title->titleText->text) ?
+                                 trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))) : null;
+        $this->mainOriginalTitle  = isset($data->title->originalTitleText->text) ?
+                                          trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null;
         $this->mainMovietype = isset($data->title->titleType->text) ?
                                      $data->title->titleType->text : null;
         $this->mainYear = isset($data->title->releaseYear->year) ?
