@@ -1487,8 +1487,10 @@ EOF;
                 if (!empty($edge->node->relatedNames)) {
                     foreach ($edge->node->relatedNames as $name) {
                         $names[] = array(
-                            'name' => isset($name->nameText->text) ? $name->nameText->text : null,
-                            'id' => isset($name->id) ? str_replace('nm', '', $name->id) : null
+                            'name' => isset($name->nameText->text) ?
+                                            $name->nameText->text : null,
+                            'id' => isset($name->id) ?
+                                          str_replace('nm', '', $name->id) : null
                         );
                     }
                 }
