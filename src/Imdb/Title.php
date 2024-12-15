@@ -853,16 +853,18 @@ EOF;
 
     #=====================================================[ /plotsummary page ]===
     /** Get movie plots without Spoilers
+     * @param $spoil boolean if true spoilers are also included, default: false.
      * @return array array[0..n] string plot, string author]
      * @see IMDB page /plotsummary
      */
-    public function plot()
+    public function plot($spoil = false)
     {
         if (empty($this->plot)) {
+            $filter = $spoil === false ? ',filter:{spoilers:EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
 query Plots(\$id: ID!) {
   title(id: \$id) {
-    plots(first: 9999, filter: {spoilers: EXCLUDE_SPOILERS}) {
+    plots(first: 9999$filter) {
       edges {
         node {
           author
