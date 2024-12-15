@@ -2260,7 +2260,8 @@ EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->videoStrip->edges as $edge) {
                 $thumbUrl = null;
-                $videoId = isset($edge->node->id) ? str_replace('vi', '', $edge->node->id) : null;
+                $videoId = isset($edge->node->id) ?
+                                 str_replace('vi', '', $edge->node->id) : null;
                 if (!empty($edge->node->thumbnail->url)) {
                     $fullImageWidth = $edge->node->thumbnail->width;
                     $fullImageHeight = $edge->node->thumbnail->height;
@@ -2270,14 +2271,18 @@ EOF;
                 }
                 $this->videos[$edge->node->contentType->displayName->value][] = array(
                     'id' => $videoId,
-                    'name' => isset($edge->node->name->value) ? $edge->node->name->value : null,
-                    'runtime' => isset($edge->node->runtime->value) ? $edge->node->runtime->value : null,
-                    'description' => isset($edge->node->description->value) ? $edge->node->description->value : null,
+                    'name' => isset($edge->node->name->value) ?
+                                    $edge->node->name->value : null,
+                    'runtime' => isset($edge->node->runtime->value) ?
+                                       $edge->node->runtime->value : null,
+                    'description' => isset($edge->node->description->value) ?
+                                           $edge->node->description->value : null,
                     'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
-                                     $edge->node->primaryTitle->titleText->text : null,
+                                         $edge->node->primaryTitle->titleText->text : null,
                     'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
                                          $edge->node->primaryTitle->releaseYear->year : null,
-                    'playbackUrl' => !empty($videoId) ? 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'playbackUrl' => !empty($videoId) ?
+                                            'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                     'imageUrl' => $thumbUrl
                 );
             }
