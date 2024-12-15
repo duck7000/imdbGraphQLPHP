@@ -927,7 +927,7 @@ EOF;
     /*
     * Get the PrincipalCredits for this title
     * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
-    * Not all categories are always available, TV series has Creator instead of writer
+    * Not all categories are always available
     */
     public function principalCredits()
     {
@@ -1033,13 +1033,13 @@ EOF;
                     }
                 }
                 $comments = array();
-                $name_alias = null;
+                $nameAlias = null;
                 $credited = true;
                 if (!empty($edge->node->attributes)) {
                     foreach ($edge->node->attributes as $attribute) {
                         if (!empty($attribute->text)) {
                             if (strpos($attribute->text, "as ") !== false) {
-                                $name_alias = trim(ltrim($attribute->text, "as"));
+                                $nameAlias = trim(ltrim($attribute->text, "as"));
                             } elseif (stripos($attribute->text, "uncredited") !== false) {
                                 $credited = false;
                             } else {
@@ -1063,7 +1063,7 @@ EOF;
                                     str_replace('nm', '', $edge->node->name->id) : null,
                     'name' => isset($edge->node->name->nameText->text) ?
                                     $edge->node->name->nameText->text : null,
-                    'name_alias' => $name_alias,
+                    'name_alias' => $nameAlias,
                     'credited' => $credited,
                     'character' => $castCharacters,
                     'comment' => $comments,
