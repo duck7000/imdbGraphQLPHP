@@ -1824,8 +1824,10 @@ EOF;
             $edges = $this->graphQlGetAll("Connections", "connections", $query);
             foreach ($edges as $edge) {
                 $this->connections[$categoryIds[$edge->node->category->id]][] = array(
-                    'titleId' => str_replace('tt', '', $edge->node->associatedTitle->id),
-                    'titleName' => $edge->node->associatedTitle->titleText->text,
+                    'titleId' => isset($edge->node->associatedTitle->id) ?
+                                       str_replace('tt', '', $edge->node->associatedTitle->id) : null,
+                    'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
+                                         $edge->node->associatedTitle->titleText->text : null,
                     'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
                                          $edge->node->associatedTitle->titleType->text : null,
                     'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
