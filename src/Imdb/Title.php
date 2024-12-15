@@ -497,7 +497,7 @@ EOF;
                     if (!empty($edge->subGenres)) {
                         foreach ($edge->subGenres as $subGenre) {
                             $subGenres[] = isset($subGenre->keyword->text->text) ?
-                                         ucwords($subGenre->keyword->text->text) : null;
+                                                 ucwords($subGenre->keyword->text->text) : null;
                         }
                     }
                     $this->genres[] = array(
