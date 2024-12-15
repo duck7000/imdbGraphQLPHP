@@ -2662,6 +2662,7 @@ EOF;
             $data = $this->graphql->query($query, "WatchOption", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->watchOptionsByCategory->categorizedWatchOptionsList as $item) {
                 $watchOptions = array();
+                $categoryName = strtolower(str_replace('/', '-', $item->categoryName->value));
                 if (!empty($item->watchOptions)) {
                     foreach ($item->watchOptions as $option) {
                         $logoUrl = null;
@@ -2678,7 +2679,7 @@ EOF;
                         );
                     }
                 }
-                $this->watchOption[strtolower($item->categoryName->value)] = $watchOptions;
+                $this->watchOption[$categoryName] = $watchOptions;
             }
         }
         return $this->watchOption;
