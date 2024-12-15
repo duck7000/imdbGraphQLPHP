@@ -2797,7 +2797,7 @@ EOF;
                     'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
                                               $edge->node->source->homepage->url : null,
                     'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
-                                           $edge->node->source->homepage->label : null,
+                                                $edge->node->source->homepage->label : null,
                     'textHtml' => isset($edge->node->text->plaidHtml) ?
                                         $edge->node->text->plaidHtml : null,
                     'textText' => isset($edge->node->text->plainText) ?
