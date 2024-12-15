@@ -888,7 +888,8 @@ EOF;
                 if (!empty($edge->node->plotText->plainText)) {
                     $this->plot[] = array(
                         'plot' => $edge->node->plotText->plainText,
-                        'author' => isset($edge->node->author) ? $edge->node->author : null
+                        'author' => isset($edge->node->author) ?
+                                          $edge->node->author : null
                     );
                 }
             }
