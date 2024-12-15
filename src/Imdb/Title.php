@@ -1063,7 +1063,7 @@ EOF;
                                     str_replace('nm', '', $edge->node->name->id) : null,
                     'name' => isset($edge->node->name->nameText->text) ?
                                     $edge->node->name->nameText->text : null,
-                    'name_alias' => $nameAlias,
+                    'alias' => $nameAlias,
                     'credited' => $credited,
                     'character' => $castCharacters,
                     'comment' => $comments,
