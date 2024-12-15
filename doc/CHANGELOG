@@ -2,6 +2,14 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.0.1
+-------------------
+* Title class plot added parameter $spoil (boolean) Default: false (not include spoilers)
+* Title class cast() changed name_alias to alias as i don't use snake case anywhere else
+* Title class connection fixed bug name and id not checked
+* Title class helper titleYear() fixed bug name and originalName not checked
+
+
 v2.0.0
 -------------------
 * Name class new methods added
