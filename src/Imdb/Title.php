@@ -191,10 +191,10 @@ query Runtimes(\$id: ID!) {
       edges {
         node {
           attributes {
-          text
+            text
           }
           country {
-          text
+            text
           }
           seconds
         }
@@ -205,12 +205,18 @@ query Runtimes(\$id: ID!) {
 EOF;
             $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
             foreach ($data->title->runtimes->edges as $edge) {
+                $attributes = array();
+                if (!empty($edge->node->attributes)) {
+                    foreach ($edge->node->attributes as $attribute) {
+                        if (!empty($attribute->text)) {
+                            $attributes[] = $attribute->text;
+                        }
+                    }
+                }
                 $this->runtimes[] = array(
                     'time' => isset($edge->node->seconds) ?
                                     $edge->node->seconds / 60 : null,
-                    'annotations' => array_map(function ($attribute) {
-                        return $attribute->text;
-                    }, $edge->node->attributes),
+                    'annotations' => $attributes,
                     'country' => isset($edge->node->country->text) ?
                                        $edge->node->country->text : null
                 );
