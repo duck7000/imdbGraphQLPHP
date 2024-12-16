@@ -2930,7 +2930,7 @@ EOF;
         foreach ($data as $edge) {
             $companyAttribute = array();
             if (!empty($edge->node->attributes)) {
-                foreach ($edge->node->attributes as $key => $attribute) {
+                foreach ($edge->node->attributes as $attribute) {
                     $companyAttribute[] = $attribute->text;
                 }
             }
