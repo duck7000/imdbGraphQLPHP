@@ -548,7 +548,6 @@ EOF;
                     $comment = null;
                     $children = 0;
                     if (!empty($spouse->attributes)) {
-                        var_dump($spouse->attributes);
                         foreach ($spouse->attributes as $key => $attribute) {
                             if (!empty($attribute->text)) {
                                 if (stripos($attribute->text, "child") !== false) {
