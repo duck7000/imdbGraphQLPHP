@@ -456,7 +456,7 @@ EOF;
     #----------------------------------------------------------------[ Spouse ]---
     /** Get spouse(s)
      * @return array [0..n] of array spouses [imdb, name, array from,
-     *         array to, dateText, comment, children] where from/to are array
+     *         array to, dateText, comment array(), children] where from/to are array
      *         [day,month,mon,year] (MonthName is the name, MonthInt the number of the month),
      * @see IMDB person page /bio
      */
@@ -545,7 +545,7 @@ EOF;
                                         $spouse->timeRange->toDate->dateComponents->year : null
                     );
                     // Comments and children
-                    $comment = null;
+                    $comment = array();
                     $children = 0;
                     if (!empty($spouse->attributes)) {
                         foreach ($spouse->attributes as $key => $attribute) {
@@ -553,7 +553,7 @@ EOF;
                                 if (stripos($attribute->text, "child") !== false) {
                                     $children = (int) preg_replace('/[^0-9]/', '', $attribute->text);
                                 } else {
-                                    $comment .= $attribute->text;
+                                    $comment[] = $attribute->text;
                                 }
                             }
                         }
