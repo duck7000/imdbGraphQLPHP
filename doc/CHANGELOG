@@ -2,6 +2,17 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.0.2
+-------------------
+* Title class soundtrack changes
+    The output array is changed, now the separate comments are inside creditSplit array where they belong (see wiki)
+    CreditSplit['creditors'] has now a attribute field that contains any remaining text after the anchor name. Example: as Roger Whitaker
+    massive code cleanup, simplified checks, added missing checks etc
+* Name class spouse changes
+    Removed leftover debug info
+    comments are now in a array() as there might be more than one comment
+* Several code improvements/cleanups
+
 v2.0.1
 -------------------
 * Title class plot added parameter $spoil (boolean) Default: false (not include spoilers)
