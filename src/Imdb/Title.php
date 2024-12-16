@@ -884,7 +884,7 @@ query Plots(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->plots->edges as $key => $edge) {
+            foreach ($data->title->plots->edges as $edge) {
                 if (!empty($edge->node->plotText->plainText)) {
                     $this->plot[] = array(
                         'plot' => $edge->node->plotText->plainText,
