@@ -3012,7 +3012,7 @@ EOF;
             }
             $attributes = array();
             if (!empty($edge->node->attributes)) {
-                foreach ($edge->node->attributes as $keyAttributes => $attribute) {
+                foreach ($edge->node->attributes as $attribute) {
                     if (!empty($attribute->text)) {
                         $attributes[] = $attribute->text;
                     }
