@@ -33,6 +33,7 @@ class Cache implements CacheInterface
      * Cache constructor.
      * @param Config $config
      * @param LoggerInterface $logger
+     * @throws Exception
      */
     public function __construct(Config $config, LoggerInterface $logger)
     {
