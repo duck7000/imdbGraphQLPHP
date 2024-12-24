@@ -110,6 +110,101 @@ EOF;
         return $results;
     }
 
+    /**
+     * Search IMDb for titles matching $searchTerms which returns Title object
+     * @param string $searchTerms
+     * @param string $types input search types like "MOVIE" or "MOVIE,TV" (separate by comma if more then one)
+     * Default for $types: null (search within all types)
+     * Possible values for $types:
+     *  MOVIE
+     *  MUSIC_VIDEO
+     *  PODCAST_EPISODE
+     *  PODCAST_SERIES
+     *  TV
+     *  TV_EPISODE
+     *  VIDEO_GAME
+     * 
+     * @param string $startDate search from startDate til present date, iso date (year-month-day) ("1975-01-01")
+     * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
+     * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
+     * 
+     * @return Title object
+     */
+    public function searchObject($searchTerms, $types = null, $startDate = '', $endDate = '')
+    {
+        $amount = $this->config->titleSearchAmount;
+        $results = array();
+        $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
+
+        // check if $searchTerm is empty or releaseDates === false, return empty array
+        if (empty(trim($searchTerms)) || $inputReleaseDates === false) {
+            return $results;
+        }
+
+        $query = <<<EOF
+query Search{
+  mainSearch(
+    first: $amount
+    options: {
+      searchTerm: "$searchTerms"
+      type: TITLE
+      includeAdult: true
+      titleSearchOptions: {
+        type: [$types]
+        releaseDateRange: {
+          start: $inputReleaseDates[startDate]
+          end: $inputReleaseDates[endDate]
+        }
+      }
+    }
+  ) {
+    edges {
+      node{
+        entity {
+          ... on Title {
+            id
+            titleText {
+              text
+            }
+            originalTitleText {
+              text
+            }
+            titleType {
+              text
+            }
+            releaseYear {
+              year
+              endYear
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "Search");
+        foreach ($data->mainSearch->edges as $key => $edge) {
+            $yearRange = null;
+            if (isset($edge->node->entity->releaseYear->year)) {
+                $yearRange .= $edge->node->entity->releaseYear->year;
+                if (isset($edge->node->entity->releaseYear->endYear)) {
+                    $yearRange .= '-' . $edge->node->entity->releaseYear->endYear;
+                }
+            }
+            $results[] = Title::fromSearchResult(
+                isset($edge->node->entity->id) ? str_replace('tt', '', $edge->node->entity->id) : null, // IMDb ID.
+                isset($edge->node->entity->titleText->text) ? $edge->node->entity->titleText->text : null, // Title.
+                isset($edge->node->entity->originalTitleText->text) ? $edge->node->entity->originalTitleText->text : null, // Original title.
+                $yearRange, // Year.
+                isset($edge->node->entity->titleType->text) ? $edge->node->entity->titleType->text : null, // Movie type.
+                $this->config,
+                $this->logger,
+                $this->cache
+            );
+        }
+        return $results;
+    }
 
     #========================================================[ Helper functions]===
 

@@ -3307,4 +3307,31 @@ EOF;
         return $airDate;
     }
 
+    #----------------------------------------------------------[ Helper for TitleSearch class ]---
+    /**
+     * Create an imdb object populated with id, title, year, and movie type
+     * @param string $id imdb ID
+     * @param string $title film title
+     * @param int $year
+     * @param string $type
+     * @param Config $config
+     * @param LoggerInterface $logger OPTIONAL override default logger
+     * @param CacheInterface $cache OPTIONAL override default cache
+     * @return Title
+     */
+    public static function fromSearchResult(
+        $id,
+        $title,
+        $year,
+        $type,
+        Config $config = null,
+        LoggerInterface $logger = null,
+        CacheInterface $cache = null
+    ) {
+        $imdb = new Title($id, $config, $logger, $cache);
+        $imdb->main_title = $title;
+        $imdb->main_year = (int)$year;
+        $imdb->main_movietype = $type;
+        return $imdb;
+    }
 }
