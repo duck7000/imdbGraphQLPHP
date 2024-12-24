@@ -3312,6 +3312,7 @@ EOF;
      * Create an imdb object populated with id, title, year, and movie type
      * @param string $id imdb ID
      * @param string $title film title
+     * @param string $orignalTitle Original film title
      * @param int $year
      * @param string $type
      * @param Config $config
@@ -3322,6 +3323,7 @@ EOF;
     public static function fromSearchResult(
         $id,
         $title,
+        $orignalTitle,
         $year,
         $type,
         Config $config = null,
@@ -3329,9 +3331,9 @@ EOF;
         CacheInterface $cache = null
     ) {
         $imdb = new Title($id, $config, $logger, $cache);
-        $imdb->main_title = $title;
-        $imdb->main_year = (int)$year;
-        $imdb->main_movietype = $type;
+        $imdb->mainTitle = $title;
+        $imdb->mainYear = (int)$year;
+        $imdb->mainMovietype = $type;
         return $imdb;
     }
 }
