@@ -9,6 +9,7 @@
 
 namespace Imdb;
 
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -24,23 +25,30 @@ class Cache implements CacheInterface
     protected $config;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Cache constructor.
      * @param Config $config
+     * @param LoggerInterface $logger
      */
-    public function __construct(Config $config)
+    public function __construct(Config $config, LoggerInterface $logger)
     {
         $this->config = $config;
+        $this->logger = $logger;
 
         if (($this->config->cacheUse|| $this->config->cacheStore) && !is_dir($this->config->cacheDir)) {
             @mkdir($this->config->cacheDir, 0700, true);
             if (!is_dir($this->config->cacheDir)) {
-                echo 'Configured cache directory does not exist!';
-                return null;
+                $this->logger->critical("[Cache] Configured cache directory [{$this->config->cacheDir}] does not exist!");
+                throw new Exception("[Cache] Configured cache directory [{$this->config->cacheDir}] does not exist!");
             }
         }
         if ($this->config->cacheStore && !is_writable($this->config->cacheDir)) {
-            echo 'Configured cache directory lacks write permission!';
-            return null;
+            $this->logger->critical("[Cache] Configured cache directory [{$this->config->cacheDir}] lacks write permission!");
+            throw new Exception("[Cache] Configured cache directory [{$this->config->cacheDir}] lacks write permission!");
         }
 
         // @TODO add a limit on how frequently a purge can occur
