@@ -68,9 +68,11 @@ class Cache implements CacheInterface
         $cleanKey = $this->sanitiseKey($key);
         $fname = $this->config->cacheDir . '/' . $cleanKey;
         if (!file_exists($fname)) {
+            $this->logger->debug("[Cache] Cache miss for [$key]");
             return $default;
         }
 
+        $this->logger->debug("[Cache] Cache hit for [$key]");
         if ($this->config->cacheUseZip) {
             $content = file_get_contents('compress.zlib://' . $fname); // This can read uncompressed files too
             if (!$content) {
@@ -102,6 +104,7 @@ class Cache implements CacheInterface
 
         $cleanKey = $this->sanitiseKey($key);
         $fname = $this->config->cacheDir . '/' . $cleanKey;
+        $this->logger->debug("[Cache] Writing key [$key] to [$fname]");
         if ($this->config->cacheUseZip) {
             $fp = gzopen($fname, "w");
             gzputs($fp, $value);
@@ -125,6 +128,7 @@ class Cache implements CacheInterface
         }
 
         $cacheDir = $this->config->cacheDir;
+        $this->logger->debug("[Cache] Purging old cache entries");
 
         $thisdir = dir($cacheDir);
         $now = time();
