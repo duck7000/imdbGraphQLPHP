@@ -2112,8 +2112,8 @@ EOF;
                 if (!empty($edge->node->id)) {
                     $embedUrl = "https://www.imdb.com/video/imdb/" . $edge->node->id . "/imdb/embed";
                     // Check if embed URL not == 404 or 401
-                    $headers = get_headers($embedUrl);
-                    if (substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+                    $headers = @get_headers($embedUrl);
+                    if (empty($headers) || substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
                         continue;
                     }
                 }
