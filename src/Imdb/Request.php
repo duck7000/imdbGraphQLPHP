@@ -83,6 +83,24 @@ class Request
     }
 
     /**
+     * Get a header value from the response
+     * @param string $header header field name
+     * @return string header value
+     */
+    public function getResponseHeader($header)
+    {
+        $headers = $this->getLastResponseHeaders();
+        foreach ($headers as $head) {
+            if (is_integer(stripos($head, $header))) {
+                $hstart = strpos($head, ": ");
+                $head = trim(substr($head, $hstart + 2, 100));
+                return $head;
+            }
+        }
+        return '';
+    }
+
+    /**
      * HTTP status code of the last response
      * @return int|null null if last request failed
      */
