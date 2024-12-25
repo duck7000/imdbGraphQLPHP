@@ -59,6 +59,20 @@ class Config
      */
     public $cacheExpire = 604800;
 
+    /**
+     * Where to store images retrieved from the IMDB site by the method photoLocalurl().
+     * This needs to be under documentroot to be able to display them on your pages.
+     * @var string
+     */
+    public $photodir = './images/';
+
+    /**
+     * URL corresponding to photodir, i.e. the URL to the images, i.e. start at
+     * your servers DOCUMENT_ROOT when specifying absolute path
+     * @var string
+     */
+    public $photoroot = './images/';
+
 
     #========================================================[ Localization options ]===
      /**
