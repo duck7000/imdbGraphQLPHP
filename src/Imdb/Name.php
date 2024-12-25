@@ -908,9 +908,8 @@ EOF;
     public function pubarticle()
     {
         if (empty($this->pubArticle)) {
-            $results = $this->pubOtherListing("PublicityArticle");
+            $this->pubArticle = $this->pubOtherListing("PublicityArticle");
         }
-        $this->pubArticle = $results;
         return $this->pubArticle;
     }
 
@@ -932,9 +931,8 @@ EOF;
     public function pubinterview()
     {
         if (empty($this->pubInterview)) {
-            $results = $this->pubOtherListing("PublicityInterview");
+            $this->pubInterview = $this->pubOtherListing("PublicityInterview");
         }
-        $this->pubInterview = $results;
         return $this->pubInterview;
     }
 
@@ -956,9 +954,8 @@ EOF;
     public function pubmagazine()
     {
         if (empty($this->pubMagazine)) {
-            $results = $this->pubOtherListing("PublicityMagazineCover");
+            $this->pubMagazine = $this->pubOtherListing("PublicityMagazineCover");
         }
-        $this->pubMagazine = $results;
         return $this->pubMagazine;
     }
 
@@ -980,9 +977,8 @@ EOF;
     public function pubpictorial()
     {
         if (empty($this->pubPictorial)) {
-            $results = $this->pubOtherListing("PublicityPictorial");
+            $this->pubPictorial = $this->pubOtherListing("PublicityPictorial");
         }
-        $this->pubPictorial = $results;
         return $this->pubPictorial;
     }
 
