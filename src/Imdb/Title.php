@@ -2247,7 +2247,7 @@ EOF;
     #-------------------------------------------------[ Video ]---
     /**
      * Get all video URL's and images from videogallery page
-     * @return categorized array videos
+     * @return array categorized by type array videos
      *     [Trailer] => Array
      *          [0] => Array()
      *              [id] => 4030506521
