@@ -161,6 +161,77 @@ EOF;
         return $this->mainPoster;
     }
 
+    /**
+     * Save the poster/cover image to disk
+     * @param string $path where to store the file
+     * @param boolean $thumb get the thumbnail or the
+     *        bigger variant (max width 1000 pixels - FALSE)
+     * @return boolean success
+     * @see IMDB page / (NamePage)
+     */
+    public function savephoto($path, $thumb = true)
+    {
+        $photoUrl = $this->photo($thumb);
+        if (!$photoUrl) {
+            return false;
+        }
+
+        $req = new Request($photoUrl, $this->config);
+        $req->sendRequest();
+        if (strpos($req->getResponseHeader("Content-Type"), 'image/jpeg') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/gif') === 0 ||
+            strpos($req->getResponseHeader("Content-Type"), 'image/bmp') === 0) {
+            $image = $req->getResponseBody();
+        } else {
+            $ctype = $req->getResponseHeader("Content-Type");
+            $this->debug_scalar("*photoerror* at " . __FILE__ . " line " . __LINE__ . ": " . $photo_url . ": Content Type is '$ctype'");
+            if (substr($ctype, 0, 4) == 'text') {
+                $this->debug_scalar("Details: <PRE>" . $req->getResponseBody() . "</PRE>\n");
+            }
+            return false;
+        }
+
+        $fp2 = fopen($path, "w");
+        if (!$fp2) {
+            $this->logger->warning("Failed to open [$path] for writing  at " . __FILE__ . " line " . __LINE__ . "...<BR>");
+            return false;
+        }
+        fputs($fp2, $image);
+        return true;
+    }
+
+    /**
+     * Get the URL for the Name cover image
+     * @param boolean $thumb get the thumbnail (default) or the
+     *        bigger variant (max width 1000 pixels - FALSE)
+     * @return mixed url (string URL or FALSE if none)
+     * @see IMDB page / (NamePage)
+     */
+    public function photoLocalurl($thumb = true)
+    {
+        if ($thumb) {
+            $ext = "";
+        } else {
+            $ext = "_big";
+        }
+        if (!is_dir($this->config->photoroot)) {
+            $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
+            return false;
+        }
+        $path = $this->config->photoroot . "nm{$this->imdbid()}" . "{$ext}.jpg";
+        if (file_exists($path)) {
+            return $this->config->photodir . "nm{$this->imdbid()}" . "{$ext}.jpg";
+        }
+        if (!is_writable($this->config->photoroot)) {
+            $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
+            return false;
+        }
+        if ($this->savephoto($path, $thumb)) {
+            return $this->config->photodir . "nm{$this->imdbid()}" . "{$ext}.jpg";
+        }
+        return false;
+    }
+    
     #==================================================================[ /bio ]===
     #------------------------------------------------------------[ Birth Name ]---
     /** Get the birth name
