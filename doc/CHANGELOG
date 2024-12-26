@@ -2,6 +2,17 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.1.1
+-------------------
+* Title and Name class added savephoto() and photoLocalurl() Thanks @jcvignoli
+* TitleSearch and NameSearch class added object to the output array this is a Title or Name object with search results included
+* Added use loggerInterface to Cache class
+* Title class Fixed bug variable not set in all pub methods
+* Cache class added extra debug info
+* Changed some file names to be PSR4 compliant
+* Added missing Exception class
+* Title class trailer() fixed bug and warning from get_headers
+
 v2.0.2
 -------------------
 * Title class soundtrack changes
