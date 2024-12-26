@@ -83,7 +83,7 @@ class Name extends MdbBase
      * @param Config $config
      * @param LoggerInterface $logger OPTIONAL override default logger
      * @param CacheInterface $cache OPTIONAL override default cache
-     * @return Title
+     * @return Name
      */
     public static function fromSearchResult(
         $id,
