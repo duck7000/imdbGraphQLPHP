@@ -167,7 +167,7 @@ EOF;
      * @param boolean $thumb get the thumbnail or the
      *        bigger variant (max width 1000 pixels - FALSE)
      * @return boolean success
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page / (NamePage)
      */
     public function savephoto($path, $thumb = true)
     {
@@ -200,11 +200,12 @@ EOF;
         return true;
     }
 
-    /** Get the URL for the movies cover image
+    /**
+     * Get the URL for the names cover image
      * @param boolean $thumb get the thumbnail (default) or the
      *        bigger variant (max width 1000 pixels - FALSE)
      * @return mixed url (string URL or FALSE if none)
-     * @see IMDB page / (TitlePage)
+     * @see IMDB page / (NamePage)
      */
     public function photoLocalurl($thumb = true)
     {
