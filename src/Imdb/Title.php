@@ -2551,7 +2551,7 @@ EOF;
     #----------------------------------------------------------[ Sound mix ]---
     /**
      * Get movie sound mixes
-     * @return array $soundMix of array[0..n] of array[type, array attributes]
+     * @return array of array[0..n] of array[type, array attributes]
      * @see IMDB page / (specifications)
      */
     public function sound()
@@ -2565,7 +2565,7 @@ EOF;
     #----------------------------------------------------------[ Colorations ]---
     /**
      * Get movie colorations like color or Black and white
-     * @return array $colors of array[0..n] of array[type, array attributes]
+     * @return array of array[0..n] of array[type, array attributes]
      * @see IMDB page / (specifications)
      */
     public function color()
@@ -2579,7 +2579,7 @@ EOF;
     #----------------------------------------------------------[ Aspect ratio ]---
     /**
      * Get movie aspect ratio like 1.66:1 or 16:9
-     * @return array $aspectRatio of array[0..n] of array[aspectRatio, array attributes]
+     * @return array of array[0..n] of array[aspectRatio, array attributes]
      * @see IMDB page / (specifications)
      */
     public function aspectRatio()
@@ -2593,7 +2593,7 @@ EOF;
     #----------------------------------------------------------[ Cameras ]---
     /**
      * Get cameras used in this title
-     * @return array $camerars of array[0..n] of array[cameras, array attributes]
+     * @return array of array[0..n] of array[cameras, array attributes]
      * @see IMDB page / (specifications)
      */
     public function camera()
