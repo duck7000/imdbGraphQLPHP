@@ -75,6 +75,28 @@ class Name extends MdbBase
     protected $creditKnownFor = array();
     protected $credits = array();
 
+    #----------------------------------------------------------[ Helper for NameSearch class ]---
+    /**
+     * Create an person object populated with id and name
+     * @param string $id name ID
+     * @param string $name person name
+     * @param Config $config
+     * @param LoggerInterface $logger OPTIONAL override default logger
+     * @param CacheInterface $cache OPTIONAL override default cache
+     * @return Title
+     */
+    public static function fromSearchResult(
+        $id,
+        $name,
+        Config $config = null,
+        LoggerInterface $logger = null,
+        CacheInterface $cache = null
+    ) {
+        $person = new Name($id, $config, $logger, $cache);
+        $person->fullName = $name;
+        return $person;
+    }
+
     /**
      * @param string $id IMDBID to use for data retrieval
      * @param Config $config OPTIONAL override default config
