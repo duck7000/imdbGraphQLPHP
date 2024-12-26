@@ -651,20 +651,20 @@ EOF;
         } else {
             $ext = "_big";
         }
-        if (!is_dir($this->config->photodir)) {
+        if (!is_dir($this->config->photoroot)) {
             $this->debug_scalar("<BR>***ERROR*** The configured image directory does not exist!<BR>");
             return false;
         }
-        $path = $this->config->photodir . "tt{$this->imdbid()}" . "{$ext}.jpg";
+        $path = $this->config->photoroot . "tt{$this->imdbid()}" . "{$ext}.jpg";
         if (file_exists($path)) {
-            return $this->config->photoroot . "tt{$this->imdbid()}" . "{$ext}.jpg";
+            return $this->config->photodir . "tt{$this->imdbid()}" . "{$ext}.jpg";
         }
-        if (!is_writable($this->config->photodir)) {
+        if (!is_writable($this->config->photoroot)) {
             $this->debug_scalar("<BR>***ERROR*** The configured image directory lacks write permission!<BR>");
             return false;
         }
         if ($this->savephoto($path, $thumb)) {
-            return $this->config->photoroot . "tt{$this->imdbid()}" . "{$ext}.jpg";
+            return $this->config->photodir . "tt{$this->imdbid()}" . "{$ext}.jpg";
         }
         return false;
     }
