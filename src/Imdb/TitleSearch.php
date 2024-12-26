@@ -31,7 +31,7 @@ class TitleSearch extends MdbBase
      * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
      * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * 
-     * @return Title[] array of Titles
+     * @return array<int, array<string, string|Title>>
      */
     public function search($searchTerms, $types = null, $startDate = '', $endDate = '')
     {
