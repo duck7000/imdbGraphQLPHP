@@ -201,7 +201,7 @@ EOF;
     }
 
     /**
-     * Get the URL for the names cover image
+     * Get the URL for the Name cover image
      * @param boolean $thumb get the thumbnail (default) or the
      *        bigger variant (max width 1000 pixels - FALSE)
      * @return mixed url (string URL or FALSE if none)
