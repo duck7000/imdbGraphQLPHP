@@ -96,6 +96,36 @@ class Title extends MdbBase
     protected $status = null;
     protected $news = array();
 
+    #----------------------------------------------------------[ Helper for TitleSearch class ]---
+    /**
+     * Create an imdb object populated with id, title, year, and movie type
+     * @param string $id imdb ID
+     * @param string $title film title
+     * @param string $orignalTitle Original film title
+     * @param int $year
+     * @param string $type
+     * @param Config $config
+     * @param LoggerInterface $logger OPTIONAL override default logger
+     * @param CacheInterface $cache OPTIONAL override default cache
+     * @return Title
+     */
+    public static function fromSearchResult(
+        $id,
+        $title,
+        $orignalTitle,
+        $year,
+        $type,
+        Config $config = null,
+        LoggerInterface $logger = null,
+        CacheInterface $cache = null
+    ) {
+        $imdb = new Title($id, $config, $logger, $cache);
+        $imdb->mainTitle = $title;
+        $imdb->mainYear = $year;
+        $imdb->mainMovietype = $type;
+        return $imdb;
+    }
+
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
      * @param Config $config OPTIONAL override default config
