@@ -278,7 +278,7 @@ EOF;
     private function principalCredits($data)
     {
         $creditsPrincipal = array();
-        var_dump($data->title->principalCredits);
+        // var_dump($data->title->principalCredits);
         foreach ($data->title->principalCredits as $value){
             $category = 'Unknown';
             $credits = array();
