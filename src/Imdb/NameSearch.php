@@ -71,7 +71,7 @@ query Search {
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "NameSearch");
+        $data = $this->graphql->query($query, "nameSearch");
         foreach ($data->mainSearch->edges as $key => $edge) {
             $creditKnownFor = array(
                 'title' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text) ?
