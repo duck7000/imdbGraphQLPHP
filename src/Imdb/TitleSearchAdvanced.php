@@ -168,7 +168,7 @@ query advancedSearch{
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "advancedSearch");
+        $data = $this->graphql->query($query, "AdvancedTitleSearch");
         foreach ($data->advancedTitleSearch->edges as $edge) {
 
             // Year range
