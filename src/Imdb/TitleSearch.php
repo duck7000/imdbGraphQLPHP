@@ -86,7 +86,7 @@ query Search{
   }
 }
 EOF;
-        $data = $this->graphql->query($query, "titleSearch");
+        $data = $this->graphql->query($query, "Search");
         foreach ($data->mainSearch->edges as $key => $edge) {
             $yearRange = null;
             if (isset($edge->node->entity->releaseYear->year)) {
