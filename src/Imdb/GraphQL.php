@@ -85,7 +85,7 @@ class GraphQL
             array(
                 'operationName' => $queryName,
                 'query' => $query,
-                'variables' => $variables
+                'variables' => (object) $variables // apparently $variables needs to object
             )
         );
         $this->logger->info("[GraphQL] Requesting $queryName");
@@ -93,15 +93,10 @@ class GraphQL
         if (200 == $request->getStatus()) {
             return json_decode($request->getResponseBody())->data;
         } else {
-            $this->logger->error(
-                "[GraphQL] Failed to retrieve query [{queryName}]. Response headers:{headers}. Response body:{body}",
-                array('queryName' => $queryName, 'headers' => $request->getLastResponseHeaders(), 'body' => $request->getResponseBody())
-            );
-            $errorId = 'Not Used'; // Some classes don't use imdbId like Chart, Trailers, Calendar and KeywordSearch
-            if (!empty($variables['id'])) {
-                $errorId = $variables['id'];
-            }
-            throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$errorId]");
+            $this->logger->error( '[GraphQL] Failed to retrieve query ' . $queryName . ' Response headers: ' . implode( ' ', $request->getLastResponseHeaders() ) . ' Response body: ' . $request->getResponseBody() );
+            // Some classes don't use imdbId like Chart, Trailers, Calendar and KeywordSearch
+            $imdbErrorID = !isset($variables['id']) ? 'n/a' : $variables['id'];
+            throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$imdbErrorID]");
         }
     }
 }
