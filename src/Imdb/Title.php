@@ -553,7 +553,14 @@ query Genres(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Genres", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->titleGenres->genres)) {
+            if (!isset($data->title)) {
+                return $this->genres;
+            }
+            if (isset($data->title->titleGenres->genres) &&
+                is_array($data->title->titleGenres->genres) &&
+                count($data->title->titleGenres->genres) > 0
+               )
+            {
                 foreach ($data->title->titleGenres->genres as $edge) {
                     $subGenres = array();
                     if (!empty($edge->subGenres)) {
