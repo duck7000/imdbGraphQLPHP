@@ -87,41 +87,50 @@ query Search{
 }
 EOF;
         $data = $this->graphql->query($query, "Search");
-        foreach ($data->mainSearch->edges as $key => $edge) {
-            $yearRange = null;
-            if (isset($edge->node->entity->releaseYear->year)) {
-                $yearRange .= $edge->node->entity->releaseYear->year;
-                if (isset($edge->node->entity->releaseYear->endYear)) {
-                    $yearRange .= '-' . $edge->node->entity->releaseYear->endYear;
+        if (!isset($data->mainSearch)) {
+            return $results;
+        }
+        if (isset($data->mainSearch->edges) &&
+            is_array($data->mainSearch->edges) &&
+            count($data->mainSearch->edges) > 0
+           )
+        {
+            foreach ($data->mainSearch->edges as $key => $edge) {
+                $yearRange = null;
+                if (isset($edge->node->entity->releaseYear->year)) {
+                    $yearRange .= $edge->node->entity->releaseYear->year;
+                    if (isset($edge->node->entity->releaseYear->endYear)) {
+                        $yearRange .= '-' . $edge->node->entity->releaseYear->endYear;
+                    }
                 }
+                $id = isset($edge->node->entity->id) ?
+                            str_replace('tt', '', $edge->node->entity->id) : null;
+                $title = isset($edge->node->entity->titleText->text) ?
+                            $edge->node->entity->titleText->text : null;
+                $origTitle = isset($edge->node->entity->originalTitleText->text) ?
+                                $edge->node->entity->originalTitleText->text : null;
+                $movieType = isset($edge->node->entity->titleType->text) ?
+                                $edge->node->entity->titleType->text : null;
+                // return search results as Title object
+                $return = Title::fromSearchResult(
+                    $id,
+                    $title,
+                    $origTitle,
+                    $yearRange,
+                    $movieType,
+                    $this->config,
+                    $this->logger,
+                    $this->cache
+                );
+                $results[] = array(
+                    'imdbid' => $id,
+                    'title' => $title,
+                    'originalTitle' => $origTitle,
+                    'year' => $yearRange,
+                    'movietype' => $movieType,
+                    'titleSearchObject' => $return
+                );
             }
-            $id = isset($edge->node->entity->id) ?
-                        str_replace('tt', '', $edge->node->entity->id) : null;
-            $title = isset($edge->node->entity->titleText->text) ?
-                           $edge->node->entity->titleText->text : null;
-            $origTitle = isset($edge->node->entity->originalTitleText->text) ?
-                               $edge->node->entity->originalTitleText->text : null;
-            $movieType = isset($edge->node->entity->titleType->text) ?
-                               $edge->node->entity->titleType->text : null;
-            // return search results as Title object
-            $return = Title::fromSearchResult(
-                $id,
-                $title,
-                $origTitle,
-                $yearRange,
-                $movieType,
-                $this->config,
-                $this->logger,
-                $this->cache
-            );
-            $results[] = array(
-                'imdbid' => $id,
-                'title' => $title,
-                'originalTitle' => $origTitle,
-                'year' => $yearRange,
-                'movietype' => $movieType,
-                'titleSearchObject' => $return
-            );
         }
         return $results;
     }
