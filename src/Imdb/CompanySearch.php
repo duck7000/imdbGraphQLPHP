@@ -75,17 +75,26 @@ query CompanySearch {
 }
 EOF;
         $data = $this->graphql->query($query, "CompanySearch");
-        foreach ($data->mainSearch->edges as $key => $edge) {
-            $results[] = array(
-                'id' => isset($edge->node->entity->id) ?
-                              str_replace('co', '', $edge->node->entity->id) : null,
-                'name' => isset($edge->node->entity->companyText->text) ?
-                                $edge->node->entity->companyText->text : null,
-                'country' => isset($edge->node->entity->country->text) ?
-                                   $edge->node->entity->country->text : null,
-                'type' => isset($edge->node->entity->companyTypes[0]->text) ?
-                                $edge->node->entity->companyTypes[0]->text : null
-            );
+        if (!isset($data->mainSearch)) {
+            return $results;
+        }
+        if (isset($data->mainSearch->edges) &&
+            is_array($data->mainSearch->edges) &&
+            count($data->mainSearch->edges) > 0
+           )
+        {
+            foreach ($data->mainSearch->edges as $key => $edge) {
+                $results[] = array(
+                    'id' => isset($edge->node->entity->id) ?
+                                str_replace('co', '', $edge->node->entity->id) : null,
+                    'name' => isset($edge->node->entity->companyText->text) ?
+                                    $edge->node->entity->companyText->text : null,
+                    'country' => isset($edge->node->entity->country->text) ?
+                                    $edge->node->entity->country->text : null,
+                    'type' => isset($edge->node->entity->companyTypes[0]->text) ?
+                                    $edge->node->entity->companyTypes[0]->text : null
+                );
+            }
         }
         return $results;
     }
