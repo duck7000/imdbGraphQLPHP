@@ -245,7 +245,11 @@ EOF;
             {
                 foreach ($data->title->runtimes->edges as $edge) {
                     $attributes = array();
-                    if (!empty($edge->node->attributes)) {
+                    if (isset($edge->node->attributes) &&
+                        is_array($edge->node->attributes) &&
+                        count($edge->node->attributes) > 0
+                       )
+                    {
                         foreach ($edge->node->attributes as $attribute) {
                             if (!empty($attribute->text)) {
                                 $attributes[] = $attribute->text;
