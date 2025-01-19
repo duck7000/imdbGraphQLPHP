@@ -876,22 +876,24 @@ attributes {
 }
 EOF;
             $data = $this->graphQlGetAll("Mpaa", "certificates", $query);
-            foreach ($data as $edge) {
-                $comments = array();
-                if (!empty($edge->node->attributes)) {
-                    foreach ($edge->node->attributes as $attribute) {
-                        if (!empty($attribute->text)) {
-                            $comments[] = $attribute->text;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $comments = array();
+                    if (!empty($edge->node->attributes)) {
+                        foreach ($edge->node->attributes as $attribute) {
+                            if (!empty($attribute->text)) {
+                                $comments[] = $attribute->text;
+                            }
                         }
                     }
+                    $this->mpaas[] = array(
+                        'country' => isset($edge->node->country->text) ?
+                                        $edge->node->country->text : null,
+                        'rating' => isset($edge->node->rating) ?
+                                        $edge->node->rating : null,
+                        'comment' => $comments
+                    );
                 }
-                $this->mpaas[] = array(
-                    'country' => isset($edge->node->country->text) ?
-                                       $edge->node->country->text : null,
-                    'rating' => isset($edge->node->rating) ?
-                                      $edge->node->rating : null,
-                    'comment' => $comments
-                );
             }
         }
         return $this->mpaas;
