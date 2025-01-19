@@ -235,22 +235,31 @@ query Runtimes(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Runtimes", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->runtimes->edges as $edge) {
-                $attributes = array();
-                if (!empty($edge->node->attributes)) {
-                    foreach ($edge->node->attributes as $attribute) {
-                        if (!empty($attribute->text)) {
-                            $attributes[] = $attribute->text;
+            if (!isset($data->title)) {
+                return $this->runtimes;
+            }
+            if (isset($data->title->runtimes->edges) &&
+                is_array($data->title->runtimes->edges) &&
+                count($data->title->runtimes->edges) > 0
+               )
+            {
+                foreach ($data->title->runtimes->edges as $edge) {
+                    $attributes = array();
+                    if (!empty($edge->node->attributes)) {
+                        foreach ($edge->node->attributes as $attribute) {
+                            if (!empty($attribute->text)) {
+                                $attributes[] = $attribute->text;
+                            }
                         }
                     }
+                    $this->runtimes[] = array(
+                        'time' => isset($edge->node->seconds) ?
+                                        $edge->node->seconds / 60 : null,
+                        'annotations' => $attributes,
+                        'country' => isset($edge->node->country->text) ?
+                                        $edge->node->country->text : null
+                    );
                 }
-                $this->runtimes[] = array(
-                    'time' => isset($edge->node->seconds) ?
-                                    $edge->node->seconds / 60 : null,
-                    'annotations' => $attributes,
-                    'country' => isset($edge->node->country->text) ?
-                                       $edge->node->country->text : null
-                );
             }
         }
         return $this->runtimes;
