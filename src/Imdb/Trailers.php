@@ -99,35 +99,44 @@ query RecentVideo {
 }
 EOF;
         $data = $this->graphql->query($query, "RecentVideo");
-        foreach ($data->recentVideos->videos as $edge) {
-            $thumbUrl = null;
-            $videoId = isset($edge->id) ?
-                             str_replace('vi', '', $edge->id) : null;
-            if (!empty($edge->primaryTitle->primaryImage->url)) {
-                $fullImageWidth = $edge->primaryTitle->primaryImage->width;
-                $fullImageHeight = $edge->primaryTitle->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->primaryTitle->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
+        if (!isset($data->recentVideos)) {
+            return array();
+        }
+        if (isset($data->recentVideos->videos) &&
+            is_array($data->recentVideos->videos) &&
+            count($data->recentVideos->videos) > 0
+           )
+        {
+            foreach ($data->recentVideos->videos as $edge) {
+                $thumbUrl = null;
+                $videoId = isset($edge->id) ?
+                                str_replace('vi', '', $edge->id) : null;
+                if (!empty($edge->primaryTitle->primaryImage->url)) {
+                    $fullImageWidth = $edge->primaryTitle->primaryImage->width;
+                    $fullImageHeight = $edge->primaryTitle->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->primaryTitle->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                $recentVideoResults[] = array(
+                    'videoId' => $videoId,
+                    'titleId' => isset($edge->primaryTitle->id) ?
+                                    str_replace('tt', '', $edge->primaryTitle->id) : null,
+                    'title' => isset($edge->primaryTitle->titleText->text) ?
+                                    $edge->primaryTitle->titleText->text : null,
+                    'trailerCreateDate' => isset($edge->createdDate) ?
+                                                $edge->createdDate : null,
+                    'trailerRuntime' => isset($edge->runtime->value) ?
+                                            $edge->runtime->value : null,
+                    'playbackUrl' => !empty($videoId) ?
+                                            'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'thumbnailUrl' => $thumbUrl,
+                    'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
+                                        $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
+                    'contentType' => isset($edge->name->value) ?
+                                        $edge->name->value : null
+                );
             }
-            $recentVideoResults[] = array(
-                'videoId' => $videoId,
-                'titleId' => isset($edge->primaryTitle->id) ?
-                                   str_replace('tt', '', $edge->primaryTitle->id) : null,
-                'title' => isset($edge->primaryTitle->titleText->text) ?
-                                 $edge->primaryTitle->titleText->text : null,
-                'trailerCreateDate' => isset($edge->createdDate) ?
-                                             $edge->createdDate : null,
-                'trailerRuntime' => isset($edge->runtime->value) ?
-                                          $edge->runtime->value : null,
-                'playbackUrl' => !empty($videoId) ?
-                                        'https://www.imdb.com/video/vi' . $videoId . '/' : null,
-                'thumbnailUrl' => $thumbUrl,
-                'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
-                                       $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
-                'contentType' => isset($edge->name->value) ?
-                                       $edge->name->value : null
-            );
         }
         return $recentVideoResults;
     }
@@ -190,38 +199,47 @@ query TrendingVideo {
 }
 EOF;
         $data = $this->graphql->query($query, "TrendingVideo");
-        foreach ($data->trendingTitles->titles as $edge) {
-            $thumbUrl = null;
-            $videoId = isset($edge->latestTrailer->id) ?
-                             str_replace('vi', '', $edge->latestTrailer->id) : null;
-            if (empty($videoId)) {
-                continue;
+        if (!isset($data->trendingTitles)) {
+            return array();
+        }
+        if (isset($data->trendingTitles->titles) &&
+            is_array($data->trendingTitles->titles) &&
+            count($data->trendingTitles->titles) > 0
+           )
+        {
+            foreach ($data->trendingTitles->titles as $edge) {
+                $thumbUrl = null;
+                $videoId = isset($edge->latestTrailer->id) ?
+                                str_replace('vi', '', $edge->latestTrailer->id) : null;
+                if (empty($videoId)) {
+                    continue;
+                }
+                if (!empty($edge->primaryImage->url)) {
+                    $fullImageWidth = $edge->primaryImage->width;
+                    $fullImageHeight = $edge->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                $trendingVideoResults[] = array(
+                    'videoId' => $videoId,
+                    'titleId' => isset($edge->id) ?
+                                    str_replace('tt', '', $edge->id) : null,
+                    'title' => isset($edge->titleText->text) ?
+                                    $edge->titleText->text : null,
+                    'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ?
+                                                $edge->latestTrailer->createdDate : null,
+                    'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ?
+                                            $edge->latestTrailer->runtime->value : null,
+                    'playbackUrl' => !empty($videoId) ?
+                                            'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'thumbnailUrl' => $thumbUrl,
+                    'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
+                                        $edge->releaseDate->displayableProperty->value->plainText : null,
+                    'contentType' => isset($edge->latestTrailer->name->value) ?
+                                        $edge->latestTrailer->name->value : null
+                );
             }
-            if (!empty($edge->primaryImage->url)) {
-                $fullImageWidth = $edge->primaryImage->width;
-                $fullImageHeight = $edge->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
-            }
-            $trendingVideoResults[] = array(
-                'videoId' => $videoId,
-                'titleId' => isset($edge->id) ?
-                                   str_replace('tt', '', $edge->id) : null,
-                'title' => isset($edge->titleText->text) ?
-                                 $edge->titleText->text : null,
-                'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ?
-                                             $edge->latestTrailer->createdDate : null,
-                'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ?
-                                          $edge->latestTrailer->runtime->value : null,
-                'playbackUrl' => !empty($videoId) ?
-                                        'https://www.imdb.com/video/vi' . $videoId . '/' : null,
-                'thumbnailUrl' => $thumbUrl,
-                'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
-                                       $edge->releaseDate->displayableProperty->value->plainText : null,
-                'contentType' => isset($edge->latestTrailer->name->value) ?
-                                       $edge->latestTrailer->name->value : null
-            );
         }
         return $trendingVideoResults;
     }
