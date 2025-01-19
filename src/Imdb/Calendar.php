@@ -393,4 +393,20 @@ EOF;
         return $calendarStreaming;
     }
 
+    /**
+     * build date string
+     * @param array $dateParts input date
+     * @return string or false
+     */
+    private function buildDateString($dateParts)
+    {
+        if (!empty($dateParts['month']) && !empty($dateParts['day']) && !empty($dateParts['year'])) {
+            return $dateParts['month'] . '-' .
+                   $dateParts['day'] . '-' .
+                   $dateParts['year'];
+        } else {
+            return false;
+        }
+    }
+
 }
