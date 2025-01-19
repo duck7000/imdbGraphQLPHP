@@ -949,26 +949,39 @@ query ParentsGuide (\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "ParentsGuide", ["id" => "tt$this->imdbID"]);
-        foreach ($data->title->parentsGuide->categories as $category) {
-            $guideItems = array();
-            if (!empty($category->guideItems->edges)) {
-                foreach ($category->guideItems->edges as $edge) {
-                    $guideItems[] = array(
-                        'isSpoiler' => $edge->node->isSpoiler,
-                        'guideText' => isset($edge->node->text->plainText) ?
-                                             $edge->node->text->plainText : null
-                    );
+        if (!isset($data->title)) {
+            return $this->parentsGuide;
+        }
+        if (isset($data->title->parentsGuide->categories) &&
+            is_array($data->title->parentsGuide->categories) &&
+            count($data->title->parentsGuide->categories) > 0
+           )
+        {
+            foreach ($data->title->parentsGuide->categories as $category) {
+                $guideItems = array();
+                if (isset($category->guideItems->edges) &&
+                    is_array($category->guideItems->edges) &&
+                    count($category->guideItems->edges) > 0
+                   )
+                {
+                    foreach ($category->guideItems->edges as $edge) {
+                        $guideItems[] = array(
+                            'isSpoiler' => $edge->node->isSpoiler,
+                            'guideText' => isset($edge->node->text->plainText) ?
+                                                $edge->node->text->plainText : null
+                        );
+                    }
                 }
+                $this->parentsGuide[strtolower($category->category->id)] = array(
+                    'severity' => isset($category->severity->text) ?
+                                        $category->severity->text : null,
+                    'severityVotedFor' => isset($category->severity->votedFor) ?
+                                                $category->severity->votedFor : null,
+                    'totalSeverityVotes' => isset($category->totalSeverityVotes) ?
+                                                $category->totalSeverityVotes : null,
+                    'guideItems' => $guideItems
+                );
             }
-            $this->parentsGuide[strtolower($category->category->id)] = array(
-                'severity' => isset($category->severity->text) ?
-                                    $category->severity->text : null,
-                'severityVotedFor' => isset($category->severity->votedFor) ?
-                                            $category->severity->votedFor : null,
-                'totalSeverityVotes' => isset($category->totalSeverityVotes) ?
-                                              $category->totalSeverityVotes : null,
-                'guideItems' => $guideItems
-            );
         }
         return $this->parentsGuide;
     }
