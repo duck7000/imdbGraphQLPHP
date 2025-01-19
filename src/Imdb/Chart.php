@@ -114,34 +114,43 @@ query Top250Title {
 }
 EOF;
         $data = $this->graphql->query($query, "Top250Title");
-        foreach ($data->titleChartRankings->edges as $edge) {
-            $thumbUrl = null;
-            if (!empty($edge->node->item->primaryImage->url)) {
-                $fullImageWidth = $edge->node->item->primaryImage->width;
-                $fullImageHeight = $edge->node->item->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
+        if (!isset($data->titleChartRankings)) {
+            return array();
+        }
+        if (isset($data->titleChartRankings->edges) &&
+            is_array($data->titleChartRankings->edges) &&
+            count($data->titleChartRankings->edges) > 0
+           )
+        {
+            foreach ($data->titleChartRankings->edges as $edge) {
+                $thumbUrl = null;
+                if (!empty($edge->node->item->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->item->primaryImage->width;
+                    $fullImageHeight = $edge->node->item->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                $top250TitleResults[] = array(
+                    'title' => isset($edge->node->item->titleText->text) ?
+                                    $edge->node->item->titleText->text : null,
+                    'imdbid' => isset($edge->node->item->id) ?
+                                    str_replace('tt', '', $edge->node->item->id) : null,
+                    'year' => isset($edge->node->item->releaseYear->year) ?
+                                    $edge->node->item->releaseYear->year : null,
+                    'rank' => isset($edge->node->item->ratingsSummary->topRanking->rank) ?
+                                    $edge->node->item->ratingsSummary->topRanking->rank : null,
+                    'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
+                                    $edge->node->item->ratingsSummary->aggregateRating : null,
+                    'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
+                                    $edge->node->item->ratingsSummary->voteCount : null,
+                    'runtimeSeconds' => isset($edge->node->item->runtime->seconds) ?
+                                            $edge->node->item->runtime->seconds : null,
+                    'runtimeText' => isset($edge->node->item->runtime->displayableProperty->value->plainText) ?
+                                        $edge->node->item->runtime->displayableProperty->value->plainText : null,
+                    'imgUrl' => $thumbUrl
+                );
             }
-            $top250TitleResults[] = array(
-                'title' => isset($edge->node->item->titleText->text) ?
-                                 $edge->node->item->titleText->text : null,
-                'imdbid' => isset($edge->node->item->id) ?
-                                  str_replace('tt', '', $edge->node->item->id) : null,
-                'year' => isset($edge->node->item->releaseYear->year) ?
-                                $edge->node->item->releaseYear->year : null,
-                'rank' => isset($edge->node->item->ratingsSummary->topRanking->rank) ?
-                                $edge->node->item->ratingsSummary->topRanking->rank : null,
-                'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
-                                  $edge->node->item->ratingsSummary->aggregateRating : null,
-                'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
-                                 $edge->node->item->ratingsSummary->voteCount : null,
-                'runtimeSeconds' => isset($edge->node->item->runtime->seconds) ?
-                                          $edge->node->item->runtime->seconds : null,
-                'runtimeText' => isset($edge->node->item->runtime->displayableProperty->value->plainText) ?
-                                       $edge->node->item->runtime->displayableProperty->value->plainText : null,
-                'imgUrl' => $thumbUrl
-            );
         }
         return $top250TitleResults;
     }
@@ -222,45 +231,54 @@ query Top250Name {
 }
 EOF;
         $data = $this->graphql->query($query, "Top250Name");
-        foreach ($data->nameChartRankings->edges as $edge) {
-            $thumbUrl = null;
-            $credits = array();
-            $knownFor = array();
-            if (!empty($edge->node->item->primaryImage->url)) {
-                $fullImageWidth = $edge->node->item->primaryImage->width;
-                $fullImageHeight = $edge->node->item->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
-            }
-            if (!empty($edge->node->item->knownFor->edges)) {
-                $knownFor = array(
-                    'id' => isset($edge->node->item->knownFor->edges[0]->node->title->id) ?
-                                  str_replace('tt', '', $edge->node->item->knownFor->edges[0]->node->title->id) : null,
-                    'title' => isset($edge->node->item->knownFor->edges[0]->node->title->titleText->text) ?
-                                     $edge->node->item->knownFor->edges[0]->node->title->titleText->text : null,
-                    'year' => isset($edge->node->item->knownFor->edges[0]->node->title->releaseYear->year) ?
-                                    $edge->node->item->knownFor->edges[0]->node->title->releaseYear->year : null
-                );
-            }
-            if (!empty($edge->node->item->creditSummary->categories)) {
-                foreach ($edge->node->item->creditSummary->categories as $item) {
-                    if (!empty($item->category->text)) {
-                        $credits[] = $item->category->text;
+        if (!isset($data->nameChartRankings)) {
+            return array();
+        }
+        if (isset($data->nameChartRankings->edges) &&
+            is_array($data->nameChartRankings->edges) &&
+            count($data->nameChartRankings->edges) > 0
+           )
+        {
+            foreach ($data->nameChartRankings->edges as $edge) {
+                $thumbUrl = null;
+                $credits = array();
+                $knownFor = array();
+                if (!empty($edge->node->item->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->item->primaryImage->width;
+                    $fullImageHeight = $edge->node->item->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                if (!empty($edge->node->item->knownFor->edges)) {
+                    $knownFor = array(
+                        'id' => isset($edge->node->item->knownFor->edges[0]->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->item->knownFor->edges[0]->node->title->id) : null,
+                        'title' => isset($edge->node->item->knownFor->edges[0]->node->title->titleText->text) ?
+                                        $edge->node->item->knownFor->edges[0]->node->title->titleText->text : null,
+                        'year' => isset($edge->node->item->knownFor->edges[0]->node->title->releaseYear->year) ?
+                                        $edge->node->item->knownFor->edges[0]->node->title->releaseYear->year : null
+                    );
+                }
+                if (!empty($edge->node->item->creditSummary->categories)) {
+                    foreach ($edge->node->item->creditSummary->categories as $item) {
+                        if (!empty($item->category->text)) {
+                            $credits[] = $item->category->text;
+                        }
                     }
                 }
+                $top250NameResults[] = array(
+                    'name' => isset($edge->node->item->nameText->text) ?
+                                    $edge->node->item->nameText->text : null,
+                    'imdbid' => isset($edge->node->item->id) ?
+                                    str_replace('nm', '', $edge->node->item->id) : null,
+                    'rank' => isset($edge->node->rank) ?
+                                    $edge->node->rank : null,
+                    'credits' => $credits,
+                    'knownFor' => $knownFor,
+                    'imgUrl' => $thumbUrl
+                );
             }
-            $top250NameResults[] = array(
-                'name' => isset($edge->node->item->nameText->text) ?
-                                $edge->node->item->nameText->text : null,
-                'imdbid' => isset($edge->node->item->id) ?
-                                  str_replace('nm', '', $edge->node->item->id) : null,
-                'rank' => isset($edge->node->rank) ?
-                                $edge->node->rank : null,
-                'credits' => $credits,
-                'knownFor' => $knownFor,
-                'imgUrl' => $thumbUrl
-            );
         }
         return $top250NameResults;
     }
@@ -344,45 +362,54 @@ query MostPopularName {
 }
 EOF;
         $data = $this->graphql->query($query, "MostPopularName");
-        foreach ($data->chartNames->edges as $edge) {
-            $thumbUrl = null;
-            $credits = array();
-            $knownFor = array();
-            if (!empty($edge->node->primaryImage->url)) {
-                $fullImageWidth = $edge->node->primaryImage->width;
-                $fullImageHeight = $edge->node->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
-            }
-            if (!empty($edge->node->knownFor->edges)) {
-                $knownFor = array(
-                    'id' => isset($edge->node->knownFor->edges[0]->node->title->id) ?
-                                  str_replace('tt', '', $edge->node->knownFor->edges[0]->node->title->id) : null,
-                    'title' => isset($edge->node->knownFor->edges[0]->node->title->titleText->text) ?
-                                     $edge->node->knownFor->edges[0]->node->title->titleText->text : null,
-                    'year' => isset($edge->node->knownFor->edges[0]->node->title->releaseYear->year) ?
-                                    $edge->node->knownFor->edges[0]->node->title->releaseYear->year : null
-                );
-            }
-            if (!empty($edge->node->creditCategories)) {
-                foreach ($edge->node->creditCategories as $item) {
-                    if (!empty($item->category->text)) {
-                        $credits[] = $item->category->text;
+        if (!isset($data->chartNames)) {
+            return array();
+        }
+        if (isset($data->chartNames->edges) &&
+            is_array($data->chartNames->edges) &&
+            count($data->chartNames->edges) > 0
+           )
+        {
+            foreach ($data->chartNames->edges as $edge) {
+                $thumbUrl = null;
+                $credits = array();
+                $knownFor = array();
+                if (!empty($edge->node->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->primaryImage->width;
+                    $fullImageHeight = $edge->node->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                if (!empty($edge->node->knownFor->edges)) {
+                    $knownFor = array(
+                        'id' => isset($edge->node->knownFor->edges[0]->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->knownFor->edges[0]->node->title->id) : null,
+                        'title' => isset($edge->node->knownFor->edges[0]->node->title->titleText->text) ?
+                                        $edge->node->knownFor->edges[0]->node->title->titleText->text : null,
+                        'year' => isset($edge->node->knownFor->edges[0]->node->title->releaseYear->year) ?
+                                        $edge->node->knownFor->edges[0]->node->title->releaseYear->year : null
+                    );
+                }
+                if (!empty($edge->node->creditCategories)) {
+                    foreach ($edge->node->creditCategories as $item) {
+                        if (!empty($item->category->text)) {
+                            $credits[] = $item->category->text;
+                        }
                     }
                 }
+                $mostPopularNameResults[] = array(
+                    'name' => isset($edge->node->nameText->text) ?
+                                    $edge->node->nameText->text : null,
+                    'imdbid' => isset($edge->node->id) ?
+                                    str_replace('nm', '', $edge->node->id) : null,
+                    'rank' => isset($edge->node->rank) ?
+                                    $edge->node->rank : null,
+                    'credits' => $credits,
+                    'knownFor' => $knownFor,
+                    'imgUrl' => $thumbUrl
+                );
             }
-            $mostPopularNameResults[] = array(
-                'name' => isset($edge->node->nameText->text) ?
-                                $edge->node->nameText->text : null,
-                'imdbid' => isset($edge->node->id) ?
-                                  str_replace('nm', '', $edge->node->id) : null,
-                'rank' => isset($edge->node->rank) ?
-                                $edge->node->rank : null,
-                'credits' => $credits,
-                'knownFor' => $knownFor,
-                'imgUrl' => $thumbUrl
-            );
         }
         return $mostPopularNameResults;
     }
@@ -484,43 +511,52 @@ query MostPopularTitle {
 }
 EOF;
         $data = $this->graphql->query($query, "MostPopularTitle");
-        foreach ($data->chartTitles->edges as $edge) {
-            $thumbUrl = null;
-            if (!empty($edge->node->primaryImage->url)) {
-                $fullImageWidth = $edge->node->primaryImage->width;
-                $fullImageHeight = $edge->node->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
-            }
-            $genres = array();
-            if (!empty($edge->node->titleGenres->genres)) {
-                foreach ($edge->node->titleGenres->genres as $genre) {
-                    if (!empty($genre->genre->text)) {
-                        $genres[] = $genre->genre->text;
+        if (!isset($data->chartTitles)) {
+            return array();
+        }
+        if (isset($data->chartTitles->edges) &&
+            is_array($data->chartTitles->edges) &&
+            count($data->chartTitles->edges) > 0
+           )
+        {
+            foreach ($data->chartTitles->edges as $edge) {
+                $thumbUrl = null;
+                if (!empty($edge->node->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->primaryImage->width;
+                    $fullImageHeight = $edge->node->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                $genres = array();
+                if (!empty($edge->node->titleGenres->genres)) {
+                    foreach ($edge->node->titleGenres->genres as $genre) {
+                        if (!empty($genre->genre->text)) {
+                            $genres[] = $genre->genre->text;
+                        }
                     }
                 }
+                $mostPopularTitleResults[] = array(
+                    'title' => isset($edge->node->titleText->text) ?
+                                    $edge->node->titleText->text : null,
+                    'imdbid' => isset($edge->node->id) ?
+                                    str_replace('tt', '', $edge->node->id) : null,
+                    'year' => isset($edge->node->releaseYear->year) ?
+                                    $edge->node->releaseYear->year : null,
+                    'runtimeSeconds' => isset($edge->node->runtime->seconds) ?
+                                            $edge->node->runtime->seconds : null,
+                    'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
+                                        $edge->node->runtime->displayableProperty->value->plainText : null,
+                    'rank' => isset($edge->currentRank) ?
+                                    $edge->currentRank : null,
+                    'genre' => $genres,
+                    'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
+                                    $edge->node->ratingsSummary->aggregateRating : null,
+                    'votes' => isset($edge->node->ratingsSummary->voteCount) ?
+                                    $edge->node->ratingsSummary->voteCount : null,
+                    'imgUrl' => $thumbUrl
+                );
             }
-            $mostPopularTitleResults[] = array(
-                'title' => isset($edge->node->titleText->text) ?
-                                 $edge->node->titleText->text : null,
-                'imdbid' => isset($edge->node->id) ?
-                                  str_replace('tt', '', $edge->node->id) : null,
-                'year' => isset($edge->node->releaseYear->year) ?
-                                $edge->node->releaseYear->year : null,
-                'runtimeSeconds' => isset($edge->node->runtime->seconds) ?
-                                          $edge->node->runtime->seconds : null,
-                'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
-                                       $edge->node->runtime->displayableProperty->value->plainText : null,
-                'rank' => isset($edge->currentRank) ?
-                                $edge->currentRank : null,
-                'genre' => $genres,
-                'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
-                                  $edge->node->ratingsSummary->aggregateRating : null,
-                'votes' => isset($edge->node->ratingsSummary->voteCount) ?
-                                 $edge->node->ratingsSummary->voteCount : null,
-                'imgUrl' => $thumbUrl
-            );
         }
         return $mostPopularTitleResults;
     }
@@ -592,42 +628,51 @@ query BoxOffice{
 }
 EOF;
         $data = $this->graphql->query($query, "BoxOffice");
-        foreach ($data->boxOfficeWeekendChart->entries as $edge) {
-            $thumbUrl = null;
-            if (!empty($edge->title->primaryImage->url)) {
-                $fullImageWidth = $edge->title->primaryImage->width;
-                $fullImageHeight = $edge->title->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->title->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $thumbUrl = $img . $parameter;
+        if (!isset($data->boxOfficeWeekendChart)) {
+            return array();
+        }
+        if (isset($data->boxOfficeWeekendChart->edges) &&
+            is_array($data->boxOfficeWeekendChart->edges) &&
+            count($data->boxOfficeWeekendChart->edges) > 0
+           )
+        {
+            foreach ($data->boxOfficeWeekendChart->entries as $edge) {
+                $thumbUrl = null;
+                if (!empty($edge->title->primaryImage->url)) {
+                    $fullImageWidth = $edge->title->primaryImage->width;
+                    $fullImageHeight = $edge->title->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->title->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $thumbUrl = $img . $parameter;
+                }
+                $weeks = null;
+                if (!empty($edge->title->releaseDate->day) && !empty($edge->title->releaseDate->month) && !empty($edge->title->releaseDate->year)) {
+                    $startDate = $edge->title->releaseDate->month . '/' .
+                                $edge->title->releaseDate->day . '/' .
+                                $edge->title->releaseDate->year;
+                    $weeks = $this->datediffInWeeks($startDate, date('m/d/Y'));
+                }
+                $results[] = array(
+                    'title' => isset($edge->title->titleText->text) ?
+                                    $edge->title->titleText->text : null,
+                    'id' => isset($edge->title->id) ?
+                                str_replace('tt', '', $edge->title->id) : null,
+                    'rating' => isset($edge->title->ratingsSummary->aggregateRating) ?
+                                    $edge->title->ratingsSummary->aggregateRating : null,
+                    'votes' => isset($edge->title->ratingsSummary->voteCount) ?
+                                    $edge->title->ratingsSummary->voteCount : null,
+                    'LifetimeGrossAmount' => isset($edge->title->lifetimeGross->total->amount) ?
+                                                $edge->title->lifetimeGross->total->amount : null,
+                    'LifetimeGrossCurrency' => isset($edge->title->lifetimeGross->total->currency) ?
+                                                    $edge->title->lifetimeGross->total->currency : null,
+                    'weekendGrossAmount' => isset($edge->weekendGross->total->amount) ?
+                                                $edge->weekendGross->total->amount : null,
+                    'weekendGrossCurrency' => isset($edge->weekendGross->total->currency) ?
+                                                    $edge->weekendGross->total->currency : null,
+                    'weeksReleased' => $weeks,
+                    'imgUrl' => $thumbUrl
+                );
             }
-            $weeks = null;
-            if (!empty($edge->title->releaseDate->day) && !empty($edge->title->releaseDate->month) && !empty($edge->title->releaseDate->year)) {
-                $startDate = $edge->title->releaseDate->month . '/' .
-                             $edge->title->releaseDate->day . '/' .
-                             $edge->title->releaseDate->year;
-                $weeks = $this->datediffInWeeks($startDate, date('m/d/Y'));
-            }
-            $results[] = array(
-                'title' => isset($edge->title->titleText->text) ?
-                                 $edge->title->titleText->text : null,
-                'id' => isset($edge->title->id) ?
-                              str_replace('tt', '', $edge->title->id) : null,
-                'rating' => isset($edge->title->ratingsSummary->aggregateRating) ?
-                                  $edge->title->ratingsSummary->aggregateRating : null,
-                'votes' => isset($edge->title->ratingsSummary->voteCount) ?
-                                 $edge->title->ratingsSummary->voteCount : null,
-                'LifetimeGrossAmount' => isset($edge->title->lifetimeGross->total->amount) ?
-                                               $edge->title->lifetimeGross->total->amount : null,
-                'LifetimeGrossCurrency' => isset($edge->title->lifetimeGross->total->currency) ?
-                                                 $edge->title->lifetimeGross->total->currency : null,
-                'weekendGrossAmount' => isset($edge->weekendGross->total->amount) ?
-                                              $edge->weekendGross->total->amount : null,
-                'weekendGrossCurrency' => isset($edge->weekendGross->total->currency) ?
-                                                $edge->weekendGross->total->currency : null,
-                'weeksReleased' => $weeks,
-                'imgUrl' => $thumbUrl
-            );
         }
         $boxOfficeResults = array(
             'weekendStartDate' => isset($data->boxOfficeWeekendChart->weekendStartDate) ?
