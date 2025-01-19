@@ -761,7 +761,7 @@ attributes {
 }
 EOF;
             $data = $this->graphQlGetAll("ReleaseDates", "releaseDates", $query);
-            if (!empty($data)) {
+            if (count($data) > 0) {
                 foreach ($data as $edge) {
                     $attributes = array();
                     if (!empty($edge->node->attributes)) {
