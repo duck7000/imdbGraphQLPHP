@@ -722,7 +722,14 @@ query Countries(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Countries", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->countriesOfOrigin->countries)) {
+            if (!isset($data->title)) {
+                return $this->countries;
+            }
+            if (isset($data->title->countriesOfOrigin->countries) &&
+                is_array($data->title->countriesOfOrigin->countries) &&
+                count($data->title->countriesOfOrigin->countries) > 0
+               )
+            {
                 foreach ($data->title->countriesOfOrigin->countries as $country) {
                     if (!empty($country->text)) {
                         $this->countries[] = $country->text;
