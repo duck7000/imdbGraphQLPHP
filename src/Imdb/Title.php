@@ -828,28 +828,30 @@ EOF;
                     'comment' => array()
                 );
             }
-            foreach ($data as $edge) {
-                $comments = array();
-                if (!empty($edge->node->attributes)) {
-                    foreach ($edge->node->attributes as $attribute) {
-                        if (!empty($attribute->text)) {
-                            $comments[] = $attribute->text;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $comments = array();
+                    if (!empty($edge->node->attributes)) {
+                        foreach ($edge->node->attributes as $attribute) {
+                            if (!empty($attribute->text)) {
+                                $comments[] = $attribute->text;
+                            }
                         }
                     }
+                    $this->akas[] = array(
+                        'title' => isset($edge->node->text) ?
+                                        ucwords($edge->node->text) : null,
+                        'country' => isset($edge->node->country->text) ?
+                                        ucwords($edge->node->country->text) : 'Unknown',
+                        'countryId' => isset($edge->node->country->id) ?
+                                            $edge->node->country->id : null,
+                        'language' => isset($edge->node->language->text) ?
+                                            ucwords($edge->node->language->text) : null,
+                        'languageId' => isset($edge->node->language->id) ?
+                                            $edge->node->language->id : null,
+                        'comment' => $comments
+                    );
                 }
-                $this->akas[] = array(
-                    'title' => isset($edge->node->text) ?
-                                     ucwords($edge->node->text) : null,
-                    'country' => isset($edge->node->country->text) ?
-                                       ucwords($edge->node->country->text) : 'Unknown',
-                    'countryId' => isset($edge->node->country->id) ?
-                                         $edge->node->country->id : null,
-                    'language' => isset($edge->node->language->text) ?
-                                        ucwords($edge->node->language->text) : null,
-                    'languageId' => isset($edge->node->language->id) ?
-                                          $edge->node->language->id : null,
-                    'comment' => $comments
-                );
             }
         }
         return $this->akas;
