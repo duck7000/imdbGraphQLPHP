@@ -569,10 +569,15 @@ EOF;
             {
                 foreach ($data->title->titleGenres->genres as $edge) {
                     $subGenres = array();
-                    if (!empty($edge->subGenres)) {
+                    if (isset($edge->subGenres) &&
+                        is_array($edge->subGenres) &&
+                        count($edge->subGenres) > 0
+                       )
+                    {
                         foreach ($edge->subGenres as $subGenre) {
-                            $subGenres[] = isset($subGenre->keyword->text->text) ?
-                                                 ucwords($subGenre->keyword->text->text) : null;
+                            if (!empty($subGenre->keyword->text->text)) {
+                                $subGenres[] = ucwords($subGenre->keyword->text->text);
+                            }
                         }
                     }
                     $this->genres[] = array(
