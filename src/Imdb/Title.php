@@ -450,28 +450,37 @@ query Recommendations(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Recommendations", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->moreLikeThisTitles->edges as $edge) {
-                $thumb = null;
-                if (!empty($edge->node->primaryImage->url)) {
-                    $fullImageWidth = $edge->node->primaryImage->width;
-                    $fullImageHeight = $edge->node->primaryImage->height;
-                    $newImageWidth = $this->config->recommendationThumbnailWidth;
-                    $newImageHeight = $this->config->recommendationThumbnailHeight;
-                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                    $thumb = $img . $parameter;
+            if (!isset($data->title)) {
+                return $this->recommendations;
+            }
+            if (isset($data->title->moreLikeThisTitles->edges) &&
+                is_array($data->title->moreLikeThisTitles->edges) &&
+                count($data->title->moreLikeThisTitles->edges) > 0
+               )
+            {
+                foreach ($data->title->moreLikeThisTitles->edges as $edge) {
+                    $thumb = null;
+                    if (!empty($edge->node->primaryImage->url)) {
+                        $fullImageWidth = $edge->node->primaryImage->width;
+                        $fullImageHeight = $edge->node->primaryImage->height;
+                        $newImageWidth = $this->config->recommendationThumbnailWidth;
+                        $newImageHeight = $this->config->recommendationThumbnailHeight;
+                        $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                        $thumb = $img . $parameter;
+                    }
+                    $this->recommendations[] = array(
+                        'title' => isset($edge->node->titleText->text) ?
+                                        $edge->node->titleText->text : null,
+                        'imdbid' => isset($edge->node->id) ?
+                                        str_replace('tt', '', $edge->node->id) : null,
+                        'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
+                                        $edge->node->ratingsSummary->aggregateRating : null,
+                        'img' => $thumb,
+                        'year' => isset($edge->node->releaseYear->year) ?
+                                        $edge->node->releaseYear->year : null
+                    );
                 }
-                $this->recommendations[] = array(
-                    'title' => isset($edge->node->titleText->text) ?
-                                     $edge->node->titleText->text : null,
-                    'imdbid' => isset($edge->node->id) ?
-                                      str_replace('tt', '', $edge->node->id) : null,
-                    'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
-                                      $edge->node->ratingsSummary->aggregateRating : null,
-                    'img' => $thumb,
-                    'year' => isset($edge->node->releaseYear->year) ?
-                                    $edge->node->releaseYear->year : null
-                );
             }
         }
         return $this->recommendations;
