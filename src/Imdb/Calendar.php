@@ -115,60 +115,69 @@ query ComingSoon {
 }
 EOF;
         $data = $this->graphql->query($query, "ComingSoon");
-        foreach ($data->comingSoon->edges as $edge) {
-            $title = isset($edge->node->titleText->text) ?
-                           $edge->node->titleText->text : null;
-            if ($title === null) {
-                continue;
-            }
-            //release date
-            $dateParts = array(
-                'month' => isset($edge->node->releaseDate->month) ?
-                                 $edge->node->releaseDate->month : null,
-                'day' => isset($edge->node->releaseDate->day) ?
-                               $edge->node->releaseDate->day : null,
-                'year' => isset($edge->node->releaseDate->year) ?
-                                $edge->node->releaseDate->year : null
-            );
-            $releaseDate = $this->buildDateString($dateParts);
-            if ($releaseDate === false) {
-                continue;
-            }
-            // Genres
-            $genres = array();
-            if (!empty($edge->node->titleGenres->genres)) {
-                foreach ($edge->node->titleGenres->genres as $genre) {
-                    if (!empty($genre->genre->text)) {
-                        $genres[] = $genre->genre->text;
+        if (!isset($data->comingSoon)) {
+            return $results;
+        }
+        if (isset($data->comingSoon->edges) &&
+            is_array($data->comingSoon->edges) &&
+            count($data->comingSoon->edges) > 0
+           )
+        {
+            foreach ($data->comingSoon->edges as $edge) {
+                $title = isset($edge->node->titleText->text) ?
+                            $edge->node->titleText->text : null;
+                if ($title === null) {
+                    continue;
+                }
+                //release date
+                $dateParts = array(
+                    'month' => isset($edge->node->releaseDate->month) ?
+                                    $edge->node->releaseDate->month : null,
+                    'day' => isset($edge->node->releaseDate->day) ?
+                                $edge->node->releaseDate->day : null,
+                    'year' => isset($edge->node->releaseDate->year) ?
+                                    $edge->node->releaseDate->year : null
+                );
+                $releaseDate = $this->buildDateString($dateParts);
+                if ($releaseDate === false) {
+                    continue;
+                }
+                // Genres
+                $genres = array();
+                if (!empty($edge->node->titleGenres->genres)) {
+                    foreach ($edge->node->titleGenres->genres as $genre) {
+                        if (!empty($genre->genre->text)) {
+                            $genres[] = $genre->genre->text;
+                        }
                     }
                 }
-            }
-            // Cast
-            $cast = array();
-            if (!empty($edge->node->principalCredits[0]->credits)) {
-                foreach ($edge->node->principalCredits[0]->credits as $credit) {
-                    if (!empty($credit->name->nameText->text)) {
-                        $cast[] = $credit->name->nameText->text;
+                // Cast
+                $cast = array();
+                if (!empty($edge->node->principalCredits[0]->credits)) {
+                    foreach ($edge->node->principalCredits[0]->credits as $credit) {
+                        if (!empty($credit->name->nameText->text)) {
+                            $cast[] = $credit->name->nameText->text;
+                        }
                     }
                 }
+                // image url
+                $imgUrl = null;
+                if (!empty($edge->node->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->primaryImage->width;
+                    $fullImageHeight = $edge->node->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $imgUrl = $img . $parameter;
+                }
+                $calendar[$releaseDate][] = array(
+                    'title' => $title,
+                    'imdbid' => isset($edge->node->id) ?
+                                    str_replace('tt', '', $edge->node->id) : null,
+                    'genres' => $genres,
+                    'cast' => $cast,
+                    'imgUrl' => $imgUrl
+                );
             }
-            // image url
-            $imgUrl = null;
-            if (!empty($edge->node->primaryImage->url)) {
-                $fullImageWidth = $edge->node->primaryImage->width;
-                $fullImageHeight = $edge->node->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $imgUrl = $img . $parameter;
-            }
-            $calendar[$releaseDate][] = array(
-                'title' => $title,
-                'imdbid' => isset($edge->node->id) ?
-                                  str_replace('tt', '', $edge->node->id) : null,
-                'genres' => $genres,
-                'cast' => $cast,
-                'imgUrl' => $imgUrl
-            );
         }
         return $calendar;
     }
@@ -305,61 +314,70 @@ query ComingSoonStreaming {
 }
 EOF;
         $data = $this->graphql->query($query, "ComingSoonStreaming", ["id" => "ls$listProviderId"]);
-        $items = array();
-        foreach ($data->list->items->edges as $edge) {
+        if (!isset($data->list)) {
+            return $results;
+        }
+        if (isset($data->list->items->edges) &&
+            is_array($data->list->items->edges) &&
+            count($data->list->items->edges) > 0
+           )
+        {
+            $items = array();
+            foreach ($data->list->items->edges as $edge) {
 
-            // image url
-            $imgUrl = null;
-            if (!empty($edge->node->item->primaryImage->url)) {
-                $fullImageWidth = $edge->node->item->primaryImage->width;
-                $fullImageHeight = $edge->node->item->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $imgUrl = $img . $parameter;
-            }
-
-            // PrincipalCredits
-            $credits = array();
-            if (!empty($edge->node->item->principalCredits)) {
-                foreach ($edge->node->item->principalCredits as $principalCredit) {
-                    $category = $principalCredit->category->text;
-                    $temp = array();
-                    foreach ($principalCredit->credits as $credit) {
-                        $temp[] = array(
-                            'nameId' => isset($credit->name->id) ?
-                                              str_replace('nm', '', $credit->name->id) : null,
-                            'name' => isset($credit->name->nameText->text) ?
-                                            $credit->name->nameText->text : null
-                        );
-                    }
-                    $credits[$category] = $temp;
+                // image url
+                $imgUrl = null;
+                if (!empty($edge->node->item->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->item->primaryImage->width;
+                    $fullImageHeight = $edge->node->item->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->item->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $imgUrl = $img . $parameter;
                 }
-            }
 
-            $items[] = array(
-                'id' => isset($edge->node->item->id) ?
-                              str_replace('tt', '', $edge->node->item->id) : null,
-                'title' => isset($edge->node->item->titleText->text) ?
-                                 $edge->node->item->titleText->text : null,
-                'type' => isset($edge->node->item->titleType->text) ?
-                                $edge->node->item->titleType->text : null,
-                'year' => isset($edge->node->item->releaseYear->year) ?
-                                $edge->node->item->releaseYear->year : null,
-                'description' => isset($edge->node->description->originalText->plainText) ?
-                                       $edge->node->description->originalText->plainText : null,
-                'runtime' => isset($edge->node->item->runtime->seconds) ?
-                                   $edge->node->item->runtime->seconds : null,
-                'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
-                                  $edge->node->item->ratingsSummary->aggregateRating : null,
-                'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
-                                 $edge->node->item->ratingsSummary->voteCount : null,
-                'metacritic' => isset($edge->node->item->metacritic->metascore->score) ?
-                                      $edge->node->item->metacritic->metascore->score : null,
-                'plot' => isset($edge->node->item->plot->plotText->plainText) ?
-                                $edge->node->item->plot->plotText->plainText : null,
-                'thumbUrl' => $imgUrl,
-                'credits' => $credits
-            );
+                // PrincipalCredits
+                $credits = array();
+                if (!empty($edge->node->item->principalCredits)) {
+                    foreach ($edge->node->item->principalCredits as $principalCredit) {
+                        $category = $principalCredit->category->text;
+                        $temp = array();
+                        foreach ($principalCredit->credits as $credit) {
+                            $temp[] = array(
+                                'nameId' => isset($credit->name->id) ?
+                                                str_replace('nm', '', $credit->name->id) : null,
+                                'name' => isset($credit->name->nameText->text) ?
+                                                $credit->name->nameText->text : null
+                            );
+                        }
+                        $credits[$category] = $temp;
+                    }
+                }
+
+                $items[] = array(
+                    'id' => isset($edge->node->item->id) ?
+                                str_replace('tt', '', $edge->node->item->id) : null,
+                    'title' => isset($edge->node->item->titleText->text) ?
+                                    $edge->node->item->titleText->text : null,
+                    'type' => isset($edge->node->item->titleType->text) ?
+                                    $edge->node->item->titleType->text : null,
+                    'year' => isset($edge->node->item->releaseYear->year) ?
+                                    $edge->node->item->releaseYear->year : null,
+                    'description' => isset($edge->node->description->originalText->plainText) ?
+                                        $edge->node->description->originalText->plainText : null,
+                    'runtime' => isset($edge->node->item->runtime->seconds) ?
+                                    $edge->node->item->runtime->seconds : null,
+                    'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
+                                    $edge->node->item->ratingsSummary->aggregateRating : null,
+                    'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
+                                    $edge->node->item->ratingsSummary->voteCount : null,
+                    'metacritic' => isset($edge->node->item->metacritic->metascore->score) ?
+                                        $edge->node->item->metacritic->metascore->score : null,
+                    'plot' => isset($edge->node->item->plot->plotText->plainText) ?
+                                    $edge->node->item->plot->plotText->plainText : null,
+                    'thumbUrl' => $imgUrl,
+                    'credits' => $credits
+                );
+            }
         }
         $calendarStreaming = array(
             'listId' => isset($data->list->id) ?
