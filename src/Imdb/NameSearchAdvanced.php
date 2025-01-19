@@ -158,57 +158,66 @@ query AdvancedNameSearch {
 }
 EOF;
         $data = $this->graphql->query($query, "AdvancedNameSearch");
-        foreach ($data->advancedNameSearch->edges as $edge) {
+        if (!isset($data->advancedNameSearch)) {
+            return $results;
+        }
+        if (isset($data->advancedNameSearch->edges) &&
+            is_array($data->advancedNameSearch->edges) &&
+            count($data->advancedNameSearch->edges) > 0
+           )
+        {
+            foreach ($data->advancedNameSearch->edges as $edge) {
 
-            // professions
-            $professions = array();
-            if (!empty($edge->node->name->primaryProfessions)) {
-                foreach ($edge->node->name->primaryProfessions as $profession) {
-                    if (!empty($profession->category->text)) {
-                        $professions[] = $profession->category->text;
+                // professions
+                $professions = array();
+                if (!empty($edge->node->name->primaryProfessions)) {
+                    foreach ($edge->node->name->primaryProfessions as $profession) {
+                        if (!empty($profession->category->text)) {
+                            $professions[] = $profession->category->text;
+                        }
                     }
                 }
-            }
 
-            // knownFor
-            $knownFor = array();
-            if (!empty($edge->node->name->knownFor->edges)) {
-                foreach ($edge->node->name->knownFor->edges as $known) {
-                    $knownFor[] = array(
-                        'titleId' => isset($known->node->credit->title->id) ?
-                                           str_replace('tt', '', $known->node->credit->title->id) : null,
-                        'title' => isset($known->node->credit->title->titleText->text) ?
-                                         $known->node->credit->title->titleText->text : null,
-                        'year' => isset($known->node->credit->title->releaseYear->year) ?
-                                        $known->node->credit->title->releaseYear->year : null,
-                        'endYear' => isset($known->node->credit->title->releaseYear->endYear) ?
-                                           $known->node->credit->title->releaseYear->endYear : null
-                    );
+                // knownFor
+                $knownFor = array();
+                if (!empty($edge->node->name->knownFor->edges)) {
+                    foreach ($edge->node->name->knownFor->edges as $known) {
+                        $knownFor[] = array(
+                            'titleId' => isset($known->node->credit->title->id) ?
+                                            str_replace('tt', '', $known->node->credit->title->id) : null,
+                            'title' => isset($known->node->credit->title->titleText->text) ?
+                                            $known->node->credit->title->titleText->text : null,
+                            'year' => isset($known->node->credit->title->releaseYear->year) ?
+                                            $known->node->credit->title->releaseYear->year : null,
+                            'endYear' => isset($known->node->credit->title->releaseYear->endYear) ?
+                                            $known->node->credit->title->releaseYear->endYear : null
+                        );
+                    }
                 }
-            }
 
-            // image url
-            $imgUrl = null;
-            if (!empty($edge->node->name->primaryImage->url)) {
-                $fullImageWidth = $edge->node->name->primaryImage->width;
-                $fullImageHeight = $edge->node->name->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $imgUrl = $img . $parameter;
-            }
+                // image url
+                $imgUrl = null;
+                if (!empty($edge->node->name->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->name->primaryImage->width;
+                    $fullImageHeight = $edge->node->name->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $imgUrl = $img . $parameter;
+                }
 
-            // Found names
-            $names[] = array(
-                'imdbid' => isset($edge->node->name->id) ?
-                                  str_replace('nm', '', $edge->node->name->id) : null,
-                'name' => isset($edge->node->name->nameText->text) ?
-                                $edge->node->name->nameText->text : null,
-                'bio' => isset($edge->node->name->bio->text->plainText) ?
-                               $edge->node->name->bio->text->plainText : null,
-                'professions' => $professions,
-                'knownFor'=> $knownFor,
-                'imgUrl' => $imgUrl
-            );
+                // Found names
+                $names[] = array(
+                    'imdbid' => isset($edge->node->name->id) ?
+                                    str_replace('nm', '', $edge->node->name->id) : null,
+                    'name' => isset($edge->node->name->nameText->text) ?
+                                    $edge->node->name->nameText->text : null,
+                    'bio' => isset($edge->node->name->bio->text->plainText) ?
+                                $edge->node->name->bio->text->plainText : null,
+                    'professions' => $professions,
+                    'knownFor'=> $knownFor,
+                    'imgUrl' => $imgUrl
+                );
+            }
         }
         if (!empty($names)) {
             $results = array(
