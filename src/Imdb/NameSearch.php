@@ -72,34 +72,43 @@ query Search {
 }
 EOF;
         $data = $this->graphql->query($query, "Search");
-        foreach ($data->mainSearch->edges as $key => $edge) {
-            $creditKnownFor = array(
-                'title' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text) ?
-                                 $edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text : null,
-                'titleYear' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year) ?
-                                     $edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year : null
-            );
-            $id = isset($edge->node->entity->id) ?
-                        str_replace('nm', '', $edge->node->entity->id) : null;
-            $name = isset($edge->node->entity->nameText->text) ?
-                          $edge->node->entity->nameText->text : null;
-            $primaryProfession = isset($edge->node->entity->primaryProfessions[0]->category->text) ?
-                                       $edge->node->entity->primaryProfessions[0]->category->text : null;
-            // return search results as Name object
-            $return = Name::fromSearchResult(
-                $id,
-                $name,
-                $this->config,
-                $this->logger,
-                $this->cache
-            );
-            $results[] = array(
-                'id' => $id,
-                'name' => $name,
-                'knownFor' => $creditKnownFor,
-                'primaryProfession' => $primaryProfession,
-                'nameSearchObject' => $return
-            );
+        if (!isset($data->mainSearch)) {
+            return $results;
+        }
+        if (isset($data->mainSearch->edges) &&
+            is_array($data->mainSearch->edges) &&
+            count($data->mainSearch->edges) > 0
+           )
+        {
+            foreach ($data->mainSearch->edges as $key => $edge) {
+                $creditKnownFor = array(
+                    'title' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text) ?
+                                    $edge->node->entity->knownFor->edges[0]->node->credit->title->titleText->text : null,
+                    'titleYear' => isset($edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year) ?
+                                        $edge->node->entity->knownFor->edges[0]->node->credit->title->releaseYear->year : null
+                );
+                $id = isset($edge->node->entity->id) ?
+                            str_replace('nm', '', $edge->node->entity->id) : null;
+                $name = isset($edge->node->entity->nameText->text) ?
+                            $edge->node->entity->nameText->text : null;
+                $primaryProfession = isset($edge->node->entity->primaryProfessions[0]->category->text) ?
+                                        $edge->node->entity->primaryProfessions[0]->category->text : null;
+                // return search results as Name object
+                $return = Name::fromSearchResult(
+                    $id,
+                    $name,
+                    $this->config,
+                    $this->logger,
+                    $this->cache
+                );
+                $results[] = array(
+                    'id' => $id,
+                    'name' => $name,
+                    'knownFor' => $creditKnownFor,
+                    'primaryProfession' => $primaryProfession,
+                    'nameSearchObject' => $return
+                );
+            }
         }
         return $results;
     }
