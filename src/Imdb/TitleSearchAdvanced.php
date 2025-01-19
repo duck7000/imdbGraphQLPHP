@@ -169,49 +169,58 @@ query advancedSearch{
 }
 EOF;
         $data = $this->graphql->query($query, "advancedSearch");
-        foreach ($data->advancedTitleSearch->edges as $edge) {
+        if (!isset($data->advancedTitleSearch)) {
+            return $results;
+        }
+        if (isset($data->advancedTitleSearch->edges) &&
+            is_array($data->advancedTitleSearch->edges) &&
+            count($data->advancedTitleSearch->edges) > 0
+           )
+        {
+            foreach ($data->advancedTitleSearch->edges as $edge) {
 
-            // Year range
-            $yearRange = '';
-            if (isset($edge->node->title->releaseYear->year)) {
-                $yearRange .= $edge->node->title->releaseYear->year;
-                if (isset($edge->node->title->releaseYear->endYear)) {
-                    $yearRange .= '-' . $edge->node->title->releaseYear->endYear;
+                // Year range
+                $yearRange = '';
+                if (isset($edge->node->title->releaseYear->year)) {
+                    $yearRange .= $edge->node->title->releaseYear->year;
+                    if (isset($edge->node->title->releaseYear->endYear)) {
+                        $yearRange .= '-' . $edge->node->title->releaseYear->endYear;
+                    }
                 }
-            }
 
-            // image url
-            $imgUrl = null;
-            if (!empty($edge->node->title->primaryImage->url)) {
-                $fullImageWidth = $edge->node->title->primaryImage->width;
-                $fullImageHeight = $edge->node->title->primaryImage->height;
-                $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
-                $imgUrl = $img . $parameter;
-            }
+                // image url
+                $imgUrl = null;
+                if (!empty($edge->node->title->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->title->primaryImage->width;
+                    $fullImageHeight = $edge->node->title->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $imgUrl = $img . $parameter;
+                }
 
-            $titles[] = array(
-                'imdbid' => isset($edge->node->title->id) ?
-                                  str_replace('tt', '', $edge->node->title->id) : null,
-                'originalTitle' => isset($edge->node->title->titleText->text) ?
-                                         $edge->node->title->titleText->text : null,
-                'title' => isset($edge->node->title->titleText->text) ?
-                                 $edge->node->title->titleText->text : null,
-                'year' => $yearRange,
-                'movietype' => isset($edge->node->title->titleType->text) ?
-                                     $edge->node->title->titleType->text : null,
-                'runtime' => isset($edge->node->title->runtime->seconds) ?
-                                   $edge->node->title->runtime->seconds : null,
-                'rating' => isset($edge->node->title->ratingsSummary->aggregateRating) ?
-                                  $edge->node->title->ratingsSummary->aggregateRating : null,
-                'voteCount' => isset($edge->node->title->ratingsSummary->voteCount) ?
-                                     $edge->node->title->ratingsSummary->voteCount : null,
-                'metacritic' => isset($edge->node->title->metacritic->metascore->score) ?
-                                      $edge->node->title->metacritic->metascore->score : null,
-                'plot' => isset($edge->node->title->plot->plotText->plainText) ?
-                                $edge->node->title->plot->plotText->plainText : null,
-                'imgUrl' => $imgUrl
-            );
+                $titles[] = array(
+                    'imdbid' => isset($edge->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->title->id) : null,
+                    'originalTitle' => isset($edge->node->title->titleText->text) ?
+                                            $edge->node->title->titleText->text : null,
+                    'title' => isset($edge->node->title->titleText->text) ?
+                                    $edge->node->title->titleText->text : null,
+                    'year' => $yearRange,
+                    'movietype' => isset($edge->node->title->titleType->text) ?
+                                        $edge->node->title->titleType->text : null,
+                    'runtime' => isset($edge->node->title->runtime->seconds) ?
+                                    $edge->node->title->runtime->seconds : null,
+                    'rating' => isset($edge->node->title->ratingsSummary->aggregateRating) ?
+                                    $edge->node->title->ratingsSummary->aggregateRating : null,
+                    'voteCount' => isset($edge->node->title->ratingsSummary->voteCount) ?
+                                        $edge->node->title->ratingsSummary->voteCount : null,
+                    'metacritic' => isset($edge->node->title->metacritic->metascore->score) ?
+                                        $edge->node->title->metacritic->metascore->score : null,
+                    'plot' => isset($edge->node->title->plot->plotText->plainText) ?
+                                    $edge->node->title->plot->plotText->plainText : null,
+                    'imgUrl' => $imgUrl
+                );
+            }
         }
         if (!empty($titles)) {
             $results = array(
