@@ -72,19 +72,28 @@ query SearchKeyword {
 }
 EOF;
         $data = $this->graphql->query($query, "SearchKeyword");
-        foreach ($data->mainSearch->edges as $key => $edge) {
-            $keywordText = isset($edge->node->entity->text->text) ?
-                                 $edge->node->entity->text->text : null;
-            if (empty($keywordText)) {
-                continue;
+        if (!isset($data->mainSearch)) {
+            return $results;
+        }
+        if (isset($data->mainSearch->edges) &&
+            is_array($data->mainSearch->edges) &&
+            count($data->mainSearch->edges) > 0
+           )
+        {
+            foreach ($data->mainSearch->edges as $key => $edge) {
+                $keywordText = isset($edge->node->entity->text->text) ?
+                                    $edge->node->entity->text->text : null;
+                if (empty($keywordText)) {
+                    continue;
+                }
+                $keywordText = lcfirst(str_replace(' ', '', ucwords($keywordText, ' ')));
+                $results[$keywordText] = array(
+                    'keywordId' => isset($edge->node->entity->id) ?
+                                        str_replace('kw', '', $edge->node->entity->id) : null,
+                    'totalTitles' => isset($edge->node->entity->titles->total) ?
+                                        $edge->node->entity->titles->total : null
+                );
             }
-            $keywordText = lcfirst(str_replace(' ', '', ucwords($keywordText, ' ')));
-            $results[$keywordText] = array(
-                'keywordId' => isset($edge->node->entity->id) ?
-                                     str_replace('kw', '', $edge->node->entity->id) : null,
-                'totalTitles' => isset($edge->node->entity->titles->total) ?
-                                       $edge->node->entity->titles->total : null
-            );
         }
         return $results;
     }
