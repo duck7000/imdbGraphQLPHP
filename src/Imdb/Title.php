@@ -1109,9 +1109,18 @@ query Taglines(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Taglines", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->taglines->edges as $edge) {
-                if (!empty($edge->node->text)) {
-                    $this->taglines[] = $edge->node->text;
+            if (!isset($data->title)) {
+                return $this->taglines;
+            }
+            if (isset($data->title->taglines->edges) &&
+                is_array($data->title->taglines->edges) &&
+                count($data->title->taglines->edges) > 0
+               )
+            {
+                foreach ($data->title->taglines->edges as $edge) {
+                    if (!empty($edge->node->text)) {
+                        $this->taglines[] = $edge->node->text;
+                    }
                 }
             }
         }
