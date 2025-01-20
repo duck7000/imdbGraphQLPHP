@@ -1629,12 +1629,14 @@ displayableArticle {
 isSpoiler
 EOF;
             $data = $this->graphQlGetAll("Goofs", "goofs", $query, $filter);
-            foreach ($data as $edge) {
-                $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
-                    'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                       $edge->node->displayableArticle->body->plainText : null,
-                    'isSpoiler' => $edge->node->isSpoiler
-                );
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
+                        'content' => isset($edge->node->displayableArticle->body->plainText) ?
+                                        $edge->node->displayableArticle->body->plainText : null,
+                        'isSpoiler' => $edge->node->isSpoiler
+                    );
+                }
             }
         }
         return $this->goofs;
