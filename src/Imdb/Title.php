@@ -3184,57 +3184,67 @@ name {
 }
 EOF;
         $data = $this->graphQlGetAll("CreditCrew", "credits", $query, $filter);
-        foreach ($data as $edge) {
-            $jobs = array();
-            if (!empty($edge->node->jobs)) {
-                foreach ($edge->node->jobs as $value) {
-                    if (!empty($value->text)) {
-                        $jobs[] = $value->text;
+        if (count($data) > 0) {
+            foreach ($data as $edge) {
+                $jobs = array();
+                if (isset($edge->node->jobs) &&
+                    is_array($edge->node->jobs) &&
+                    count($edge->node->jobs) > 0
+                   )
+                {
+                    foreach ($edge->node->jobs as $value) {
+                        if (!empty($value->text)) {
+                            $jobs[] = $value->text;
+                        }
                     }
                 }
-            }
-            $episodes = array();
-            if (!empty($edge->node->episodeCredits)) {
-                $episodes = array(
-                    'total' => isset($edge->node->episodeCredits->total) ?
-                                     $edge->node->episodeCredits->total : null,
-                    'year' => isset($edge->node->episodeCredits->yearRange->year) ?
-                                    $edge->node->episodeCredits->yearRange->year : null,
-                    'endYear' => isset($edge->node->episodeCredits->yearRange->endYear) ?
-                                       $edge->node->episodeCredits->yearRange->endYear : null
+                $episodes = array();
+                if (!empty($edge->node->episodeCredits)) {
+                    $episodes = array(
+                        'total' => isset($edge->node->episodeCredits->total) ?
+                                        $edge->node->episodeCredits->total : null,
+                        'year' => isset($edge->node->episodeCredits->yearRange->year) ?
+                                        $edge->node->episodeCredits->yearRange->year : null,
+                        'endYear' => isset($edge->node->episodeCredits->yearRange->endYear) ?
+                                        $edge->node->episodeCredits->yearRange->endYear : null
+                    );
+                }
+                $attributes = array();
+                if (isset($edge->node->attributes) &&
+                    is_array($edge->node->attributes) &&
+                    count($edge->node->attributes) > 0
+                   )
+                {
+                    foreach ($edge->node->attributes as $attribute) {
+                        if (!empty($attribute->text)) {
+                            $attributes[] = $attribute->text;
+                        }
+                    }
+                }
+                $nameThumbImageUrl = null;
+                $nameFullImageUrl = null;
+                if (!empty($edge->node->name->primaryImage->url)) {
+                    $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
+                    $nameFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                    $fullImageWidth = $edge->node->name->primaryImage->width;
+                    $fullImageHeight = $edge->node->name->primaryImage->height;
+                    $newImageWidth = 140;
+                    $newImageHeight = 207;
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                    $nameThumbImageUrl = $img . $parameter;
+                }
+                $output[] = array(
+                    'imdb' => isset($edge->node->name->id) ?
+                                    str_replace('nm', '', $edge->node->name->id) : null,
+                    'name' => isset($edge->node->name->nameText->text) ?
+                                    $edge->node->name->nameText->text : null,
+                    'jobs' => $jobs,
+                    'attributes' => $attributes,
+                    'episode' => $episodes,
+                    'titleFullImageUrl' =>$nameFullImageUrl,
+                    'titleThumbImageUrl' => $nameThumbImageUrl
                 );
             }
-            $attributes = array();
-            if (!empty($edge->node->attributes)) {
-                foreach ($edge->node->attributes as $attribute) {
-                    if (!empty($attribute->text)) {
-                        $attributes[] = $attribute->text;
-                    }
-                }
-            }
-            $nameThumbImageUrl = null;
-            $nameFullImageUrl = null;
-            if (!empty($edge->node->name->primaryImage->url)) {
-                $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
-                $nameFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                $fullImageWidth = $edge->node->name->primaryImage->width;
-                $fullImageHeight = $edge->node->name->primaryImage->height;
-                $newImageWidth = 140;
-                $newImageHeight = 207;
-                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                $nameThumbImageUrl = $img . $parameter;
-            }
-            $output[] = array(
-                'imdb' => isset($edge->node->name->id) ?
-                                str_replace('nm', '', $edge->node->name->id) : null,
-                'name' => isset($edge->node->name->nameText->text) ?
-                                $edge->node->name->nameText->text : null,
-                'jobs' => $jobs,
-                'attributes' => $attributes,
-                'episode' => $episodes,
-                'titleFullImageUrl' =>$nameFullImageUrl,
-                'titleThumbImageUrl' => $nameThumbImageUrl
-            );
         }
         return $output;
     }
