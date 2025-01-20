@@ -1494,7 +1494,7 @@ EOF;
             if (empty($this->seasonEpisodes)) {
                 // Check if season or year based
                 $seasonsData = $this->seasonYearCheck($yearbased);
-                if ($seasonsData == null) {
+                if ($seasonsData == false) {
                     return $this->seasonEpisodes;
                 }
                 foreach ($seasonsData as $edge) {
@@ -3279,7 +3279,8 @@ EOF;
 
     #========================================================[ Season Year check ]===
     /** Check if TV Series season or year based
-     * @return array $data based on years or seasons
+     * @param int $yearbased 0: year based, 1: season based
+     * @return array or false
      */
     private function seasonYearCheck($yearbased)
     {
@@ -3315,7 +3316,7 @@ EOF;
                 $data = $seasonsData->title->episodes->displayableYears->edges;
             }
         } else {
-            $data = null;
+            return false;
         }
         return $data;
 
