@@ -1064,13 +1064,22 @@ query Plots(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Plots", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->plots->edges as $edge) {
-                if (!empty($edge->node->plotText->plainText)) {
-                    $this->plot[] = array(
-                        'plot' => $edge->node->plotText->plainText,
-                        'author' => isset($edge->node->author) ?
-                                          $edge->node->author : null
-                    );
+            if (!isset($data->title)) {
+                return $this->plot;
+            }
+            if (isset($data->title->plots->edges) &&
+                is_array($data->title->plots->edges) &&
+                count($data->title->plots->edges) > 0
+               )
+            {
+                foreach ($data->title->plots->edges as $edge) {
+                    if (!empty($edge->node->plotText->plainText)) {
+                        $this->plot[] = array(
+                            'plot' => $edge->node->plotText->plainText,
+                            'author' => isset($edge->node->author) ?
+                                            $edge->node->author : null
+                        );
+                    }
                 }
             }
         }
