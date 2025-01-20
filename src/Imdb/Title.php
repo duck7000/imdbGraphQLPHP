@@ -1157,28 +1157,41 @@ query PrincipalCredits(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "PrincipalCredits", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->principalCredits as $value){
-                $category = 'Unknown';
-                $credits = array();
-                if (!empty($value->credits[0]->category->text)) {
-                    $category = $value->credits[0]->category->text;
-                    if ($category == "Actor" || $category == "Actress") {
-                        $category = "Star";
+            if (!isset($data->title)) {
+                return $this->creditsPrincipal;
+            }
+            if (isset($data->title->principalCredits) &&
+                is_array($data->title->principalCredits) &&
+                count($data->title->principalCredits) > 0
+               )
+            {
+                foreach ($data->title->principalCredits as $value){
+                    $category = 'Unknown';
+                    $credits = array();
+                    if (!empty($value->credits[0]->category->text)) {
+                        $category = $value->credits[0]->category->text;
+                        if ($category == "Actor" || $category == "Actress") {
+                            $category = "Star";
+                        }
                     }
-                }
-                if (!empty($value->credits)) {
-                    foreach ($value->credits as $credit) {
-                        $credits[] = array(
-                            'name' => isset($credit->name->nameText->text) ?
-                                            $credit->name->nameText->text : null,
-                            'imdbid' => isset($credit->name->id) ?
-                                              str_replace('nm', '', $credit->name->id) : null
-                        );
+                    if (isset($value->credits) &&
+                        is_array($value->credits) &&
+                        count($value->credits) > 0
+                       )
+                    {
+                        foreach ($value->credits as $credit) {
+                            $credits[] = array(
+                                'name' => isset($credit->name->nameText->text) ?
+                                                $credit->name->nameText->text : null,
+                                'imdbid' => isset($credit->name->id) ?
+                                                str_replace('nm', '', $credit->name->id) : null
+                            );
+                        }
+                    } elseif ($category == 'Unknown') {
+                            continue;
                     }
-                } elseif ($category == 'Unknown') {
-                        continue;
+                    $this->creditsPrincipal[$category] = $credits;
                 }
-                $this->creditsPrincipal[$category] = $credits;
             }
         }
         return $this->creditsPrincipal;
