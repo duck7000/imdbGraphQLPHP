@@ -1494,7 +1494,7 @@ EOF;
             if (empty($this->seasonEpisodes)) {
                 // Check if season or year based
                 $seasonsData = $this->seasonYearCheck($yearbased);
-                if ($seasonsData == false) {
+                if ($seasonsData === false) {
                     return $this->seasonEpisodes;
                 }
                 foreach ($seasonsData as $edge) {
