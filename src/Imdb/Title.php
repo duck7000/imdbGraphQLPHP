@@ -1241,52 +1241,62 @@ name {
 }
 EOF;
             $data = $this->graphQlGetAll("CreditQuery", "credits", $query, $filter);
-            foreach ($data as $edge) {
-                $castCharacters = array();
-                if (!empty($edge->node->characters)) {
-                    foreach ($edge->node->characters as $character) {
-                        if (!empty($character->name)) {
-                            $castCharacters[] = $character->name;
-                        }
-                    }
-                }
-                $comments = array();
-                $nameAlias = null;
-                $credited = true;
-                if (!empty($edge->node->attributes)) {
-                    foreach ($edge->node->attributes as $attribute) {
-                        if (!empty($attribute->text)) {
-                            if (strpos($attribute->text, "as ") !== false) {
-                                $nameAlias = trim(ltrim($attribute->text, "as"));
-                            } elseif (stripos($attribute->text, "uncredited") !== false) {
-                                $credited = false;
-                            } else {
-                                $comments[] = $attribute->text;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $castCharacters = array();
+                    if (isset($edge->node->characters) &&
+                        is_array($edge->node->characters) &&
+                        count($edge->node->characters) > 0
+                       )
+                    {
+                        foreach ($edge->node->characters as $character) {
+                            if (!empty($character->name)) {
+                                $castCharacters[] = $character->name;
                             }
                         }
                     }
+                    $comments = array();
+                    $nameAlias = null;
+                    $credited = true;
+                    if (isset($edge->node->attributes) &&
+                        is_array($edge->node->attributes) &&
+                        count($edge->node->attributes) > 0
+                       )
+                    {
+                        foreach ($edge->node->attributes as $attribute) {
+                            if (!empty($attribute->text)) {
+                                if (strpos($attribute->text, "as ") !== false) {
+                                    $nameAlias = trim(ltrim($attribute->text, "as"));
+                                } elseif (stripos($attribute->text, "uncredited") !== false) {
+                                    $credited = false;
+                                } else {
+                                    $comments[] = $attribute->text;
+                                }
+                            }
+                        }
+                    }
+                    $imgUrl = null;
+                    if (!empty($edge->node->name->primaryImage->url)) {
+                        $fullImageWidth = $edge->node->name->primaryImage->width;
+                        $fullImageHeight = $edge->node->name->primaryImage->height;
+                        $newImageWidth = $this->config->castThumbnailWidth;
+                        $newImageHeight = $this->config->castThumbnailHeight;
+                        $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                        $imgUrl = $img . $parameter;
+                    }
+                    $this->creditsCast[] = array(
+                        'imdb' => isset($edge->node->name->id) ?
+                                        str_replace('nm', '', $edge->node->name->id) : null,
+                        'name' => isset($edge->node->name->nameText->text) ?
+                                        $edge->node->name->nameText->text : null,
+                        'alias' => $nameAlias,
+                        'credited' => $credited,
+                        'character' => $castCharacters,
+                        'comment' => $comments,
+                        'thumb' => $imgUrl
+                    );
                 }
-                $imgUrl = null;
-                if (!empty($edge->node->name->primaryImage->url)) {
-                    $fullImageWidth = $edge->node->name->primaryImage->width;
-                    $fullImageHeight = $edge->node->name->primaryImage->height;
-                    $newImageWidth = $this->config->castThumbnailWidth;
-                    $newImageHeight = $this->config->castThumbnailHeight;
-                    $img = str_replace('.jpg', '', $edge->node->name->primaryImage->url);
-                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                    $imgUrl = $img . $parameter;
-                }
-                $this->creditsCast[] = array(
-                    'imdb' => isset($edge->node->name->id) ?
-                                    str_replace('nm', '', $edge->node->name->id) : null,
-                    'name' => isset($edge->node->name->nameText->text) ?
-                                    $edge->node->name->nameText->text : null,
-                    'alias' => $nameAlias,
-                    'credited' => $credited,
-                    'character' => $castCharacters,
-                    'comment' => $comments,
-                    'thumb' => $imgUrl
-                );
             }
             return $this->creditsCast;
         }
