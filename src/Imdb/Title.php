@@ -1448,9 +1448,11 @@ text {
 }
 EOF;
             $data = $this->graphQlGetAll("CrazyCredits", "crazyCredits", $query);
-            foreach ($data as $edge) {
-                if (!empty($edge->node->text->plainText)) {
-                    $this->crazyCredits[] = preg_replace('/\s\s+/', ' ', $edge->node->text->plainText);
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    if (!empty($edge->node->text->plainText)) {
+                        $this->crazyCredits[] = preg_replace('/\s\s+/', ' ', $edge->node->text->plainText);
+                    }
                 }
             }
         }
