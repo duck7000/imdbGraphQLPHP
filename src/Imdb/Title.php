@@ -1720,26 +1720,32 @@ relatedNames {
 }
 EOF;
             $data = $this->graphQlGetAll("Trivia", "trivia", $query, $filter);
-            foreach ($data as $edge) {
-                $names = array();
-                if (!empty($edge->node->relatedNames)) {
-                    foreach ($edge->node->relatedNames as $name) {
-                        $names[] = array(
-                            'name' => isset($name->nameText->text) ?
-                                            $name->nameText->text : null,
-                            'id' => isset($name->id) ?
-                                          str_replace('nm', '', $name->id) : null
-                        );
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $names = array();
+                    if (isset($edge->node->relatedNames) &&
+                        is_array($edge->node->relatedNames) &&
+                        count($edge->node->relatedNames) > 0
+                       )
+                    {
+                        foreach ($edge->node->relatedNames as $name) {
+                            $names[] = array(
+                                'name' => isset($name->nameText->text) ?
+                                                $name->nameText->text : null,
+                                'id' => isset($name->id) ?
+                                            str_replace('nm', '', $name->id) : null
+                            );
+                        }
                     }
+                    $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
+                        'content' => isset($edge->node->displayableArticle->body->plainText) ?
+                                        preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
+                        'names' => $names,
+                        'trademark' => isset($edge->node->trademark->plainText) ?
+                                            $edge->node->trademark->plainText : null,
+                        'isSpoiler' => $edge->node->isSpoiler
+                    );
                 }
-                $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
-                    'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                       preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
-                    'names' => $names,
-                    'trademark' => isset($edge->node->trademark->plainText) ?
-                                         $edge->node->trademark->plainText : null,
-                    'isSpoiler' => $edge->node->isSpoiler
-                );
             }
         }
         return $this->trivias;
