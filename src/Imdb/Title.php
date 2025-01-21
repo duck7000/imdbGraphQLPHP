@@ -1904,21 +1904,27 @@ displayableProperty {
 }
 EOF;
             $data = $this->graphQlGetAll("FilmingLocations", "filmingLocations", $query);
-            foreach ($data as $edge) {
-                $movie = array();
-                if (!empty($edge->node->displayableProperty->qualifiersInMarkdownList)) {
-                    foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $attribute) {
-                        if (!empty($attribute->plainText)) {
-                            $movie[] = $attribute->plainText;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $movie = array();
+                    if (isset($edge->node->displayableProperty->qualifiersInMarkdownList) &&
+                        is_array($edge->node->displayableProperty->qualifiersInMarkdownList) &&
+                        count($edge->node->displayableProperty->qualifiersInMarkdownList) > 0
+                       )
+                    {
+                        foreach ($edge->node->displayableProperty->qualifiersInMarkdownList as $attribute) {
+                            if (!empty($attribute->plainText)) {
+                                $movie[] = $attribute->plainText;
+                            }
                         }
                     }
+                    $this->locations[] = array(
+                        'real' => isset($edge->node->displayableProperty->value->plainText) ?
+                                        $edge->node->displayableProperty->value->plainText : null,
+                        'movie' => $movie
+                    );
+                    
                 }
-                $this->locations[] = array(
-                    'real' => isset($edge->node->displayableProperty->value->plainText) ?
-                                    $edge->node->displayableProperty->value->plainText : null,
-                    'movie' => $movie
-                );
-                
             }
         }
         return $this->locations;
