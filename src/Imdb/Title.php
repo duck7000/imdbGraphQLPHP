@@ -3147,24 +3147,30 @@ yearsInvolved {
 EOF;
         $data = $this->graphQlGetAll("CompanyCredits", "companyCredits", $query, $filter);
         $results = array();
-        foreach ($data as $edge) {
-            $companyAttribute = array();
-            if (!empty($edge->node->attributes)) {
-                foreach ($edge->node->attributes as $attribute) {
-                    $companyAttribute[] = $attribute->text;
+        if (count($data) > 0) {
+            foreach ($data as $edge) {
+                $companyAttribute = array();
+                if (isset($edge->node->attributes) &&
+                    is_array($edge->node->attributes) &&
+                    count($edge->node->attributes) > 0
+                   )
+                {
+                    foreach ($edge->node->attributes as $attribute) {
+                        $companyAttribute[] = $attribute->text;
+                    }
                 }
+                $results[] = array(
+                    "name" => isset($edge->node->displayableProperty->value->plainText) ?
+                                    $edge->node->displayableProperty->value->plainText : null,
+                    "id" => isset($edge->node->company->id) ?
+                                str_replace('co', '', $edge->node->company->id ) : null,
+                    "country" => isset($edge->node->countries[0]->text) ?
+                                    $edge->node->countries[0]->text : null,
+                    "attribute" => $companyAttribute,
+                    "year" => isset($edge->node->yearsInvolved->year) ?
+                                    $edge->node->yearsInvolved->year : null,
+                );
             }
-            $results[] = array(
-                "name" => isset($edge->node->displayableProperty->value->plainText) ?
-                                $edge->node->displayableProperty->value->plainText : null,
-                "id" => isset($edge->node->company->id) ?
-                              str_replace('co', '', $edge->node->company->id ) : null,
-                "country" => isset($edge->node->countries[0]->text) ?
-                                   $edge->node->countries[0]->text : null,
-                "attribute" => $companyAttribute,
-                "year" => isset($edge->node->yearsInvolved->year) ?
-                                $edge->node->yearsInvolved->year : null,
-            );
         }
         return $results;
     }
