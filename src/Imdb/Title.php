@@ -2093,22 +2093,28 @@ externalLinkLanguages {
 EOF;
             $filter = ' filter: {excludeCategories: "review"}';
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
-            foreach ($edges as $edge) {
-                $language = array();
-                if (!empty($edge->node->externalLinkLanguages)) {
-                    foreach ($edge->node->externalLinkLanguages as $lang) {
-                        if (!empty($lang->text)) {
-                            $language[] = $lang->text;
+            if (count($edges) > 0) {
+                foreach ($edges as $edge) {
+                    $language = array();
+                    if (isset($edge->node->externalLinkLanguages) &&
+                        is_array($edge->node->externalLinkLanguages) &&
+                        count($edge->node->externalLinkLanguages) > 0
+                       )
+                    {
+                        foreach ($edge->node->externalLinkLanguages as $lang) {
+                            if (!empty($lang->text)) {
+                                $language[] = $lang->text;
+                            }
                         }
                     }
+                    $this->externalSites[$edge->node->externalLinkCategory->id][] = array(
+                        'label' => isset($edge->node->label) ?
+                                        $edge->node->label : null,
+                        'url' => isset($edge->node->url) ?
+                                    $edge->node->url : null,
+                        'language' => $language
+                    );
                 }
-                $this->externalSites[$edge->node->externalLinkCategory->id][] = array(
-                    'label' => isset($edge->node->label) ?
-                                     $edge->node->label : null,
-                    'url' => isset($edge->node->url) ?
-                                   $edge->node->url : null,
-                    'language' => $language
-                );
             }
         }
         return $this->externalSites;
