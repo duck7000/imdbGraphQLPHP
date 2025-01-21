@@ -2184,15 +2184,24 @@ query RankedLifetimeGrosses(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "RankedLifetimeGrosses", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
-                if (!empty($edge->node->boxOfficeAreaType->text)) {
-                    $this->grosses[] = array(
-                        'areatype' => $edge->node->boxOfficeAreaType->text,
-                        'amount' => isset($edge->node->total->amount) ?
-                                          $edge->node->total->amount : null,
-                        'currency' => isset($edge->node->total->currency) ?
-                                            $edge->node->total->currency : null
-                    );
+            if (!isset($data->title)) {
+                return $this->grosses;
+            }
+            if (isset($data->title->rankedLifetimeGrosses->edges) &&
+                is_array($data->title->rankedLifetimeGrosses->edges) &&
+                count($data->title->rankedLifetimeGrosses->edges) > 0
+               )
+            {
+                foreach ($data->title->rankedLifetimeGrosses->edges as $edge) {
+                    if (!empty($edge->node->boxOfficeAreaType->text)) {
+                        $this->grosses[] = array(
+                            'areatype' => $edge->node->boxOfficeAreaType->text,
+                            'amount' => isset($edge->node->total->amount) ?
+                                            $edge->node->total->amount : null,
+                            'currency' => isset($edge->node->total->currency) ?
+                                                $edge->node->total->currency : null
+                        );
+                    }
                 }
             }
         }
