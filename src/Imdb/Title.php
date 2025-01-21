@@ -2049,23 +2049,25 @@ description {
 }
 EOF;
             $edges = $this->graphQlGetAll("Connections", "connections", $query);
-            foreach ($edges as $edge) {
-                $this->connections[$categoryIds[$edge->node->category->id]][] = array(
-                    'titleId' => isset($edge->node->associatedTitle->id) ?
-                                       str_replace('tt', '', $edge->node->associatedTitle->id) : null,
-                    'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
-                                         $edge->node->associatedTitle->titleText->text : null,
-                    'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
-                                         $edge->node->associatedTitle->titleType->text : null,
-                    'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
-                                    $edge->node->associatedTitle->releaseYear->year : null,
-                    'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
-                                       $edge->node->associatedTitle->releaseYear->endYear : null,
-                    'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
-                                          $edge->node->associatedTitle->series->series->titleText->text : null,
-                    'description' => isset($edge->node->description->plainText) ?
-                                           $edge->node->description->plainText : null
-                );
+            if (count($edges) > 0) {
+                foreach ($edges as $edge) {
+                    $this->connections[$categoryIds[$edge->node->category->id]][] = array(
+                        'titleId' => isset($edge->node->associatedTitle->id) ?
+                                        str_replace('tt', '', $edge->node->associatedTitle->id) : null,
+                        'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
+                                            $edge->node->associatedTitle->titleText->text : null,
+                        'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
+                                            $edge->node->associatedTitle->titleType->text : null,
+                        'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
+                                        $edge->node->associatedTitle->releaseYear->year : null,
+                        'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
+                                        $edge->node->associatedTitle->releaseYear->endYear : null,
+                        'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
+                                            $edge->node->associatedTitle->series->series->titleText->text : null,
+                        'description' => isset($edge->node->description->plainText) ?
+                                            $edge->node->description->plainText : null
+                    );
+                }
             }
         }
         return $this->connections;
