@@ -1787,91 +1787,97 @@ comments {
 }
 EOF;
             $data = $this->graphQlGetAll("Soundtrack", "soundtrack", $query);
-            foreach ($data as $edge) {
-                $title = 'Unknown';
-                if (!empty($edge->node->text)) {
-                    $title = trim($edge->node->text);
-                }
-                $credits = array();
-                $creditComments = array();
-                $crediters = array();
-                if (!empty($edge->node->comments)) {
-                    foreach ($edge->node->comments as $comment) {
-                        if (!empty(trim(strip_tags($comment->plaidHtml)))) {
-                            $comment = $comment->plaidHtml;
-                        } else {
-                            continue;
-                        }
-                        if (stripos($comment, "arrangement with") === false) {
-                            // check and replace :
-                            if (($posArrangement = stripos($comment, ":")) !== false) {
-                                $comment = substr_replace($comment, " by", $posArrangement, strlen(":"));
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $title = 'Unknown';
+                    if (!empty($edge->node->text)) {
+                        $title = trim($edge->node->text);
+                    }
+                    $credits = array();
+                    $creditComments = array();
+                    $crediters = array();
+                    if (isset($edge->node->comments) &&
+                        is_array($edge->node->comments) &&
+                        count($edge->node->comments) > 0
+                       )
+                    {
+                        foreach ($edge->node->comments as $comment) {
+                            if (!empty(trim(strip_tags($comment->plaidHtml)))) {
+                                $comment = $comment->plaidHtml;
+                            } else {
+                                continue;
                             }
-                            if (($posBy = stripos($comment, "by")) !== false) {
-                                // split at "by"
-                                $creditRaw = substr($comment, $posBy + 2);
-                                $creditType = trim(substr($comment, 0, $posBy + 2), "[] ");
-                                // replace characters (& and) with , and explode it in array
-                                $patterns = array(
-                                    '/^.*?\K&amp;(?![^>]*\/\s*a\s*>)/',
-                                    '/^.*?\Kand(?![^>]*\/\s*a\s*>)/'
-                                );
-                                $creditRaw = preg_replace($patterns, ',', $creditRaw);
-                                $creditRawParts = explode(",", $creditRaw);
-                                $creditRawParts = array_values(array_filter($creditRawParts));
-                                // loop $creditRawParts array 
-                                foreach ($creditRawParts as $value) {
-                                    // check if there is any text after the anchor tag
-                                    $attribute = '';
-                                    if (($posAttribute = strripos($value, ">")) !== false) {
-                                        $valueExtention = trim(substr($value, $posAttribute + 1), ' ()[]"');
-                                        if (!empty($valueExtention)) {
-                                            $attribute = $valueExtention;
-                                        }
-                                    }
-                                    // get anchor links
-                                    libxml_use_internal_errors(true);
-                                    $doc = new \DOMDocument();
-                                    $doc->loadHTML('<?xml encoding="UTF-8">' . $value);
-                                    $anchors = $doc->getElementsByTagName('a');
-                                    // check if $anchors contains any <a> records
-                                    if ($anchors != null && $anchors->length > 0) {
-                                        $href = $anchors->item(0)->attributes->getNamedItem('href')->nodeValue;
-                                        $nameId = preg_replace('/[^0-9]+/', '', $href);
-                                        $name = trim($anchors->item(0)->nodeValue);
-                                    } else {
-                                        // no anchor, text only, check if id is present in text form
-                                        $nameId = '';
-                                        $name = trim($value, "[] ");
-                                        if (preg_match('/(nm?\d+)/', $value, $match)) {
-                                            $nameId = preg_replace('/[^0-9]+/', '', $match[0]);
-                                            $name = '';
-                                        }
-                                    }
-                                    $crediters[] = array(
-                                        'creditType' => $creditType,
-                                        'name' => $name,
-                                        'nameId' => $nameId,
-                                        'attribute' => $attribute
+                            if (stripos($comment, "arrangement with") === false) {
+                                // check and replace :
+                                if (($posArrangement = stripos($comment, ":")) !== false) {
+                                    $comment = substr_replace($comment, " by", $posArrangement, strlen(":"));
+                                }
+                                if (($posBy = stripos($comment, "by")) !== false) {
+                                    // split at "by"
+                                    $creditRaw = substr($comment, $posBy + 2);
+                                    $creditType = trim(substr($comment, 0, $posBy + 2), "[] ");
+                                    // replace characters (& and) with , and explode it in array
+                                    $patterns = array(
+                                        '/^.*?\K&amp;(?![^>]*\/\s*a\s*>)/',
+                                        '/^.*?\Kand(?![^>]*\/\s*a\s*>)/'
                                     );
+                                    $creditRaw = preg_replace($patterns, ',', $creditRaw);
+                                    $creditRawParts = explode(",", $creditRaw);
+                                    $creditRawParts = array_values(array_filter($creditRawParts));
+                                    // loop $creditRawParts array 
+                                    foreach ($creditRawParts as $value) {
+                                        // check if there is any text after the anchor tag
+                                        $attribute = '';
+                                        if (($posAttribute = strripos($value, ">")) !== false) {
+                                            $valueExtention = trim(substr($value, $posAttribute + 1), ' ()[]"');
+                                            if (!empty($valueExtention)) {
+                                                $attribute = $valueExtention;
+                                            }
+                                        }
+                                        // get anchor links
+                                        libxml_use_internal_errors(true);
+                                        $doc = new \DOMDocument();
+                                        $doc->loadHTML('<?xml encoding="UTF-8">' . $value);
+                                        $anchors = $doc->getElementsByTagName('a');
+                                        // check if $anchors contains any <a> records
+                                        if ($anchors != null && $anchors->length > 0) {
+                                            $href = $anchors->item(0)->attributes->getNamedItem('href')->nodeValue;
+                                            $nameId = preg_replace('/[^0-9]+/', '', $href);
+                                            $name = trim($anchors->item(0)->nodeValue);
+                                        } else {
+                                            // no anchor, text only, check if id is present in text form
+                                            $nameId = '';
+                                            $name = trim($value, "[] ");
+                                            if (preg_match('/(nm?\d+)/', $value, $match)) {
+                                                $nameId = preg_replace('/[^0-9]+/', '', $match[0]);
+                                                $name = '';
+                                            }
+                                        }
+                                        $crediters[] = array(
+                                            'creditType' => $creditType,
+                                            'name' => $name,
+                                            'nameId' => $nameId,
+                                            'attribute' => $attribute
+                                        );
+                                    }
+                                } else {
+                                    // no by, treat as comment in plain text
+                                    $creditComments[] = trim(strip_tags($comment));
                                 }
                             } else {
-                                // no by, treat as comment in plain text
+                                // no arrangement with, treat as comment in plain text
                                 $creditComments[] = trim(strip_tags($comment));
                             }
-                        } else {
-                            // no arrangement with, treat as comment in plain text
-                            $creditComments[] = trim(strip_tags($comment));
+                            // add data to $credits as plain text
+                            $credits[] = trim(strip_tags($comment));
                         }
-                        // add data to $credits as plain text
-                        $credits[] = trim(strip_tags($comment));
                     }
+                    $this->soundtracks[] = array(
+                        'soundtrack' => $title,
+                        'credits' => $credits,
+                        'creditSplit' => array('creditors' => $crediters, 'comment' => $creditComments)
+                    );
                 }
-                $this->soundtracks[] = array(
-                    'soundtrack' => $title,
-                    'credits' => $credits,
-                    'creditSplit' => array('creditors' => $crediters, 'comment' => $creditComments)
-                );
             }
         }
         return $this->soundtracks;
