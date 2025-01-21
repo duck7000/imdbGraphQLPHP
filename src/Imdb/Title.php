@@ -1658,12 +1658,14 @@ displayableArticle {
 }
 EOF;
             $data = $this->graphQlGetAll("Quotes", "quotes", $query);
-            foreach ($data as $key => $edge) {
-                if (!empty($edge->node->displayableArticle->body->plaidHtml)) {
-                    $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
-                    foreach ($quoteParts as $quoteItem) {
-                        if (!empty(trim(strip_tags($quoteItem)))) {
-                            $this->quotes[$key][] = trim(strip_tags($quoteItem));
+            if (count($data) > 0) {
+                foreach ($data as $key => $edge) {
+                    if (!empty($edge->node->displayableArticle->body->plaidHtml)) {
+                        $quoteParts = explode("<li>", $edge->node->displayableArticle->body->plaidHtml);
+                        foreach ($quoteParts as $quoteItem) {
+                            if (!empty(trim(strip_tags($quoteItem)))) {
+                                $this->quotes[$key][] = trim(strip_tags($quoteItem));
+                            }
                         }
                     }
                 }
