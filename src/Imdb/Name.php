@@ -914,24 +914,26 @@ EOF;
 }
 EOF;
             $data = $this->graphQlGetAll("PubPrint", "publicityListings", $query, $filter);
-            foreach ($data as $edge) {
-                $authors = array();
-                if (!empty($edge->node->authors)) {
-                    foreach ($edge->node->authors as $author) {
-                        if (!empty($author->plainText)) {
-                            $authors[] = $author->plainText;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $authors = array();
+                    if (!empty($edge->node->authors)) {
+                        foreach ($edge->node->authors as $author) {
+                            if (!empty($author->plainText)) {
+                                $authors[] = $author->plainText;
+                            }
                         }
                     }
+                    $this->pubPrints[] = array(
+                        "title" => isset($edge->node->title->text) ?
+                                        $edge->node->title->text : null,
+                        "author" => $authors,
+                        "publisher" => isset($edge->node->publisher) ?
+                                            $edge->node->publisher : null,
+                        "isbn" => isset($edge->node->isbn) ?
+                                        $edge->node->isbn : null
+                    );
                 }
-                $this->pubPrints[] = array(
-                    "title" => isset($edge->node->title->text) ?
-                                     $edge->node->title->text : null,
-                    "author" => $authors,
-                    "publisher" => isset($edge->node->publisher) ?
-                                         $edge->node->publisher : null,
-                    "isbn" => isset($edge->node->isbn) ?
-                                    $edge->node->isbn : null
-                );
             }
         }
         return $this->pubPrints;
@@ -975,21 +977,23 @@ EOF;
 }
 EOF;
             $data = $this->graphQlGetAll("PubFilm", "publicityListings", $query, $filter);
-            foreach ($data as $edge) {
-                $this->pubMovies[] = array(
-                    "title" => isset($edge->node->title->titleText->text) ?
-                                     $edge->node->title->titleText->text : null,
-                    "id" => isset($edge->node->title->id) ?
-                                  str_replace('tt', '', $edge->node->title->id) : null,
-                    "year" => isset($edge->node->title->releaseYear->year) ?
-                                    $edge->node->title->releaseYear->year : null,
-                    "seriesTitle" => isset($edge->node->title->series->series->titleText->text) ?
-                                           $edge->node->title->series->series->titleText->text : null,
-                    "seriesSeason" => isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
-                                            $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null,
-                    "seriesEpisode" => isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
-                                             $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null,
-                );
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $this->pubMovies[] = array(
+                        "title" => isset($edge->node->title->titleText->text) ?
+                                        $edge->node->title->titleText->text : null,
+                        "id" => isset($edge->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->title->id) : null,
+                        "year" => isset($edge->node->title->releaseYear->year) ?
+                                        $edge->node->title->releaseYear->year : null,
+                        "seriesTitle" => isset($edge->node->title->series->series->titleText->text) ?
+                                            $edge->node->title->series->series->titleText->text : null,
+                        "seriesSeason" => isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
+                                                $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null,
+                        "seriesEpisode" => isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
+                                                $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null,
+                    );
+                }
             }
         }
         return $this->pubMovies;
@@ -1018,15 +1022,17 @@ EOF;
 }
 EOF;
             $data = $this->graphQlGetAll("PubPortrayal", "publicityListings", $query, $filter);
-            foreach ($data as $edge) {
-                $this->pubPortrayal[] = array(
-                    'title' => isset($edge->node->title->titleText->text) ?
-                                     $edge->node->title->titleText->text : null,
-                    'id' => isset($edge->node->title->id) ?
-                                  str_replace('tt', '', $edge->node->title->id) : null,
-                    'year' => isset($edge->node->title->releaseYear->year) ?
-                                    $edge->node->title->releaseYear->year : null
-                );
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $this->pubPortrayal[] = array(
+                        'title' => isset($edge->node->title->titleText->text) ?
+                                        $edge->node->title->titleText->text : null,
+                        'id' => isset($edge->node->title->id) ?
+                                    str_replace('tt', '', $edge->node->title->id) : null,
+                        'year' => isset($edge->node->title->releaseYear->year) ?
+                                        $edge->node->title->releaseYear->year : null
+                    );
+                }
             }
         }
         return $this->pubPortrayal;
