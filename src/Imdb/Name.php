@@ -2038,13 +2038,19 @@ query Redirect(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "nm$this->imdbID"]);
-        $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
-        if ($nameImdbId  != $this->imdbID) {
-            // todo write to log?
-            return $nameImdbId;
-        } else {
-            return false;
+        if (isset($data->title->meta->canonicalId) &&
+            $data->title->meta->canonicalId != ''
+           )
+        {
+            $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
+            if ($nameImdbId  != $this->imdbID) {
+                // todo write to log?
+                return $nameImdbId;
+            } else {
+                return false;
+            }
         }
+        return false;
     }
 
     #----------------------------------------------------------[ Award filter helper ]---
