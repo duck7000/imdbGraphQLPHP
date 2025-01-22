@@ -2381,72 +2381,81 @@ query Video(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->primaryVideos->edges as $edge) {
-                // check contentType is set and contentType == Trailer
-                if (isset($edge->node->contentType->displayName->value) && $edge->node->contentType->displayName->value !== "Trailer") {
-                    continue;
-                }
-                // Embed URL
-                $embedUrl = null;
-                if (!empty($edge->node->id)) {
-                    $embedUrl = "https://www.imdb.com/video/imdb/" . $edge->node->id . "/imdb/embed";
-                    // Check if embed URL not == 404 or 401
-                    $headers = @get_headers($embedUrl);
-                    if (empty($headers) || substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+            if (!isset($data->title)) {
+                return $this->trailers;
+            }
+            if (isset($data->title->primaryVideos->edges) &&
+                is_array($data->title->primaryVideos->edges) &&
+                count($data->title->primaryVideos->edges) > 0
+               )
+            {
+                foreach ($data->title->primaryVideos->edges as $edge) {
+                    // check contentType is set and contentType == Trailer
+                    if (isset($edge->node->contentType->displayName->value) && $edge->node->contentType->displayName->value !== "Trailer") {
                         continue;
                     }
-                }
-                $titleName = isset($edge->node->primaryTitle->titleText->text) ?
-                                   $edge->node->primaryTitle->titleText->text : null;
-                $runtime = isset($edge->node->runtime->value) ?
-                                 $edge->node->runtime->value : null;
-                $thumbnailUrl = isset($edge->node->thumbnail->url) ?
-                                      $edge->node->thumbnail->url : null;
-                $thumbUrl = '';
-                if (!empty($thumbnailUrl)) {
-                    //CustomThumb
-                    if ($customThumb !== false) {
-                        $timeString = '';
-                        if (!empty($runtime)) {
-                            $timeString .= sprintf("%02d", ($runtime / 60)) . '%253A' . sprintf("%02d", $runtime % 60);
-                        }
-                        $title = '';
-                        if (!empty($titleName)) {
-                            $title = rawurlencode(rawurlencode($titleName));
-                        }
-                        $thumbUrl = str_replace('.jpg', '', $thumbnailUrl);
-                        $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_'
-                                     . 'PIimdb-blackband-204-14,TopLeft,0,0_'
-                                     . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
-                                     . 'PIimdb-bluebutton-big,BottomRight,-1,-1_'
-                                     . 'ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
-                                     . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_'
-                                     . 'ZA' . $timeString .',164,1,14,36,verdenab,7,255,255,255,1_'
-                                     . 'ZA' . $title . ',4,138,14,176,arialbd,7,255,255,255,1_.jpg';
-                    } else {
-                        // New style thumb
-                        if (!empty($thumbnailUrl)) {
-                            $fullImageWidth = $edge->node->thumbnail->width;
-                            $fullImageHeight = $edge->node->thumbnail->height;
-                            $img = str_replace('.jpg', '', $thumbnailUrl);
-                            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
-                            $thumbUrl = $img . $parameter;
+                    // Embed URL
+                    $embedUrl = null;
+                    if (!empty($edge->node->id)) {
+                        $embedUrl = "https://www.imdb.com/video/imdb/" . $edge->node->id . "/imdb/embed";
+                        // Check if embed URL not == 404 or 401
+                        $headers = @get_headers($embedUrl);
+                        if (empty($headers) || substr($headers[0], 9, 3) == "404" || substr($headers[0], 9, 3) == "401") {
+                            continue;
                         }
                     }
-                }
-                if (count($this->trailers) < $amount) {
-                    $this->trailers[] = array(
-                        'name' => isset($edge->node->name->value) ?
-                                        $edge->node->name->value : null,
-                        'runtime' => $runtime,
-                        'description' => isset($edge->node->description->value) ?
-                                               $edge->node->description->value : null,
-                        'titleName' => $titleName,
-                        'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
-                                             $edge->node->primaryTitle->releaseYear->year : null,
-                        'videoUrl' => $embedUrl,
-                        'videoImageUrl' => $thumbUrl
-                    );
+                    $titleName = isset($edge->node->primaryTitle->titleText->text) ?
+                                    $edge->node->primaryTitle->titleText->text : null;
+                    $runtime = isset($edge->node->runtime->value) ?
+                                    $edge->node->runtime->value : null;
+                    $thumbnailUrl = isset($edge->node->thumbnail->url) ?
+                                        $edge->node->thumbnail->url : null;
+                    $thumbUrl = '';
+                    if (!empty($thumbnailUrl)) {
+                        //CustomThumb
+                        if ($customThumb !== false) {
+                            $timeString = '';
+                            if (!empty($runtime)) {
+                                $timeString .= sprintf("%02d", ($runtime / 60)) . '%253A' . sprintf("%02d", $runtime % 60);
+                            }
+                            $title = '';
+                            if (!empty($titleName)) {
+                                $title = rawurlencode(rawurlencode($titleName));
+                            }
+                            $thumbUrl = str_replace('.jpg', '', $thumbnailUrl);
+                            $thumbUrl .= '1_SP330,330,0,C,0,0,0_CR65,90,200,150_'
+                                        . 'PIimdb-blackband-204-14,TopLeft,0,0_'
+                                        . 'PIimdb-blackband-204-28,BottomLeft,0,1_CR0,0,200,150_'
+                                        . 'PIimdb-bluebutton-big,BottomRight,-1,-1_'
+                                        . 'ZATrailer,4,123,16,196,verdenab,8,255,255,255,1_'
+                                        . 'ZAon%2520IMDb,4,1,14,196,verdenab,7,255,255,255,1_'
+                                        . 'ZA' . $timeString .',164,1,14,36,verdenab,7,255,255,255,1_'
+                                        . 'ZA' . $title . ',4,138,14,176,arialbd,7,255,255,255,1_.jpg';
+                        } else {
+                            // New style thumb
+                            if (!empty($thumbnailUrl)) {
+                                $fullImageWidth = $edge->node->thumbnail->width;
+                                $fullImageHeight = $edge->node->thumbnail->height;
+                                $img = str_replace('.jpg', '', $thumbnailUrl);
+                                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                                $thumbUrl = $img . $parameter;
+                            }
+                        }
+                    }
+                    if (count($this->trailers) < $amount) {
+                        $this->trailers[] = array(
+                            'name' => isset($edge->node->name->value) ?
+                                            $edge->node->name->value : null,
+                            'runtime' => $runtime,
+                            'description' => isset($edge->node->description->value) ?
+                                                $edge->node->description->value : null,
+                            'titleName' => $titleName,
+                            'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
+                                                $edge->node->primaryTitle->releaseYear->year : null,
+                            'videoUrl' => $embedUrl,
+                            'videoImageUrl' => $thumbUrl
+                        );
+                    }
                 }
             }
         }
