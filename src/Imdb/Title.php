@@ -2595,6 +2595,9 @@ query MainAward(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "MainAward", ["id" => "tt$this->imdbID"]);
+            if (!isset($data->title)) {
+                return $this->mainAwards;
+            }
             if (!empty($data->title->prestigiousAwardSummary)) {
                 $this->mainAwards = array(
                     'award' => isset($data->title->prestigiousAwardSummary->award->text) ?
