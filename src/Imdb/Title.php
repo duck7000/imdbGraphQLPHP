@@ -3091,36 +3091,45 @@ query News(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "News", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->news->edges as $edge) {
-                $thumbUrl = null;
-                if (!empty($edge->node->image->url)) {
-                    $fullImageWidth = $edge->node->image->width;
-                    $fullImageHeight = $edge->node->image->height;
-                    $img = str_replace('.jpg', '', $edge->node->image->url);
-                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
-                    $thumbUrl = $img . $parameter;
+            if (!isset($data->title)) {
+                return $this->news;
+            }
+            if (isset($data->title->news->edges) &&
+                is_array($data->title->news->edges) &&
+                count($data->title->news->edges) > 0
+               )
+            {
+                foreach ($data->title->news->edges as $edge) {
+                    $thumbUrl = null;
+                    if (!empty($edge->node->image->url)) {
+                        $fullImageWidth = $edge->node->image->width;
+                        $fullImageHeight = $edge->node->image->height;
+                        $img = str_replace('.jpg', '', $edge->node->image->url);
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                        $thumbUrl = $img . $parameter;
+                    }
+                    $this->news[] = array(
+                        'id' => isset($edge->node->id) ?
+                                    str_replace('ni', '', $edge->node->id) : null,
+                        'title' => isset($edge->node->articleTitle->plainText) ?
+                                        $edge->node->articleTitle->plainText : null,
+                        'author' => isset($edge->node->byline) ?
+                                        $edge->node->byline : null,
+                        'date' => isset($edge->node->date) ?
+                                        $edge->node->date : null,
+                        'extUrl' => isset($edge->node->externalUrl) ?
+                                        $edge->node->externalUrl : null,
+                        'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
+                                                $edge->node->source->homepage->url : null,
+                        'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
+                                                    $edge->node->source->homepage->label : null,
+                        'textHtml' => isset($edge->node->text->plaidHtml) ?
+                                            $edge->node->text->plaidHtml : null,
+                        'textText' => isset($edge->node->text->plainText) ?
+                                            $edge->node->text->plainText : null,
+                        'thumbnailUrl' => $thumbUrl
+                    );
                 }
-                $this->news[] = array(
-                    'id' => isset($edge->node->id) ?
-                                  str_replace('ni', '', $edge->node->id) : null,
-                    'title' => isset($edge->node->articleTitle->plainText) ?
-                                     $edge->node->articleTitle->plainText : null,
-                    'author' => isset($edge->node->byline) ?
-                                      $edge->node->byline : null,
-                    'date' => isset($edge->node->date) ?
-                                    $edge->node->date : null,
-                    'extUrl' => isset($edge->node->externalUrl) ?
-                                      $edge->node->externalUrl : null,
-                    'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
-                                              $edge->node->source->homepage->url : null,
-                    'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
-                                                $edge->node->source->homepage->label : null,
-                    'textHtml' => isset($edge->node->text->plaidHtml) ?
-                                        $edge->node->text->plaidHtml : null,
-                    'textText' => isset($edge->node->text->plainText) ?
-                                        $edge->node->text->plainText : null,
-                    'thumbnailUrl' => $thumbUrl
-                );
             }
         }
         return $this->news;
