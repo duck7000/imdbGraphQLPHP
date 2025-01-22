@@ -625,7 +625,14 @@ query Spouses(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Spouses", ["id" => "nm$this->imdbID"]);
-            if (!empty($data->name->spouses)) {
+            if (!isset($data->name)) {
+                return $this->spouses;
+            }
+            if (isset($data->name->spouses) &&
+                is_array($data->name->spouses) &&
+                count($data->name->spouses) > 0
+               )
+            {
                 foreach ($data->name->spouses as $spouse) {
                     // Spouse id
                     $imdbId = null;
@@ -667,7 +674,11 @@ EOF;
                     // Comments and children
                     $comment = array();
                     $children = 0;
-                    if (!empty($spouse->attributes)) {
+                    if (isset($spouse->attributes) &&
+                        is_array($spouse->attributes) &&
+                        count($spouse->attributes) > 0
+                       )
+                    {
                         foreach ($spouse->attributes as $key => $attribute) {
                             if (!empty($attribute->text)) {
                                 if (stripos($attribute->text, "child") !== false) {
