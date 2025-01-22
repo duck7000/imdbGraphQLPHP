@@ -2970,26 +2970,39 @@ query WatchOption(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "WatchOption", ["id" => "tt$this->imdbID"]);
-            foreach ($data->title->watchOptionsByCategory->categorizedWatchOptionsList as $item) {
-                $watchOptions = array();
-                $categoryName = strtolower(str_replace('/', '-', $item->categoryName->value));
-                if (!empty($item->watchOptions)) {
-                    foreach ($item->watchOptions as $option) {
-                        $logoUrl = null;
-                        if (!empty($option->provider->logos->icon->url)) {
-                            $img = str_replace('.png', '', $option->provider->logos->icon->url);
-                            $logoUrl = $img . 'QL100_UX250_.png';
+            if (!isset($data->title)) {
+                return $this->watchOption;
+            }
+            if (isset($data->title->watchOptionsByCategory->categorizedWatchOptionsList) &&
+                is_array($data->title->watchOptionsByCategory->categorizedWatchOptionsList) &&
+                count($data->title->watchOptionsByCategory->categorizedWatchOptionsList) > 0
+               )
+            {
+                foreach ($data->title->watchOptionsByCategory->categorizedWatchOptionsList as $item) {
+                    $watchOptions = array();
+                    $categoryName = strtolower(str_replace('/', '-', $item->categoryName->value));
+                    if (isset($item->watchOptions) &&
+                        is_array($item->watchOptions) &&
+                        count($item->watchOptions) > 0
+                       )
+                    {
+                        foreach ($item->watchOptions as $option) {
+                            $logoUrl = null;
+                            if (!empty($option->provider->logos->icon->url)) {
+                                $img = str_replace('.png', '', $option->provider->logos->icon->url);
+                                $logoUrl = $img . 'QL100_UX250_.png';
+                            }
+                            $watchOptions[] = array(
+                                'providerId' => isset($option->provider->id) ?
+                                                    $option->provider->id : null,
+                                'providerName' => isset($option->provider->name->value) ?
+                                                        $option->provider->name->value : null,
+                                'logoUrl' => $logoUrl
+                            );
                         }
-                        $watchOptions[] = array(
-                            'providerId' => isset($option->provider->id) ?
-                                                  $option->provider->id : null,
-                            'providerName' => isset($option->provider->name->value) ?
-                                                    $option->provider->name->value : null,
-                            'logoUrl' => $logoUrl
-                        );
                     }
+                    $this->watchOption[$categoryName] = $watchOptions;
                 }
-                $this->watchOption[$categoryName] = $watchOptions;
             }
         }
         return $this->watchOption;
