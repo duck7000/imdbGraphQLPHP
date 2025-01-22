@@ -3508,10 +3508,21 @@ query TechSpec(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "TechSpec", ["id" => "tt$this->imdbID"]);
-        if (!empty($data->title->technicalSpecifications->$type->items)) {
+        if (!isset($data->title)) {
+            return $arrayName;
+        }
+        if (isset($data->title->technicalSpecifications->$type->items) &&
+            is_array($data->title->technicalSpecifications->$type->items) &&
+            count($data->title->technicalSpecifications->$type->items) > 0
+           )
+        {
             foreach ($data->title->technicalSpecifications->$type->items as $item) {
                 $attributes = array();
-                if (!empty($item->attributes)) {
+                if (isset($item->attributes) &&
+                    is_array($item->attributes) &&
+                    count($item->attributes) > 0
+                   )
+                {
                     foreach ($item->attributes as $attribute) {
                         if (!empty($attribute->text)) {
                             $attributes[] = $attribute->text;
