@@ -1903,9 +1903,11 @@ text {
 }
 EOF;
         $data = $this->graphQlGetAll("Data", $name, $query);
-        foreach ($data as $edge) {
-            if (!empty($edge->node->text->plainText)) {
-                $arrayName[] = $edge->node->text->plainText;
+        if (count($data) > 0) {
+            foreach ($data as $edge) {
+                if (!empty($edge->node->text->plainText)) {
+                    $arrayName[] = $edge->node->text->plainText;
+                }
             }
         }
         return $arrayName;
