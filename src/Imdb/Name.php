@@ -1927,26 +1927,28 @@ relationshipType {
 }
 EOF;
         $data = $this->graphQlGetAll("Data", "relations", $query, $filter);
-        foreach ($data as $edge) {
-            if (empty($edge->node->relationName->name) && empty($edge->node->relationName->nameText)) {
-                continue;
+        if (count($data) > 0) {
+            foreach ($data as $edge) {
+                if (empty($edge->node->relationName->name) && empty($edge->node->relationName->nameText)) {
+                    continue;
+                }
+                if (!empty($edge->node->relationName->name)) {
+                    $id = isset($edge->node->relationName->name->id) ?
+                                str_replace('nm', '', $edge->node->relationName->name->id) : null;
+                    $name = isset($edge->node->relationName->name->nameText->text) ?
+                                $edge->node->relationName->name->nameText->text : null;
+                } else {
+                    $id = null;
+                    $name = isset($edge->node->relationName->nameText) ?
+                                $edge->node->relationName->nameText : null;
+                }
+                $arrayName[] = array(
+                    'imdb' => $id,
+                    'name' => $name,
+                    'relType' => isset($edge->node->relationshipType->text) ?
+                                    $edge->node->relationshipType->text : null
+                );
             }
-            if (!empty($edge->node->relationName->name)) {
-                $id = isset($edge->node->relationName->name->id) ?
-                            str_replace('nm', '', $edge->node->relationName->name->id) : null;
-                $name = isset($edge->node->relationName->name->nameText->text) ?
-                              $edge->node->relationName->name->nameText->text : null;
-            } else {
-                $id = null;
-                $name = isset($edge->node->relationName->nameText) ?
-                              $edge->node->relationName->nameText : null;
-            }
-            $arrayName[] = array(
-                'imdb' => $id,
-                'name' => $name,
-                'relType' => isset($edge->node->relationshipType->text) ?
-                                   $edge->node->relationshipType->text : null
-            );
         }
         return $arrayName;
     }
