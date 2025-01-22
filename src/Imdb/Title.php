@@ -2719,54 +2719,60 @@ EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
-            foreach ($data as $edge) {
-                $eventName = isset($edge->node->award->event->text) ?
-                                   $edge->node->award->event->text : null;
-                $awardIsWinner = $edge->node->isWinner;
-                $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
-                $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
-                //credited persons
-                $names = array();
-                if (!empty($edge->node->awardedEntities->secondaryAwardNames)) {
-                    foreach ($edge->node->awardedEntities->secondaryAwardNames as $creditor) {
-                        $nameThumbImageUrl = null;
-                        $nameFullImageUrl = null;
-                        if (!empty($creditor->name->primaryImage->url)) {
-                            $img = str_replace('.jpg', '', $creditor->name->primaryImage->url);
-                            $nameFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                            $fullImageWidth = $creditor->name->primaryImage->width;
-                            $fullImageHeight = $creditor->name->primaryImage->height;
-                            $newImageWidth = 140;
-                            $newImageHeight = 207;
-                            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                            $nameThumbImageUrl = $img . $parameter;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $eventName = isset($edge->node->award->event->text) ?
+                                    $edge->node->award->event->text : null;
+                    $awardIsWinner = $edge->node->isWinner;
+                    $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
+                    $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
+                    //credited persons
+                    $names = array();
+                    if (isset($edge->node->awardedEntities->secondaryAwardNames) &&
+                        is_array($edge->node->awardedEntities->secondaryAwardNames) &&
+                        count($edge->node->awardedEntities->secondaryAwardNames) > 0
+                       )
+                    {
+                        foreach ($edge->node->awardedEntities->secondaryAwardNames as $creditor) {
+                            $nameThumbImageUrl = null;
+                            $nameFullImageUrl = null;
+                            if (!empty($creditor->name->primaryImage->url)) {
+                                $img = str_replace('.jpg', '', $creditor->name->primaryImage->url);
+                                $nameFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                                $fullImageWidth = $creditor->name->primaryImage->width;
+                                $fullImageHeight = $creditor->name->primaryImage->height;
+                                $newImageWidth = 140;
+                                $newImageHeight = 207;
+                                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                                $nameThumbImageUrl = $img . $parameter;
+                            }
+                            $names[] = array(
+                                'creditId' => isset($creditor->name->id) ?
+                                                    str_replace('nm', '', $creditor->name->id) : null,
+                                'creditName' => isset($creditor->name->nameText->text) ?
+                                                    $creditor->name->nameText->text : null,
+                                'creditNote' => isset($creditor->note->plainText) ?
+                                                    trim($creditor->note->plainText, " ()") : null,
+                                'nameFullImageUrl' => $nameFullImageUrl,
+                                'nameThumbImageUrl' => $nameThumbImageUrl
+                            );
                         }
-                        $names[] = array(
-                            'creditId' => isset($creditor->name->id) ?
-                                                str_replace('nm', '', $creditor->name->id) : null,
-                            'creditName' => isset($creditor->name->nameText->text) ?
-                                                  $creditor->name->nameText->text : null,
-                            'creditNote' => isset($creditor->note->plainText) ?
-                                                  trim($creditor->note->plainText, " ()") : null,
-                            'nameFullImageUrl' => $nameFullImageUrl,
-                            'nameThumbImageUrl' => $nameThumbImageUrl
-                        );
                     }
+                    
+                    $this->awards[$eventName][] = array(
+                        'awardYear' => isset($edge->node->award->eventEdition->year) ?
+                                            $edge->node->award->eventEdition->year : null,
+                        'awardWinner' => $awardIsWinner,
+                        'awardCategory' => isset($edge->node->award->category->text) ?
+                                                $edge->node->award->category->text : null,
+                        'awardName' => isset($edge->node->award->text) ?
+                                            $edge->node->award->text : null,
+                        'awardNotes' => isset($edge->node->award->notes->plainText) ?
+                                            $edge->node->award->notes->plainText : null,
+                        'awardPersons' => $names,
+                        'awardOutcome' => $conclusion
+                    );
                 }
-                
-                $this->awards[$eventName][] = array(
-                    'awardYear' => isset($edge->node->award->eventEdition->year) ?
-                                         $edge->node->award->eventEdition->year : null,
-                    'awardWinner' => $awardIsWinner,
-                    'awardCategory' => isset($edge->node->award->category->text) ?
-                                             $edge->node->award->category->text : null,
-                    'awardName' => isset($edge->node->award->text) ?
-                                         $edge->node->award->text : null,
-                    'awardNotes' => isset($edge->node->award->notes->plainText) ?
-                                          $edge->node->award->notes->plainText : null,
-                    'awardPersons' => $names,
-                    'awardOutcome' => $conclusion
-                );
             }
             if ($winnerCount > 0 || $nomineeCount > 0) {
                 $this->awards['total'] = array(
@@ -3622,6 +3628,32 @@ EOF;
             $airDate .= $date['year'];
         }
         return $airDate;
+    }
+
+    #----------------------------------------------------------[ Award filter helper ]---
+    /**
+     * Build award filter string
+     * @param $winsOnly boolean
+     * @param $event string eventId
+     * @return string $filter
+     */
+    public function awardFilter($winsOnly, $event)
+    {
+        $filter = ', sort: {by: PRESTIGIOUS, order: DESC}';
+        if (!empty($event) || $winsOnly === true) {
+            $filter .= ', filter:{';
+            if ($winsOnly === true) {
+                $filter .= 'wins:WINS_ONLY';
+                if (empty($event)) {
+                    $filter .= '}';
+                } else {
+                    $filter .= ', events:"' . trim($event) . '"}';
+                }
+            } else {
+                $filter .= 'events:"' . trim($event) . '"}';
+            }
+        }
+        return $filter;
     }
 
 }
