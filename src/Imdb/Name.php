@@ -276,9 +276,18 @@ query NickName(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "NickName", ["id" => "nm$this->imdbID"]);
-            foreach ($data->name->nickNames as $nickName) {
-                if (!empty($nickName->text)) {
-                    $this->nickName[] = $nickName->text;
+            if (!isset($data->name)) {
+                return $this->nickName;
+            }
+            if (isset($data->name->nickNames) &&
+                is_array($data->name->nickNames) &&
+                count($data->name->nickNames) > 0
+               )
+            {
+                foreach ($data->name->nickNames as $nickName) {
+                    if (!empty($nickName->text)) {
+                        $this->nickName[] = $nickName->text;
+                    }
                 }
             }
         }
