@@ -3028,6 +3028,9 @@ query ProductionStatus(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "ProductionStatus", ["id" => "tt$this->imdbID"]);
+            if (!isset($data->title)) {
+                return $this->status;
+            }
             $this->status = isset($data->title->productionStatus->currentProductionStage->text) ? 
                                   $data->title->productionStatus->currentProductionStage->text : null;
         }
