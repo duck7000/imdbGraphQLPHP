@@ -3640,13 +3640,19 @@ query Redirect(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "tt$this->imdbID"]);
-        $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
-        if ($titleImdbId  != $this->imdbID) {
-            // todo write to log?
-            return $titleImdbId;
-        } else {
-            return false;
+        if (isset($data->title->meta->canonicalId) &&
+            $data->title->meta->canonicalId != ''
+           )
+        {
+            $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
+            if ($titleImdbId  != $this->imdbID) {
+                // todo write to log?
+                return $titleImdbId;
+            } else {
+                return false;
+            }
         }
+        return false;
     }
 
     #----------------------------------------------------------[ Build date string for Episode() ]---
