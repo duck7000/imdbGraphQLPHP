@@ -2225,9 +2225,11 @@ keyword {
 }
 EOF;
             $data = $this->graphQlGetAll("Keywords", "keywords", $query);
-            foreach ($data as $edge) {
-                if (!empty($edge->node->keyword->text->text)) {
-                    $this->keywords[] = $edge->node->keyword->text->text;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    if (!empty($edge->node->keyword->text->text)) {
+                        $this->keywords[] = $edge->node->keyword->text->text;
+                    }
                 }
             }
         }
@@ -2249,9 +2251,11 @@ text {
 }
 EOF;
             $data = $this->graphQlGetAll("AlternateVersions", "alternateVersions", $query);
-            foreach ($data as $edge) {
-                if (!empty($edge->node->text->plainText)) {
-                    $this->alternateversions[] = $edge->node->text->plainText;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    if (!empty($edge->node->text->plainText)) {
+                        $this->alternateversions[] = $edge->node->text->plainText;
+                    }
                 }
             }
         }
