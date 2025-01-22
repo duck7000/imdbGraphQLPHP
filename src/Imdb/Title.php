@@ -2875,7 +2875,14 @@ query Reviews(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Reviews", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->featuredReviews->edges)) {
+            if (!isset($data->title)) {
+                return $this->featuredReviews;
+            }
+            if (isset($data->title->featuredReviews->edges) &&
+                is_array($data->title->featuredReviews->edges) &&
+                count($data->title->featuredReviews->edges) > 0
+               )
+            {
                 foreach ($data->title->featuredReviews->edges as $edge) {
                 $this->featuredReviews[] = array(
                     'authorNickName' => isset($edge->node->author->nickName) ?
