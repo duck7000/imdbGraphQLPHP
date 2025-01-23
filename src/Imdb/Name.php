@@ -1780,33 +1780,42 @@ query Video(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "Video", ["id" => "nm$this->imdbID"]);
-            foreach ($data->name->primaryVideos->edges as $edge) {
-                $thumbUrl = null;
-                $videoId = isset($edge->node->id) ?
-                                 str_replace('vi', '', $edge->node->id) : null;
-                if (!empty($edge->node->thumbnail->url)) {
-                    $fullImageWidth = $edge->node->thumbnail->width;
-                    $fullImageHeight = $edge->node->thumbnail->height;
-                    $img = str_replace('.jpg', '', $edge->node->thumbnail->url);
-                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
-                    $thumbUrl = $img . $parameter;
+            if (!isset($data->name)) {
+                return $this->videos;
+            }
+            if (isset($data->name->primaryVideos->edges) &&
+                is_array($data->name->primaryVideos->edges) &&
+                count($data->name->primaryVideos->edges) > 0
+               )
+            {
+                foreach ($data->name->primaryVideos->edges as $edge) {
+                    $thumbUrl = null;
+                    $videoId = isset($edge->node->id) ?
+                                    str_replace('vi', '', $edge->node->id) : null;
+                    if (!empty($edge->node->thumbnail->url)) {
+                        $fullImageWidth = $edge->node->thumbnail->width;
+                        $fullImageHeight = $edge->node->thumbnail->height;
+                        $img = str_replace('.jpg', '', $edge->node->thumbnail->url);
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                        $thumbUrl = $img . $parameter;
+                    }
+                    $this->videos[$edge->node->contentType->displayName->value][] = array(
+                        'id' => $videoId,
+                        'name' => isset($edge->node->name->value) ?
+                                        $edge->node->name->value : null,
+                        'runtime' => isset($edge->node->runtime->value) ?
+                                        $edge->node->runtime->value : null,
+                        'description' => isset($edge->node->description->value) ?
+                                            $edge->node->description->value : null,
+                        'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
+                                            $edge->node->primaryTitle->titleText->text : null,
+                        'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
+                                            $edge->node->primaryTitle->releaseYear->year : null,
+                        'playbackUrl' => !empty($videoId) ?
+                                                'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                        'imageUrl' => $thumbUrl
+                    );
                 }
-                $this->videos[$edge->node->contentType->displayName->value][] = array(
-                    'id' => $videoId,
-                    'name' => isset($edge->node->name->value) ?
-                                    $edge->node->name->value : null,
-                    'runtime' => isset($edge->node->runtime->value) ?
-                                       $edge->node->runtime->value : null,
-                    'description' => isset($edge->node->description->value) ?
-                                           $edge->node->description->value : null,
-                    'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
-                                         $edge->node->primaryTitle->titleText->text : null,
-                    'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
-                                         $edge->node->primaryTitle->releaseYear->year : null,
-                    'playbackUrl' => !empty($videoId) ?
-                                            'https://www.imdb.com/video/vi' . $videoId . '/' : null,
-                    'imageUrl' => $thumbUrl
-                );
             }
         }
         return $this->videos;
