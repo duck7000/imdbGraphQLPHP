@@ -1150,33 +1150,35 @@ text {
 }
 EOF;
             $data = $this->graphQlGetAll("OtherWorks", "otherWorks", $query);
-            foreach ($data as $edge) {
-                // From date
-                $fromDate = array(
-                    "day" => isset($edge->node->fromDate->day) ?
-                                   $edge->node->fromDate->day : null,
-                    "month" => isset($edge->node->fromDate->month) ?
-                                     $edge->node->fromDate->month : null,
-                    "year" => isset($edge->node->fromDate->year) ?
-                                    $edge->node->fromDate->year : null
-                );
-                // To date
-                $toDate = array(
-                    "day" => isset($edge->node->toDate->day) ?
-                                   $edge->node->toDate->day : null,
-                    "month" => isset($edge->node->toDate->month) ?
-                                     $edge->node->toDate->month : null,
-                    "year" => isset($edge->node->toDate->year) ?
-                                    $edge->node->toDate->year : null
-                );
-                $this->otherWorks[] = array(
-                    "category" => isset($edge->node->category) ?
-                                        $edge->node->category->text : null,
-                    "fromDate" => $fromDate,
-                    "toDate" => $toDate,
-                    "text" => isset($edge->node->text->plainText) ?
-                                    $edge->node->text->plainText : null
-                );
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    // From date
+                    $fromDate = array(
+                        "day" => isset($edge->node->fromDate->day) ?
+                                    $edge->node->fromDate->day : null,
+                        "month" => isset($edge->node->fromDate->month) ?
+                                        $edge->node->fromDate->month : null,
+                        "year" => isset($edge->node->fromDate->year) ?
+                                        $edge->node->fromDate->year : null
+                    );
+                    // To date
+                    $toDate = array(
+                        "day" => isset($edge->node->toDate->day) ?
+                                    $edge->node->toDate->day : null,
+                        "month" => isset($edge->node->toDate->month) ?
+                                        $edge->node->toDate->month : null,
+                        "year" => isset($edge->node->toDate->year) ?
+                                        $edge->node->toDate->year : null
+                    );
+                    $this->otherWorks[] = array(
+                        "category" => isset($edge->node->category) ?
+                                            $edge->node->category->text : null,
+                        "fromDate" => $fromDate,
+                        "toDate" => $toDate,
+                        "text" => isset($edge->node->text->plainText) ?
+                                        $edge->node->text->plainText : null
+                    );
+                }
             }
         }
         return $this->otherWorks;
