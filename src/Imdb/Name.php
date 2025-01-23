@@ -1651,51 +1651,61 @@ title {
 }
 EOF;
             $edges = $this->graphQlGetAll("Credits", "credits", $query);
-            foreach ($edges as $edge) {
-                $characters = array();
-                if (!empty($edge->node->characters)) {
-                    foreach ($edge->node->characters as $character) {
-                        if (!empty($character->name)) {
-                            $characters[] = $character->name;
+            if (count($edges) > 0) {
+                foreach ($edges as $edge) {
+                    $characters = array();
+                    if (isset($edge->node->characters) &&
+                        is_array($edge->node->characters) &&
+                        count($edge->node->characters) > 0
+                       )
+                    {
+                        foreach ($edge->node->characters as $character) {
+                            if (!empty($character->name)) {
+                                $characters[] = $character->name;
+                            }
                         }
                     }
-                }
-                $jobs = array();
-                if (!empty($edge->node->jobs)) {
-                    foreach ($edge->node->jobs as $job) {
-                        if (!empty($job->text)) {
-                            $jobs[] = $job->text;
+                    $jobs = array();
+                    if (isset($edge->node->jobs) &&
+                        is_array($edge->node->jobs) &&
+                        count($edge->node->jobs) > 0
+                       )
+                    {
+                        foreach ($edge->node->jobs as $job) {
+                            if (!empty($job->text)) {
+                                $jobs[] = $job->text;
+                            }
                         }
                     }
+                    $titleThumbImageUrl = null;
+                    $titleFullImageUrl = null;
+                    if (!empty($edge->node->title->primaryImage->url)) {
+                        $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
+                        $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                        $fullImageWidth = $edge->node->title->primaryImage->width;
+                        $fullImageHeight = $edge->node->title->primaryImage->height;
+                        $newImageWidth = 140;
+                        $newImageHeight = 207;
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                        $titleThumbImageUrl = $img . $parameter;
+                    }
+                    $this->credits[$categoryIds[$edge->node->category->id]][] = array(
+                        'titleId' => isset($edge->node->title->id) ?
+                                        str_replace('tt', '', $edge->node->title->id) : null,
+                        'titleName' => isset($edge->node->title->titleText->text) ?
+                                            $edge->node->title->titleText->text : null,
+                        'titleType' => isset($edge->node->title->titleType->text) ?
+                                            $edge->node->title->titleType->text : null,
+                        'year' => isset($edge->node->title->releaseYear->year) ?
+                                        $edge->node->title->releaseYear->year : null,
+                        'endYear' => isset($edge->node->title->releaseYear->endYear) ?
+                                        $edge->node->title->releaseYear->endYear : null,
+                        'characters' => $characters,
+                        'jobs' => $jobs,
+                        'titleFullImageUrl' => $titleFullImageUrl,
+                        'titleThumbImageUrl' => $titleThumbImageUrl
+                    );
                 }
-                $titleThumbImageUrl = null;
-                $titleFullImageUrl = null;
-                if (!empty($edge->node->title->primaryImage->url)) {
-                    $img = str_replace('.jpg', '', $edge->node->title->primaryImage->url);
-                    $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                    $fullImageWidth = $edge->node->title->primaryImage->width;
-                    $fullImageHeight = $edge->node->title->primaryImage->height;
-                    $newImageWidth = 140;
-                    $newImageHeight = 207;
-                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                    $titleThumbImageUrl = $img . $parameter;
-                }
-                $this->credits[$categoryIds[$edge->node->category->id]][] = array(
-                    'titleId' => isset($edge->node->title->id) ?
-                                       str_replace('tt', '', $edge->node->title->id) : null,
-                    'titleName' => isset($edge->node->title->titleText->text) ?
-                                         $edge->node->title->titleText->text : null,
-                    'titleType' => isset($edge->node->title->titleType->text) ?
-                                         $edge->node->title->titleType->text : null,
-                    'year' => isset($edge->node->title->releaseYear->year) ?
-                                    $edge->node->title->releaseYear->year : null,
-                    'endYear' => isset($edge->node->title->releaseYear->endYear) ?
-                                       $edge->node->title->releaseYear->endYear : null,
-                    'characters' => $characters,
-                    'jobs' => $jobs,
-                    'titleFullImageUrl' => $titleFullImageUrl,
-                    'titleThumbImageUrl' => $titleThumbImageUrl
-                );
             }
         }
         return $this->credits;
