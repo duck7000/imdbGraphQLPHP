@@ -2163,8 +2163,8 @@ query Redirect(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "Redirect", ["id" => "nm$this->imdbID"]);
-        if (isset($data->title->meta->canonicalId) &&
-            $data->title->meta->canonicalId != ''
+        if (isset($data->name->meta->canonicalId) &&
+            $data->name->meta->canonicalId != ''
            )
         {
             $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
