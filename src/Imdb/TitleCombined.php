@@ -249,10 +249,18 @@ EOF;
      */
     private function genre($data)
     {
-        if (!empty($data->title->titleGenres->genres)) {
+        if (isset($data->title->titleGenres->genres) &&
+            is_array($data->title->titleGenres->genres) &&
+            count($data->title->titleGenres->genres) > 0
+            )
+        {
             foreach ($data->title->titleGenres->genres as $edge) {
                 $subGenres = array();
-                if (!empty($edge->subGenres)) {
+                if (isset($edge->subGenres) &&
+                    is_array($edge->subGenres) &&
+                    count($edge->subGenres) > 0
+                    )
+                {
                     foreach ($edge->subGenres as $subGenre) {
                         if (!empty($subGenre->keyword->text->text)) {
                             $subGenres[] = $subGenre->keyword->text->text;
@@ -281,28 +289,38 @@ EOF;
     private function principalCredits($data)
     {
         $creditsPrincipal = array();
-        foreach ($data->title->principalCredits as $value){
-            $category = 'Unknown';
-            $credits = array();
-            if (!empty($value->credits[0]->category->text)) {
-                $category = $value->credits[0]->category->text;
-                if ($category == "Actor" || $category == "Actress") {
-                    $category = "Star";
+        if (isset($data->title->principalCredits) &&
+            is_array($data->title->principalCredits) &&
+            count($data->title->principalCredits) > 0
+            )
+        {
+            foreach ($data->title->principalCredits as $value){
+                $category = 'Unknown';
+                $credits = array();
+                if (!empty($value->credits[0]->category->text)) {
+                    $category = $value->credits[0]->category->text;
+                    if ($category == "Actor" || $category == "Actress") {
+                        $category = "Star";
+                    }
                 }
-            }
-            if (!empty($value->credits)) {
-                foreach ($value->credits as $credit) {
-                    $credits[] = array(
-                        'name' => isset($credit->name->nameText->text) ?
-                                        $credit->name->nameText->text : null,
-                        'imdbid' => isset($credit->name->id) ?
-                                          str_replace('nm', '', $credit->name->id) : null
-                    );
+                if (isset($value->credits) &&
+                    is_array($value->credits) &&
+                    count($value->credits) > 0
+                    )
+                {
+                    foreach ($value->credits as $credit) {
+                        $credits[] = array(
+                            'name' => isset($credit->name->nameText->text) ?
+                                            $credit->name->nameText->text : null,
+                            'imdbid' => isset($credit->name->id) ?
+                                            str_replace('nm', '', $credit->name->id) : null
+                        );
+                    }
+                } elseif ($category == 'Unknown') {
+                        continue;
                 }
-            } elseif ($category == 'Unknown') {
-                    continue;
+                $creditsPrincipal[$category] = $credits;
             }
-            $creditsPrincipal[$category] = $credits;
         }
         return $creditsPrincipal;
     }
@@ -319,13 +337,19 @@ EOF;
      */
     public function checkRedirect($data)
     {
-        $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
-        if ($titleImdbId  != $this->imdbID) {
-            // todo write to log?
-            return $titleImdbId;
-        } else {
-            return false;
+        if (isset($data->title->meta->canonicalId) &&
+            $data->title->meta->canonicalId != ''
+           )
+        {
+            $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
+            if ($titleImdbId  != $this->imdbID) {
+                // todo write to log?
+                return $titleImdbId;
+            } else {
+                return false;
+            }
         }
+        return false;
     }
 
 }
