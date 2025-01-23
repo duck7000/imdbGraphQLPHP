@@ -104,7 +104,7 @@ query News{
 EOF;
         $data = $this->graphql->query($query, "News");
         if (!isset($data->news)) {
-            return array();
+            return $newsListItems;
         }
         if (isset($data->news->edges) &&
             is_array($data->news->edges) &&
