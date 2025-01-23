@@ -116,7 +116,7 @@ query ComingSoon {
 EOF;
         $data = $this->graphql->query($query, "ComingSoon");
         if (!isset($data->comingSoon)) {
-            return array();
+            return $calendar;
         }
         if (isset($data->comingSoon->edges) &&
             is_array($data->comingSoon->edges) &&
@@ -315,7 +315,7 @@ query ComingSoonStreaming {
 EOF;
         $data = $this->graphql->query($query, "ComingSoonStreaming", ["id" => "ls$listProviderId"]);
         if (!isset($data->list)) {
-            return array();
+            return $calendarStreaming;
         }
         if (isset($data->list->items->edges) &&
             is_array($data->list->items->edges) &&
