@@ -168,7 +168,7 @@ query Company {
 EOF;
         $data = $this->graphql->query($query, "Company");
         if (!isset($data->company)) {
-            return array();
+            return $companyResults;
         }
         //CompanyTypes
         $companyTypes = array();
