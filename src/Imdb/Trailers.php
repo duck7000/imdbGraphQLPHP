@@ -100,7 +100,7 @@ query RecentVideo {
 EOF;
         $data = $this->graphql->query($query, "RecentVideo");
         if (!isset($data->recentVideos)) {
-            return array();
+            return $recentVideoResults;
         }
         if (isset($data->recentVideos->videos) &&
             is_array($data->recentVideos->videos) &&
@@ -200,7 +200,7 @@ query TrendingVideo {
 EOF;
         $data = $this->graphql->query($query, "TrendingVideo");
         if (!isset($data->trendingTitles)) {
-            return array();
+            return $trendingVideoResults;
         }
         if (isset($data->trendingTitles->titles) &&
             is_array($data->trendingTitles->titles) &&
