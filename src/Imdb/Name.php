@@ -1265,18 +1265,27 @@ query MainPhoto(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "MainPhoto", ["id" => "nm$this->imdbID"]);
-            foreach ($data->name->images->edges as $edge) {
-                if (!empty($edge->node->url)) {
-                    $imgUrl = str_replace('.jpg', '', $edge->node->url);
-                    if ($thumb === true) {
-                        $fullImageWidth = $edge->node->width;
-                        $fullImageHeight = $edge->node->height;
-                        $newImageHeight = $this->config->mainphotoThumbnailHeight;
-                        // calculate new width
-                        $newImageWidth = $this->imageFunctions->thumbUrlNewWidth($fullImageWidth, $fullImageHeight, $newImageHeight);
-                        $this->mainPhoto[] = $imgUrl . 'QL75_UX' . $newImageWidth . '_.jpg';
-                    } else {
-                        $this->mainPhoto[] = $imgUrl . 'QL100_UX1000_.jpg';
+            if (!isset($data->name)) {
+                return $this->mainPhoto;
+            }
+            if (isset($data->name->images->edges) &&
+                is_array($data->name->images->edges) &&
+                count($data->name->images->edges) > 0
+               )
+            {
+                foreach ($data->name->images->edges as $edge) {
+                    if (!empty($edge->node->url)) {
+                        $imgUrl = str_replace('.jpg', '', $edge->node->url);
+                        if ($thumb === true) {
+                            $fullImageWidth = $edge->node->width;
+                            $fullImageHeight = $edge->node->height;
+                            $newImageHeight = $this->config->mainphotoThumbnailHeight;
+                            // calculate new width
+                            $newImageWidth = $this->imageFunctions->thumbUrlNewWidth($fullImageWidth, $fullImageHeight, $newImageHeight);
+                            $this->mainPhoto[] = $imgUrl . 'QL75_UX' . $newImageWidth . '_.jpg';
+                        } else {
+                            $this->mainPhoto[] = $imgUrl . 'QL100_UX1000_.jpg';
+                        }
                     }
                 }
             }
