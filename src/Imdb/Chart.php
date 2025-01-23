@@ -115,7 +115,7 @@ query Top250Title {
 EOF;
         $data = $this->graphql->query($query, "Top250Title");
         if (!isset($data->titleChartRankings)) {
-            return array();
+            return $top250TitleResults;
         }
         if (isset($data->titleChartRankings->edges) &&
             is_array($data->titleChartRankings->edges) &&
@@ -232,7 +232,7 @@ query Top250Name {
 EOF;
         $data = $this->graphql->query($query, "Top250Name");
         if (!isset($data->nameChartRankings)) {
-            return array();
+            return $top250NameResults;
         }
         if (isset($data->nameChartRankings->edges) &&
             is_array($data->nameChartRankings->edges) &&
@@ -363,7 +363,7 @@ query MostPopularName {
 EOF;
         $data = $this->graphql->query($query, "MostPopularName");
         if (!isset($data->chartNames)) {
-            return array();
+            return $mostPopularNameResults;
         }
         if (isset($data->chartNames->edges) &&
             is_array($data->chartNames->edges) &&
@@ -512,7 +512,7 @@ query MostPopularTitle {
 EOF;
         $data = $this->graphql->query($query, "MostPopularTitle");
         if (!isset($data->chartTitles)) {
-            return array();
+            return $mostPopularTitleResults;
         }
         if (isset($data->chartTitles->edges) &&
             is_array($data->chartTitles->edges) &&
