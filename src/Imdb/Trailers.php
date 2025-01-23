@@ -98,6 +98,7 @@ query RecentVideo {
   } 
 }
 EOF;
+
         $data = $this->graphql->query($query, "RecentVideo");
         if (!isset($data->recentVideos)) {
             return $recentVideoResults;
