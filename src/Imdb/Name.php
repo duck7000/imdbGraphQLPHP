@@ -1214,22 +1214,24 @@ externalLinkLanguages {
 EOF;
             $filter = ' filter: {excludeCategories: "review"}';
             $edges = $this->graphQlGetAll("ExternalSites", "externalLinks", $query, $filter);
-            foreach ($edges as $edge) {
-                $language = array();
-                if (!empty($edge->node->externalLinkLanguages)) {
-                    foreach ($edge->node->externalLinkLanguages as $lang) {
-                        if (!empty($lang->text)) {
-                            $language[] = $lang->text;
+            if (count($edges) > 0) {
+                foreach ($edges as $edge) {
+                    $language = array();
+                    if (!empty($edge->node->externalLinkLanguages)) {
+                        foreach ($edge->node->externalLinkLanguages as $lang) {
+                            if (!empty($lang->text)) {
+                                $language[] = $lang->text;
+                            }
                         }
                     }
+                    $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
+                        'label' => !empty($edge->node->label) ?
+                                        $edge->node->label : null,
+                        'url' => !empty($edge->node->url) ?
+                                        $edge->node->url : null,
+                        'language' => $language
+                    );
                 }
-                $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
-                    'label' => !empty($edge->node->label) ?
-                                      $edge->node->label : null,
-                    'url' => !empty($edge->node->url) ?
-                                    $edge->node->url : null,
-                    'language' => $language
-                );
             }
         }
         return $this->externalSites;
