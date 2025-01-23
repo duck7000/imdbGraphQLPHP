@@ -1998,35 +1998,41 @@ EOF;
 }
 EOF;
         $data = $this->graphQlGetAll($listingType, "publicityListings", $query, $filter);
-        foreach ($data as $edge) {
-            $date = array(
-                'day' => isset($edge->node->date->day) ?
-                               $edge->node->date->day : null,
-                'month' => isset($edge->node->date->month) ?
-                                 $edge->node->date->month : null,
-                'year' => isset($edge->node->date->year) ?
-                                $edge->node->date->year : null
-            );
-            $authors = array();
-            if (!empty($edge->node->authors)) {
-                foreach ($edge->node->authors as $author) {
-                    if (!empty($author->plainText)) {
-                        $authors[] = $author->plainText;
+        if (count($data) > 0) {
+            foreach ($data as $edge) {
+                $date = array(
+                    'day' => isset($edge->node->date->day) ?
+                                $edge->node->date->day : null,
+                    'month' => isset($edge->node->date->month) ?
+                                    $edge->node->date->month : null,
+                    'year' => isset($edge->node->date->year) ?
+                                    $edge->node->date->year : null
+                );
+                $authors = array();
+                if (isset($edge->node->authors) &&
+                    is_array($edge->node->authors) &&
+                    count($edge->node->authors) > 0
+                   )
+                {
+                    foreach ($edge->node->authors as $author) {
+                        if (!empty($author->plainText)) {
+                            $authors[] = $author->plainText;
+                        }
                     }
                 }
+                $results[] = array(
+                    'publication' => isset($edge->node->publication) ?
+                                        $edge->node->publication : null,
+                    'regionId' => isset($edge->node->region->id) ?
+                                        $edge->node->region->id : null,
+                    'title' => isset($edge->node->title->text) ?
+                                    $edge->node->title->text : null,
+                    'date' => $date,
+                    'reference' => isset($edge->node->reference) ?
+                                        $edge->node->reference : null,
+                    'authors' => $authors
+                );
             }
-            $results[] = array(
-                'publication' => isset($edge->node->publication) ?
-                                       $edge->node->publication : null,
-                'regionId' => isset($edge->node->region->id) ?
-                                    $edge->node->region->id : null,
-                'title' => isset($edge->node->title->text) ?
-                                 $edge->node->title->text : null,
-                'date' => $date,
-                'reference' => isset($edge->node->reference) ?
-                                     $edge->node->reference : null,
-                'authors' => $authors
-            );
         }
         return $results;
     }
