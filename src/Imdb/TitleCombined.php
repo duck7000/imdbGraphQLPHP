@@ -187,7 +187,7 @@ query TitleCombinedMain(\$id: ID!) {
 EOF;
         $data = $this->graphql->query($query, "TitleCombinedMain", ["id" => "tt$this->imdbID"]);
         if (!isset($data->title)) {
-            return array();
+            return $this->main;
         }
         $this->main = array(
             'title' => isset($data->title->titleText->text) ?
