@@ -1386,53 +1386,59 @@ EOF;
             $data = $this->graphQlGetAll("Award", "awardNominations", $query, $filter);
             $winnerCount = 0;
             $nomineeCount = 0;
-            foreach ($data as $edge) {
-                $eventName = isset($edge->node->award->event->text) ?
-                                   $edge->node->award->event->text : null;
-                $awardIsWinner = $edge->node->isWinner;
-                $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
-                $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
-                //credited titles
-                $titles = array();
-                if (!empty($edge->node->awardedEntities->secondaryAwardTitles)) {
-                    foreach ($edge->node->awardedEntities->secondaryAwardTitles as $title) {
-                        $titleThumbImageUrl = null;
-                        $titleFullImageUrl = null;
-                        if (!empty($title->title->primaryImage->url)) {
-                            $img = str_replace('.jpg', '', $title->title->primaryImage->url);
-                            $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
-                            $fullImageWidth = $title->title->primaryImage->width;
-                            $fullImageHeight = $title->title->primaryImage->height;
-                            $newImageWidth = 140;
-                            $newImageHeight = 207;
-                            $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                            $titleThumbImageUrl = $img . $parameter;
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    $eventName = isset($edge->node->award->event->text) ?
+                                    $edge->node->award->event->text : null;
+                    $awardIsWinner = $edge->node->isWinner;
+                    $conclusion = $awardIsWinner === true ? "Winner" : "Nominee";
+                    $awardIsWinner === true ? $winnerCount++ : $nomineeCount++;
+                    //credited titles
+                    $titles = array();
+                    if (isset($edge->node->awardedEntities->secondaryAwardTitles) &&
+                        is_array($edge->node->awardedEntities->secondaryAwardTitles) &&
+                        count($edge->node->awardedEntities->secondaryAwardTitles) > 0
+                       )
+                    {
+                        foreach ($edge->node->awardedEntities->secondaryAwardTitles as $title) {
+                            $titleThumbImageUrl = null;
+                            $titleFullImageUrl = null;
+                            if (!empty($title->title->primaryImage->url)) {
+                                $img = str_replace('.jpg', '', $title->title->primaryImage->url);
+                                $titleFullImageUrl = $img . 'QL100_UX1000_.jpg';
+                                $fullImageWidth = $title->title->primaryImage->width;
+                                $fullImageHeight = $title->title->primaryImage->height;
+                                $newImageWidth = 140;
+                                $newImageHeight = 207;
+                                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                                $titleThumbImageUrl = $img . $parameter;
+                            }
+                            $titles[] = array(
+                                'titleId' => isset($title->title->id) ?
+                                                str_replace('tt', '', $title->title->id) : null,
+                                'titleName' => isset($title->title->titleText->text) ?
+                                                    $title->title->titleText->text : null,
+                                'titleNote' => isset($title->note->plainText) ?
+                                                    trim($title->note->plainText, " ()") : null,
+                                'titleFullImageUrl' => $titleFullImageUrl,
+                                'titleThumbImageUrl' => $titleThumbImageUrl
+                            );
                         }
-                        $titles[] = array(
-                            'titleId' => isset($title->title->id) ?
-                                               str_replace('tt', '', $title->title->id) : null,
-                            'titleName' => isset($title->title->titleText->text) ?
-                                                 $title->title->titleText->text : null,
-                            'titleNote' => isset($title->note->plainText) ?
-                                                 trim($title->note->plainText, " ()") : null,
-                            'titleFullImageUrl' => $titleFullImageUrl,
-                            'titleThumbImageUrl' => $titleThumbImageUrl
-                        );
                     }
+                    $this->awards[$eventName][] = array(
+                        'awardYear' => isset($edge->node->award->eventEdition->year) ?
+                                            $edge->node->award->eventEdition->year : null,
+                        'awardWinner' => $awardIsWinner,
+                        'awardCategory' => isset($edge->node->award->category->text) ?
+                                                $edge->node->award->category->text : null,
+                        'awardName' => isset($edge->node->award->text) ?
+                                            $edge->node->award->text : null,
+                        'awardNotes' => isset($edge->node->award->notes->plainText) ?
+                                            $edge->node->award->notes->plainText : null,
+                        'awardTitles' => $titles,
+                        'awardOutcome' => $conclusion
+                    );
                 }
-                $this->awards[$eventName][] = array(
-                    'awardYear' => isset($edge->node->award->eventEdition->year) ?
-                                         $edge->node->award->eventEdition->year : null,
-                    'awardWinner' => $awardIsWinner,
-                    'awardCategory' => isset($edge->node->award->category->text) ?
-                                             $edge->node->award->category->text : null,
-                    'awardName' => isset($edge->node->award->text) ?
-                                         $edge->node->award->text : null,
-                    'awardNotes' => isset($edge->node->award->notes->plainText) ?
-                                          $edge->node->award->notes->plainText : null,
-                    'awardTitles' => $titles,
-                    'awardOutcome' => $conclusion
-                );
             }
             if ($winnerCount > 0 || $nomineeCount > 0) {
                 $this->awards['total'] = array(
