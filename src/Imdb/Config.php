@@ -480,6 +480,12 @@ class Config
     public $debug = false;
 
     /**
+     * Throw exceptions when a request to fetch some content fails?
+     * @var boolean
+     */
+    public $throwHttpExceptions = true;
+    
+    /**
      * Set curlopt_timout, this is the time out if curl has a connection problem
      * @var int
      */
