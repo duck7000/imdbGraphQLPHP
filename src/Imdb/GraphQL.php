@@ -94,9 +94,13 @@ class GraphQL
             return json_decode($request->getResponseBody())->data;
         } else {
             $this->logger->error( '[GraphQL] Failed to retrieve query ' . $queryName . ' Response headers: ' . implode( ' ', $request->getLastResponseHeaders() ) . ' Response body: ' . $request->getResponseBody() );
-            // Some classes don't use imdbId like Chart, Trailers, Calendar and KeywordSearch
-            $imdbErrorID = !isset($variables['id']) ? 'n/a' : $variables['id'];
-            throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$imdbErrorID]");
+            if ($this->config->throwHttpExceptions) {
+                // Some classes don't use imdbId like Chart, Trailers, Calendar and KeywordSearch
+                $imdbErrorID = !isset($variables['id']) ? 'n/a' : $variables['id'];
+                throw new \Exception("Failed to retrieve query [$queryName] , IMDb id [$imdbErrorID]");
+            } else {
+                return new \StdClass();
+            }
         }
     }
 }
