@@ -114,7 +114,7 @@ class Name extends MdbBase
 
     #------------------------------------------------------------------[ Name ]---
     /** Get the name of the person
-     * @return string name full name of the person
+     * @return string|null name full name of the person
      * @see IMDB person page / (Main page)
      */
     public function name()
