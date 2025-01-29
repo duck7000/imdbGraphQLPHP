@@ -2134,9 +2134,11 @@ EOF;
         $edges = array();
         while ($hasNextPage) {
             $data = $this->graphql->query($fullQuery, $queryName, ["id" => "nm$this->imdbID", "after" => $endCursor]);
-            $edges = array_merge($edges, $data->name->{$fieldName}->edges);
-            $hasNextPage = $data->name->{$fieldName}->pageInfo->hasNextPage;
-            $endCursor = $data->name->{$fieldName}->pageInfo->endCursor;
+            if ( isset( $data->name->{$fieldName} ) ) {
+                $edges = array_merge($edges, $data->name->{$fieldName}->edges);
+                $hasNextPage = $data->name->{$fieldName}->pageInfo->hasNextPage;
+                $endCursor = $data->name->{$fieldName}->pageInfo->endCursor;
+            }
         }
         return $edges;
     }
