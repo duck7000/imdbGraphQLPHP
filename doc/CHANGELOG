@@ -2,6 +2,17 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.1.2
+-------------------
+* GraphQL class fixed logger bugs and TitleSearch not working Thanks @jcvignoli
+* MdbBase class php 8.4 compatibility, Implicitly nullable parameter declarations deprecated Thanks @jcvignoli
+* Calendar class added missing helper method..
+* Title class added missing award helper method..
+* Name class checkRedirect fixed bug wrong path name
+* Added property $throwHttpExceptions in Config class to allow or prevent throwing Exceptions in GraphQL Thanks @jcvignoli
+* Name and Title class added extra check if the object exists in loop while methods graphQlGetAll() Thanks @jcvignoli
+* Title, TitleCombined and Name class added extra checks to prevent errors when there are no results
+
 v2.1.1
 -------------------
 * Title and Name class added savephoto() and photoLocalurl() Thanks @jcvignoli
