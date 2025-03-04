@@ -86,11 +86,11 @@ class Name extends MdbBase
      * @return Name
      */
     public static function fromSearchResult(
-        $id,
-        $name,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
+        string $id,
+        string $name,
+        ?Config $config = null,
+        ?LoggerInterface $logger = null,
+        ?CacheInterface $cache = null
     ) {
         $person = new Name($id, $config, $logger, $cache);
         $person->fullName = $name;
@@ -103,7 +103,7 @@ class Name extends MdbBase
      * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
      * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
-    public function __construct($id, Config $config = null, LoggerInterface $logger = null, CacheInterface $cache = null)
+    public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
         parent::__construct($config, $logger, $cache);
         $this->setid($id);
