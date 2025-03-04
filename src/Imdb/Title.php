@@ -110,14 +110,14 @@ class Title extends MdbBase
      * @return Title
      */
     public static function fromSearchResult(
-        $id,
-        $title,
-        $orignalTitle,
-        $year,
-        $type,
-        Config $config = null,
-        LoggerInterface $logger = null,
-        CacheInterface $cache = null
+        string $id,
+        string $title,
+        string $orignalTitle,
+        int $year,
+        string $type,
+        ?Config $config = null,
+        ?LoggerInterface $logger = null,
+        ?CacheInterface $cache = null
     ) {
         $imdb = new Title($id, $config, $logger, $cache);
         $imdb->mainTitle = $title;
