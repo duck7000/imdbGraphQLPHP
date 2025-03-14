@@ -2,6 +2,10 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.1.3
+-------------------
+* Fixed several PHP 8.4 warnings/errors due to deprecations
+
 v2.1.2
 -------------------
 * GraphQL class fixed logger bugs and TitleSearch not working Thanks @jcvignoli
