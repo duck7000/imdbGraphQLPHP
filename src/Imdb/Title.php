@@ -102,7 +102,7 @@ class Title extends MdbBase
      * @param string $id imdb ID
      * @param string $title film title
      * @param string $orignalTitle Original film title
-     * @param int $year
+     * @param string|null $year
      * @param string $type
      * @param Config $config
      * @param LoggerInterface $logger OPTIONAL override default logger
@@ -113,7 +113,7 @@ class Title extends MdbBase
         string $id,
         string $title,
         string $orignalTitle,
-        int $year,
+        ?string $year,
         string $type,
         ?Config $config = null,
         ?LoggerInterface $logger = null,
