@@ -872,7 +872,7 @@ EOF;
             $originalTitle = $this->originalTitle();
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
-                    'title' => ucwords($originalTitle),
+                    'title' => $originalTitle,
                     'country' => "(Original Title)",
                     'countryId' => null,
                     'language' => null,
@@ -896,7 +896,7 @@ EOF;
                     }
                     $this->akas[] = array(
                         'title' => isset($edge->node->text) ?
-                                        ucwords($edge->node->text) : null,
+                                        $edge->node->text : null,
                         'country' => isset($edge->node->country->text) ?
                                         ucwords($edge->node->country->text) : 'Unknown',
                         'countryId' => isset($edge->node->country->id) ?
