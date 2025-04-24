@@ -15,7 +15,7 @@ use Imdb\Image;
 /**
  * A title on IMDb
  * @author Ed
- * @copyright (c) 2024 Ed
+ * @copyright (c) 2025 Ed
  */
 class TitleCombined extends MdbBase
 {
@@ -195,66 +195,67 @@ EOF;
             'originalTitle' => isset($data->title->originalTitleText->text) ?
                                      trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null,
             'imdbid' => $this->imdbID,
-            'reDirectId' => $this->checkRedirect($data),
+            'reDirectId' => isset($data->title->meta->canonicalId) ?
+                                  $this->checkRedirect($data->title->meta->canonicalId) : false,
             'movieType' => isset($data->title->titleType->text) ?
                                  $data->title->titleType->text : null,
             'year' => isset($data->title->releaseYear->year) ?
                             $data->title->releaseYear->year : null,
             'endYear' => isset($data->title->releaseYear->endYear) ?
                                $data->title->releaseYear->endYear : null,
-            'imgThumb' => $this->populatePoster($data, true),
-            'imgFull' => $this->populatePoster($data, false),
+            'imgThumb' => isset($data->title->primaryImage) ?
+                                $this->populatePoster($data->title->primaryImage, true) : null,
+            'imgFull' => isset($data->title->primaryImage) ?
+                               $this->populatePoster($data->title->primaryImage, false) : null,
             'runtime' => isset($data->title->runtime->seconds) ?
                                $data->title->runtime->seconds / 60 : 0,
             'rating' => isset($data->title->ratingsSummary->aggregateRating) ?
                               $data->title->ratingsSummary->aggregateRating : 0,
-            'genre' => $this->genre($data),
+            'genre' => isset($data->title->titleGenres->genres) ?
+                             $this->genre($data->title->titleGenres->genres) : null,
             'plotoutline' => isset($data->title->plot->plotText->plainText) ?
                                    $data->title->plot->plotText->plainText : null,
-            'credits' => $this->principalCredits($data)
+            'credits' => isset($data->title->principalCredits) ?
+                               $this->principalCredits($data->title->principalCredits) : null
         );
         return $this->main;
     }
 
 
     #========================================================[ Helper functions ]===
-    #===============================================================================
 
-    #========================================================[ photo/poster ]===
+    #--------------------------------------------------------------[ Photo/Poster ]---
     /**
      * Setup cover photo (thumbnail and big variant)
+     * @param object $primaryImage primary image object found in main()
      * @see IMDB page / (TitlePage)
      */
-    private function populatePoster($data, $thumb)
+    private function populatePoster($primaryImage, $thumb)
     {
-        if (!empty($data->title->primaryImage->url)) {
-            $img = str_replace('.jpg', '', $data->title->primaryImage->url);
+        if (isset($primaryImage->url)) {
+            $img = str_replace('.jpg', '', $primaryImage->url);
             if ($thumb === true) {
-                $fullImageWidth = $data->title->primaryImage->width;
-                $fullImageHeight = $data->title->primaryImage->height;
+                $fullImageWidth = $primaryImage->width;
+                $fullImageHeight = $primaryImage->height;
                 $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
                 return $img . $parameter;
             } else {
                 return $img . 'QL100_SX1000_.jpg';
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     #--------------------------------------------------------------[ Genre(s) ]---
     /** Get all genres the movie is registered for
+     * @param array $genreArray found genres array from main()
      * @return array genres (array[0..n] of mainGenre| string, subGenre| array())
      * @see IMDB page / (TitlePage)
      */
-    private function genre($data)
+    private function genre($genreArray)
     {
-        if (isset($data->title->titleGenres->genres) &&
-            is_array($data->title->titleGenres->genres) &&
-            count($data->title->titleGenres->genres) > 0
-            )
-        {
-            foreach ($data->title->titleGenres->genres as $edge) {
+        if (is_array($genreArray) && count($genreArray) > 0) {
+            foreach ($genreArray as $edge) {
                 $subGenres = array();
                 if (isset($edge->subGenres) &&
                     is_array($edge->subGenres) &&
@@ -274,27 +275,21 @@ EOF;
                 );
             }
             return $mainGenres;
-        } else {
-            return array();
         }
+        return array();
     }
 
-    #=====================================================[ /fullcredits page ]===
     #----------------------------------------------------------------[ PrincipalCredits ]---
     /*
     * Get the PrincipalCredits for this title
+    * @param array $principalCredits principal credits array from main()
     * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
-    * Not all categories are always available, TV series has Creator instead of writer
     */
-    private function principalCredits($data)
+    private function principalCredits($principalCredits)
     {
         $creditsPrincipal = array();
-        if (isset($data->title->principalCredits) &&
-            is_array($data->title->principalCredits) &&
-            count($data->title->principalCredits) > 0
-            )
-        {
-            foreach ($data->title->principalCredits as $value){
+        if (is_array($principalCredits) && count($principalCredits) > 0) {
+            foreach ($principalCredits as $value){
                 $category = 'Unknown';
                 $credits = array();
                 if (!empty($value->credits[0]->category->text)) {
@@ -317,7 +312,7 @@ EOF;
                         );
                     }
                 } elseif ($category == 'Unknown') {
-                        continue;
+                    continue;
                 }
                 $creditsPrincipal[$category] = $credits;
             }
@@ -327,29 +322,21 @@ EOF;
 
     #----------------------------------------------------------[ imdbID redirect ]---
     /**
-     * Check if imdbid is redirected to another id or not.
-     * It sometimes happens that imdb redirects an existing id to a new id.
-     * If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
-     * @var $this->imdbID The imdbid used to call this class
-     * @var $titleImdbId the returned imdbid from Graphql call (in some cases this can be different)
-     * @return $titleImdbId (the new redirected imdbId) or false (no redirect)
+     * Check if imdbid is redirected to another id or not
+     * Sometimes it happens that imdb redirects an existing id to a new id
+     * @param string $titleImdbId the returned imdbid from Graphql call
+     * @return string $titleImdbId (the new redirected imdbId) or false (no redirect)
      * @see IMDB page / (TitlePage)
      */
-    public function checkRedirect($data)
+    private function checkRedirect($titleImdbId)
     {
-        if (isset($data->title->meta->canonicalId) &&
-            $data->title->meta->canonicalId != ''
-           )
-        {
-            $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
-            if ($titleImdbId  != $this->imdbID) {
-                // todo write to log?
-                return $titleImdbId;
-            } else {
-                return false;
-            }
+        $titleImdbId = str_replace('tt', '', $titleImdbId);
+        if ($titleImdbId  != $this->imdbID) {
+            // todo write to log?
+            return $titleImdbId;
+        } else {
+            return false;
         }
-        return false;
     }
 
 }

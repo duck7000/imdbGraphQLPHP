@@ -54,7 +54,7 @@ class Title extends MdbBase
     protected $mainTop250 = 0;
     protected $mainRating = 0;
     protected $mainRatingVotes = 0;
-    protected $mainMetacritics = 0;
+    protected $mainMetacritics = array();
     protected $mainRank = array();
     protected $mainPhoto = array();
     protected $trailers = array();
@@ -321,27 +321,66 @@ EOF;
     }
 
     /**
-     * Rating out of 100 on metacritic
-     * @return int
+     * Metacritic data like score and reviews
+     * @return array(url:string, score:int, reviewCount:int, reviews:array(reviewer:string, score:int, quote:string, siteName:string, siteUrl:string))
      */
     public function metacritic()
     {
-        if ($this->mainMetacritics == 0) {
+        if (empty($this->mainMetacritics)) {
             $query = <<<EOF
 query Metacritic(\$id: ID!) {
   title(id: \$id) {
     metacritic {
+      url
       metascore {
         score
+        reviewCount
+      }
+      reviews(first:9999) {
+        edges {
+          node {
+            reviewer
+            score
+            site
+            url
+            quote {
+              value
+            }
+          }
+        }
       }
     }
   }
 }
 EOF;
             $data = $this->graphql->query($query, "Metacritic", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->metacritic->metascore->score)) {
-               $this->mainMetacritics = $data->title->metacritic->metascore->score;
+            if (!isset($data->title->metacritic)) {
+                return $this->mainMetacritics;
             }
+            $reviews = array();
+            if (isset($data->title->metacritic->reviews->edges) &&
+                is_array($data->title->metacritic->reviews->edges) &&
+                count($data->title->metacritic->reviews->edges) > 0
+               )
+            {
+                foreach ($data->title->metacritic->reviews->edges as $edge) {
+                    $reviews[] = array(
+                        'reviewer' => isset($edge->node->reviewer) ? $edge->node->reviewer : null,
+                        'score' => isset($edge->node->score) ? $edge->node->score : 0,
+                        'quote' => isset($edge->node->quote->value) ? $edge->node->quote->value : null,
+                        'siteName' => isset($edge->node->site) ? $edge->node->site : null,
+                        'siteUrl' => isset($edge->node->url) ? $edge->node->url : null
+                    );
+                }
+            }
+            $this->mainMetacritics = array(
+                    'url' => isset($data->title->metacritic->url) ? $data->title->metacritic->url : null,
+                    'score' => isset($data->title->metacritic->metascore->score) ?
+                                     $data->title->metacritic->metascore->score : 0,
+                    'reviewCount' => isset($data->title->metacritic->metascore->reviewCount) ?
+                                           $data->title->metacritic->metascore->reviewCount : 0,
+                    'reviews' => $reviews
+                );
         }
         return $this->mainMetacritics;
     }
@@ -833,7 +872,7 @@ EOF;
             $originalTitle = $this->originalTitle();
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
-                    'title' => ucwords($originalTitle),
+                    'title' => $originalTitle,
                     'country' => "(Original Title)",
                     'countryId' => null,
                     'language' => null,
@@ -857,7 +896,7 @@ EOF;
                     }
                     $this->akas[] = array(
                         'title' => isset($edge->node->text) ?
-                                        ucwords($edge->node->text) : null,
+                                        $edge->node->text : null,
                         'country' => isset($edge->node->country->text) ?
                                         ucwords($edge->node->country->text) : 'Unknown',
                         'countryId' => isset($edge->node->country->id) ?
