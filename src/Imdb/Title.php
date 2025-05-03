@@ -52,8 +52,7 @@ class Title extends MdbBase
     protected $mainYear = -1;
     protected $mainEndYear = -1;
     protected $mainTop250 = 0;
-    protected $mainRating = 0;
-    protected $mainRatingVotes = 0;
+    protected $mainRatingVotes = array();
     protected $mainMetacritics = array();
     protected $mainRank = array();
     protected $mainPhoto = array();
@@ -269,53 +268,32 @@ EOF;
         return $this->runtimes;
     }
 
-    #----------------------------------------------------------[ Movie Rating ]---
+    #----------------------------------------------------------[ Rating Votes Metacritics]---
     /**
-     * Get movie rating
-     * @return int/float or 0
+     * Get movie rating and votes
+     * @return array(rating:float, votes:int)
      * @see IMDB page / (TitlePage)
      */
-    public function rating()
+    public function ratingVotes()
     {
-        if ($this->mainRating == 0) {
-            $query = <<<EOF
-query Rating(\$id: ID!) {
-  title(id: \$id) {
-    ratingsSummary {
-      aggregateRating
-    }
-  }
-}
-EOF;
-            $data = $this->graphql->query($query, "Rating", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->ratingsSummary->aggregateRating)) {
-                $this->mainRating = $data->title->ratingsSummary->aggregateRating;
-            }
-        }
-        return $this->mainRating;
-    }
-
-     /**
-     * Return number of votes for this movie
-     * @return int
-     * @see IMDB page / (TitlePage)
-     */
-    public function votes()
-    {
-        if ($this->mainRatingVotes == 0) {
+        if (empty($this->mainRatingVotes)) {
             $query = <<<EOF
 query RatingVotes(\$id: ID!) {
   title(id: \$id) {
     ratingsSummary {
+      aggregateRating
       voteCount
     }
   }
 }
 EOF;
             $data = $this->graphql->query($query, "RatingVotes", ["id" => "tt$this->imdbID"]);
-            if (!empty($data->title->ratingsSummary->voteCount)) {
-                $this->mainRatingVotes = $data->title->ratingsSummary->voteCount;
-            }
+            $this->mainRatingVotes = array(
+                    'rating' => isset($data->title->ratingsSummary->aggregateRating) ?
+                                      $data->title->ratingsSummary->aggregateRating : 0,
+                    'votes' => isset($data->title->ratingsSummary->voteCount) ?
+                                     $data->title->ratingsSummary->voteCount : 0
+                );
         }
         return $this->mainRatingVotes;
     }
