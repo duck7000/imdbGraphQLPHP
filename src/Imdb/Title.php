@@ -91,6 +91,11 @@ class Title extends MdbBase
     protected $status = null;
     protected $news = array();
 
+    #---------------------------------------------[ fromSearchResults Protected variables]---
+    protected $mainTitle = null;
+    protected $mainYear = null;
+    protected $mainMovietype = null;
+
     #----------------------------------------------------------[ Helper for TitleSearch class ]---
     /**
      * Create an imdb object populated with id, title, year, and movie type
