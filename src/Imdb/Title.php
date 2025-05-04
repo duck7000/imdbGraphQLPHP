@@ -1475,75 +1475,73 @@ EOF;
      */
     public function episode($thumb = true, $yearbased = 0)
     {
-        if ($this->movietype() === "TV Series" || $this->movietype() === "TV Mini Series") {
-            if (empty($this->seasonEpisodes)) {
-                // Check if season or year based
-                $seasonsData = $this->seasonYearCheck($yearbased);
-                if ($seasonsData === false) {
-                    return $this->seasonEpisodes;
-                }
-                if (is_array($seasonsData) && count($seasonsData) > 0) {
-                    foreach ($seasonsData as $edge) {
-                        if (empty($edge->node->text)) {
-                            return $this->seasonEpisodes;
-                        }
-                        $seasonYear = $edge->node->text;
-                        $filter = $this->buildFilter($seasonYear);
-                        if ($seasonYear == "Unknown") { //this is intended capitol
-                            $seasonYear = -1;
-                        }
-                        // Get all episodes
-                        $episodesData = $this->graphQlGetAllEpisodes($filter);
-                        $episodes = array();
-                        foreach ($episodesData as $edge) {
-                            $dateParts = array(
-                                'day' => isset($edge->node->releaseDate->day) ?
-                                            $edge->node->releaseDate->day : null,
-                                'month' => isset($edge->node->releaseDate->month) ?
-                                                $edge->node->releaseDate->month : null,
-                                'year' => isset($edge->node->releaseDate->year) ?
-                                                $edge->node->releaseDate->year : null
-                            );
-                            $airDate = $this->buildDateString($dateParts);
-                            $epNumber = null;
-                            if (isset($edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber)) {
-                                $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
-                                // Unknown episodes get a number to keep them separate.
-                                if ($epNumber == "unknown") {
-                                    $epNumber = -1;
-                                }
-                            }
-                            $imgUrl = null;
-                            if (!empty($edge->node->primaryImage->url)) {
-                                $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
-                                if ($thumb == true) {
-                                    $fullImageWidth = $edge->node->primaryImage->width;
-                                    $fullImageHeight = $edge->node->primaryImage->height;
-                                    $newImageWidth = $this->config->episodeThumbnailWidth;
-                                    $newImageHeight = $this->config->episodeThumbnailHeight;
-                                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
-                                    $imgUrl = $img . $parameter;
-                                } else {
-                                    $imgUrl = $img . 'QL100_SX1000_.jpg';
-                                }
-                            }
-                            $episode = array(
-                                    'imdbid' => isset($edge->node->id) ?
-                                                    str_replace('tt', '', $edge->node->id) : null,
-                                    'title' => isset($edge->node->titleText->text) ?
-                                                    $edge->node->titleText->text : null,
-                                    'airdate' => $airDate,
-                                    'airdateParts' => $dateParts,
-                                    'plot' => isset($edge->node->plot->plotText->plainText) ?
-                                                    $edge->node->plot->plotText->plainText : null,
-                                    'season' => $seasonYear,
-                                    'episode' => $epNumber,
-                                    'imgUrl' => $imgUrl
-                                );
-                            $episodes[] = $episode;
-                        }
-                        $this->seasonEpisodes[$seasonYear] = $episodes;
+        if (empty($this->seasonEpisodes)) {
+            // Check if season or year based
+            $seasonsData = $this->seasonYearCheck($yearbased);
+            if ($seasonsData === false) {
+                return $this->seasonEpisodes;
+            }
+            if (is_array($seasonsData) && count($seasonsData) > 0) {
+                foreach ($seasonsData as $edge) {
+                    if (empty($edge->node->text)) {
+                        return $this->seasonEpisodes;
                     }
+                    $seasonYear = $edge->node->text;
+                    $filter = $this->buildFilter($seasonYear);
+                    if ($seasonYear == "Unknown") { //this is intended capitol
+                        $seasonYear = -1;
+                    }
+                    // Get all episodes
+                    $episodesData = $this->graphQlGetAllEpisodes($filter);
+                    $episodes = array();
+                    foreach ($episodesData as $edge) {
+                        $dateParts = array(
+                            'day' => isset($edge->node->releaseDate->day) ?
+                                        $edge->node->releaseDate->day : null,
+                            'month' => isset($edge->node->releaseDate->month) ?
+                                            $edge->node->releaseDate->month : null,
+                            'year' => isset($edge->node->releaseDate->year) ?
+                                            $edge->node->releaseDate->year : null
+                        );
+                        $airDate = $this->buildDateString($dateParts);
+                        $epNumber = null;
+                        if (isset($edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber)) {
+                            $epNumber = $edge->node->series->displayableEpisodeNumber->episodeNumber->episodeNumber;
+                            // Unknown episodes get a number to keep them separate.
+                            if ($epNumber == "unknown") {
+                                $epNumber = -1;
+                            }
+                        }
+                        $imgUrl = null;
+                        if (!empty($edge->node->primaryImage->url)) {
+                            $img = str_replace('.jpg', '', $edge->node->primaryImage->url);
+                            if ($thumb == true) {
+                                $fullImageWidth = $edge->node->primaryImage->width;
+                                $fullImageHeight = $edge->node->primaryImage->height;
+                                $newImageWidth = $this->config->episodeThumbnailWidth;
+                                $newImageHeight = $this->config->episodeThumbnailHeight;
+                                $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
+                                $imgUrl = $img . $parameter;
+                            } else {
+                                $imgUrl = $img . 'QL100_SX1000_.jpg';
+                            }
+                        }
+                        $episode = array(
+                                'imdbid' => isset($edge->node->id) ?
+                                                str_replace('tt', '', $edge->node->id) : null,
+                                'title' => isset($edge->node->titleText->text) ?
+                                                $edge->node->titleText->text : null,
+                                'airdate' => $airDate,
+                                'airdateParts' => $dateParts,
+                                'plot' => isset($edge->node->plot->plotText->plainText) ?
+                                                $edge->node->plot->plotText->plainText : null,
+                                'season' => $seasonYear,
+                                'episode' => $epNumber,
+                                'imgUrl' => $imgUrl
+                            );
+                        $episodes[] = $episode;
+                    }
+                    $this->seasonEpisodes[$seasonYear] = $episodes;
                 }
             }
         }
