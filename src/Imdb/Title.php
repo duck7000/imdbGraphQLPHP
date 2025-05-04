@@ -46,11 +46,7 @@ class Title extends MdbBase
     protected $mainPoster = null;
     protected $mainPosterThumb = null;
     protected $mainPlotoutline = null;
-    protected $mainMovietype = null;
-    protected $mainTitle = null;
-    protected $mainOriginalTitle = null;
-    protected $mainYear = -1;
-    protected $mainEndYear = -1;
+    protected $mainTitleYearMovietype = array();
     protected $mainTop250 = 0;
     protected $mainRatingVotes = array();
     protected $mainMetacritics = array();
@@ -139,70 +135,42 @@ class Title extends MdbBase
     }
 
     #-------------------------------------------------------------[ Title ]---
-
-    /** Get movie type
-     * @return string movietype (TV Series, Movie, TV Episode, TV Special, TV Movie, TV Mini Series, Video Game, TV Short, Video)
-     * @see IMDB page / (TitlePage)
-     * If no movietype has been defined explicitly, it returns 'Movie' -- so this is always set.
+    /**
+     * Get title, originalTitle, year, endYear and movietype properties
+     * @return array(title:string|null, originalTitle:string|null, year:int|null, endYear:int|null, movietype:string|null)
      */
-    public function movietype()
+    public function titleYearMovietype()
     {
-        if (empty($this->mainMovietype)) {
-            $this->titleYear();
-            if (empty($this->mainMovietype)) {
-                $this->mainMovietype = 'Movie';
-            }
-        }
-        return $this->mainMovietype;
+        $query = <<<EOF
+query TitleYearMovietype(\$id: ID!) {
+  title(id: \$id) {
+    titleText {
+      text
     }
-
-    /** Get movie title
-     * @return string title movie title (name)
-     * @see IMDB page / (TitlePage)
-     */
-    public function title()
-    {
-        if (empty($this->mainTitle)) {
-            $this->titleYear();
-        }
-        return $this->mainTitle;
+    originalTitleText {
+      text
     }
-
-    /** Get movie original title
-     * @return string mainOriginalTitle  movie original title
-     * @see IMDB page / (TitlePage)
-     */
-    public function originalTitle()
-    {
-        if (empty($this->mainOriginalTitle)) {
-            $this->titleYear();
-        }
-        return $this->mainOriginalTitle ;
+    titleType {
+      text
     }
-
-    /** Get year
-     * @return string year
-     * @see IMDB page / (TitlePage)
-     */
-    public function year()
-    {
-        if ($this->mainYear == -1) {
-            $this->titleYear();
-        }
-        return $this->mainYear;
+    releaseYear {
+      year
+      endYear
     }
-
-    /** Get end-year
-     * if production spanned multiple years, usually for series
-     * @return int endyear|null
-     * @see IMDB page / (TitlePage)
-     */
-    public function endyear()
-    {
-        if ($this->mainEndYear == -1) {
-            $this->titleYear();
-        }
-        return $this->mainEndYear;
+  }
+}
+EOF;
+        $data = $this->graphql->query($query, "TitleYearMovietype", ["id" => "tt$this->imdbID"]);
+        $this->mainTitleYearMovietype = array(
+            'title' => isset($data->title->titleText->text) ?
+                             trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))) : null,
+            'originalTitle' => isset($data->title->originalTitleText->text) ?
+                                     trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null,
+            'year' => isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null,
+            'endYear' => isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null,
+            'movietype' => isset($data->title->titleType->text) ? $data->title->titleType->text : null
+        );
+        return $this->mainTitleYearMovietype;
     }
 
     #---------------------------------------------------------------[ Runtime ]---
@@ -3155,44 +3123,6 @@ EOF;
 
     #========================================================[ Helper functions ]===
     #===============================================================================
-
-    /**
-     * Setup title and year properties
-     */
-    protected function titleYear()
-    {
-        $query = <<<EOF
-query TitleYear(\$id: ID!) {
-  title(id: \$id) {
-    titleText {
-      text
-    }
-    originalTitleText {
-      text
-    }
-    titleType {
-      text
-    }
-    releaseYear {
-      year
-      endYear
-    }
-  }
-}
-EOF;
-        $data = $this->graphql->query($query, "TitleYear", ["id" => "tt$this->imdbID"]);
-
-        $this->mainTitle = isset($data->title->titleText->text) ?
-                                 trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))) : null;
-        $this->mainOriginalTitle  = isset($data->title->originalTitleText->text) ?
-                                          trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null;
-        $this->mainMovietype = isset($data->title->titleType->text) ?
-                                     $data->title->titleType->text : null;
-        $this->mainYear = isset($data->title->releaseYear->year) ?
-                                $data->title->releaseYear->year : null;
-        $this->mainEndYear = isset($data->title->releaseYear->endYear) ?
-                                   $data->title->releaseYear->endYear : null;
-    }
 
     #========================================================[ photo/poster ]===
     /**
