@@ -472,6 +472,39 @@ class Config
      */
     public $titleSearchAdvancedThumbnailHeight = 207;
 
+    #----------------------------------------[Title class Video thumbnail]---
+    /**
+     * video() thumbnail width
+     * Default value: 250
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $videoThumbnailWidth = 250;
+
+    /**
+     * video() thumbnail height
+     * Default value: 140
+     * @var int pixels
+     * Keep ratio in mind, square thumbnails don't work
+     */
+    public $videoThumbnailHeight = 140;
+
+    #========================================================[ Title class video() options ]===
+    /**
+     * This include or exclude mature content video urls
+     * @var boolean default: true
+     */
+    public $videoIncludeMature = true;
+
+    /**
+     * include all video content types or only trailers
+     * @var string default: trailer
+     * Possible values:
+     *      all (include all video content types)
+     *      trailer (include only trailers)
+     */
+    public $videoContentType = 'trailer';
+
     #========================================================[ Debug / Expert options ]===
     /**
      * Enable debug mode?
