@@ -2453,12 +2453,13 @@ EOF;
     #-------------------------------------------------[ Video ]---
     /**
      * Get all video URL's and images from videogallery page
+     * See config settings for this method
      * @return array categorized by type array videos
      *     [Trailer] => Array
      *          [0] => Array()
      *              [id] => 4030506521
      *              [name] => A Clockwork Orange
-     *              [runtime] => 130
+     *              [runtime] => 130 (seconds)
      *              [description] => Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
      *              [titleName] => A Clockwork Orange
      *              [titleYear] => 1971
@@ -2478,10 +2479,11 @@ EOF;
     public function video()
     {
         if (empty($this->videos)) {
+            $filter = $this->config->videoIncludeMature === true ? ',filter:{maturityLevel:INCLUDE_MATURE}' : '';
             $query = <<<EOF
 query Video(\$id: ID!) {
   title(id: \$id) {
-    videoStrip(first:9999) {
+    videoStrip(first:9999$filter) {
       edges {
         node {
           id
@@ -2528,14 +2530,23 @@ EOF;
                )
             {
                 foreach ($data->title->videoStrip->edges as $edge) {
+                    if ($this->config->videoContentType == 'trailer' &&
+                        isset($edge->node->contentType->displayName->value) &&
+                        $edge->node->contentType->displayName->value !== "Trailer"
+                       )
+                    {
+                        continue;
+                    }
                     $thumbUrl = null;
                     $videoId = isset($edge->node->id) ?
                                     str_replace('vi', '', $edge->node->id) : null;
                     if (!empty($edge->node->thumbnail->url)) {
                         $fullImageWidth = $edge->node->thumbnail->width;
                         $fullImageHeight = $edge->node->thumbnail->height;
+                        $newImageWidth = $this->config->videoThumbnailWidth;
+                        $newImageHeight = $this->config->videoThumbnailHeight;
                         $img = str_replace('.jpg', '', $edge->node->thumbnail->url);
-                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, 500, 281);
+                        $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                         $thumbUrl = $img . $parameter;
                     }
                     $this->videos[$edge->node->contentType->displayName->value][] = array(
