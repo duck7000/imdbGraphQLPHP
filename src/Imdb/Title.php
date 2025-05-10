@@ -820,7 +820,10 @@ language {
 }
 EOF;
             $data = $this->graphQlGetAll("AlsoKnow", "akas", $query, $filter);
-            $originalTitle = $this->originalTitle();
+            if (empty($mainTitleYearMovietype)) {
+                $mainTitleYearMovietype = $this->titleYearMovietype();
+            }
+            $originalTitle = $mainTitleYearMovietype['originalTitle'];
             if (!empty($originalTitle)) {
                 $this->akas[] = array(
                     'title' => $originalTitle,
