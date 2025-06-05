@@ -42,6 +42,7 @@ class Title extends MdbBase
     protected $creditsWriter = array();
     protected $creditsCinematographer = array();
     protected $languages = array();
+    protected $interests = array();
     protected $keywords = array();
     protected $mainPoster = null;
     protected $mainPosterThumb = null;
@@ -2197,6 +2198,53 @@ EOF;
             }
         }
         return $this->grosses;
+    }
+
+    #========================================================[ /Interests page ]===
+    /**
+     * Get all interests from movie
+     * It is a mix of keywords and main genres and an alternative for the real interests from imdb
+     * InterestId is not possible
+     * @return array interests
+     * @see IMDB page /interests
+     */
+    public function interests()
+    {
+        if (empty($this->interests)) {
+            $query = <<<EOF
+itemCategory {
+  itemCategoryId
+}
+keyword {
+  text {
+    text
+  }
+}
+EOF;
+            $data = $this->graphQlGetAll("Interests", "keywords", $query);
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    if (isset($edge->node->itemCategory->itemCategoryId) &&
+                        $edge->node->itemCategory->itemCategoryId == 'subgenre'
+                       )
+                    {
+                        if (isset($edge->node->keyword->text->text)) {
+                            $this->interests[] = ucwords($edge->node->keyword->text->text);
+                        }
+                    }
+                }
+            }
+        }
+        sort($this->interests);
+        if (empty($this->genres)) {
+            $this->genre();
+        }
+        foreach ($this->genres as $item) {
+            if (isset($item['mainGenre']) && $item['mainGenre'] != '') {
+                $this->interests[] = $item['mainGenre'];
+            }
+        }
+        return $this->interests;
     }
 
     #========================================================[ /keywords page ]===
