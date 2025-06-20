@@ -485,7 +485,7 @@ EOF;
 
     #--------------------------------------------------------[ Language Stuff ]---
     /** Get all spoken languages spoken in this title
-     * @return array languages (array[0..n] of strings)
+     * @return array languages (array[0..n] of array(id|string, text|string))
      * @see IMDB page / (TitlePage)
      */
     public function language()
@@ -496,6 +496,7 @@ query Languages(\$id: ID!) {
   title(id: \$id) {
     spokenLanguages {
       spokenLanguages {
+        id
         text
       }
     }
@@ -513,7 +514,10 @@ EOF;
             {
                 foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
                     if (!empty($language->text)) {
-                        $this->languages[] = $language->text;
+                        $this->languages[] = array(
+                            'id' => isset($language->id) ? $language->id : null,
+                            'text' => $language->text
+                        );
                     }
                 }
             }
@@ -706,7 +710,7 @@ EOF;
     #-------------------------------------------------[ Country of Origin ]---
     /**
      * Get country of origin
-     * @return array country (array[0..n] of string)
+     * @return array country (array[0..n] of array(id|string, text|string))
      * @see IMDB page / (TitlePage)
      */
     public function country()
@@ -717,6 +721,7 @@ query Countries(\$id: ID!) {
   title(id: \$id) {
     countriesOfOrigin {
       countries {
+        id
         text
       }
     }
@@ -734,7 +739,10 @@ EOF;
             {
                 foreach ($data->title->countriesOfOrigin->countries as $country) {
                     if (!empty($country->text)) {
-                        $this->countries[] = $country->text;
+                        $this->countries[] = array(
+                            'id' => isset($country->id) ? $country->id : null,
+                            'text' => $country->text
+                        );
                     }
                 }
             }
