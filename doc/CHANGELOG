@@ -2,6 +2,18 @@
 History for imdbGraphQLPHP
 ====================
 
+v2.2.0
+-------------------
+* Title class metacritics() overhaul and added all remaining available data like reviews (user changes to ouput array())
+* Title class alsoknow() removed ucwords of title and originalTitle so all names are now returned as they are
+* PSR log v3.0 is now supported
+* Title class merged votes() and rating() into new method ratingVotes(), removed votes() and rating()
+* Title class merged title(), originalTitle(), year(), endYear() and movietype() into new method titleYearMovietype(), and removed the separeate methods
+* Title class video() added mature filter (set in config), added image width and height set in config, added config setting to return trailers only
+* Title class removed trailer() method, use video() instead
+* Title class added new method interests() this wil get interests as shown on imdb title pages (not 100% accurate as this is not in GraphQL API)
+* Title class country() added country ID, language() added language ID
+
 v2.1.4
 -------------------
 * TitleSearch class fixed bug $year wrong typehint and nullable not added, Thansk @jcvignoli
