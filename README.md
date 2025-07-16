@@ -4,6 +4,7 @@ imdbGraphQLPHP7
 =================================================================
 * Attention! this branch is only for php 7.2-7.4!
 * If you use php 8 or higher use the main branch
+* 
 =================================================================
 
 PHP library for retrieving film and TV information from IMDb.<br>
