@@ -1,5 +1,10 @@
-imdbGraphQLPHP
+imdbGraphQLPHP7
 =======
+
+=================================================================
+Attention! this branch is only for php 7.2-7.4!
+If you use php 8 or higher use the main branch
+=================================================================
 
 PHP library for retrieving film and TV information from IMDb.<br>
 This library uses GraphQL API from imdb to get the data.<br>
@@ -68,11 +73,10 @@ Installation
 Download the latest version or latest git version and extract it to your webserver. Use one of the above methods to get some results
 
 Get the files with one of:
-* Composer Include the duck7000/imdb-graphql-php package.
 * Git clone. Checkout the latest release tag
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= works from 7.2 - 8.4 Remember all versions < 8.0 are EOL!
+* PHP >= works from 7.2 - 7.4
 * PHP cURL extension
 * PHP json extension
