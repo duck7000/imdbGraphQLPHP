@@ -25,7 +25,6 @@ class Logger implements LoggerInterface
      * @param array $context
      * @return void
      */
-    //public function emergency($message, array $context = array())
     public function emergency(Stringable|string $message, array $context = []): void
     {
         $this->log('emergency', $message, $context);
