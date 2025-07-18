@@ -42,6 +42,7 @@ class Calendar extends MdbBase
      * @parameter $region This defines which country's releases are returned like DE, NL, US
      * @parameter $type This defines which type is returned, MOVIE, TV or TV_EPISODE
      * @parameter $startDateOverride This defines the startDate override like +3 or -5 of default todays day
+     * @parameter $endDateOverride This defines the endDate override ending date in number of days, default + 1 year
      * @parameter $filter This defines if disablePopularityFilter is set or not, set to false shows all releases,
      * true only returns populair releases so less results within the given date span
      * there seems to be a limit of 100 titles but i did get more titles so i really don't know
@@ -58,14 +59,14 @@ class Calendar extends MdbBase
      *                  [1] =>      (string) Chris Evans
      *              [imgUrl] => (string) https://m.media-amazon.com/images/M/MV5Bc@._V1_QL75_SX50_CR0,0,140,207_.jpg
      */
-    public function comingSoon($region = "US", $type = "MOVIE", $startDateOverride = 0, $filter = "true")
+    public function comingSoon($region = "US", $type = "MOVIE", $startDateOverride = 0, $endDateOverride = 0, $filter = "true")
     {
         $calendar = array();
         $startDate = date("Y-m-d");
         if ($startDateOverride != 0) {
             $startDate = date('Y-m-d', strtotime($startDateOverride . ' day', strtotime($startDate)) );
         }
-        $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($startDate)) );
+        $futureDate = $endDateOverride !== 0 ? gmdate('Y-m-d', strtotime( '+ ' . $endDateOverride . ' days', strtotime($startDate)) ) : date('Y-m-d', strtotime('+1 year', strtotime($startDate)) );
         
         $query = <<<EOF
 query ComingSoon {
