@@ -63,10 +63,13 @@ class Calendar extends MdbBase
     {
         $calendar = array();
         $startDate = date("Y-m-d");
-        if ($startDateOverride != 0) {
-            $startDate = date('Y-m-d', strtotime($startDateOverride . ' day', strtotime($startDate)) );
+        if ($startDateOverride > 0) {
+            $startDate = date('Y-m-d', strtotime($startDateOverride . ' days', strtotime($startDate)) );
         }
-        $futureDate = $endDateOverride !== 0 ? gmdate('Y-m-d', strtotime( '+ ' . $endDateOverride . ' days', strtotime($startDate)) ) : date('Y-m-d', strtotime('+1 year', strtotime($startDate)) );
+        $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($startDate)));
+        if ($endDateOverride > 0) {
+            $futureDate = date('Y-m-d', strtotime( '+' . $endDateOverride . ' days', strtotime($startDate)) );
+       	}
         
         $query = <<<EOF
 query ComingSoon {
