@@ -2,6 +2,8 @@
 
 namespace Psr\Log;
 
+use Stringable;
+
 /**
  * Describes a logger instance.
  *
@@ -27,7 +29,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function emergency($message, array $context = array());
+    public function emergency(Stringable|string $message, array $context = []): void;
 
     /**
      * Action must be taken immediately.
@@ -40,7 +42,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function alert($message, array $context = array());
+    public function alert(Stringable|string $message, array $context = []): void;
 
     /**
      * Critical conditions.
@@ -52,7 +54,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function critical($message, array $context = array());
+    public function critical(Stringable|string $message, array $context = []): void;
 
     /**
      * Runtime errors that do not require immediate action but should typically
@@ -63,7 +65,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function error($message, array $context = array());
+    public function error(Stringable|string $message, array $context = []): void;
 
     /**
      * Exceptional occurrences that are not errors.
@@ -76,7 +78,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function warning($message, array $context = array());
+    public function warning(Stringable|string $message, array $context = []): void;
 
     /**
      * Normal but significant events.
@@ -86,7 +88,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function notice($message, array $context = array());
+    public function notice(Stringable|string $message, array $context = []): void;
 
     /**
      * Interesting events.
@@ -98,7 +100,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function info($message, array $context = array());
+    public function info(Stringable|string $message, array $context = []): void;
 
     /**
      * Detailed debug information.
@@ -108,7 +110,7 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function debug($message, array $context = array());
+    public function debug(Stringable|string $message, array $context = []): void;
 
     /**
      * Logs with an arbitrary level.
@@ -119,5 +121,5 @@ interface LoggerInterface
      *
      * @return null
      */
-    public function log($level, $message, array $context = array());
+    public function log($level, Stringable|string $message, array $context = []): void;
 }
