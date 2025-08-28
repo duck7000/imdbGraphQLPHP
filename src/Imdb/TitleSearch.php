@@ -10,8 +10,26 @@
 
 namespace Imdb;
 
+use Imdb\Image;
+
 class TitleSearch extends MdbBase
 {
+    protected $imageFunctions;
+    protected $newImageWidth;
+    protected $newImageHeight;
+
+    /**
+     * @param Config $config OPTIONAL override default config
+     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     */
+    public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
+    {
+        parent::__construct($config, $logger, $cache);
+        $this->imageFunctions = new Image();
+        $this->newImageWidth = $this->config->titleSearchAdvancedThumbnailWidth;
+        $this->newImageHeight = $this->config->titleSearchAdvancedThumbnailHeight;
+    }
 
     /**
      * Search IMDb for titles matching $searchTerms
@@ -79,6 +97,11 @@ query Search{
               year
               endYear
             }
+            primaryImage {
+              url
+              width
+              height
+            }
           }
         }
       }
@@ -102,6 +125,15 @@ EOF;
                     if (isset($edge->node->entity->releaseYear->endYear)) {
                         $yearRange .= '-' . $edge->node->entity->releaseYear->endYear;
                     }
+                }
+                // image url
+                $imgUrl = null;
+                if (!empty($edge->node->entity->primaryImage->url)) {
+                    $fullImageWidth = $edge->node->entity->primaryImage->width;
+                    $fullImageHeight = $edge->node->entity->primaryImage->height;
+                    $img = str_replace('.jpg', '', $edge->node->entity->primaryImage->url);
+                    $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $this->newImageWidth, $this->newImageHeight);
+                    $imgUrl = $img . $parameter;
                 }
                 $id = isset($edge->node->entity->id) ?
                             str_replace('tt', '', $edge->node->entity->id) : null;
@@ -128,6 +160,7 @@ EOF;
                     'originalTitle' => $origTitle,
                     'year' => $yearRange,
                     'movietype' => $movieType,
+                    'imgUrl' => $imgUrl,
                     'titleSearchObject' => $return
                 );
             }
