@@ -42,7 +42,7 @@ class Config
      * @see $converttozip if you're changing from false to true
      * @var boolean
      */
-    public $cacheUseZip = true;
+    public $cacheUseZip = false;
 
     /**
      * Convert non-zip cache-files to zip
