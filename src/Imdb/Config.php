@@ -39,6 +39,7 @@ class Config
 
     /**
      * Use zip compression for caching the retrieved html-files?
+     * If you are experience any issues when enabling try disable it again as the cache file sizes aren't that big
      * @see $converttozip if you're changing from false to true
      * @var boolean
      */
