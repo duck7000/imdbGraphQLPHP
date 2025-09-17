@@ -2,6 +2,12 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.0.1
+-------------------
+* Updated Logger and LoggerInterface to PSR-3 only (PSR-1 and 2 are no longer supported)
+* Title class search() now has image url included
+* Config class cacheUseZip default is changed to false
+
 v3.0.0
 -------------------
 * Master branch is now php 8 or higher only, if you want to use php 7.2-7.4 use branch imdbGraphQLPHP7
