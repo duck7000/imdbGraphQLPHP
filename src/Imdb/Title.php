@@ -2210,6 +2210,324 @@ EOF;
     }
 
     #========================================================[ /Interests page ]===
+
+    /**
+     * Get all interests from movie
+     * Interests are real and checked to be accurate
+     * @return array interests
+     * @see IMDB page /interests/all
+     */
+    public function interests()
+    {
+        if (empty($this->interests)) {
+            $keywords = array (
+                array('keyword' => 'Action', 'displayName' => 'Action', 'interestId' => 'in0000001'),
+                array('keyword' => 'epic action', 'displayName' => 'Action Epic', 'interestId' => 'in0000002'),
+                array('keyword' => 'for grown ups animation', 'displayName' => 'Adult Animation', 'interestId' => 'in0000025'),
+                array('keyword' => 'Adventure', 'displayName' => 'Adventure', 'interestId' => 'in0000012'),
+                array('keyword' => 'epic adventure', 'displayName' => 'Adventure Epic', 'interestId' => 'in0000015'),
+                array('keyword' => 'alien invasion sci fi', 'displayName' => 'Alien Invasion', 'interestId' => 'in0000157'),
+                array('keyword' => 'animals family', 'displayName' => 'Animal Adventure', 'interestId' => 'in0000092'),
+                array('keyword' => 'Animation', 'displayName' => 'Animation', 'interestId' => 'in0000026'),
+                array('keyword' => 'anime animation', 'displayName' => 'Anime', 'interestId' => 'in0000027'),
+                array('keyword' => 'artificial intelligence sci fi', 'displayName' => 'Artificial Intelligence', 'interestId' => 'in0000158'),
+                array('keyword' => 'b action', 'displayName' => 'B-Action', 'interestId' => 'in0000003'),
+                array('keyword' => 'baseball sport', 'displayName' => 'Baseball', 'interestId' => 'in0000167'),
+                array('keyword' => 'basketball sport', 'displayName' => 'Basketball', 'interestId' => 'in0000168'),
+                array('keyword' => 'beauty game show', 'displayName' => 'Beauty Competition', 'interestId' => 'in0000102'),
+                array('keyword' => 'beauty makeover reality tv', 'displayName' => 'Beauty Makeover', 'interestId' => 'in0000123'),
+                array('keyword' => 'b horror', 'displayName' => 'B-Horror', 'interestId' => 'in0000108'),
+                array('keyword' => 'Biography', 'displayName' => 'Biography', 'interestId' => 'in0000072'),
+                array('keyword' => 'body horror', 'displayName' => 'Body Horror', 'interestId' => 'in0000109'),
+                array('keyword' => 'body swap comedy', 'displayName' => 'Body Swap Comedy', 'interestId' => 'in0000031'),
+                array('keyword' => 'boxing sport', 'displayName' => 'Boxing', 'interestId' => 'in0000169'),
+                array('keyword' => 'buddy comedy', 'displayName' => 'Buddy Comedy', 'interestId' => 'in0000032'),
+                array('keyword' => 'buddy cop comedy', 'displayName' => 'Buddy Cop', 'interestId' => 'in0000033'),
+                array('keyword' => 'bumbling detective mystery', 'displayName' => 'Bumbling Detective', 'interestId' => 'in0000136'),
+                array('keyword' => 'business and occupation reality tv', 'displayName' => 'Business Reality TV', 'interestId' => 'in0000142'),
+                array('keyword' => 'caper crime', 'displayName' => 'Caper', 'interestId' => 'in0000050'),
+                array('keyword' => 'car action', 'displayName' => 'Car Action', 'interestId' => 'in0000004'),
+                array('keyword' => 'classic musical', 'displayName' => 'Classic Musical', 'interestId' => 'in0000131'),
+                array('keyword' => 'classical western', 'displayName' => 'Classical Western', 'interestId' => 'in0000187'),
+                array('keyword' => 'Comedy', 'displayName' => 'Comedy', 'interestId' => 'in0000034'),
+                array('keyword' => 'coming of age drama', 'displayName' => 'Coming-of-Age', 'interestId' => 'in0000073'),
+                array('keyword' => 'cg animation', 'displayName' => 'Computer Animation', 'interestId' => 'in0000028'),
+                array('keyword' => 'concert music', 'displayName' => 'Concert', 'interestId' => 'in0000129'),
+                array('keyword' => 'conspiracy thriller', 'displayName' => 'Conspiracy Thriller', 'interestId' => 'in0000176'),
+                array('keyword' => 'contemporary western', 'displayName' => 'Contemporary Western', 'interestId' => 'in0000188'),
+                array('keyword' => 'cooking reality tv', 'displayName' => 'Cooking & Food', 'interestId' => 'in0000124'),
+                array('keyword' => 'cookery game show', 'displayName' => 'Cooking Competition', 'interestId' => 'in0000103'),
+                array('keyword' => 'cop drama', 'displayName' => 'Cop Drama', 'interestId' => 'in0000051'),
+                array('keyword' => 'costume drama', 'displayName' => 'Costume Drama', 'interestId' => 'in0000074'),
+                array('keyword' => 'cozy mystery', 'displayName' => 'Cozy Mystery', 'interestId' => 'in0000137'),
+                array('keyword' => 'Crime', 'displayName' => 'Crime', 'interestId' => 'in0000052'),
+                array('keyword' => 'crime documentary', 'displayName' => 'Crime Documentary', 'interestId' => 'in0000059'),
+                array('keyword' => 'crime reality tv', 'displayName' => 'Crime Reality TV', 'interestId' => 'in0000143'),
+                array('keyword' => 'cyber thriller', 'displayName' => 'Cyber Thriller', 'interestId' => 'in0000177'),
+                array('keyword' => 'cyberpunk sci fi', 'displayName' => 'Cyberpunk', 'interestId' => 'in0000159'),
+                array('keyword' => 'dark comedy', 'displayName' => 'Dark Comedy', 'interestId' => 'in0000035'),
+                array('keyword' => 'dark fantasy', 'displayName' => 'Dark Fantasy', 'interestId' => 'in0000095'),
+                array('keyword' => 'dark romance', 'displayName' => 'Dark Romance', 'interestId' => 'in0000149'),
+                array('keyword' => 'dating and romance reality tv', 'displayName' => 'Dating Reality TV', 'interestId' => 'in0000144'),
+                array('keyword' => 'desert adventure', 'displayName' => 'Desert Adventure', 'interestId' => 'in0000013'),
+                array('keyword' => 'dinosaur adventure', 'displayName' => 'Dinosaur Adventure', 'interestId' => 'in0000014'),
+                array('keyword' => 'disaster action', 'displayName' => 'Disaster', 'interestId' => 'in0000005'),
+                array('keyword' => 'docudrama', 'displayName' => 'Docudrama', 'interestId' => 'in0000075'),
+                array('keyword' => 'Documentary', 'displayName' => 'Documentary', 'interestId' => 'in0000060'),
+                array('keyword' => 'docuseries documentary', 'displayName' => 'Docuseries', 'interestId' => 'in0000061'),
+                array('keyword' => 'docusoap reality tv', 'displayName' => 'Docusoap Reality TV', 'interestId' => 'in0000145'),
+                array('keyword' => 'Drama', 'displayName' => 'Drama', 'interestId' => 'in0000076'),
+                array('keyword' => 'drug crime', 'displayName' => 'Drug Crime', 'interestId' => 'in0000053'),
+                array('keyword' => 'dystopian sci fi', 'displayName' => 'Dystopian Sci-Fi', 'interestId' => 'in0000160'),
+                array('keyword' => 'epic drama', 'displayName' => 'Epic', 'interestId' => 'in0000077'),
+                array('keyword' => 'erotic thriller', 'displayName' => 'Erotic Thriller', 'interestId' => 'in0000178'),
+                array('keyword' => 'extreme sport', 'displayName' => 'Extreme Sport', 'interestId' => 'in0000170'),
+                array('keyword' => 'fairy tale fantasy', 'displayName' => 'Fairy Tale', 'interestId' => 'in0000097'),
+                array('keyword' => 'religion and spirituality documentary', 'displayName' => 'Faith & Spirit Documentary', 'interestId' => 'in0000062'),
+                array('keyword' => 'Family', 'displayName' => 'Family', 'interestId' => 'in0000093'),
+                array('keyword' => 'Fantasy', 'displayName' => 'Fantasy', 'interestId' => 'in0000098'),
+                array('keyword' => 'epic fantasy', 'displayName' => 'Fantasy Epic', 'interestId' => 'in0000096'),
+                array('keyword' => 'farce comedy', 'displayName' => 'Farce', 'interestId' => 'in0000036'),
+                array('keyword' => 'feel good romance', 'displayName' => 'Feel-Good Romance', 'interestId' => 'in0000151'),
+                array('keyword' => 'Film Noir', 'displayName' => 'Film Noir', 'interestId' => 'in0000054'),
+                array('keyword' => 'financial drama', 'displayName' => 'Financial Drama', 'interestId' => 'in0000078'),
+                array('keyword' => 'folk horror', 'displayName' => 'Folk Horror', 'interestId' => 'in0000110'),
+                array('keyword' => 'food and drink documentary', 'displayName' => 'Food Documentary', 'interestId' => 'in0000063'),
+                array('keyword' => 'american football sport', 'displayName' => 'Football', 'interestId' => 'in0000171'),
+                array('keyword' => 'found footage horror', 'displayName' => 'Found Footage Horror', 'interestId' => 'in0000111'),
+                array('keyword' => 'Game Show', 'displayName' => 'Game Show', 'interestId' => 'in0000105'),
+                array('keyword' => 'gangster crime', 'displayName' => 'Gangster', 'interestId' => 'in0000055'),
+                array('keyword' => 'giallo thriller', 'displayName' => 'Giallo', 'interestId' => 'in0000179'),
+                array('keyword' => 'globetrotting adventure', 'displayName' => 'Globetrotting Adventure', 'interestId' => 'in0000016'),
+                array('keyword' => 'gun fu action', 'displayName' => 'Gun Fu', 'interestId' => 'in0000197'),
+                array('keyword' => 'hand drawn animation', 'displayName' => 'Hand-Drawn Animation', 'interestId' => 'in0000029'),
+                array('keyword' => 'hardboiled mystery', 'displayName' => 'Hard-boiled Detective', 'interestId' => 'in0000138'),
+                array('keyword' => 'heist crime', 'displayName' => 'Heist', 'interestId' => 'in0000056'),
+                array('keyword' => 'hidden camera reality tv', 'displayName' => 'Hidden Camera', 'interestId' => 'in0000146'),
+                array('keyword' => 'high concept comedy', 'displayName' => 'High-Concept Comedy', 'interestId' => 'in0000037'),
+                array('keyword' => 'epic history', 'displayName' => 'Historical Epic', 'interestId' => 'in0000079'),
+                array('keyword' => 'History', 'displayName' => 'History', 'interestId' => 'in0000080'),
+                array('keyword' => 'history documentary', 'displayName' => 'History Documentary', 'interestId' => 'in0000064'),
+                array('keyword' => 'holiday season', 'displayName' => 'Holiday', 'interestId' => 'in0000192'),
+                array('keyword' => 'holiday animation', 'displayName' => 'Holiday Animation', 'interestId' => 'in0000193'),
+                array('keyword' => 'holiday comedy', 'displayName' => 'Holiday Comedy', 'interestId' => 'in0000194'),
+                array('keyword' => 'holiday family', 'displayName' => 'Holiday Family', 'interestId' => 'in0000195'),
+                array('keyword' => 'holiday romance', 'displayName' => 'Holiday Romance', 'interestId' => 'in0000196'),
+                array('keyword' => 'home makeover reality tv', 'displayName' => 'Home Improvement', 'interestId' => 'in0000125'),
+                array('keyword' => 'Horror', 'displayName' => 'Horror', 'interestId' => 'in0000112'),
+                array('keyword' => 'isekai anime animation', 'displayName' => 'Isekai', 'interestId' => 'in0000201'),
+                array('keyword' => 'iyashikei anime animation', 'displayName' => 'Iyashikei', 'interestId' => 'in0000202'),
+                array('keyword' => 'josei anime animation', 'displayName' => 'Josei', 'interestId' => 'in0000203'),
+                array('keyword' => 'jukebox musical', 'displayName' => 'Jukebox Musical', 'interestId' => 'in0000132'),
+                array('keyword' => 'jungle adventure', 'displayName' => 'Jungle Adventure', 'interestId' => 'in0000017'),
+                array('keyword' => 'giant monster sci fi', 'displayName' => 'Kaiju', 'interestId' => 'in0000161'),
+                array('keyword' => 'k drama', 'displayName' => 'Korean Drama', 'interestId' => 'in0000209'),
+                array('keyword' => 'kung fu action', 'displayName' => 'Kung Fu', 'interestId' => 'in0000198'),
+                array('keyword' => 'legal drama', 'displayName' => 'Legal Drama', 'interestId' => 'in0000081'),
+                array('keyword' => 'legal thriller', 'displayName' => 'Legal Thriller', 'interestId' => 'in0000180'),
+                array('keyword' => 'lifestyle reality tv', 'displayName' => 'Lifestyle', 'interestId' => 'in0000126'),
+                array('keyword' => 'martial arts action', 'displayName' => 'Martial Arts', 'interestId' => 'in0000006'),
+                array('keyword' => 'mecha anime animation', 'displayName' => 'Mecha', 'interestId' => 'in0000204'),
+                array('keyword' => 'medical drama', 'displayName' => 'Medical Drama', 'interestId' => 'in0000082'),
+                array('keyword' => 'military and war documentary', 'displayName' => 'Military Documentary', 'interestId' => 'in0000065'),
+                array('keyword' => 'mockumentary comedy', 'displayName' => 'Mockumentary', 'interestId' => 'in0000038'),
+                array('keyword' => 'monster horror', 'displayName' => 'Monster Horror', 'interestId' => 'in0000113'),
+                array('keyword' => 'motorsports sport', 'displayName' => 'Motorsport', 'interestId' => 'in0000172'),
+                array('keyword' => 'mountain adventure', 'displayName' => 'Mountain Adventure', 'interestId' => 'in0000018'),
+                array('keyword' => 'Music', 'displayName' => 'Music', 'interestId' => 'in0000130'),
+                array('keyword' => 'music documentary', 'displayName' => 'Music Documentary', 'interestId' => 'in0000066'),
+                array('keyword' => 'Musical', 'displayName' => 'Musical', 'interestId' => 'in0000133'),
+                array('keyword' => 'Mystery', 'displayName' => 'Mystery', 'interestId' => 'in0000139'),
+                array('keyword' => 'nature documentary', 'displayName' => 'Nature Documentary', 'interestId' => 'in0000067'),
+                array('keyword' => 'News', 'displayName' => 'News', 'interestId' => 'in0000211'),
+                array('keyword' => 'one person army action', 'displayName' => 'One-Person-Army', 'interestId' => 'in0000007'),
+                array('keyword' => 'supernatural reality tv', 'displayName' => 'Paranormal Reality TV', 'interestId' => 'in0000147'),
+                array('keyword' => 'parody comedy', 'displayName' => 'Parody', 'interestId' => 'in0000039'),
+                array('keyword' => 'period drama', 'displayName' => 'Period Drama', 'interestId' => 'in0000083'),
+                array('keyword' => 'police procedural crime', 'displayName' => 'Police Procedural', 'interestId' => 'in0000057'),
+                array('keyword' => 'politics documentary', 'displayName' => 'Political Documentary', 'interestId' => 'in0000068'),
+                array('keyword' => 'political drama', 'displayName' => 'Political Drama', 'interestId' => 'in0000084'),
+                array('keyword' => 'political thriller', 'displayName' => 'Political Thriller', 'interestId' => 'in0000181'),
+                array('keyword' => 'pop musical', 'displayName' => 'Pop Musical', 'interestId' => 'in0000134'),
+                array('keyword' => 'prison drama', 'displayName' => 'Prison Drama', 'interestId' => 'in0000085'),
+                array('keyword' => 'psychological drama', 'displayName' => 'Psychological Drama', 'interestId' => 'in0000086'),
+                array('keyword' => 'psychological horror', 'displayName' => 'Pyschological Horror', 'interestId' => 'in0000114'),
+                array('keyword' => 'psychological thriller', 'displayName' => 'Psychological Thriller', 'interestId' => 'in0000182'),
+                array('keyword' => 'quest adventure', 'displayName' => 'Quest', 'interestId' => 'in0000019'),
+                array('keyword' => 'quirky comedy', 'displayName' => 'Quirky Comedy', 'interestId' => 'in0000040'),
+                array('keyword' => 'quiz game show', 'displayName' => 'Quiz Show', 'interestId' => 'in0000104'),
+                array('keyword' => 'raunchy comedy', 'displayName' => 'Raunchy Comedy', 'interestId' => 'in0000041'),
+                array('keyword' => 'Reality TV', 'displayName' => 'Reality TV', 'interestId' => 'in0000148'),
+                array('keyword' => 'road trip adventure', 'displayName' => 'Road Trip', 'interestId' => 'in0000020'),
+                array('keyword' => 'rock musical', 'displayName' => 'Rock Musical', 'interestId' => 'in0000135'),
+                array('keyword' => 'Romance', 'displayName' => 'Romance', 'interestId' => 'in0000152'),
+                array('keyword' => 'romantic comedy', 'displayName' => 'Romantic Comedy', 'interestId' => 'in0000153'),
+                array('keyword' => 'epic romance', 'displayName' => 'Romantic Epic', 'interestId' => 'in0000150'),
+                array('keyword' => 'samurai action', 'displayName' => 'Samurai', 'interestId' => 'in0000199'),
+                array('keyword' => 'satire comedy', 'displayName' => 'Satire', 'interestId' => 'in0000042'),
+                array('keyword' => 'science and technology documentary', 'displayName' => 'Science & Technology Documentary', 'interestId' => 'in0000069'),
+                array('keyword' => 'Sci Fi', 'displayName' => 'Sci-Fi', 'interestId' => 'in0000162'),
+                array('keyword' => 'epic sci fi', 'displayName' => 'Sci-Fi Epic', 'interestId' => 'in0000163'),
+                array('keyword' => 'screwball comedy', 'displayName' => 'Screwball Comedy', 'interestId' => 'in0000043'),
+                array('keyword' => 'sea adventure', 'displayName' => 'Sea Adventure', 'interestId' => 'in0000021'),
+                array('keyword' => 'seinen anime animation', 'displayName' => 'Seinen', 'interestId' => 'in0000205'),
+                array('keyword' => 'serial killer crime', 'displayName' => 'Serial Killer', 'interestId' => 'in0000183'),
+                array('keyword' => 'shojo anime animation', 'displayName' => 'Shōjo', 'interestId' => 'in0000206'),
+                array('keyword' => 'shonen anime animation', 'displayName' => 'Shōnen', 'interestId' => 'in0000207'),
+                array('keyword' => 'Short', 'displayName' => 'Short', 'interestId' => 'in0000212'),
+                array('keyword' => 'showbiz drama', 'displayName' => 'Showbiz Drama', 'interestId' => 'in0000087'),
+                array('keyword' => 'sitcom comedy', 'displayName' => 'Sitcom', 'interestId' => 'in0000044'),
+                array('keyword' => 'sketch comedy', 'displayName' => 'Sketch Comedy', 'interestId' => 'in0000045'),
+                array('keyword' => 'slapstick comedy', 'displayName' => 'Slapstick', 'interestId' => 'in0000046'),
+                array('keyword' => 'slasher horror', 'displayName' => 'Slasher Horror', 'interestId' => 'in0000115'),
+                array('keyword' => 'slice of life anime animation', 'displayName' => 'Slice of Life', 'interestId' => 'in0000208'),
+                array('keyword' => 'soap opera drama', 'displayName' => 'Soap Opera', 'interestId' => 'in0000088'),
+                array('keyword' => 'soccer sport', 'displayName' => 'Soccer', 'interestId' => 'in0000173'),
+                array('keyword' => 'space sci fi', 'displayName' => 'Space Sci-Fi', 'interestId' => 'in0000164'),
+                array('keyword' => 'spaghetti western', 'displayName' => 'Spaghetti Western', 'interestId' => 'in0000190'),
+                array('keyword' => 'splatter horror', 'displayName' => 'Splatter Horror', 'interestId' => 'in0000116'),
+                array('keyword' => 'Sport', 'displayName' => 'Sport', 'interestId' => 'in0000174'),
+                array('keyword' => 'sports documentary', 'displayName' => 'Sports Documentary', 'interestId' => 'in0000070'),
+                array('keyword' => 'spy thriller', 'displayName' => 'Spy', 'interestId' => 'in0000184'),
+                array('keyword' => 'stand up comedy', 'displayName' => 'Stand-Up', 'interestId' => 'in0000047'),
+                array('keyword' => 'steampunk sci fi', 'displayName' => 'Steampunk', 'interestId' => 'in0000165'),
+                array('keyword' => 'steamy romance', 'displayName' => 'Steamy Romance', 'interestId' => 'in0000154'),
+                array('keyword' => 'stoner comedy', 'displayName' => 'Stoner Comedy', 'interestId' => 'in0000048'),
+                array('keyword' => 'stop motion animation', 'displayName' => 'Stop Motion Animation', 'interestId' => 'in0000030'),
+                array('keyword' => 'superhero action', 'displayName' => 'Superhero', 'interestId' => 'in0000008'),
+                array('keyword' => 'supernatural fantasy', 'displayName' => 'Supernatural Fantasy', 'interestId' => 'in0000099'),
+                array('keyword' => 'supernatural horror', 'displayName' => 'Supernatural Horror', 'interestId' => 'in0000117'),
+                array('keyword' => 'survival adventure', 'displayName' => 'Survival', 'interestId' => 'in0000185'),
+                array('keyword' => 'survival game show', 'displayName' => 'Survival Competition', 'interestId' => 'in0000106'),
+                array('keyword' => 'suspense mystery', 'displayName' => 'Suspense Mystery', 'interestId' => 'in0000140'),
+                array('keyword' => 'swashbuckler adventure', 'displayName' => 'Swashbuckler', 'interestId' => 'in0000022'),
+                array('keyword' => 'sword and sandal action', 'displayName' => 'Sword & Sandal', 'interestId' => 'in0000009'),
+                array('keyword' => 'sword and sorcery fantasy', 'displayName' => 'Sword & Sorcery', 'interestId' => 'in0000100'),
+                array('keyword' => 'talent game show', 'displayName' => 'Talent Competition', 'interestId' => 'in0000107'),
+                array('keyword' => 'Talk Show', 'displayName' => 'Talk Show', 'interestId' => 'in0000127'),
+                array('keyword' => 'teen adventure', 'displayName' => 'Teen Adventure', 'interestId' => 'in0000023'),
+                array('keyword' => 'teen comedy', 'displayName' => 'Teen Comedy', 'interestId' => 'in0000049'),
+                array('keyword' => 'teen drama', 'displayName' => 'Teen Drama', 'interestId' => 'in0000089'),
+                array('keyword' => 'teen fantasy', 'displayName' => 'Teen Fantasy', 'interestId' => 'in0000101'),
+                array('keyword' => 'teen horror', 'displayName' => 'Teen Horror', 'interestId' => 'in0000118'),
+                array('keyword' => 'teen romance', 'displayName' => 'Teen Romance', 'interestId' => 'in0000155'),
+                array('keyword' => 'telenovela drama', 'displayName' => 'Telenovela', 'interestId' => 'in0000210'),
+                array('keyword' => 'Thriller', 'displayName' => 'Thriller', 'interestId' => 'in0000186'),
+                array('keyword' => 'time travel sci fi', 'displayName' => 'Time Travel', 'interestId' => 'in0000166'),
+                array('keyword' => 'tragedy drama', 'displayName' => 'Tragedy', 'interestId' => 'in0000090'),
+                array('keyword' => 'tragic romance', 'displayName' => 'Tragic Romance', 'interestId' => 'in0000156'),
+                array('keyword' => 'travel reality tv', 'displayName' => 'Travel', 'interestId' => 'in0000128'),
+                array('keyword' => 'travel documentary', 'displayName' => 'Travel Documentary', 'interestId' => 'in0000071'),
+                array('keyword' => 'true crime', 'displayName' => 'True Crime', 'interestId' => 'in0000058'),
+                array('keyword' => 'urban adventure', 'displayName' => 'Urban Adventure', 'interestId' => 'in0000024'),
+                array('keyword' => 'vampire horror', 'displayName' => 'Vampire Horror', 'interestId' => 'in0000119'),
+                array('keyword' => 'War', 'displayName' => 'War', 'interestId' => 'in0000010'),
+                array('keyword' => 'epic war', 'displayName' => 'War Epic', 'interestId' => 'in0000011'),
+                array('keyword' => 'aquatic sport', 'displayName' => 'Water Sport', 'interestId' => 'in0000175'),
+                array('keyword' => 'werewolf horror', 'displayName' => 'Werewolf Horror', 'interestId' => 'in0000120'),
+                array('keyword' => 'Western', 'displayName' => 'Western', 'interestId' => 'in0000191'),
+                array('keyword' => 'epic western', 'displayName' => 'Western Epic', 'interestId' => 'in0000189'),
+                array('keyword' => 'whodunnit mystery', 'displayName' => 'Whodunit', 'interestId' => 'in0000141'),
+                array('keyword' => 'witch horror', 'displayName' => 'Witch Horror', 'interestId' => 'in0000121'),
+                array('keyword' => 'workplace drama', 'displayName' => 'Workplace Drama', 'interestId' => 'in0000091'),
+                array('keyword' => 'wuxia action', 'displayName' => 'Wuxia', 'interestId' => 'in0000200'),
+                array('keyword' => 'zombie horror', 'displayName' => 'Zombie Horror', 'interestId' => 'in0000122')
+            );
+            $lang = array (
+                array('isoCode' => 'ar', 'displayName' => 'Arabic', 'interestId' => 'in0000213'),
+                array('isoCode' => 'bn', 'displayName' => 'Bengali', 'interestId' => 'in0000214'),
+                array('isoCode' => 'yue', 'displayName' => 'Cantonese', 'interestId' => 'in0000215'),
+                array('isoCode' => 'da', 'displayName' => 'Danish', 'interestId' => 'in0000242'),
+                array('isoCode' => 'nl', 'displayName' => 'Dutch', 'interestId' => 'in0000216'),
+                array('isoCode' => 'fil', 'displayName' => 'Filipino', 'interestId' => 'in0000217'),
+                array('isoCode' => 'fi', 'displayName' => 'Finnish', 'interestId' => 'in0000218'),
+                array('isoCode' => 'fr', 'displayName' => 'French', 'interestId' => 'in0000219'),
+                array('isoCode' => 'de', 'displayName' => 'German', 'interestId' => 'in0000220'),
+                array('isoCode' => 'el', 'displayName' => 'Greek', 'interestId' => 'in0000221'),
+                array('isoCode' => 'hi', 'displayName' => 'Hindi', 'interestId' => 'in0000222'),
+                array('isoCode' => 'it', 'displayName' => 'Italian', 'interestId' => 'in0000223'),
+                array('isoCode' => 'ja', 'displayName' => 'Japanese', 'interestId' => 'in0000224'),
+                array('isoCode' => 'kn', 'displayName' => 'Kannada', 'interestId' => 'in0000241'),
+                array('isoCode' => 'ko', 'displayName' => 'Korean', 'interestId' => 'in0000225'),
+                array('isoCode' => 'ml', 'displayName' => 'Malayalam', 'interestId' => 'in0000240'),
+                array('isoCode' => 'cmn', 'displayName' => 'Mandarin', 'interestId' => 'in0000226'),
+                array('isoCode' => 'mr', 'displayName' => 'Marathi', 'interestId' => 'in0000227'),
+                array('isoCode' => 'no', 'displayName' => 'Norwegian', 'interestId' => 'in0000228'),
+                array('isoCode' => 'fa', 'displayName' => 'Persian', 'interestId' => 'in0000229'),
+                array('isoCode' => 'pt', 'displayName' => 'Portuguese', 'interestId' => 'in0000230'),
+                array('isoCode' => 'pa', 'displayName' => 'Punjabi', 'interestId' => 'in0000231'),
+                array('isoCode' => 'ru', 'displayName' => 'Russian', 'interestId' => 'in0000232'),
+                array('isoCode' => 'es', 'displayName' => 'Spanish', 'interestId' => 'in0000233'),
+                array('isoCode' => 'sv', 'displayName' => 'Swedish', 'interestId' => 'in0000234'),
+                array('isoCode' => 'ta', 'displayName' => 'Tamil', 'interestId' => 'in0000235'),
+                array('isoCode' => 'te', 'displayName' => 'Telugu', 'interestId' => 'in0000236'),
+                array('isoCode' => 'th', 'displayName' => 'Thai', 'interestId' => 'in0000237'),
+                array('isoCode' => 'tr', 'displayName' => 'Turkish', 'interestId' => 'in0000238'),
+                array('isoCode' => 'ur', 'displayName' => 'Urdu', 'interestId' => 'in0000239')
+            );
+            if (empty($this->languages)) {
+                $this->language();
+            }
+            if (!empty($this->languages[0])) {
+                foreach ($lang as $langArray) {
+                    if($this->languages[0]['id'] === $langArray['isoCode']) {
+                        $this->interests[] = array(
+                            'interestId' => $langArray['interestId'],
+                            'displayName' => $langArray['displayName']
+                        );
+                    }
+                }
+            }
+            $query = <<<EOF
+itemCategory {
+  itemCategoryId
+}
+keyword {
+  text {
+    text
+  }
+}
+EOF;
+            $data = $this->graphQlGetAll("Interests", "keywords", $query);
+            if (count($data) > 0) {
+                foreach ($data as $edge) {
+                    if (isset($edge->node->itemCategory->itemCategoryId) &&
+                        $edge->node->itemCategory->itemCategoryId == 'subgenre'
+                       )
+                    {
+                        if (isset($edge->node->keyword->text->text)) {
+                            foreach ($keywords as $keyword) {
+                               if(in_array($edge->node->keyword->text->text, $keyword)) {
+                                  $this->interests[] = array(
+                                    'interestId' => $keyword['interestId'],
+                                    'displayName' => $keyword['displayName']
+                                  );
+                               }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $this->interests = $this->sortByName($this->interests, "ASC");
+        if (empty($this->genres)) {
+            $this->genre();
+        }
+        foreach ($this->genres as $item) {
+            if (isset($item['mainGenre']) && $item['mainGenre'] != '') {
+                foreach ($keywords as $keyword) {
+                   if(in_array($item['mainGenre'], $keyword)) {
+                      $this->interests[] = array(
+                        'interestId' => $keyword['interestId'],
+                        'displayName' => $keyword['displayName']
+                      );
+                   }
+                }
+            }
+        }
+        return $this->interests;
+    }
+
     /**
      * Get all interesting keywords for a movie
      * It is a mix of keywords and main genres and an alternative for the real interests from imdb
