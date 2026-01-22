@@ -2,6 +2,11 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.0.2
+-------------------
+* Title class renamed interests() to interestingKeywords() to better suit its purpose
+* Title class Added a new interests() method, this will get real interests including language interests and id's
+
 v3.0.1
 -------------------
 * Updated Logger and LoggerInterface to PSR-3 only (PSR-1 and 2 are no longer supported)
