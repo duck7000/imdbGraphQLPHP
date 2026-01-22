@@ -42,6 +42,7 @@ class Title extends MdbBase
     protected $creditsWriter = array();
     protected $creditsCinematographer = array();
     protected $languages = array();
+    protected $interestKeywords = array();
     protected $interests = array();
     protected $keywords = array();
     protected $mainPoster = null;
@@ -2210,15 +2211,14 @@ EOF;
 
     #========================================================[ /Interests page ]===
     /**
-     * Get all interests from movie
+     * Get all interesting keywords for a movie
      * It is a mix of keywords and main genres and an alternative for the real interests from imdb
-     * InterestId is not possible
-     * @return array interests
-     * @see IMDB page /interests
+     * @return array interestKeywords
+     * @see IMDB page /interests, /keywords
      */
-    public function interests()
+    public function interestingKeywords()
     {
-        if (empty($this->interests)) {
+        if (empty($this->interestKeywords)) {
             $query = <<<EOF
 itemCategory {
   itemCategoryId
@@ -2229,7 +2229,7 @@ keyword {
   }
 }
 EOF;
-            $data = $this->graphQlGetAll("Interests", "keywords", $query);
+            $data = $this->graphQlGetAll("InterestKeyword", "keywords", $query);
             if (count($data) > 0) {
                 foreach ($data as $edge) {
                     if (isset($edge->node->itemCategory->itemCategoryId) &&
@@ -2237,22 +2237,22 @@ EOF;
                        )
                     {
                         if (isset($edge->node->keyword->text->text)) {
-                            $this->interests[] = ucwords($edge->node->keyword->text->text);
+                            $this->interestKeywords[] = ucwords($edge->node->keyword->text->text);
                         }
                     }
                 }
             }
         }
-        sort($this->interests);
+        sort($this->interestKeywords);
         if (empty($this->genres)) {
             $this->genre();
         }
         foreach ($this->genres as $item) {
             if (isset($item['mainGenre']) && $item['mainGenre'] != '') {
-                $this->interests[] = $item['mainGenre'];
+                $this->interestKeywords[] = $item['mainGenre'];
             }
         }
-        return $this->interests;
+        return $this->interestKeywords;
     }
 
     #========================================================[ /keywords page ]===
