@@ -3586,4 +3586,40 @@ EOF;
         return $filter;
     }
 
+    /**
+     * Sort by name function for interests()
+     * @param array $array input to be sorted
+     * @param string $sortOrder "ASC" "DESC"
+     * @return array sorted array
+     */
+    public function sortByName($array, $sortOrder)
+    {
+        if ($sortOrder == 'DESC') {
+            // sort array by date
+            usort($array, function($a, $b) {
+                $ad = $a['displayName'];
+                $bd = $b['displayName'];
+
+                if ($ad == $bd) {
+                return 0;
+                }
+
+                return $ad > $bd ? -1 : 1;
+            });
+        } else {
+            // sort array by date
+            usort($array, function($a, $b) {
+                $ad = $a['displayName'];
+                $bd = $b['displayName'];
+
+                if ($ad == $bd) {
+                return 0;
+                }
+
+                return $ad < $bd ? -1 : 1;
+            });
+        }
+        return $array;
+    }
+
 }
