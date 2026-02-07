@@ -1553,70 +1553,7 @@ EOF;
      */
     public function credit()
     {
-        // imdb credits category ids to camelCase names
-        $categoryIds = array(
-            'director' => 'director',
-            'writer' => 'writer',
-            'actress' => 'actress',
-            'actor' => 'actor',
-            'producer' => 'producer',
-            'composer' => 'composer',
-            'cinematographer' => 'cinematographer',
-            'editor' => 'editor',
-            'casting_director' => 'castingDirector',
-            'production_designer' => 'productionDesigner',
-            'art_director' => 'artDirector',
-            'set_decorator' => 'setDecorator',
-            'costume_designer' => 'costumeDesigner',
-            'make_up_department' => 'makeUpDepartment',
-            'production_manager' => 'productionManager',
-            'assistant_director' => 'assistantDirector',
-            'art_department' => 'artDepartment',
-            'sound_department' => 'soundDepartment',
-            'special_effects' => 'specialEffects',
-            'visual_effects' => 'visualEffects',
-            'stunts' => 'stunts',
-            'choreographer' => 'choreographer',
-            'camera_department' => 'cameraDepartment',
-            'animation_department' => 'animationDepartment',
-            'casting_department' => 'castingDepartment',
-            'costume_department' => 'costumeDepartment',
-            'editorial_department' => 'editorialDepartment',
-            'electrical_department' => 'electricalDepartment',
-            'location_management' => 'locationManagement',
-            'music_department' => 'musicDepartment',
-            'production_department' => 'productionDepartment',
-            'script_department' => 'scriptDepartment',
-            'transportation_department' => 'transportationDepartment',
-            'miscellaneous' => 'miscellaneous',
-            'thanks' => 'thanks',
-            'executive' => 'executive',
-            'legal' => 'legal',
-            'soundtrack' => 'soundtrack',
-            'manager' => 'manager',
-            'assistant' => 'assistant',
-            'talent_agent' => 'talentAgent',
-            'self' => 'self',
-            'publicist' => 'publicist',
-            'music_artist' => 'musicArtist',
-            'podcaster' => 'podcaster',
-            'archive_footage' => 'archiveFootage',
-            'archive_sound' => 'archiveSound',
-            'costume_supervisor' => 'costumeSupervisor',
-            'hair_stylist' => 'hairStylist',
-            'intimacy_coordinator' => 'intimacyCoordinator',
-            'make_up_artist' => 'makeUpArtist',
-            'music_supervisor' => 'musicSupervisor',
-            'property_master' => 'propertyMaster',
-            'script_supervisor' => 'scriptSupervisor',
-            'showrunner' => 'showrunner',
-            'stunt_coordinator' => 'stuntCoordinator',
-            'accountant' => 'accountant'
-        );
         if (empty($this->credits)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->credits[$categoryId] = array();
-            }
             $query = <<<EOF
 category {
   id
@@ -1689,7 +1626,15 @@ EOF;
                         $parameter = $this->imageFunctions->resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight);
                         $titleThumbImageUrl = $img . $parameter;
                     }
-                    $this->credits[$categoryIds[$edge->node->category->id]][] = array(
+                    // category Id
+                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catIdSplit = explode('_', $catId);
+                    $categoryId = '';
+                    foreach ($catIdSplit as $catIdKey => $catIdItem) {
+                        $categoryId .= ucwords($catIdItem);
+                    }
+                    $categoryId = lcfirst($categoryId);
+                    $this->credits[$categoryId][] = array(
                         'titleId' => isset($edge->node->title->id) ?
                                         str_replace('tt', '', $edge->node->title->id) : null,
                         'titleName' => isset($edge->node->title->titleText->text) ?
