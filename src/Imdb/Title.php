@@ -1688,21 +1688,7 @@ EOF;
      */
     public function trivia($spoil = false)
     {
-        // imdb connection category ids to camelCase
-        $categoryIds = array(
-            'uncategorized' => 'uncategorized',
-            'actor-trademark' => 'actorTrademark',
-            'cameo' => 'cameo',
-            'director-cameo' => 'directorCameo',
-            'director-trademark' => 'directorTrademark',
-            'smithee' => 'smithee'
-        );
-
         if (empty($this->trivias)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->trivias[$categoryId] = array();
-            }
-
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
 category {
@@ -1742,7 +1728,15 @@ EOF;
                             );
                         }
                     }
-                    $this->trivias[$categoryIds[$edge->node->category->id]][] = array(
+                    // category Id
+                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catIdSplit = explode('-', $catId);
+                    $categoryId = '';
+                    foreach ($catIdSplit as $catIdKey => $catIdItem) {
+                        $categoryId .= ucwords($catIdItem);
+                    }
+                    $categoryId = lcfirst($categoryId);
+                    $this->trivias[$categoryId][] = array(
                         'content' => isset($edge->node->displayableArticle->body->plainText) ?
                                         preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
                         'names' => $names,
