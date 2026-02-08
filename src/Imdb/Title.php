@@ -37,6 +37,7 @@ class Title extends MdbBase
     protected $creditsThanks = array();
     protected $creditsVisualEffects = array();
     protected $creditsSpecialEffects = array();
+    protected $creditsVoiceActor = array();
     protected $creditsDirector = array();
     protected $creditsProducer = array();
     protected $creditsWriter = array();
@@ -1421,7 +1422,7 @@ EOF;
         return $this->creditsVisualEffects = $visualEffectsData;
     }
     
-        #-------------------------------------------------------------[ Special Effects ]---
+    #-------------------------------------------------------------[ Special Effects ]---
     /** Obtain Special Effects credits of this title
      * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
      * @see IMDB page /fullcredits
@@ -1433,6 +1434,20 @@ EOF;
         }
         $specialEffectsData = $this->creditHelper("special_effects");
         return $this->creditsSpecialEffects = $specialEffectsData;
+    }
+
+    #-------------------------------------------------------------[ voice actor credits ]---
+    /** Obtain voice actor credits of this title, normally listed under miscelleanous but now filtered
+     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
+     * @see IMDB page /fullcredits
+     */
+    public function voiceActor()
+    {
+        if (!empty($this->creditsVoiceActor)) {
+            return $this->creditsVoiceActor;
+        }
+        $voiceActorData = $this->creditHelper("miscellaneous", "voice actor");
+        return $this->creditsVoiceActor = $voiceActorData;
     }
 
     #====================================================[ /crazycredits page ]===
@@ -3467,12 +3482,13 @@ EOF;
     #========================================================[ Crew Category ]===
     #---------------------------------------------------------------[ credit helper ]---
     /** helper for stunts, thanks, visualEffects, specialEffects, producer,
-     *      writer, director, composer, cinematographer
+     *      writer, director, composer, cinematographer, voiceActor
+     * @param string $aditionalType filter type for miscelleanous credits, only "voice actor" is supported
      * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[],
      *      episode array(total, year, endYear)], titleFullImageUrl, titleThumbImageUrl)
      * @see IMDB page /fullcredits
      */
-    private function creditHelper($crewCategory)
+    private function creditHelper($crewCategory, $aditionalType = '')
     {
         $filter = ', filter: { categories: ["' .$crewCategory . '"] }';
         $output = array();
@@ -3516,6 +3532,21 @@ EOF;
                     foreach ($edge->node->jobs as $value) {
                         if (!empty($value->text)) {
                             $jobs[] = $value->text;
+                        }
+                    }
+                }
+                // aditionalType "voice actor"
+                if ($aditionalType === 'voice actor') {
+                    foreach ($jobs as $jobKey => $job) {
+                        $type = explode(':', $job);
+                        if (trim($type[0]) !== $aditionalType) {
+                            if ($jobKey === array_key_last($jobs)) {
+                                continue 2;
+                            } else {
+                                continue;
+                            }
+                        } else {
+                            break;
                         }
                     }
                 }
