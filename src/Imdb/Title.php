@@ -1994,31 +1994,7 @@ EOF;
      */
     public function connection()
     {
-        // imdb connection category ids to camelCase
-        $categoryIds = array(
-            'alternate_language_version_of' => 'alternateLanguageVersionOf',
-            'edited_from' => 'editedFrom',
-            'edited_into' => 'editedInto',
-            'featured_in' => 'featured',
-            'features' => 'features',
-            'followed_by' => 'followedBy',
-            'follows' => 'follows',
-            'referenced_in' => 'referenced',
-            'references' => 'references',
-            'remade_as' => 'remadeAs',
-            'remake_of' => 'remakeOf',
-            'same_franchise' => 'sameFranchise',
-            'spin_off' => 'spinOff',
-            'spin_off_from' => 'spinOffFrom',
-            'spoofed_in' => 'spoofed',
-            'spoofs' => 'spoofs',
-            'version_of' => 'versionOf'
-        );
-
         if (empty($this->connections)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->connections[$categoryId] = array();
-            }
             $query = <<<EOF
 associatedTitle {
   id
@@ -2050,7 +2026,15 @@ EOF;
             $edges = $this->graphQlGetAll("Connections", "connections", $query);
             if (count($edges) > 0) {
                 foreach ($edges as $edge) {
-                    $this->connections[$categoryIds[$edge->node->category->id]][] = array(
+                    // category Id
+                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catIdSplit = explode('_', $catId);
+                    $categoryId = '';
+                    foreach ($catIdSplit as $catIdKey => $catIdItem) {
+                        $categoryId .= ucwords($catIdItem);
+                    }
+                    $categoryId = lcfirst($categoryId);
+                    $this->connections[$categoryId][] = array(
                         'titleId' => isset($edge->node->associatedTitle->id) ?
                                         str_replace('tt', '', $edge->node->associatedTitle->id) : null,
                         'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
