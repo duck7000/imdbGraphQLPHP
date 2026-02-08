@@ -1612,26 +1612,7 @@ EOF;
      */
     public function goof($spoil = false)
     {
-        // imdb connection category ids to camelCase
-        $categoryIds = array(
-            'continuity' => 'continuity',
-            'factual_error' => 'factualError',
-            'not_a_goof' => 'notAGoof',
-            'revealing_mistake' => 'revealingMistake',
-            'miscellaneous' => 'miscellaneous',
-            'anachronism' => 'anachronism',
-            'audio_visual_unsynchronized' => 'audioVisualUnsynchronized',
-            'crew_or_equipment_visible' => 'crewOrEquipmentVisible',
-            'error_in_geography' => 'errorInGeography',
-            'plot_hole' => 'plotHole',
-            'boom_mic_visible' => 'boomMicVisible',
-            'character_error' => 'characterError'
-        );
-
         if (empty($this->goofs)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->goofs[$categoryId] = array();
-            }
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
             $query = <<<EOF
 category {
@@ -1647,7 +1628,15 @@ EOF;
             $data = $this->graphQlGetAll("Goofs", "goofs", $query, $filter);
             if (count($data) > 0) {
                 foreach ($data as $edge) {
-                    $this->goofs[$categoryIds[$edge->node->category->id]][] = array(
+                    // category Id
+                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catIdSplit = explode('_', $catId);
+                    $categoryId = '';
+                    foreach ($catIdSplit as $catIdKey => $catIdItem) {
+                        $categoryId .= ucwords($catIdItem);
+                    }
+                    $categoryId = lcfirst($categoryId);
+                    $this->goofs[$categoryId][] = array(
                         'content' => isset($edge->node->displayableArticle->body->plainText) ?
                                         $edge->node->displayableArticle->body->plainText : null,
                         'isSpoiler' => $edge->node->isSpoiler
