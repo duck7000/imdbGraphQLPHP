@@ -2,6 +2,12 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.1.1
+-------------------
+* Title class goof(), trivia() and connection() removed hard-coded category names, use real categoryID's instead.
+* Name class credit() removed hard-coded category names, use real categoryID's instead.
+* Title class Added a new method voiceActor
+
 v3.0.2
 -------------------
 * Title class renamed interests() to interestingKeywords() to better suit its purpose
