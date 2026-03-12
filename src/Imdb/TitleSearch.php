@@ -47,12 +47,14 @@ class TitleSearch extends MdbBase
      * 
      * @param string $startDate search from startDate til present date, iso date (year-month-day) ("1975-01-01")
      * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
+     * @param boolean $exactMatch true:only return results if exactly match searchTerm, default: false
      * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * 
      * @return array<int, array<string, string|Title>>
      */
-    public function search($searchTerms, $types = null, $startDate = '', $endDate = '')
+    public function search($searchTerms, $types = null, $startDate = '', $endDate = '', $exactMatch = false)
     {
+        $match = $exactMatch === true ? 'true' : 'false';
         $amount = $this->config->titleSearchAmount;
         $results = array();
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
@@ -70,6 +72,7 @@ query Search{
       searchTerm: "$searchTerms"
       type: TITLE
       includeAdult: true
+      isExactMatch: $match
       titleSearchOptions: {
         type: [$types]
         releaseDateRange: {
