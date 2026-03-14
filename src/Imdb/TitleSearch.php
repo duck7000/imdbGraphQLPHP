@@ -168,7 +168,7 @@ EOF;
                 );
             }
         }
-        return $results;
+        return $this->sortBySearch($results, $searchTerms);
     }
 
 
@@ -229,6 +229,28 @@ EOF;
                 }
             }
         }
+    }
+
+    /**
+     * Sort by exact match searchItem for search()
+     * @param array $array input to be sorted
+     * @param string $sortItem where sort is based on e'g $searchItem from search()
+     * @return array sorted array
+     */
+    public function sortBySearch($array, $sortItem)
+    {
+        $matches = array();
+        $others  = array();
+
+        foreach ($array as $t) {
+            if (strcasecmp($t['title'], $sortItem) === 0) {
+                $matches[] = $t;
+            } else {
+                $others[] = $t;
+            }
+        }
+
+        return array_merge($matches, $others);
     }
 
 }
