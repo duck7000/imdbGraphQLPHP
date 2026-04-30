@@ -132,6 +132,8 @@ query WatchListPage {
     items(first:1000) {
       edges {
         node {
+          createdDate
+          lastModifiedDate
           item {
             ... on Title {
               id
@@ -180,6 +182,10 @@ EOF;
                     'id' => isset($item->node->item->id) ? $item->node->item->id : null,
                     'title' => isset($item->node->item->titleText->text) ?
                                      $item->node->item->titleText->text : null,
+                    'createdDate' => isset($item->node->createdDate) ?
+                                           $item->node->createdDate : null,
+                    'lastModifiedDate' => isset($item->node->lastModifiedDate) ?
+                                                $item->node->lastModifiedDate : null,
                     'titleType' => isset($item->node->item->titleType->text) ?
                                          $item->node->item->titleType->text : null,
                     'thumb' => $thumb
@@ -241,6 +247,8 @@ query UserList {
         items (first:1000) {
           edges {
             node {
+              createdDate
+              lastModifiedDate
               item {
                 ... on Title {
                   id
@@ -310,6 +318,10 @@ EOF;
                                 'id' => isset($listItems->node->item->id) ? $listItems->node->item->id : null,
                                 'name' => isset($listItems->node->item->nameText->text) ?
                                                 $listItems->node->item->nameText->text : null,
+                                'createdDate' => isset($listItems->node->createdDate) ?
+                                                       $listItems->node->createdDate : null,
+                                'lastModifiedDate' => isset($listItems->node->lastModifiedDate) ?
+                                                            $listItems->node->lastModifiedDate : null,
                                 'thumb' => $thumb
                             );
                         } elseif ($listElementType === 'TITLES') {
