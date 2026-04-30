@@ -194,17 +194,17 @@ EOF;
             $results = array(
                 'id' => isset($data->predefinedList->id) ? $data->predefinedList->id : null,
                 'name' => isset($data->predefinedList->name->originalText) ?
-                                    $data->predefinedList->name->originalText : null,
+                                $data->predefinedList->name->originalText : null,
                 'createdDate' => isset($data->predefinedList->createdDate) ?
-                                     $data->predefinedList->createdDate : null,
+                                       $data->predefinedList->createdDate : null,
                 'lastModifiedDate' => isset($data->predefinedList->lastModifiedDate) ?
-                                     $data->predefinedList->lastModifiedDate : null,
+                                            $data->predefinedList->lastModifiedDate : null,
                 'listTypeId' => isset($data->predefinedList->listType->id) ?
                                       $data->predefinedList->listType->id : null,
                 'authorId' => isset($data->predefinedList->author->userId) ?
                                     $data->predefinedList->author->userId : null,
                 'authorNickName' => isset($data->predefinedList->author->nickName) ?
-                                    $data->predefinedList->author->nickName : null,
+                                          $data->predefinedList->author->nickName : null,
                 'items' => $items
             );
         }
