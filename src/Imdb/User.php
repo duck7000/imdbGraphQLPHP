@@ -244,7 +244,7 @@ query UserList {
         name {
           originalText
         }
-        items (first:1000) {
+        items (first:9999) {
           edges {
             node {
               createdDate
