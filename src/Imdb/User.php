@@ -329,6 +329,10 @@ EOF;
                                 'id' => isset($listItems->node->item->id) ? $listItems->node->item->id : null,
                                 'title' => isset($listItems->node->item->titleText->text) ?
                                                  $listItems->node->item->titleText->text : null,
+                                'createdDate' => isset($listItems->node->createdDate) ?
+                                                       $listItems->node->createdDate : null,
+                                'lastModifiedDate' => isset($listItems->node->lastModifiedDate) ?
+                                                            $listItems->node->lastModifiedDate : null,
                                 'titleType' => isset($listItems->node->item->titleType->text) ?
                                                      $listItems->node->item->titleType->text : null,
                                 'thumb' => $thumb
