@@ -73,6 +73,6 @@ Get the files with one of:
 * [Zip/Tar download]
 
 ### Requirements
-* PHP >= works from 8.0 - 8.4
+* PHP >= works from 8.0 - 8.5
 * PHP cURL extension
 * PHP json extension
