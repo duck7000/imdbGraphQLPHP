@@ -117,7 +117,7 @@ class Title extends MdbBase
         string $title,
         string $orignalTitle,
         ?string $year,
-        string $type,
+        ?string $type,
         ?Config $config = null,
         ?LoggerInterface $logger = null,
         ?CacheInterface $cache = null
