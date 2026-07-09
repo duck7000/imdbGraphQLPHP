@@ -1515,11 +1515,11 @@ EOF;
                 return $this->seasonEpisodes;
             }
             if (is_array($seasonsData) && count($seasonsData) > 0) {
-                foreach ($seasonsData as $edge) {
-                    if (empty($edge->node->text)) {
+                foreach ($seasonsData as $seasonsDataEdge) {
+                    if (empty($seasonsDataEdge->node->text)) {
                         return $this->seasonEpisodes;
                     }
-                    $seasonYear = $edge->node->text;
+                    $seasonYear = $seasonsDataEdge->node->text;
                     $filter = $this->buildFilter($seasonYear);
                     if ($seasonYear == "Unknown") { //this is intended capitol
                         $seasonYear = -1;
