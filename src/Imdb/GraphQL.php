@@ -73,6 +73,7 @@ class GraphQL
     {
         $request = new Request('https://api.graphql.imdb.com/', $this->config);
         $request->addHeaderLine("Content-Type", "application/json");
+        $request->addHeaderLine("x-imdb-client-name", "imdb-web-next-localized");
         if ($this->config->useLocalization === true) {
             if (!empty($this->config->country)) {
                 $request->addHeaderLine("X-Imdb-User-Country", $this->config->country);
