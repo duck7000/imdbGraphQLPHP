@@ -585,6 +585,7 @@ EOF;
     public function topBoxOffice()
     {
         $boxOfficeResults = array();
+        $results = array();
         $query = <<<EOF
 query BoxOffice{
   boxOfficeWeekendChart(limit: 10) {
@@ -631,9 +632,9 @@ EOF;
         if (!isset($data->boxOfficeWeekendChart)) {
             return array();
         }
-        if (isset($data->boxOfficeWeekendChart->edges) &&
-            is_array($data->boxOfficeWeekendChart->edges) &&
-            count($data->boxOfficeWeekendChart->edges) > 0
+        if (isset($data->boxOfficeWeekendChart->entries) &&
+            is_array($data->boxOfficeWeekendChart->entries) &&
+            count($data->boxOfficeWeekendChart->entries) > 0
            )
         {
             foreach ($data->boxOfficeWeekendChart->entries as $edge) {
