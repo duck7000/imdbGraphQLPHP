@@ -2678,7 +2678,11 @@ EOF;
      *              [description] => Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
      *              [titleName] => A Clockwork Orange
      *              [titleYear] => 1971
-     *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/
+     *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/ (this is playable in browser)
+     *              [fullPlaybackUrls] => Array[]
+     *                  [0] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *              [fullPreviewUrls] => Array[]
+     *                  [0] => string
      *              [imageUrl] => https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
      *      [Clip] => Array()
      *          [0] => Array()
@@ -2702,6 +2706,12 @@ query Video(\$id: ID!) {
       edges {
         node {
           id
+          playbackURLs {
+            url
+          }
+          previewURLs {
+            url
+          }
           name {
             value
           }
@@ -2752,6 +2762,35 @@ EOF;
                     {
                         continue;
                     }
+
+                    // fullPlaybackURLs
+                    $fullPlaybackUrl = array();
+                    if (isset($edge->node->playbackURLs) &&
+                        is_array($edge->node->playbackURLs) &&
+                        count($edge->node->playbackURLs) > 0
+                       )
+                    {
+                        foreach ($edge->node->playbackURLs as $playbackUrl) {
+                            if (!empty($playbackUrl->url)) {
+                                $fullPlaybackUrl[] = $playbackUrl->url;
+                            }
+                        }
+                    }
+
+                    // fullPreviewURLs
+                    $fullPreviewUrls = array();
+                    if (isset($edge->node->previewURLs) &&
+                        is_array($edge->node->previewURLs) &&
+                        count($edge->node->previewURLs) > 0
+                       )
+                    {
+                        foreach ($edge->node->previewURLs as $previewUrl) {
+                            if (!empty($previewUrl->url)) {
+                                $fullPreviewUrls[] = $previewUrl->url;
+                            }
+                        }
+                    }
+
                     $thumbUrl = null;
                     $videoId = isset($edge->node->id) ?
                                     str_replace('vi', '', $edge->node->id) : null;
@@ -2769,15 +2808,17 @@ EOF;
                         'name' => isset($edge->node->name->value) ?
                                         $edge->node->name->value : null,
                         'runtime' => isset($edge->node->runtime->value) ?
-                                        $edge->node->runtime->value : null,
+                                           $edge->node->runtime->value : null,
                         'description' => isset($edge->node->description->value) ?
-                                            $edge->node->description->value : null,
+                                               $edge->node->description->value : null,
                         'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
-                                            $edge->node->primaryTitle->titleText->text : null,
+                                             $edge->node->primaryTitle->titleText->text : null,
                         'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
-                                            $edge->node->primaryTitle->releaseYear->year : null,
+                                             $edge->node->primaryTitle->releaseYear->year : null,
                         'playbackUrl' => !empty($videoId) ?
-                                                'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                                         'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                        'fullPlaybackUrls' => $fullPlaybackUrl,
+                        'fullPreviewUrls' => $fullPreviewUrls,
                         'imageUrl' => $thumbUrl
                     );
                 }
