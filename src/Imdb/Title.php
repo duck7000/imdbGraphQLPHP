@@ -2679,21 +2679,17 @@ EOF;
      *              [titleName] => A Clockwork Orange
      *              [titleYear] => 1971
      *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/ (this is playable in browser)
-     *              [fullPlaybackUrls] => Array[]
-     *                  [0] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
-     *              [fullPreviewUrls] => Array[]
-     *                  [0] => string
+     *              [fullPlaybackUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                      [mimeType] => string MP4
+     *                      [definition] => string DEF_SD
+     *              [fullPreviewUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string 
+     *                      [mimeType] => string M3U8
+     *                      [definition] => string DEF_AUTO
      *              [imageUrl] => https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
-     *      [Clip] => Array()
-     *          [0] => Array()
-     *              [id] => 815316505
-     *              [name] => 'The Platform' & Future Films From the IMDb Top 250
-     *              [runtime] => 244
-     *              [description] => On this IMDbrief, we break down our favorite movies from the IMDb Top 250 that boldly look to what might lie ahead.
-     *              [titleName] => 'The Platform' & Future Films From the IMDb Top 250
-     *              [titleYear] => 2020
-     *              [playbackUrl] => https://www.imdb.com/video/vi815316505/
-     *              [imageUrl] => https://m.media-amazon.com/images/M/MV5BMW8@._V1_QL75_UX500_CR0,0,500,281_.jpg
      */
     public function video()
     {
@@ -2708,9 +2704,13 @@ query Video(\$id: ID!) {
           id
           playbackURLs {
             url
+            videoMimeType
+            videoDefinition
           }
           previewURLs {
             url
+            videoMimeType
+            videoDefinition
           }
           name {
             value
@@ -2772,7 +2772,13 @@ EOF;
                     {
                         foreach ($edge->node->playbackURLs as $playbackUrl) {
                             if (!empty($playbackUrl->url)) {
-                                $fullPlaybackUrl[] = $playbackUrl->url;
+                                $fullPlaybackUrl[] = array(
+                                    'url' => $playbackUrl->url,
+                                    'mimeType' => isset($playbackUrl->videoMimeType) ?
+                                                        $playbackUrl->videoMimeType : null,
+                                    'definition' => isset($playbackUrl->videoDefinition) ?
+                                                          $playbackUrl->videoDefinition : null,
+                                );
                             }
                         }
                     }
@@ -2786,14 +2792,20 @@ EOF;
                     {
                         foreach ($edge->node->previewURLs as $previewUrl) {
                             if (!empty($previewUrl->url)) {
-                                $fullPreviewUrls[] = $previewUrl->url;
+                                $fullPreviewUrls[] = array(
+                                    'url' => $previewUrl->url,
+                                    'mimeType' => isset($previewUrl->videoMimeType) ?
+                                                        $previewUrl->videoMimeType : null,
+                                    'definition' => isset($previewUrl->videoDefinition) ?
+                                                          $previewUrl->videoDefinition : null,
+                                );
                             }
                         }
                     }
 
                     $thumbUrl = null;
                     $videoId = isset($edge->node->id) ?
-                                    str_replace('vi', '', $edge->node->id) : null;
+                                     str_replace('vi', '', $edge->node->id) : null;
                     if (!empty($edge->node->thumbnail->url)) {
                         $fullImageWidth = $edge->node->thumbnail->width;
                         $fullImageHeight = $edge->node->thumbnail->height;
