@@ -52,6 +52,16 @@ class Trailers extends MdbBase
      *              [trailerCreateDate] =>          (string iso date) 2024-11-17T13:16:18.708Z
      *              [trailerRuntime] =>             (int) (in seconds!)
      *              [playbackUrl] =>                (string) This url will playback in browser only)
+     *              [fullPlaybackUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                      [mimeType] => string MP4
+     *                      [definition] => string DEF_SD
+     *              [fullPreviewUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string 
+     *                      [mimeType] => string M3U8
+     *                      [definition] => string DEF_AUTO
      *              [thumbnailUrl] =>               (string) (thumbnail (140x207) image of the title)
      *              [releaseDate] =>                (string) (date string: December 4, 2024)
      *              [contentType] =>                (string ) like Trailer Season 1 [OV]
@@ -69,6 +79,16 @@ query RecentVideo {
   ) {
     videos {
       id
+      playbackURLs {
+        url
+        videoMimeType
+        videoDefinition
+      }
+      previewURLs {
+        url
+        videoMimeType
+        videoDefinition
+      }
       createdDate
       primaryTitle {
         id
@@ -108,6 +128,47 @@ EOF;
            )
         {
             foreach ($data->recentVideos->videos as $edge) {
+
+                // fullPlaybackURLs
+                $fullPlaybackUrl = array();
+                if (isset($edge->playbackURLs) &&
+                    is_array($edge->playbackURLs) &&
+                    count($edge->playbackURLs) > 0
+                   )
+                {
+                    foreach ($edge->playbackURLs as $playbackUrl) {
+                        if (!empty($playbackUrl->url)) {
+                            $fullPlaybackUrl[] = array(
+                                'url' => $playbackUrl->url,
+                                'mimeType' => isset($playbackUrl->videoMimeType) ?
+                                                    $playbackUrl->videoMimeType : null,
+                                'definition' => isset($playbackUrl->videoDefinition) ?
+                                                      $playbackUrl->videoDefinition : null,
+                            );
+                        }
+                    }
+                }
+
+                // fullPreviewURLs
+                $fullPreviewUrls = array();
+                if (isset($edge->previewURLs) &&
+                    is_array($edge->previewURLs) &&
+                    count($edge->previewURLs) > 0
+                   )
+                {
+                    foreach ($edge->previewURLs as $previewUrl) {
+                        if (!empty($previewUrl->url)) {
+                            $fullPreviewUrls[] = array(
+                                'url' => $previewUrl->url,
+                                'mimeType' => isset($previewUrl->videoMimeType) ?
+                                                    $previewUrl->videoMimeType : null,
+                                'definition' => isset($previewUrl->videoDefinition) ?
+                                                      $previewUrl->videoDefinition : null,
+                            );
+                        }
+                    }
+                }
+
                 $thumbUrl = null;
                 $videoId = isset($edge->id) ?
                                 str_replace('vi', '', $edge->id) : null;
@@ -123,13 +184,15 @@ EOF;
                     'titleId' => isset($edge->primaryTitle->id) ?
                                     str_replace('tt', '', $edge->primaryTitle->id) : null,
                     'title' => isset($edge->primaryTitle->titleText->text) ?
-                                    $edge->primaryTitle->titleText->text : null,
+                                     $edge->primaryTitle->titleText->text : null,
                     'trailerCreateDate' => isset($edge->createdDate) ?
-                                                $edge->createdDate : null,
+                                                 $edge->createdDate : null,
                     'trailerRuntime' => isset($edge->runtime->value) ?
-                                            $edge->runtime->value : null,
+                                             $edge->runtime->value : null,
                     'playbackUrl' => !empty($videoId) ?
-                                            'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                                     'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'fullPlaybackUrls' => $fullPlaybackUrl,
+                    'fullPreviewUrls' => $fullPreviewUrls,
                     'thumbnailUrl' => $thumbUrl,
                     'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
                                         $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
@@ -154,6 +217,16 @@ EOF;
      *              [trailerCreateDate] =>  (string iso date) 2024-11-17T13:16:18.708Z
      *              [trailerRuntime] =>     (int) (in seconds!)
      *              [playbackUrl] =>        (string) This url will playback in browser only)
+     *              [fullPlaybackUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                      [mimeType] => string MP4
+     *                      [definition] => string DEF_SD
+     *              [fullPreviewUrls] => Array()
+     *                  [0] => Array()
+     *                      [url] => string 
+     *                      [mimeType] => string M3U8
+     *                      [definition] => string DEF_AUTO
      *              [thumbnailUrl] =>       (string) (thumbnail (140x207)image of the title)
      *              [releaseDate] =>        (string) (date string: December 4, 2024)
      *              [contentType] =>        (string ) like Trailer Season 1 [OV]
@@ -168,6 +241,23 @@ query TrendingVideo {
   trendingTitles(limit: 250) {
     titles {
       id
+      videoStrip {
+        edges {
+          node {
+            id
+            playbackURLs {
+              url
+              videoMimeType
+              videoDefinition
+            }
+            previewURLs {
+              url
+              videoMimeType
+              videoDefinition
+            }
+          }
+        }
+      }
       titleText {
         text
       }
@@ -208,9 +298,59 @@ EOF;
            )
         {
             foreach ($data->trendingTitles->titles as $edge) {
+
+                // full playback and preview URLs
+                $fullPlaybackUrls = array();
+                $fullPreviewUrls = array();
+                if (isset($edge->videoStrip->edges) &&
+                    is_array($edge->videoStrip->edges) &&
+                    count($edge->videoStrip->edges) > 0
+                   )
+                {
+                    foreach ($edge->videoStrip->edges as $videos) {
+                        if (isset($videos->node->playbackURLs) &&
+                            is_array($videos->node->playbackURLs) &&
+                            count($videos->node->playbackURLs) > 0
+                           )
+                        {
+                            if (isset($videos->node->id) &&
+                                isset($edge->latestTrailer->id) &&
+                                $videos->node->id !== $edge->latestTrailer->id
+                               )
+                            {
+                                continue;
+                            }
+                            //playback Urls
+                            foreach ($videos->node->playbackURLs as $playbackUrl) {
+                                if (!empty($playbackUrl->url)) {
+                                    $fullPlaybackUrls[] = array(
+                                        'url' => $playbackUrl->url,
+                                        'mimeType' => isset($playbackUrl->videoMimeType) ?
+                                                            $playbackUrl->videoMimeType : null,
+                                        'definition' => isset($playbackUrl->videoDefinition) ?
+                                                              $playbackUrl->videoDefinition : null,
+                                    );
+                                }
+                            }
+                            //preview Urls
+                            foreach ($videos->node->previewURLs as $previewUrl) {
+                                if (!empty($previewUrl->url)) {
+                                    $fullPreviewUrls[] = array(
+                                        'url' => $previewUrl->url,
+                                        'mimeType' => isset($previewUrl->videoMimeType) ?
+                                                            $previewUrl->videoMimeType : null,
+                                        'definition' => isset($previewUrl->videoDefinition) ?
+                                                              $previewUrl->videoDefinition : null,
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
                 $thumbUrl = null;
                 $videoId = isset($edge->latestTrailer->id) ?
-                                str_replace('vi', '', $edge->latestTrailer->id) : null;
+                                 str_replace('vi', '', $edge->latestTrailer->id) : null;
                 if (empty($videoId)) {
                     continue;
                 }
@@ -224,20 +364,22 @@ EOF;
                 $trendingVideoResults[] = array(
                     'videoId' => $videoId,
                     'titleId' => isset($edge->id) ?
-                                    str_replace('tt', '', $edge->id) : null,
+                                       str_replace('tt', '', $edge->id) : null,
                     'title' => isset($edge->titleText->text) ?
-                                    $edge->titleText->text : null,
+                                     $edge->titleText->text : null,
                     'trailerCreateDate' => isset($edge->latestTrailer->createdDate) ?
-                                                $edge->latestTrailer->createdDate : null,
+                                                 $edge->latestTrailer->createdDate : null,
                     'trailerRuntime' => isset($edge->latestTrailer->runtime->value) ?
-                                            $edge->latestTrailer->runtime->value : null,
+                                              $edge->latestTrailer->runtime->value : null,
                     'playbackUrl' => !empty($videoId) ?
                                             'https://www.imdb.com/video/vi' . $videoId . '/' : null,
+                    'fullPlaybackUrls' => $fullPlaybackUrls,
+                    'fullPreviewUrls' => $fullPreviewUrls,
                     'thumbnailUrl' => $thumbUrl,
                     'releaseDate' => isset($edge->releaseDate->displayableProperty->value->plainText) ?
-                                        $edge->releaseDate->displayableProperty->value->plainText : null,
+                                           $edge->releaseDate->displayableProperty->value->plainText : null,
                     'contentType' => isset($edge->latestTrailer->name->value) ?
-                                        $edge->latestTrailer->name->value : null
+                                           $edge->latestTrailer->name->value : null
                 );
             }
         }
