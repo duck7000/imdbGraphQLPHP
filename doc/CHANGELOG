@@ -2,6 +2,25 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.2.0
+-------------------
+* TitleSearch class added exactMatch parameter to search()
+* TitleSearch class added sorting by exactMatch to search()
+* fixed deprecation of curl_close in this library
+* Added User class it gets user related imdb data
+* User class added createdDate and lastModifiedDate to items of all methods
+* User class raised number of returned items to 9999
+* User class added missing createdDate and lastModifiedDate and code cleanup
+* Calendar class comingSoon() added endDateOverride
+* Title class fixed bug $type string only (using strict types)
+* Title class episode() fixed bug duplicate variable name
+* GraphQL class fixed api call not working anymore concerning all classes to fail, thanks @ivoviz
+* Chart class fixed bug topBoxOffice() not returning anything. Fixed bug error variable not found error as well
+* Title class video() added fullPlaybackUrls and fullPreviewUrls, incl mimetype and definition
+* Trailers class added fullPlaybackUrls and fullPreviewUrls, incl mimetype and definition to all methods
+* Title class interest() added new/missing interest
+* Ttile class interest() added new Franchise interests
+
 v3.1.1
 -------------------
 * Title class goof(), trivia() and connection() removed hard-coded category names, use real categoryID's instead.
