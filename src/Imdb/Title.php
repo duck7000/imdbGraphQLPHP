@@ -2299,6 +2299,7 @@ EOF;
                 array('keyword' => 'Horror', 'displayName' => 'Horror', 'interestId' => 'in0000112'),
                 array('keyword' => 'isekai anime animation', 'displayName' => 'Isekai', 'interestId' => 'in0000201'),
                 array('keyword' => 'iyashikei anime animation', 'displayName' => 'Iyashikei', 'interestId' => 'in0000202'),
+                array('keyword' => 'statham action', 'displayName' => 'Jason Statham Action', 'interestId' => 'in0000315'),
                 array('keyword' => 'josei anime animation', 'displayName' => 'Josei', 'interestId' => 'in0000203'),
                 array('keyword' => 'jukebox musical', 'displayName' => 'Jukebox Musical', 'interestId' => 'in0000132'),
                 array('keyword' => 'jungle adventure', 'displayName' => 'Jungle Adventure', 'interestId' => 'in0000017'),
