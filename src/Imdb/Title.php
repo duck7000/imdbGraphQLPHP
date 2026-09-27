@@ -2635,7 +2635,11 @@ EOF;
     {
         if (empty($this->keywords)) {
             $query = <<<EOF
+itemCategory {
+  itemCategoryId
+}
 keyword {
+  id
   text {
     text
   }
@@ -2644,8 +2648,14 @@ EOF;
             $data = $this->graphQlGetAll("Keywords", "keywords", $query);
             if (count($data) > 0) {
                 foreach ($data as $edge) {
+                    $category = isset($edge->node->itemCategory->itemCategoryId) ?
+                                      $edge->node->itemCategory->itemCategoryId : 'Unknown';
                     if (!empty($edge->node->keyword->text->text)) {
-                        $this->keywords[] = $edge->node->keyword->text->text;
+                        $this->keywords[$category][] = array(
+                            'id' => isset($edge->node->keyword->id) ?
+                                          $edge->node->keyword->id : null,
+                            'text' => $edge->node->keyword->text->text
+                        );
                     }
                 }
             }
