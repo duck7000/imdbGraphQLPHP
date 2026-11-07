@@ -47,9 +47,8 @@ class TitleSearch extends MdbBase
      * 
      * @param string $startDate search from startDate til present date, iso date (year-month-day) ("1975-01-01")
      * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
-     * @param boolean $exactMatch true:only return results if exactly match searchTerm, default: false
-     * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
-     * 
+     * @param bool $exactMatch true:only return results if exactly match searchTerm, default: false
+     *      if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * @return array<int, array<string, string|Title>>
      */
     public function search($searchTerms, $types = null, $startDate = '', $endDate = '', $exactMatch = false)
@@ -141,30 +140,18 @@ EOF;
                 $id = isset($edge->node->entity->id) ?
                             str_replace('tt', '', $edge->node->entity->id) : null;
                 $title = isset($edge->node->entity->titleText->text) ?
-                            $edge->node->entity->titleText->text : null;
+                               $edge->node->entity->titleText->text : null;
                 $origTitle = isset($edge->node->entity->originalTitleText->text) ?
-                                $edge->node->entity->originalTitleText->text : null;
+                                   $edge->node->entity->originalTitleText->text : null;
                 $movieType = isset($edge->node->entity->titleType->text) ?
-                                $edge->node->entity->titleType->text : null;
-                // return search results as Title object
-                $return = Title::fromSearchResult(
-                    $id,
-                    $title,
-                    $origTitle,
-                    $yearRange,
-                    $movieType,
-                    $this->config,
-                    $this->logger,
-                    $this->cache
-                );
+                                   $edge->node->entity->titleType->text : null;
                 $results[] = array(
                     'imdbid' => $id,
                     'title' => $title,
                     'originalTitle' => $origTitle,
                     'year' => $yearRange,
                     'movietype' => $movieType,
-                    'imgUrl' => $imgUrl,
-                    'titleSearchObject' => $return
+                    'imgUrl' => $imgUrl
                 );
             }
         }
