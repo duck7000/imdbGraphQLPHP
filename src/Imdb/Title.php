@@ -618,7 +618,7 @@ EOF;
     #--------------------------------------------------------[ Photo specific ]---
     /**
      * Get the main photo image url for thumbnail or full size
-     * @param boolean $thumb get the thumbnail (height: 281) or large (max 1000 pixels)
+     * @param bool $thumb get the thumbnail (height: 281) or large (max 1000 pixels)
      * @return string|false photo (string URL if found, FALSE otherwise)
      * @see IMDB page / (TitlePage)
      */
