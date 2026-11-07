@@ -642,9 +642,9 @@ EOF;
     /**
      * Save the poster/cover image to disk
      * @param string $path where to store the file
-     * @param boolean $thumb get the thumbnail or the
+     * @param bool $thumb get the thumbnail or the
      *        bigger variant (max width 1000 pixels - FALSE)
-     * @return boolean success
+     * @return bool success
      * @see IMDB page / (TitlePage)
      */
     public function savephoto($path, $thumb = true)
