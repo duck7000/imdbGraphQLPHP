@@ -20,17 +20,13 @@ class CompanySearch extends MdbBase
     /**
      * Search IMDb for companies matching input search string
      * @param string $company input company, ("warner brothers")
-     * The results can be used as input for advancedTitleSearch class to get titles based on this company
-     * Or the results can be used as input for Company class to get company info
-     * 
-     * @return array[]
-     * Array
-     * (
-     *      [id] =>         (string) 0185428
-     *      [name] =>       (string) Warner Brothers Entertainment
-     *      [country] =>    (string) United States
-     *      [type] =>       (string) Distributor
-     * )
+     * @note The results can be used as input for advancedTitleSearch class to get titles made by this company
+     * @note Or the results can be used as input for Company class to get company info
+     * @return array
+     *      [id]         (string) 0185428
+     *      [name]       (string) Warner Brothers Entertainment
+     *      [country]    (string) United States
+     *      [type]       (string) Distributor
      */
     public function searchCompany($company)
     {
@@ -86,11 +82,11 @@ EOF;
             foreach ($data->mainSearch->edges as $key => $edge) {
                 $results[] = array(
                     'id' => isset($edge->node->entity->id) ?
-                                str_replace('co', '', $edge->node->entity->id) : null,
+                                  str_replace('co', '', $edge->node->entity->id) : null,
                     'name' => isset($edge->node->entity->companyText->text) ?
                                     $edge->node->entity->companyText->text : null,
                     'country' => isset($edge->node->entity->country->text) ?
-                                    $edge->node->entity->country->text : null,
+                                       $edge->node->entity->country->text : null,
                     'type' => isset($edge->node->entity->companyTypes[0]->text) ?
                                     $edge->node->entity->companyTypes[0]->text : null
                 );
