@@ -11,19 +11,20 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Obtains information about Company
- * This info is only available for imdbPro users but throught GraphQL it is freely available!
+ * @note This info is only available for imdbPro users but throught GraphQL it is freely available!
  * @author Ed (github user: duck7000)
  */
 class Company extends MdbBase
 {
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -32,47 +33,44 @@ class Company extends MdbBase
 
     /**
      * Get all info about a specific company (only freely available info)
-     * PrimaryImage and bio is available but returns always null so those are not included.
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *              [id] =>             (string) (without co)
-     *              [name] =>           (string)
-     *              [country] =>        (string)
-     *              [meterRanking] =>   (array)
-     *                  [currentRank] =>        (int) 3622
-     *                  [changeDirection] =>    (string) DOWN
-     *                  [difference] =>         (int) 1707
-     *              [type] =>           (array)
-     *                  [0] => (string) Distributor
-     *                  [1] => (string) Production
-     *              [keyStaff] =>       (array)
-     *                  [0] => (array)
-     *                      [id] =>     (string) 3280279
-     *                      [name] =>   (string) Ciaran Michael Vejby
-     *                      [employments] => (array)
-     *                          [0] => (array)
-     *                              [employmentTitle] => (string) Editorial Department
-     *                              [occupation] =>      (string) Editorial Department
-     *                              [branch] =>          (string)
-     *              [knownFor] =>       (array)
-     *                  [0] => (array)
-     *                      [id] =>     (string) 0993840
-     *                      [name] =>   (string) Army of the dead
-     *                      [jobs] =>   (array)
-     *                          [0] => (array)
-     *                              [category] => (string) Other Companies
-     *                              [job] =>      (string) Music
-     *                      [countries] =>   (array)
-     *                          [0] => World-wide
+     * @note PrimaryImage and bio is available but returns always null so those are not included.
+     * @return array
+     *      [0] Array()
+     *              [id]             (string) (without co)
+     *              [name]           (string)
+     *              [country]        (string)
+     *              [meterRanking]   (array)
+     *                  [currentRank]        (int) 3622
+     *                  [changeDirection]    (string) DOWN
+     *                  [difference]         (int) 1707
+     *              [type]           (array)
+     *                  [0] (string) Distributor
+     *                  [1] (string) Production
+     *              [keyStaff]       (array)
+     *                  [0] (array)
+     *                      [id]     (string) 3280279
+     *                      [name]   (string) Ciaran Michael Vejby
+     *                      [employments] (array)
+     *                          [0] (array)
+     *                              [employmentTitle] (string) Editorial Department
+     *                              [occupation]      (string) Editorial Department
+     *                              [branch]          (string)
+     *              [knownFor]       (array)
+     *                  [0] (array)
+     *                      [id]     (string) 0993840
+     *                      [name]   (string) Army of the dead
+     *                      [jobs]   (array)
+     *                          [0] (array)
+     *                              [category] (string) Other Companies
+     *                              [job]      (string) Music
+     *                      [countries]   (array)
+     *                          [0] World-wide
      *                      [year]      (int)
      *                      [endYear]   (int)
-     *              [affiliations] =>   (array)
+     *              [affiliations]   (array)
      *                  [0] (array)
-     *                      [companyName] => (string) Warner Bros. Entertainment
-     *                      [description] => (string) Also Known As
-     *  )
+     *                      [companyName] (string) Warner Bros. Entertainment
+     *                      [description] (string) Also Known As
      */
     public function companyInfo($companyId)
     {
@@ -179,12 +177,10 @@ EOF;
                 }
             }
         }
-
         // KeyStaff
         $keyStaff = array();
         if (!empty($data->company->keyStaff->edges)) {
             foreach ($data->company->keyStaff->edges as $staff) {
-
                 // Employments
                 $employments = array();
                 if (!empty($staff->node->summary->employment)) {
@@ -208,12 +204,10 @@ EOF;
                 );
             }
         }
-
         // KnownFor
         $knownFor = array();
         if (!empty($data->company->knownForTitles->edges)) {
             foreach ($data->company->knownForTitles->edges as $title) {
-
                 // Jobs
                 $jobs = array();
                 if (!empty($title->node->summary->jobs)) {
@@ -226,7 +220,6 @@ EOF;
                         );
                     }
                 }
-
                 // Countries
                 $countries = array();
                 if (!empty($title->node->summary->countries)) {
@@ -250,7 +243,6 @@ EOF;
                 );
             }
         }
-
         //Affiliations
         $affiliations = array();
         if (!empty($data->company->affiliations->edges)) {
@@ -263,7 +255,6 @@ EOF;
                     );
             }
         }
-
         //MeterRanking
         $meterRanking = array();
         if (!empty($data->company->meterRanking->currentRank)) {
@@ -275,7 +266,6 @@ EOF;
                                       $data->company->meterRanking->rankChange->difference : null
             );
         }
-
         // Results
         $companyResults = array(
             'id' => isset($data->company->id) ?
