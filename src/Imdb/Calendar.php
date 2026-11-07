@@ -25,9 +25,9 @@ class Calendar extends MdbBase
     protected $newImageHeight;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -39,13 +39,12 @@ class Calendar extends MdbBase
 
     /**
      * Get upcoming movie releases as seen on IMDb
-     * @parameter $region This defines which country's releases are returned like DE, NL, US
-     * @parameter $type This defines which type is returned, MOVIE, TV or TV_EPISODE
-     * @parameter $startDateOverride This defines the startDate override like +3 or -5 of default todays day
-     * @parameter $endDateOverride This defines the endDate override ending date in number of days, default + 1 year
-     * @parameter $filter This defines if disablePopularityFilter is set or not, set to false shows all releases,
-     * true only returns populair releases so less results within the given date span
-     * there seems to be a limit of 100 titles but i did get more titles so i really don't know
+     * @param string $region This defines which country's releases are returned like DE, NL, US
+     * @param string $type This defines which type is returned, MOVIE, TV or TV_EPISODE
+     * @param int $startDateOverride This defines the startDate override like +3 or -5 of default todays day
+     * @param int $endDateOverride This defines the endDate override ending date in number of days, default + 1 year
+     * @param string $filter This defines if disablePopularityFilter is set or not, set to false shows all releases,
+     *      true only returns populair releases
      * @return array categorized by release date ASC
      *      [11-15-2024] => (array)
      *          [0] => Array
@@ -64,11 +63,11 @@ class Calendar extends MdbBase
         $calendar = array();
         $startDate = date("Y-m-d");
         if ($startDateOverride != 0) {
-            $startDate = date('Y-m-d', strtotime($startDateOverride . ' day', strtotime($startDate)) );
+            $startDate = date('Y-m-d', strtotime($startDateOverride . ' day', strtotime($startDate)));
         }
         $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($startDate)));
         if ($endDateOverride > 0) {
-            $futureDate = date('Y-m-d', strtotime( '+' . $endDateOverride . ' days', strtotime($startDate)) );
+            $futureDate = date('Y-m-d', strtotime('+' . $endDateOverride . ' days', strtotime($startDate)));
         }
         
         $query = <<<EOF
@@ -129,16 +128,16 @@ EOF;
         {
             foreach ($data->comingSoon->edges as $edge) {
                 $title = isset($edge->node->titleText->text) ?
-                            $edge->node->titleText->text : null;
+                               $edge->node->titleText->text : null;
                 if ($title === null) {
                     continue;
                 }
                 //release date
                 $dateParts = array(
                     'month' => isset($edge->node->releaseDate->month) ?
-                                    $edge->node->releaseDate->month : null,
+                                     $edge->node->releaseDate->month : null,
                     'day' => isset($edge->node->releaseDate->day) ?
-                                $edge->node->releaseDate->day : null,
+                                   $edge->node->releaseDate->day : null,
                     'year' => isset($edge->node->releaseDate->year) ?
                                     $edge->node->releaseDate->year : null
                 );
@@ -176,7 +175,7 @@ EOF;
                 $calendar[$releaseDate][] = array(
                     'title' => $title,
                     'imdbid' => isset($edge->node->id) ?
-                                    str_replace('tt', '', $edge->node->id) : null,
+                                      str_replace('tt', '', $edge->node->id) : null,
                     'genres' => $genres,
                     'cast' => $cast,
                     'imgUrl' => $imgUrl
@@ -189,7 +188,7 @@ EOF;
     /**
      * Get upcoming releases from big streaming providers for current month.
      * See https://www.imdb.com/list/ls549391228/ (Netflix)
-     * @parameter $listProviderId This is the streaming provider list id like "549391228" (without ls)
+     * @param string $listProviderId This is the streaming provider list id like "549391228" (without ls)
      * Possible providerIds:
      *      549391228 (Netflix)
      *      549615961 (HBO MAX)
@@ -199,10 +198,9 @@ EOF;
      *      549641648 (Amazon Prime)
      *      549617029 (Paramount+)
      *      544306775 (TV and Streaming Calendar)
-     * @config options
+     * @config class options
      *      $streamSortBy, $streamSortOrder, $calendarThumbnailWidth, $calendarThumbnailHeight
-     * 
-     * @return array ()
+     * @return array
      *  [listId] =>                 (string) 549391228 (without ls)
      *  [listName] =>               (string) What's New on Netflix in November 2024
      *  [listCreateDate] =>         (string)2024-10-23T21:14:59Z
@@ -348,7 +346,7 @@ EOF;
                         foreach ($principalCredit->credits as $credit) {
                             $temp[] = array(
                                 'nameId' => isset($credit->name->id) ?
-                                                str_replace('nm', '', $credit->name->id) : null,
+                                                  str_replace('nm', '', $credit->name->id) : null,
                                 'name' => isset($credit->name->nameText->text) ?
                                                 $credit->name->nameText->text : null
                             );
@@ -359,23 +357,23 @@ EOF;
 
                 $items[] = array(
                     'id' => isset($edge->node->item->id) ?
-                                str_replace('tt', '', $edge->node->item->id) : null,
+                                  str_replace('tt', '', $edge->node->item->id) : null,
                     'title' => isset($edge->node->item->titleText->text) ?
-                                    $edge->node->item->titleText->text : null,
+                                     $edge->node->item->titleText->text : null,
                     'type' => isset($edge->node->item->titleType->text) ?
                                     $edge->node->item->titleType->text : null,
                     'year' => isset($edge->node->item->releaseYear->year) ?
                                     $edge->node->item->releaseYear->year : null,
                     'description' => isset($edge->node->description->originalText->plainText) ?
-                                        $edge->node->description->originalText->plainText : null,
+                                           $edge->node->description->originalText->plainText : null,
                     'runtime' => isset($edge->node->item->runtime->seconds) ?
-                                    $edge->node->item->runtime->seconds : null,
+                                       $edge->node->item->runtime->seconds : null,
                     'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
-                                    $edge->node->item->ratingsSummary->aggregateRating : null,
+                                      $edge->node->item->ratingsSummary->aggregateRating : null,
                     'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
-                                    $edge->node->item->ratingsSummary->voteCount : null,
+                                     $edge->node->item->ratingsSummary->voteCount : null,
                     'metacritic' => isset($edge->node->item->metacritic->metascore->score) ?
-                                        $edge->node->item->metacritic->metascore->score : null,
+                                          $edge->node->item->metacritic->metascore->score : null,
                     'plot' => isset($edge->node->item->plot->plotText->plainText) ?
                                     $edge->node->item->plot->plotText->plainText : null,
                     'thumbUrl' => $imgUrl,
@@ -400,7 +398,7 @@ EOF;
     /**
      * build date string
      * @param array $dateParts input date
-     * @return string or false
+     * @return string|false
      */
     private function buildDateString($dateParts)
     {
