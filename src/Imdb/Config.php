@@ -209,43 +209,39 @@ class Config
 
     #========================================================[ NameSearchAdvanced options ]===
     /**
-     * amount of search results (Default: 250)
-     * @var int (should be 250 or less, more is not very useful)
+     * Amount of search results
+     * @note should be 250 or less
+     * @var int
      */
     public $nameSearchAdvancedAmount = 250;
 
     /**
-     * Sort by options
-     * @var string with double quotes (Default: POPULARITY
+     * NameSearchAdvanced sort by options
+     * @note default: POPULARITY
+     * @var string
      * Possible values:
-     *
      * BIRTH_DATE
      *      Sort names based on their birth date
      *      ASC: Earliest dates to Highest dates (Oldest - Youngest)
-     *
      * DEATH_DATE
      *      Sort names based on their death date
      *      ASC: Earliest dates to last dates (Died First - Died Last)
-     *
      * NAME
      *      Sort Names alphabetically
      *      ASC: A-Z
-     *
      * POPULARITY
      *      Sort Names based on their starMeterCurrentWeekRank
      *      ASC: Lower popularity score means that the name is more popular, so the most popular names will be first.
-     *
      */
     public $nameSortBy = "POPULARITY";
 
     /**
-     * Sort order options (Default: ASC
-     * @var ENUM
+     * NameSearchAdvanced sort order options
+     * @note default: ASC
+     * @var string
      * Possible values:
-     *
      * ASC
      *      Ascending order e.g. 1,2,3
-     *
      * DESC
      *      Descending order e.g. 3,2,1
      */
