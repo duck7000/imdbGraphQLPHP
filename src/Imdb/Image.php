@@ -83,7 +83,7 @@ class Image
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $scaledWidth = $fullImageWidth / $newScalefactor;
         $totalPixelCropSize = $scaledWidth - $newImageWidth;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
+        $cropValue = max($this->roundInteger($totalPixelCropSize) / 2, 0);
         return $cropValue;
     }
 
@@ -101,7 +101,7 @@ class Image
         $newScalefactor = $fullImageWidth / $newImageWidth;
         $scaledHeight = $fullImageHeight / $newScalefactor;
         $totalPixelCropSize = $scaledHeight - $newImageHeight;
-        $cropValue = max($this->roundInteger($totalPixelCropSize)/2, 0);
+        $cropValue = max($this->roundInteger($totalPixelCropSize) / 2, 0);
         return $cropValue;
     }
 
