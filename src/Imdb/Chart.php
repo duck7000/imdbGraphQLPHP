@@ -11,6 +11,7 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\Log\LoggerInterface;
 use Imdb\Image;
 
 /**
