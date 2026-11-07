@@ -1,6 +1,7 @@
 <?php
+
 #############################################################################
-# imdbphp6                                                (c) Ed (duck7000) #
+# imdbGraphQLPHP                                          (c) Ed (duck7000) #
 # written by Ed                                                             #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -31,8 +32,8 @@ class Cache implements CacheInterface
 
     /**
      * Cache constructor.
-     * @param Config $config
-     * @param LoggerInterface $logger
+     * @param string Config $config
+     * @param string LoggerInterface $logger
      * @throws Exception
      */
     public function __construct(Config $config, LoggerInterface $logger)
@@ -40,7 +41,7 @@ class Cache implements CacheInterface
         $this->config = $config;
         $this->logger = $logger;
 
-        if (($this->config->cacheUse|| $this->config->cacheStore) && !is_dir($this->config->cacheDir)) {
+        if (($this->config->cacheUse || $this->config->cacheStore) && !is_dir($this->config->cacheDir)) {
             @mkdir($this->config->cacheDir, 0700, true);
             if (!is_dir($this->config->cacheDir)) {
                 $this->logger->critical("[Cache] Configured cache directory [{$this->config->cacheDir}] does not exist!");
