@@ -28,9 +28,9 @@ class Chart extends MdbBase
     protected $newImageHeight;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -42,32 +42,23 @@ class Chart extends MdbBase
 
     /**
      * Get top250 titles lists as seen on IMDb https://www.imdb.com/chart
-     * @parameter $listType This defines different kind of lists like top250 Movie or TV
+     * @param string $listType This defines different kind of lists like top250 Movie or TV
      * possible values for $listType:
-     *  BOTTOM_100
-     *      Overall IMDb Bottom 100 Feature List
-     *  TOP_250
-     *      Overall IMDb Top 250 Feature List
-     *  TOP_250_ENGLISH
-     *      Top 250 English Feature List
-     *  TOP_250_TV
-     *      Overall IMDb Top 250 TV List
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *              [title] =>          (string) Breaking Bad
-     *              [imdbid] =>         (string) 0903747
-     *              [year] =>           (int) 2008
-     *              [rank] =>           (int) 1
-     *              [rating] =>         (float) 9.5
-     *              [votes] =>          (int) 2178109
-     *              [runtimeSeconds] => (int) 2700
-     *              [runtimeText] =>    (string) 45m
-     *              [imgUrl] =>         (string) (140x207 set in config)
-     *          )
-     *  )
+     *  BOTTOM_100      (Overall IMDb Bottom 100 Feature List)
+     *  TOP_250         (Overall IMDb Top 250 Feature List)
+     *  TOP_250_ENGLISH (Top 250 English Feature List)
+     *  TOP_250_TV      (Overall IMDb Top 250 TV List)
+     * @return array
+     *      [0] => Array()
+     *              [title]              (string) Breaking Bad
+     *              [imdbid]             (string) 0903747
+     *              [year]               (int) 2008
+     *              [rank]               (int) 1
+     *              [rating]             (float) 9.5
+     *              [votes]              (int) 2178109
+     *              [runtimeSeconds]     (int) 2700
+     *              [runtimeText]        (string) 45m
+     *              [imgUrl]             (string) (140x207 set in config)
      */
     public function top250Title($listType = "TOP_250")
     {
@@ -134,21 +125,21 @@ EOF;
                 }
                 $top250TitleResults[] = array(
                     'title' => isset($edge->node->item->titleText->text) ?
-                                    $edge->node->item->titleText->text : null,
+                                     $edge->node->item->titleText->text : null,
                     'imdbid' => isset($edge->node->item->id) ?
-                                    str_replace('tt', '', $edge->node->item->id) : null,
+                                      str_replace('tt', '', $edge->node->item->id) : null,
                     'year' => isset($edge->node->item->releaseYear->year) ?
                                     $edge->node->item->releaseYear->year : null,
                     'rank' => isset($edge->node->item->ratingsSummary->topRanking->rank) ?
                                     $edge->node->item->ratingsSummary->topRanking->rank : null,
                     'rating' => isset($edge->node->item->ratingsSummary->aggregateRating) ?
-                                    $edge->node->item->ratingsSummary->aggregateRating : null,
+                                      $edge->node->item->ratingsSummary->aggregateRating : null,
                     'votes' => isset($edge->node->item->ratingsSummary->voteCount) ?
-                                    $edge->node->item->ratingsSummary->voteCount : null,
+                                     $edge->node->item->ratingsSummary->voteCount : null,
                     'runtimeSeconds' => isset($edge->node->item->runtime->seconds) ?
-                                            $edge->node->item->runtime->seconds : null,
+                                              $edge->node->item->runtime->seconds : null,
                     'runtimeText' => isset($edge->node->item->runtime->displayableProperty->value->plainText) ?
-                                        $edge->node->item->runtime->displayableProperty->value->plainText : null,
+                                           $edge->node->item->runtime->displayableProperty->value->plainText : null,
                     'imgUrl' => $thumbUrl
                 );
             }
@@ -158,28 +149,18 @@ EOF;
 
     /**
      * Get top250 Names lists (Not seen on IMDb afaik)
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *              [name] =>       (string) jenifer lopez
-     *              [imdbid] =>     (string) 0903747
-     *              [rank] =>       (int)1
-     *              [credits] =>    (array)
-     *                  [0] => Actress
-     *                  [1] => Producer
-     *                  [2] => Director
-     *                  [3] => Writer
-     *                  [4] => Self
-     *                  [5] => Thanks
-     *              [knownFor] =>   (array)
-     *                  [id] => 2258337
-     *                  [title] => Eega
-     *                  [year] => 2012
-     *              [imgUrl] =>     (string) (140x207 set in config)
-     *          )
-     *  )
+     * @return array
+     *      [0] => Array()
+     *              [name]       (string) jenifer lopez
+     *              [imdbid]     (string) 0903747
+     *              [rank]       (int)1
+     *              [credits]    (array)
+     *                  [0] string Actress
+     *              [knownFor]   (array)
+     *                  [id] 2258337
+     *                  [title] Eega
+     *                  [year] 2012
+     *              [imgUrl]     (string) (140x207 set in config)
      */
     public function top250Name()
     {
@@ -254,9 +235,9 @@ EOF;
                 if (!empty($edge->node->item->knownFor->edges)) {
                     $knownFor = array(
                         'id' => isset($edge->node->item->knownFor->edges[0]->node->title->id) ?
-                                    str_replace('tt', '', $edge->node->item->knownFor->edges[0]->node->title->id) : null,
+                                      str_replace('tt', '', $edge->node->item->knownFor->edges[0]->node->title->id) : null,
                         'title' => isset($edge->node->item->knownFor->edges[0]->node->title->titleText->text) ?
-                                        $edge->node->item->knownFor->edges[0]->node->title->titleText->text : null,
+                                         $edge->node->item->knownFor->edges[0]->node->title->titleText->text : null,
                         'year' => isset($edge->node->item->knownFor->edges[0]->node->title->releaseYear->year) ?
                                         $edge->node->item->knownFor->edges[0]->node->title->releaseYear->year : null
                     );
@@ -272,7 +253,7 @@ EOF;
                     'name' => isset($edge->node->item->nameText->text) ?
                                     $edge->node->item->nameText->text : null,
                     'imdbid' => isset($edge->node->item->id) ?
-                                    str_replace('nm', '', $edge->node->item->id) : null,
+                                      str_replace('nm', '', $edge->node->item->id) : null,
                     'rank' => isset($edge->node->rank) ?
                                     $edge->node->rank : null,
                     'credits' => $credits,
@@ -286,28 +267,18 @@ EOF;
 
     /**
      * Get most popular Names lists as seen on https://imdb.com/chart/starmeter
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *              [name] =>       (string) jenifer lopez
-     *              [imdbid] =>     (string) 0903747
-     *              [rank] =>       (int)1
-     *              [credits] =>    (array)
-     *                  [0] => Actress
-     *                  [1] => Producer
-     *                  [2] => Director
-     *                  [3] => Writer
-     *                  [4] => Self
-     *                  [5] => Thanks
-     *              [knownFor] =>   (array)
-     *                  [id] => 2258337
-     *                  [title] => Eega
-     *                  [year] => 2012
-     *              [imgUrl] =>     (string) (140x207 set in config)
-     *          )
-     *  )
+     * @return array
+     *      [0] => Array()
+     *              [name]       (string) jenifer lopez
+     *              [imdbid]     (string) 0903747
+     *              [rank]       (int)1
+     *              [credits]    (array)
+     *                  [0] string Actress
+     *              [knownFor]   (array)
+     *                  [id] 2258337
+     *                  [title] Eega
+     *                  [year] 2012
+     *              [imgUrl]     (string) (140x207 set in config)
      */
     public function mostPopularName()
     {
@@ -385,9 +356,9 @@ EOF;
                 if (!empty($edge->node->knownFor->edges)) {
                     $knownFor = array(
                         'id' => isset($edge->node->knownFor->edges[0]->node->title->id) ?
-                                    str_replace('tt', '', $edge->node->knownFor->edges[0]->node->title->id) : null,
+                                      str_replace('tt', '', $edge->node->knownFor->edges[0]->node->title->id) : null,
                         'title' => isset($edge->node->knownFor->edges[0]->node->title->titleText->text) ?
-                                        $edge->node->knownFor->edges[0]->node->title->titleText->text : null,
+                                         $edge->node->knownFor->edges[0]->node->title->titleText->text : null,
                         'year' => isset($edge->node->knownFor->edges[0]->node->title->releaseYear->year) ?
                                         $edge->node->knownFor->edges[0]->node->title->releaseYear->year : null
                     );
@@ -403,7 +374,7 @@ EOF;
                     'name' => isset($edge->node->nameText->text) ?
                                     $edge->node->nameText->text : null,
                     'imdbid' => isset($edge->node->id) ?
-                                    str_replace('nm', '', $edge->node->id) : null,
+                                      str_replace('nm', '', $edge->node->id) : null,
                     'rank' => isset($edge->node->rank) ?
                                     $edge->node->rank : null,
                     'credits' => $credits,
@@ -417,44 +388,31 @@ EOF;
 
     /**
      * Get most popular Titles lists as seen on https://imdb.com/chart/moviemeter
-     * @parameter $genreId This filters the results on a genreId like "Horror"
+     * @param string $genreId This filters the results on a genreId like "Horror"
      * GenreIDs: Action, Adult, Adventure, Animation, Biography, Comedy, Crime,
      *           Documentary, Drama, Family, Fantasy, Film-Noir, Game-Show,
      *           History, Horror, Music, Musical, Mystery, News, Reality-TV,
      *           Romance, Sci-Fi, Short, Sport, Talk-Show, Thriller, War, Western
-     * 
-     * @parameter $listType This defines different kind of lists like Movie or TV
+     * @param string $listType This defines different kind of lists like Movie or TV
      * possible values for $listType:
-     *  LOWEST_RATED_MOVIES
-     *      Lowest Rated IMDb Bottom List
-     *  MOST_POPULAR_MOVIES
-     *      Most Popular IMDb Movies List
-     *  MOST_POPULAR_TV_SHOWS
-     *      Most Popular IMDb TV List
-     *  TOP_RATED_MOVIES
-     *      Top Rated IMDb Movies List
-     *  TOP_RATED_ENGLISH_MOVIES
-     *      Top Rated English IMDb Movies List
-     *  TOP_RATED_TV_SHOWS
-     *      Top Rated IMDb TV List
-     * 
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *          [title] =>              (string) The Substance
-     *          [imdbid] =>             (string) 17526714
-     *          [year] =>               (int) 2024
-     *          [runtimeSeconds] =>     (int) 8460
-     *          [runtimeText] =>        (string) 2h 21m
-     *          [rank] =>               (int) 1
-     *          [genre] =>              (array) every index an genre
-     *          [rating] =>             (float) 7.5
-     *          [votes] =>              (int) 124556
-     *          [imgUrl] =>             (string) (140x207 set in config)
-     *          )
-     *  )
+     *  LOWEST_RATED_MOVIES         (Lowest Rated IMDb Bottom List)
+     *  MOST_POPULAR_MOVIES         (Most Popular IMDb Movies List)
+     *  MOST_POPULAR_TV_SHOWS       (Most Popular IMDb TV List)
+     *  TOP_RATED_MOVIES            (Top Rated IMDb Movies List)
+     *  TOP_RATED_ENGLISH_MOVIES    (Top Rated English IMDb Movies List)
+     *  TOP_RATED_TV_SHOWS          (Top Rated IMDb TV List)
+     * @return array
+     *      [0] => Array()
+     *          [title]              (string) The Substance
+     *          [imdbid]             (string) 17526714
+     *          [year]               (int) 2024
+     *          [runtimeSeconds]     (int) 8460
+     *          [runtimeText]        (string) 2h 21m
+     *          [rank]               (int) 1
+     *          [genre]              (array)
+     *          [rating]             (float) 7.5
+     *          [votes]              (int) 124556
+     *          [imgUrl]             (string) (140x207 set in config)
      */
     public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
@@ -539,22 +497,22 @@ EOF;
                 }
                 $mostPopularTitleResults[] = array(
                     'title' => isset($edge->node->titleText->text) ?
-                                    $edge->node->titleText->text : null,
+                                     $edge->node->titleText->text : null,
                     'imdbid' => isset($edge->node->id) ?
-                                    str_replace('tt', '', $edge->node->id) : null,
+                                      str_replace('tt', '', $edge->node->id) : null,
                     'year' => isset($edge->node->releaseYear->year) ?
                                     $edge->node->releaseYear->year : null,
                     'runtimeSeconds' => isset($edge->node->runtime->seconds) ?
-                                            $edge->node->runtime->seconds : null,
+                                              $edge->node->runtime->seconds : null,
                     'runtimeText' => isset($edge->node->runtime->displayableProperty->value->plainText) ?
-                                        $edge->node->runtime->displayableProperty->value->plainText : null,
+                                           $edge->node->runtime->displayableProperty->value->plainText : null,
                     'rank' => isset($edge->currentRank) ?
                                     $edge->currentRank : null,
                     'genre' => $genres,
                     'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
-                                    $edge->node->ratingsSummary->aggregateRating : null,
+                                      $edge->node->ratingsSummary->aggregateRating : null,
                     'votes' => isset($edge->node->ratingsSummary->voteCount) ?
-                                    $edge->node->ratingsSummary->voteCount : null,
+                                     $edge->node->ratingsSummary->voteCount : null,
                     'imgUrl' => $thumbUrl
                 );
             }
@@ -564,24 +522,23 @@ EOF;
 
     /**
      * Get topBoxWeekend list as seen on https://www.imdb.com/chart/boxoffice/
-     * max 10 results! more is not possible
-     * Thumbnail is set in config for the whole class, default 140x207
-     * @return
-     * Array
-     *      [weekendStartDate] => 2024-11-29
-     *      [weekendEndDate] => 2024-12-01
-     *      [titles] => Array
+     * @note max 10 results! more is not possible
+     * @note Thumbnail is set in config for the whole class, default 140x207
+     * @return array
+     *      [weekendStartDate] 2024-11-29
+     *      [weekendEndDate] 2024-12-01
+     *      [titles] => Array()
      *          [0] => Array()
-     *              [title] =>                  (string)
-     *              [id] =>                     (string) 13622970
-     *              [rating] =>                 (float) 7.1
-     *              [votes] =>                  (int) 17669
-     *              [LifetimeGrossAmount] =>    (int) 221000000
-     *              [LifetimeGrossCurrency] =>  (string) USD
-     *              [weekendGrossAmount] =>     (int) 135500000
-     *              [weekendGrossCurrency] =>   (string) USD
-     *              [weeksReleased] =>          (int)
-     *              [imgUrl] =>                 (string)
+     *              [title]                  (string)
+     *              [id]                     (string) 13622970
+     *              [rating]                 (float) 7.1
+     *              [votes]                  (int) 17669
+     *              [LifetimeGrossAmount]    (int) 221000000
+     *              [LifetimeGrossCurrency]  (string) USD
+     *              [weekendGrossAmount]     (int) 135500000
+     *              [weekendGrossCurrency]   (string) USD
+     *              [weeksReleased]          (int)
+     *              [imgUrl]                 (string)
      */
     public function topBoxOffice()
     {
@@ -648,27 +605,31 @@ EOF;
                     $thumbUrl = $img . $parameter;
                 }
                 $weeks = null;
-                if (!empty($edge->title->releaseDate->day) && !empty($edge->title->releaseDate->month) && !empty($edge->title->releaseDate->year)) {
+                if (!empty($edge->title->releaseDate->day) &&
+                    !empty($edge->title->releaseDate->month) &&
+                    !empty($edge->title->releaseDate->year)
+                   )
+                {
                     $startDate = $edge->title->releaseDate->month . '/' .
-                                $edge->title->releaseDate->day . '/' .
-                                $edge->title->releaseDate->year;
+                                 $edge->title->releaseDate->day . '/' .
+                                 $edge->title->releaseDate->year;
                     $weeks = $this->datediffInWeeks($startDate, date('m/d/Y'));
                 }
                 $results[] = array(
                     'title' => isset($edge->title->titleText->text) ?
-                                    $edge->title->titleText->text : null,
+                                     $edge->title->titleText->text : null,
                     'id' => isset($edge->title->id) ?
-                                str_replace('tt', '', $edge->title->id) : null,
+                                  str_replace('tt', '', $edge->title->id) : null,
                     'rating' => isset($edge->title->ratingsSummary->aggregateRating) ?
-                                    $edge->title->ratingsSummary->aggregateRating : null,
+                                      $edge->title->ratingsSummary->aggregateRating : null,
                     'votes' => isset($edge->title->ratingsSummary->voteCount) ?
-                                    $edge->title->ratingsSummary->voteCount : null,
+                                     $edge->title->ratingsSummary->voteCount : null,
                     'LifetimeGrossAmount' => isset($edge->title->lifetimeGross->total->amount) ?
-                                                $edge->title->lifetimeGross->total->amount : null,
+                                                   $edge->title->lifetimeGross->total->amount : null,
                     'LifetimeGrossCurrency' => isset($edge->title->lifetimeGross->total->currency) ?
-                                                    $edge->title->lifetimeGross->total->currency : null,
+                                                     $edge->title->lifetimeGross->total->currency : null,
                     'weekendGrossAmount' => isset($edge->weekendGross->total->amount) ?
-                                                $edge->weekendGross->total->amount : null,
+                                                  $edge->weekendGross->total->amount : null,
                     'weekendGrossCurrency' => isset($edge->weekendGross->total->currency) ?
                                                     $edge->weekendGross->total->currency : null,
                     'weeksReleased' => $weeks,
