@@ -15,7 +15,7 @@ namespace Imdb;
 /**
  * The request class
  * Here we emulate a browser accessing the IMDB site. You don't need to
- * call any of its method directly - they are rather used by the IMDB classes.
+ * call any of its method directly - they are rather used by the IMDB classes
  */
 class Request
 {
@@ -27,8 +27,8 @@ class Request
 
     /**
      * No need to call this.
-     * @param string $url URL to open
-     * @param Config $config The Config object to use
+     * @param string $url URL to fetch data
+     * @param string Config $config OPTIONAL override default config
      */
     public function __construct($url, Config $config)
     {
@@ -36,7 +36,7 @@ class Request
         $this->ch = curl_init($url);
         curl_setopt($this->ch, CURLOPT_ACCEPT_ENCODING, "");
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callback_CURLOPT_HEADERFUNCTION"));
+        curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callbackCurloptHeaderFunction"));
         curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
         curl_setopt($this->ch, CURLOPT_TIMEOUT, $this->config->curloptTimeout);
     }
@@ -48,8 +48,8 @@ class Request
 
     /**
      * Send a POST request
-     *
      * @param string|array $content
+     * @return array
      */
     public function post($content)
     {
@@ -60,6 +60,7 @@ class Request
 
     /**
      * Send a request to the movie site
+     * @return bool
      */
     public function sendRequest()
     {
@@ -74,7 +75,7 @@ class Request
 
     /**
      * Get the Response body
-     * @return string page
+     * @return array
      */
     public function getResponseBody()
     {
@@ -84,7 +85,7 @@ class Request
     /**
      * Get a header value from the response
      * @param string $header header field name
-     * @return string header value
+     * @return string
      */
     public function getResponseHeader($header)
     {
@@ -101,7 +102,7 @@ class Request
 
     /**
      * HTTP status code of the last response
-     * @return int|null null if last request failed
+     * @return int|null
      */
     public function getStatus()
     {
@@ -122,7 +123,7 @@ class Request
         return $this->responseHeaders;
     }
 
-    private function callback_CURLOPT_HEADERFUNCTION($ch, $str)
+    private function callbackCurloptHeaderFunction($ch, $str)
     {
         $len = strlen($str);
         if ($len) {
@@ -130,4 +131,5 @@ class Request
         }
         return $len;
     }
+
 }
