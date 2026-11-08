@@ -22,25 +22,25 @@ use Psr\SimpleCache\CacheInterface;
 class GraphQL
 {
     /**
-     * @var CacheInterface
+     * @var string CacheInterface
      */
     private $cache;
 
     /**
-     * @var LoggerInterface
+     * @var string LoggerInterface
      */
     private $logger;
 
     /**
-     * @var Config
+     * @var string Config
      */
     private $config;
 
     /**
      * GraphQL constructor.
-     * @param CacheInterface $cache
-     * @param LoggerInterface $logger
-     * @param Config $config
+     * @param string CacheInterface $cache
+     * @param string LoggerInterface $logger
+     * @param string Config $config
      */
     public function __construct($cache, $logger, $config)
     {
@@ -64,6 +64,7 @@ class GraphQL
     }
 
     /**
+     * Execute request
      * @param string $query
      * @param string|null $queryName
      * @param array $variables
@@ -86,7 +87,7 @@ class GraphQL
             array(
                 'operationName' => $queryName,
                 'query' => $query,
-                'variables' => (object) $variables // apparently $variables needs to object
+                'variables' => (object) $variables // apparently $variables needs to be an object
             )
         );
         $this->logger->info("[GraphQL] Requesting $queryName");
