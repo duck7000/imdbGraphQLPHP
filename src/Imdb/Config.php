@@ -248,40 +248,26 @@ class Config
     public $nameSortOrder = "ASC";
 
 
-    #========================================================[ Calendar class options ]===
-
-    #---------------------------------------comingSoonStreaming]---
+    #========================================================[ comingSoonStreaming options ]===
     /**
      * Sort by options
-     * @var string with double quotes (Default: LIST_ORDER)
+     * @note Default: LIST_ORDER
+     * @var string
      * Possible values:
-     *
-     * LIST_ORDER
-     *      Sort titles based on their list order
-     *
-     * CREATED_DATE
-     *      Sort titles based on their created date
-     *
-     * MODIFIED_DATE
-     *      Sort titles based on their modified date
-     *
-     * POPULARITY
-     *      Sort Names based on their starMeterCurrentWeekRank
-     *      ASC: Lower popularity score means that the name is more popular, so the most popular names will be first.
-     *
+     *      LIST_ORDER (Sort titles based on their list order)
+     *      CREATED_DATE (Sort titles based on their created date)
+     *      MODIFIED_DATE (Sort titles based on their modified date)
+     *      POPULARITY
      */
     public $streamSortBy = "LIST_ORDER";
 
     /**
-     * Sort order options (Default: ASC
-     * @var ENUM
+     * Sort order options
+     * @note Default: ASC
+     * @var string
      * Possible values:
-     *
-     * ASC
-     *      Ascending order e.g. 1,2,3
-     *
-     * DESC
-     *      Descending order e.g. 3,2,1
+     *      ASC (Ascending order e.g. 1,2,3)
+     *      DESC (Descending order e.g. 3,2,1)
      */
     public $streamSortOrder = "ASC";
 
@@ -289,192 +275,195 @@ class Config
 
     #---------------------------------------[Title and TitleCombined class Photo thumbnail]---
     /**
-     * photo() thumbnail width
-     * Default value: 190
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * photo() thumbnail width in pixels
+     * @note Default value: 190
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $photoThumbnailWidth = 190;
 
     /**
-     * photo() thumbnail height
-     * Default value: 281
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * photo() thumbnail height in pixels
+     * @note Default value: 281
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $photoThumbnailHeight = 281;
 
     #----------------------------------------[Title class Recommendation thumbnail]---
     /**
-     * recommendation() thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * recommendation() thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $recommendationThumbnailWidth = 140;
 
     /**
-     * recommendation() thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * recommendation() thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $recommendationThumbnailHeight = 207;
 
     #----------------------------------------[Title class Cast thumbnail]---
     /**
-     * cast() thumbnail width
-     * Default value: 32
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * cast() thumbnail width in pixels
+     * @note Default value: 32
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $castThumbnailWidth = 32;
 
     /**
-     * cast() thumbnail height
-     * Default value: 44
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * cast() thumbnail height in pixels
+     * @note Default value: 44
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $castThumbnailHeight = 44;
 
     #----------------------------------------[Title class Episodes thumbnail]---
     /**
-     * episode() thumbnail width
-     * Default value: 224
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * episode() thumbnail width in pixels
+     * @note Default value: 224
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $episodeThumbnailWidth = 224;
 
     /**
      * episode() thumbnail height
-     * Default value: 126
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * @note Default value: 126
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $episodeThumbnailHeight = 126;
 
     #----------------------------------------[Title and Name class mainphoto thumbnail]---
     /**
-     * mainphoto() thumbnail height
-     * Default value: 100
-     * @var int pixels
+     * mainphoto() thumbnail height in pixels
+     * @note Default value: 100
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $mainphotoThumbnailHeight = 100;
 
     #---------------------------------------[Name class Photo thumbnail]---
     /**
-     * photo() thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * photo() thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $namePhotoThumbnailWidth = 140;
 
     /**
-     * photo() thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * photo() thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $namePhotoThumbnailHeight = 207;
 
     #---------------------------------------[Trailers and Chart class Photo thumbnail]---
     /**
-     * ALL methods thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * ALL methods thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $thumbnailWidth = 140;
 
     /**
-     * ALL methods thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * ALL methods thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $thumbnailHeight = 207;
 
     #---------------------------------------[Calendar class thumbnail]---
     /**
-     * All methods thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind square thumbnails don't work
+     * All methods thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $calendarThumbnailWidth = 140;
 
     /**
-     * All methods thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * All methods thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $calendarThumbnailHeight = 207;
 
     #---------------------------------------[NameSearchAdvanced class thumbnail]---
     /**
-     * All methods thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind square thumbnails don't work
+     * All methods thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $nameSearchAdvancedThumbnailWidth = 140;
 
     /**
-     * All methods thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * All methods thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $nameSearchAdvancedThumbnailHeight = 207;
 
     #---------------------------------------[TitleSearchAdvanced class thumbnail]---
     /**
-     * All methods thumbnail width
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind square thumbnails don't work
+     * All methods thumbnail width in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $titleSearchAdvancedThumbnailWidth = 140;
 
     /**
-     * All methods thumbnail height
-     * Default value: 207
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * All methods thumbnail height in pixels
+     * @note Default value: 207
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $titleSearchAdvancedThumbnailHeight = 207;
 
     #----------------------------------------[Title class Video thumbnail]---
     /**
-     * video() thumbnail width
-     * Default value: 250
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * video() thumbnail width in pixels
+     * @note Default value: 250
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $videoThumbnailWidth = 250;
 
     /**
-     * video() thumbnail height
-     * Default value: 140
-     * @var int pixels
-     * Keep ratio in mind, square thumbnails don't work
+     * video() thumbnail height in pixels
+     * @note Default value: 140
+     * @note Keep ratio in mind, square thumbnails don't work
+     * @var int
      */
     public $videoThumbnailHeight = 140;
 
     #========================================================[ Title class video() options ]===
     /**
-     * This include or exclude mature content video urls
-     * @var boolean default: true
+     * This will include or exclude mature content video urls
+     * @note Default: true
+     * @var bool
      */
     public $videoIncludeMature = true;
 
     /**
      * include all video content types or only trailers
-     * @var string default: trailer
+     * @note Default: trailer
+     * @var string
      * Possible values:
      *      all (include all video content types)
      *      trailer (include only trailers)
@@ -484,18 +473,21 @@ class Config
     #========================================================[ Debug / Expert options ]===
     /**
      * Enable debug mode?
-     * @var boolean
+     * @note Default: false
+     * @var bool
      */
     public $debug = false;
 
     /**
      * Throw exceptions when a request to fetch some content fails?
-     * @var boolean
+     * @note true: throws exception, false: returns empty object
+     * @var bool
      */
     public $throwHttpExceptions = true;
     
     /**
-     * Set curlopt_timout, this is the time out if curl has a connection problem
+     * Set curlopt_timout (in seconds), this is the time out if curl has a connection problem
+     * @note Default: 30
      * @var int
      */
     public $curloptTimeout = 30;
