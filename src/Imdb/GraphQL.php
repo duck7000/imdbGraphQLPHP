@@ -68,7 +68,7 @@ class GraphQL
      * @param string $query
      * @param string|null $queryName
      * @param array $variables
-     * @return \stdClass
+     * @return object
      */
     private function doRequest($query, $queryName = null, $variables = array())
     {

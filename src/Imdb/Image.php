@@ -25,16 +25,15 @@ class Image
 
     /**
      * Calculate The total result parameter and determine if SX or SY is used
+     * @note example: 'QL100_SX190_CR0,15,190,281_.jpg'
+     * @note QL100 = Quality Level, 100 the highest, 0 the lowest quality
+     * @note SX190 = S (scale) X190 desired width
+     * @note CR = Crop (crop left and right, crop top and bottom, New width, New Height)
      * @param int $fullImageWidth the width in pixels of the large original image
      * @param int $fullImageHeight the height in pixels of the large original image
      * @param int $newImageWidth the width in pixels of the desired cropt/resized thumb image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return string
-     * @note example: 'QL100_SX190_CR0,15,190,281_.jpg'
-     * @note QL100 = Quality Level, 100 the highest, 0 the lowest quality
-     * @note SX190 = S (scale) X190 desired width
-     * @note CR = Crop (crop left and right, crop top and bottom, New width, New Height)
-     * @see IMDB page / (TitlePage)
      */
     public function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
     {
@@ -80,7 +79,6 @@ class Image
      * @param int $newImageWidth the width in pixels of the desired cropt/resized thumb image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return int
-     * @see IMDB page / (TitlePage)
      */
     public function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
     {
@@ -99,7 +97,6 @@ class Image
      * @param int $newImageWidth the width in pixels of the desired cropt/resized thumb image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return int
-     * @see IMDB page / (TitlePage)
      */
     public function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
     {

@@ -199,41 +199,40 @@ EOF;
      *      549641648 (Amazon Prime)
      *      549617029 (Paramount+)
      *      544306775 (TV and Streaming Calendar)
-     * @config class options
-     *      $streamSortBy, $streamSortOrder, $calendarThumbnailWidth, $calendarThumbnailHeight
+     * @config class options: $streamSortBy, $streamSortOrder, $calendarThumbnailWidth, $calendarThumbnailHeight
      * @return array
-     *  [listId] =>                 (string) 549391228 (without ls)
-     *  [listName] =>               (string) What's New on Netflix in November 2024
-     *  [listCreateDate] =>         (string)2024-10-23T21:14:59Z
-     *  [listLastModifiedDate ] =>  (string)2024-10-23T21:42:30Z
-     *  [items] => Array()
-     *      [0] => Array()
-     *          [id] =>             (string) 33130884 (without tt)
-     *          [title] =>          (string) Barbie Mysteries: The Great Horse Chase
-     *          [type] =>           (string) TV Series
-     *          [year] =>           (int) 2024
-     *          [description] =>    (string) Season 1 Available November 1
-     *          [runtime] =>        (int) 1320 (Seconds!)
-     *          [rating] =>         (float) 6.7
-     *          [votes] =>          (int) 36
-     *          [metacritic] =>     (int) 75
-     *          [plot] =>           (string) Barbie "Brooklyn" Roberts and Barbie "Malibu" Roberts embark on an adventure-packed journey across Europe to rescue two stolen horses.
-     *          [thumbUrl] =>       (string) https://m.media-amazon.com/images/M/MV5BOTg3MDg2ZTYtMjgzNy00MmViLWJjOWItYzQ4YWNmOWQ1ZGM0XkEyXkFqcGc@._V1_QL75_SX140_CR0,2,140,207_.jpg
-     *          [credits] => Array() categorized by index like Stars and Director max 3 elements in each category
-     *              [Director] => Array()
-     *                  [0] => Array()
-     *                      [nameId] => (string) 4638466 (without nm)
-     *                      [name] =>   (string) Joanna Pardos
-     *              [Stars] => Array()
-     *                  [0] => Array()
-     *                      [nameId] => (string) 0046033 (without nm)
-     *                      [name] =>   (string) Diedrich Bader
-     *                  [1] => Array()
-     *                      [nameId] => (string) 1312566 (without nm)
-     *                      [name] =>   (string) Kari Wahlgren
-     *                  [2] => Array()
-     *                      [nameId] => (string) 1293885 (without nm)
-     *                      [name] =>   (string) Bobby Moynihan
+     *  [listId]                  string 549391228 (without ls)
+     *  [listName]                string What's New on Netflix in November 2024
+     *  [listCreateDate]          string   2024-10-23T21:14:59Z
+     *  [listLastModifiedDate ]   string   2024-10-23T21:42:30Z
+     *  [items]  Array()
+     *      [0]  Array()
+     *          [id]              string 33130884 (without tt)
+     *          [title]           string Barbie Mysteries: The Great Horse Chase
+     *          [type]            string TV Series
+     *          [year]            int 2024
+     *          [description]     string Season 1 Available November 1
+     *          [runtime]         int 1320 (Seconds!)
+     *          [rating]          float 6.7
+     *          [votes]           int 36
+     *          [metacritic]      int 75
+     *          [plot]            string Barbie "Brooklyn" Roberts and Barbie "Malibu" Roberts embark on an adventure-packed journey across Europe to rescue two stolen horses.
+     *          [thumbUrl]        string https://m.media-amazon.com/images/M/MV5BOTg3MDg2ZTYtMjgzNy00MmViLWJjOWItYzQ4YWNmOWQ1ZGM0XkEyXkFqcGc@._V1_QL75_SX140_CR0,2,140,207_.jpg
+     *          [credits]  Array() categorized by index like Stars and Director max 3 elements in each category
+     *              [Director]  Array()
+     *                  [0]  Array()
+     *                      [nameId]  string 4638466 (without nm)
+     *                      [name]    string Joanna Pardos
+     *              [Stars]  Array()
+     *                  [0]  Array()
+     *                      [nameId]  string 0046033 (without nm)
+     *                      [name]    string Diedrich Bader
+     *                  [1]  Array()
+     *                      [nameId]  string 1312566 (without nm)
+     *                      [name]    string Kari Wahlgren
+     *                  [2]  Array()
+     *                      [nameId]  string 1293885 (without nm)
+     *                      [name]    string Bobby Moynihan
      */
     public function comingSoonStreaming($listProviderId)
     {

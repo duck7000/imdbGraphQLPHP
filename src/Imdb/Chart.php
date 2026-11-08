@@ -50,15 +50,15 @@ class Chart extends MdbBase
      *  TOP_250_TV      (Overall IMDb Top 250 TV List)
      * @return array
      *      [0] => Array()
-     *              [title]              (string) Breaking Bad
-     *              [imdbid]             (string) 0903747
-     *              [year]               (int) 2008
-     *              [rank]               (int) 1
-     *              [rating]             (float) 9.5
-     *              [votes]              (int) 2178109
-     *              [runtimeSeconds]     (int) 2700
-     *              [runtimeText]        (string) 45m
-     *              [imgUrl]             (string) (140x207 set in config)
+     *              [title]              string Breaking Bad
+     *              [imdbid]             string 0903747
+     *              [year]               int 2008
+     *              [rank]               int 1
+     *              [rating]             float 9.5
+     *              [votes]              int 2178109
+     *              [runtimeSeconds]     int 2700
+     *              [runtimeText]        string 45m
+     *              [imgUrl]             string (140x207 set in config)
      */
     public function top250Title($listType = "TOP_250")
     {
@@ -151,16 +151,16 @@ EOF;
      * Get top250 Names lists (Not seen on IMDb afaik)
      * @return array
      *      [0] => Array()
-     *              [name]       (string) jenifer lopez
-     *              [imdbid]     (string) 0903747
-     *              [rank]       (int)1
-     *              [credits]    (array)
+     *              [name]       string jenifer lopez
+     *              [imdbid]     string 0903747
+     *              [rank]       int    1
+     *              [credits]    array()
      *                  [0] string Actress
-     *              [knownFor]   (array)
-     *                  [id] 2258337
-     *                  [title] Eega
-     *                  [year] 2012
-     *              [imgUrl]     (string) (140x207 set in config)
+     *              [knownFor]   array()
+     *                  [id]       string 2258337
+     *                  [title]    string Eega
+     *                  [year]     int 2012
+     *              [imgUrl]     string (140x207 set in config)
      */
     public function top250Name()
     {
@@ -269,16 +269,16 @@ EOF;
      * Get most popular Names lists as seen on https://imdb.com/chart/starmeter
      * @return array
      *      [0] => Array()
-     *              [name]       (string) jenifer lopez
-     *              [imdbid]     (string) 0903747
-     *              [rank]       (int)1
-     *              [credits]    (array)
+     *              [name]       string jenifer lopez
+     *              [imdbid]     string 0903747
+     *              [rank]       int      1
+     *              [credits]    array()
      *                  [0] string Actress
-     *              [knownFor]   (array)
-     *                  [id] 2258337
-     *                  [title] Eega
-     *                  [year] 2012
-     *              [imgUrl]     (string) (140x207 set in config)
+     *              [knownFor]   array()
+     *                  [id]     string 2258337
+     *                  [title]  string Eega
+     *                  [year]   int 2012
+     *              [imgUrl]     string (140x207 set in config)
      */
     public function mostPopularName()
     {
@@ -403,16 +403,16 @@ EOF;
      *  TOP_RATED_TV_SHOWS          (Top Rated IMDb TV List)
      * @return array
      *      [0] => Array()
-     *          [title]              (string) The Substance
-     *          [imdbid]             (string) 17526714
-     *          [year]               (int) 2024
-     *          [runtimeSeconds]     (int) 8460
-     *          [runtimeText]        (string) 2h 21m
-     *          [rank]               (int) 1
-     *          [genre]              (array)
-     *          [rating]             (float) 7.5
-     *          [votes]              (int) 124556
-     *          [imgUrl]             (string) (140x207 set in config)
+     *          [title]              string The Substance
+     *          [imdbid]             string 17526714
+     *          [year]               int 2024
+     *          [runtimeSeconds]     int 8460
+     *          [runtimeText]        string 2h 21m
+     *          [rank]               int 1
+     *          [genre]              array()
+     *          [rating]             float 7.5
+     *          [votes]              int 124556
+     *          [imgUrl]             string (140x207 set in config)
      */
     public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
     {
@@ -529,16 +529,16 @@ EOF;
      *      [weekendEndDate] 2024-12-01
      *      [titles] => Array()
      *          [0] => Array()
-     *              [title]                  (string)
-     *              [id]                     (string) 13622970
-     *              [rating]                 (float) 7.1
-     *              [votes]                  (int) 17669
-     *              [LifetimeGrossAmount]    (int) 221000000
-     *              [LifetimeGrossCurrency]  (string) USD
-     *              [weekendGrossAmount]     (int) 135500000
-     *              [weekendGrossCurrency]   (string) USD
-     *              [weeksReleased]          (int)
-     *              [imgUrl]                 (string)
+     *              [title]                  string
+     *              [id]                     string 13622970
+     *              [rating]                 float 7.1
+     *              [votes]                  int 17669
+     *              [LifetimeGrossAmount]    int 221000000
+     *              [LifetimeGrossCurrency]  string USD
+     *              [weekendGrossAmount]     int 135500000
+     *              [weekendGrossCurrency]   string USD
+     *              [weeksReleased]          int
+     *              [imgUrl]                 string
      */
     public function topBoxOffice()
     {
@@ -648,12 +648,11 @@ EOF;
     }
 
     #========================================================[ Helper functions]===
-
     /**
      * Get amount of weeks between input date and current date
      * @param string $startDate like '1/2/2013' (month/day/year)
      * @param string $endDate current date! like '1/2/2013' (month/day/year)
-     * @return int number of weeks
+     * @return int
      */
     function datediffInWeeks($startDate, $endDate)
     {

@@ -52,15 +52,15 @@ class News extends MdbBase
      *      TV
      * @return array
      *      [0]  Array()
-     *          [id]              (string) (without ni)
-     *          [title]           (string) news item title
-     *          [author]          (string)
-     *          [date]            (string) iso date string
-     *          [extUrl]          (string)
-     *          [exturlLabel]     (string) label used for extUrl
-     *          [textHtml]        (string)
-     *          [textText]        (string)
-     *          [thumbnailUrl]    (string)
+     *          [id]              string (without ni)
+     *          [title]           string news item title
+     *          [author]          string
+     *          [date]            string iso date string
+     *          [extUrl]          string
+     *          [exturlLabel]     string label used for extUrl
+     *          [textHtml]        string
+     *          [textText]        string
+     *          [thumbnailUrl]    string
      */
     public function newsList($listType = "MOVIE")
     {

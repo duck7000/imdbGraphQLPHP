@@ -22,11 +22,11 @@ class KeywordSearch extends MdbBase
      * @param string $keywords input keywords, ("nihilism" or "sex drugs")
      * @return array
      *      [nihilism]
-     *          [keywordId] 0022341 (without kw)
-     *          [totalTitles] 517
+     *          [keywordId]     string  0022341 (without kw)
+     *          [totalTitles]   int     517
      *      [referenceToNihilism]
-     *          [keywordId] 0467796
-     *          [totalTitles] 1
+     *          [keywordId]     string  0467796
+     *          [totalTitles]   int     1
      */
     public function searchKeyword($keywords)
     {

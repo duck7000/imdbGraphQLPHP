@@ -52,18 +52,18 @@ class NameSearchAdvanced extends MdbBase
      *      [totalFoundResults] (int)
      *      [names] Array()
      *          [0] => Array()
-     *              [imdbid] (string) 0001228 (without nm)
-     *              [name]   (string) Peter Fonda
-     *              [bio]    (string) Name bio text
+     *              [imdbid] string 0001228 (without nm)
+     *              [name]   string Peter Fonda
+     *              [bio]    string Name bio text
      *              [professions] Array()
-     *                  [0] (string) Actor
+     *                  [0] string Actor
      *              [knownFor] Array()
      *                  [0] Array()
-     *                      [titleId]    (string) 0064276 (without tt)
-     *                      [title]      (string) Easy Rider
-     *                      [year]       (int) 1969
-     *                      [endYear]    (int) (will be null if not available)
-     *              [imgUrl] (string) ImageUrl for thumbnail
+     *                      [titleId]    string 0064276 (without tt)
+     *                      [title]      string Easy Rider
+     *                      [year]       int 1969
+     *                      [endYear]    int (will be null if not available)
+     *              [imgUrl] string ImageUrl for thumbnail
      */
     public function advancedNameSearch(
         $searchTerm = '',
@@ -221,7 +221,6 @@ EOF;
     }
 
     #========================================================[ Helper functions]===
-
     /**
      * Check and validate which input parameters are filled in and build constraints
      * @param string $searchTerm
@@ -283,7 +282,7 @@ EOF;
     /**
      * Check if provided date is valid
      * @param string $date input date
-     * @return bool
+     * @return string
      */
     private function validateDate($date)
     {
