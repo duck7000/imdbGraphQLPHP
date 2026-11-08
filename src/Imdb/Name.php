@@ -21,12 +21,10 @@ use Imdb\Image;
  * A person on IMDb
  * @author Izzy (izzysoft AT qumran DOT org)
  * @author Ed
- * @copyright 2008 by Itzchak Rehberg and IzzySoft
  */
 class Name extends MdbBase
 {
 
-    // "Name" page:
     protected $imageFunctions;
     protected $mainPoster = null;
     protected $mainPosterThumb = null;
@@ -39,8 +37,6 @@ class Name extends MdbBase
     protected $mainPhoto = array();
     protected $videos = array();
     protected $news = array();
-
-    // "Bio" page:
     protected $birthName = null;
     protected $nickName = array();
     protected $akaName = array();
@@ -54,8 +50,6 @@ class Name extends MdbBase
     protected $bioQuotes = array();
     protected $bioTrademark = array();
     protected $bioSalary = array();
-
-    // "Publicity" page:
     protected $pubPrints = array();
     protected $pubMovies = array();
     protected $pubPortrayal = array();
@@ -63,23 +57,17 @@ class Name extends MdbBase
     protected $pubInterview = array();
     protected $pubMagazine = array();
     protected $pubPictorial = array();
-
-    // "OtherWorks" page:
     protected $otherWorks = array();
-
-    // "External Sites" page:
     protected $externalSites = array();
-
-    // "Credits" page:
     protected $awards = array();
     protected $creditKnownFor = array();
     protected $credits = array();
 
     /**
      * @param string $id IMDBID to use for data retrieval
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -88,12 +76,9 @@ class Name extends MdbBase
         $this->imageFunctions = new Image();
     }
 
-    #=============================================================[ Main Page ]===
-
     #------------------------------------------------------------------[ Name ]---
-    /** Get the name of the person
-     * @return string|null name full name of the person
-     * @see IMDB person page / (Main page)
+    /** Get person full name
+     * @return string|null
      */
     public function name()
     {
@@ -115,12 +100,11 @@ EOF;
         return $this->fullName;
     }
 
-    #--------------------------------------------------------[ Photo specific ]---
+    #--------------------------------------------------------[ Photo ]---
     /**
-     * Get the main photo image url for thumbnail or full size
-     * @param boolean $thumb get the thumbnail (140x207 pixels) or large (max 1000 pixels)
-     * @return string|false photo (string URL if found, FALSE otherwise)
-     * @see IMDB page / (NamePage)
+     * Get person photo image url
+     * @param bool $thumb true: thumbnail (140x207 pixels), false: large (max 1000 pixels)
+     * @return string|false
      */
     public function photo($thumb = true)
     {
@@ -139,11 +123,9 @@ EOF;
         return $this->mainPoster;
     }
 
-    #==================================================================[ /bio ]===
     #------------------------------------------------------------[ Birth Name ]---
-    /** Get the birth name
-     * @return string birthname
-     * @see IMDB person page /bio
+    /** Get person birth name
+     * @return string|null birthname
      */
     public function birthname()
     {
@@ -166,9 +148,8 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Nick Name ]---
-    /** Get the nick name
-     * @return array nicknames array[0..n] of strings
-     * @see IMDB person page /bio
+    /** Get person nick name
+     * @return array
      */
     public function nickname()
     {
@@ -202,9 +183,8 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Alternative Names ]---
-    /** Get alternative names for a person
-     * @return array[0..n] of alternative names
-     * @see IMDB person page /bio
+    /** Get person alternative names
+     * @return array
      */
     public function akaName()
     {
@@ -241,11 +221,10 @@ EOF;
         return $this->akaName;
     }
 
-    #------------------------------------------------------------------[ Born ]---
-    /** Get Birthday
-     * @return array|null birthday [day,month,mon,year,place]
-     *         where $monthName is the month name, and $monthInt the month number
-     * @see IMDB person page /bio
+    #------------------------------------------------------------------[ Birthday ]---
+    /** Get person birthday
+     * @note $monthName is the month name, and $monthInt the month number
+     * @return array|null
      */
     public function born()
     {
@@ -287,12 +266,11 @@ EOF;
         return $this->birthday;
     }
 
-    #------------------------------------------------------------------[ Died ]---
+    #------------------------------------------------------------------[ Death ]---
     /**
-     * Get date of death with place and cause
-     * @return array [day,monthName,monthInt,year,place,cause,status]
-     *         New: Status returns current state: ALIVE,DEAD or PRESUMED_DEAD
-     * @see IMDB person page /bio
+     * Get person date of death with place and cause
+     * @note New: Status returns current state: ALIVE,DEAD or PRESUMED_DEAD
+     * @return array
      */
     public function died()
     {
@@ -343,9 +321,8 @@ EOF;
     }
 
     #------------------------------------------------------------------[ Age ]---
-    /** Get the age of the person
-     * @return int age
-     * @see IMDB person page / (Main page)
+    /** Get person age
+     * @return int|null
      */
     public function age()
     {
@@ -368,9 +345,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Primary Professions ]---
-    /** Get primary professions of this person
-     * @return array() all professions
-     * @see IMDB person page
+    /** Get person primary professions
+     * @return array
      */
     public function profession()
     {
@@ -407,9 +383,8 @@ EOF;
 
     #----------------------------------------------------------[ Popularity ]---
     /**
-     * Get current popularity rank of a person
-     * @return array(currentRank: int, changeDirection: string, difference: int)
-     * @see IMDB page / (NamePage)
+     * Get person current popularity rank
+     * @return array
      */
     public function rank()
     {
@@ -443,9 +418,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Body Height ]---
-    /** Get the body height
-     * @return array [imperial: array[feet (int), inches (float)], metric: int (in centimeters)]
-     * @see IMDB person page /bio
+    /** Get person body height
+     * @return array
      */
     public function height()
     {
@@ -481,11 +455,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Spouse ]---
-    /** Get spouse(s)
-     * @return array [0..n] of array spouses [imdb, name, array from,
-     *         array to, dateText, comment array(), children] where from/to are array
-     *         [day,month,mon,year] (MonthName is the name, MonthInt the number of the month),
-     * @see IMDB person page /bio
+    /** Get person spouse(s)
+     * @return array
      */
     public function spouse()
     {
@@ -615,9 +586,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Children ]---
-    /** Get the Children
-     * @return array children array[0..n] of array(imdb, name, relType)
-     * @see IMDB person page /bio
+    /** Get person children
+     * @return array
      */
     public function children()
     {
@@ -628,9 +598,8 @@ EOF;
     }
     
     #----------------------------------------------------------------[ Parents ]---
-    /** Get the Parents
-     * @return array parents array[0..n] of array(imdb, name, relType)
-     * @see IMDB person page /bio
+    /** Get person parents
+     * @return array
      */
     public function parents()
     {
@@ -641,9 +610,8 @@ EOF;
     }
     
     #----------------------------------------------------------------[ Relatives ]---
-    /** Get the relatives
-     * @return array relatives array[0..n] of array(imdb, name, relType)
-     * @see IMDB person page /bio
+    /** Get person relatives
+     * @return array
      */
     public function relatives()
     {
@@ -654,9 +622,8 @@ EOF;
     }
 
     #---------------------------------------------------------------[ MiniBio ]---
-    /** Get the person's mini bio
-     * @return array bio array [0..n] of array[string desc, string author]
-     * @see IMDB person page /bio
+    /** Get person mini bio
+     * @return array
      */
     public function bio()
     {
@@ -693,7 +660,7 @@ EOF;
                         'desc' => isset($edge->node->text->plainText) ?
                                         $edge->node->text->plainText : null,
                         'author' => isset($edge->node->author->plainText) ?
-                                        $edge->node->author->plainText : null
+                                          $edge->node->author->plainText : null
                     );
                 }
             }
@@ -702,9 +669,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Trivia ]---
-    /** Get the Trivia
-     * @return array trivia array[0..n] of string
-     * @see IMDB person page /bio
+    /** Get person trivia
+     * @return array
      */
     public function trivia()
     {
@@ -715,9 +681,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Quotes ]---
-    /** Get the Personal Quotes
-     * @return array quotes array[0..n] of string
-     * @see IMDB person page /bio
+    /** Get person quotes
+     * @return array
      */
     public function quotes()
     {
@@ -728,9 +693,8 @@ EOF;
     }
 
     #------------------------------------------------------------[ Trademarks ]---
-    /** Get the "trademarks" of the person
-     * @return array trademarks array[0..n] of strings
-     * @see IMDB person page /bio
+    /** Get person trademarks
+     * @return array
      */
     public function trademark()
     {
@@ -741,9 +705,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Salary ]---
-    /** Get the salary list
-     * @return array salary array[0..n] of array [strings imdb, name, year, amount, currency, array comments[]]
-     * @see IMDB person page /bio
+    /** Get person salary list
+     * @return array
      */
     public function salary()
     {
@@ -785,7 +748,7 @@ EOF;
                         'year' => isset($edge->node->title->releaseYear->year) ?
                                         $edge->node->title->releaseYear->year : null,
                         'amount' => isset($edge->node->amount->amount) ?
-                                        $edge->node->amount->amount : null,
+                                          $edge->node->amount->amount : null,
                         'currency' => isset($edge->node->amount->currency) ?
                                             $edge->node->amount->currency : null,
                         'comment' => $comments
@@ -796,13 +759,9 @@ EOF;
         return $this->bioSalary;
     }
 
-    #============================================================[ /publicity ]===
-
-    #-----------------------------------------------------------[ Print media ]---
-    /** Print media about this person
-     * @return array prints array[0..n] of array[title, author, place, publisher, isbn],
-     *         where "place" refers to the place of publication including year
-     * @see IMDB person page /publicity
+    #-----------------------------------------------------------[ Printed media ]---
+    /** Person printed media
+     * @return array
      */
     public function pubprints()
     {
@@ -833,10 +792,10 @@ EOF;
                     }
                     $this->pubPrints[] = array(
                         "title" => isset($edge->node->title->text) ?
-                                        $edge->node->title->text : null,
+                                         $edge->node->title->text : null,
                         "author" => $authors,
                         "publisher" => isset($edge->node->publisher) ?
-                                            $edge->node->publisher : null,
+                                             $edge->node->publisher : null,
                         "isbn" => isset($edge->node->isbn) ?
                                         $edge->node->isbn : null
                     );
@@ -847,9 +806,8 @@ EOF;
     }
 
     #----------------------------------------------------[ Biographical movies ]---
-    /** Biographical Movies
-     * @return array pubmovies array[0..n] of array[title, id, year, seriesTitle, seriesSeason, seriesEpisode]
-     * @see IMDB person page /publicity
+    /** Person biographical Movies
+     * @return array
      */
     public function pubmovies()
     {
@@ -888,17 +846,17 @@ EOF;
                 foreach ($data as $edge) {
                     $this->pubMovies[] = array(
                         "title" => isset($edge->node->title->titleText->text) ?
-                                        $edge->node->title->titleText->text : null,
+                                         $edge->node->title->titleText->text : null,
                         "id" => isset($edge->node->title->id) ?
-                                    str_replace('tt', '', $edge->node->title->id) : null,
+                                      str_replace('tt', '', $edge->node->title->id) : null,
                         "year" => isset($edge->node->title->releaseYear->year) ?
                                         $edge->node->title->releaseYear->year : null,
                         "seriesTitle" => isset($edge->node->title->series->series->titleText->text) ?
-                                            $edge->node->title->series->series->titleText->text : null,
+                                               $edge->node->title->series->series->titleText->text : null,
                         "seriesSeason" => isset($edge->node->title->series->displayableEpisodeNumber->displayableSeason->text) ?
                                                 $edge->node->title->series->displayableEpisodeNumber->displayableSeason->text : null,
                         "seriesEpisode" => isset($edge->node->title->series->displayableEpisodeNumber->episodeNumber->text) ?
-                                                $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null,
+                                                 $edge->node->title->series->displayableEpisodeNumber->episodeNumber->text : null
                     );
                 }
             }
@@ -907,9 +865,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Portrayal]---
-    /** Portrayal listings about this person
-     * @return array portrayal array[0..n] of array[title, id, year]
-     * @see IMDB person page /publicity
+    /** Person portrayal listings
+     * @return array
      */
     public function pubportrayal()
     {
@@ -933,9 +890,9 @@ EOF;
                 foreach ($data as $edge) {
                     $this->pubPortrayal[] = array(
                         'title' => isset($edge->node->title->titleText->text) ?
-                                        $edge->node->title->titleText->text : null,
+                                         $edge->node->title->titleText->text : null,
                         'id' => isset($edge->node->title->id) ?
-                                    str_replace('tt', '', $edge->node->title->id) : null,
+                                      str_replace('tt', '', $edge->node->title->id) : null,
                         'year' => isset($edge->node->title->releaseYear->year) ?
                                         $edge->node->title->releaseYear->year : null
                     );
@@ -946,19 +903,18 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Article ]---
-    /** Get the Publicity Articles of this name
-     * @return array()
-     *      [publication] =>    (string)
-     *      [regionId] =>       (string)
-     *      [title] =>          (string)
-     *      [date] => Array()
-     *          [day] =>    (int)
-     *          [month] =>  (int)
-     *          [year] =>   (int)
-     *      [reference] =>      (string)
-     *      [authors] => Array()
-     *          [0] => (string)
-     * @see IMDB person page /publicity
+    /** Get person publicity articles
+     * @return array
+     *      [publication]    (string)
+     *      [regionId]       (string)
+     *      [title]          (string)
+     *      [date] array()
+     *          [day]    (int)
+     *          [month]  (int)
+     *          [year]   (int)
+     *      [reference]      (string)
+     *      [authors] array()
+     *          [0] (string)
      */
     public function pubarticle()
     {
@@ -969,19 +925,18 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Interview ]---
-    /** Get the Publicity Interviews of this name
-     * @return array()
-     *      [publication] =>    (string)
-     *      [regionId] =>       (string)
-     *      [title] =>          (string)
-     *      [date] => Array()
-     *          [day] =>    (int)
-     *          [month] =>  (int)
-     *          [year] =>   (int)
-     *      [reference] =>      (string)
-     *      [authors] => Array()
-     *          [0] => (string)
-     * @see IMDB person page /publicity
+    /** Get person publicity interviews
+     * @return array
+     *      [publication]    (string)
+     *      [regionId]       (string)
+     *      [title]          (string)
+     *      [date] Array()
+     *          [day]    (int)
+     *          [month]  (int)
+     *          [year]   (int)
+     *      [reference]      (string)
+     *      [authors] Array()
+     *          [0] (string)
      */
     public function pubinterview()
     {
@@ -992,19 +947,18 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Magazines ]---
-    /** Get the Publicity Magazines of this name
-     * @return array()
-     *      [publication] =>    (string)
-     *      [regionId] =>       (string)
-     *      [title] =>          (string)
-     *      [date] => Array()
-     *          [day] =>    (int)
-     *          [month] =>  (int)
-     *          [year] =>   (int)
-     *      [reference] =>      (string)
-     *      [authors] => Array()
-     *          [0] => (string)
-     * @see IMDB person page /publicity
+    /** Get person publicity magazines
+     * @return array
+     *      [publication]    (string)
+     *      [regionId]       (string)
+     *      [title]          (string)
+     *      [date] Array()
+     *          [day]    (int)
+     *          [month]  (int)
+     *          [year]   (int)
+     *      [reference]      (string)
+     *      [authors] Array()
+     *          [0] (string)
      */
     public function pubmagazine()
     {
@@ -1014,20 +968,19 @@ EOF;
         return $this->pubMagazine;
     }
 
-    #----------------------------------------------------------------[ Pictorial ]---
-    /** Get the Publicity Pictoryials of this name
-     * @return array()
-     *      [publication] =>    (string)
-     *      [regionId] =>       (string)
-     *      [title] =>          (string)
-     *      [date] => Array()
-     *          [day] =>    (int)
-     *          [month] =>  (int)
-     *          [year] =>   (int)
-     *      [reference] =>      (string)
-     *      [authors] => Array()
-     *          [0] => (string)
-     * @see IMDB person page /publicity
+    #----------------------------------------------------------------[ Pictorials ]---
+    /** Get person publicity pictoryials
+     * @return array
+     *      [publication]    (string)
+     *      [regionId]       (string)
+     *      [title]          (string)
+     *      [date] Array()
+     *          [day]    (int)
+     *          [month]  (int)
+     *          [year]   (int)
+     *      [reference]      (string)
+     *      [authors] Array()
+     *          [0] (string)
      */
     public function pubpictorial()
     {
@@ -1037,11 +990,9 @@ EOF;
         return $this->pubPictorial;
     }
 
-    #============================================================[ /OtherWorks ]===
-
-    /** Other works of this person
-     * @return array pubOtherWorks array[0..n] of array[category, fromDate array(day, month,year), toDate array(day, month,year), text]
-     * @see IMDB person page /otherworks
+    #----------------------------------------------------------------[ OtherWorks ]---
+    /** Get person other works
+     * @return array
      */
     public function otherWorks()
     {
@@ -1062,18 +1013,18 @@ EOF;
                     // From date
                     $fromDate = array(
                         "day" => isset($edge->node->fromDate->day) ?
-                                    $edge->node->fromDate->day : null,
+                                       $edge->node->fromDate->day : null,
                         "month" => isset($edge->node->fromDate->month) ?
-                                        $edge->node->fromDate->month : null,
+                                         $edge->node->fromDate->month : null,
                         "year" => isset($edge->node->fromDate->year) ?
                                         $edge->node->fromDate->year : null
                     );
                     // To date
                     $toDate = array(
                         "day" => isset($edge->node->toDate->day) ?
-                                    $edge->node->toDate->day : null,
+                                       $edge->node->toDate->day : null,
                         "month" => isset($edge->node->toDate->month) ?
-                                        $edge->node->toDate->month : null,
+                                         $edge->node->toDate->month : null,
                         "year" => isset($edge->node->toDate->year) ?
                                         $edge->node->toDate->year : null
                     );
@@ -1092,9 +1043,8 @@ EOF;
     }
 
     #-------------------------------------------------------[ External sites ]---
-    /** external websites with info of this name, excluding external reviews.
-     * @return array of array('label: string, 'url: string, language: array[])
-     * @see IMDB page /externalsites
+    /** Get person external websites
+     * @return array
      */
     public function extSites()
     {
@@ -1133,7 +1083,7 @@ EOF;
                     }
                     $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
                         'label' => !empty($edge->node->label) ?
-                                        $edge->node->label : null,
+                                          $edge->node->label : null,
                         'url' => !empty($edge->node->url) ?
                                         $edge->node->url : null,
                         'language' => $language
@@ -1144,14 +1094,15 @@ EOF;
         return $this->externalSites;
     }
 
-    #-------------------------------------------------[ Main images ]---
+    #-------------------------------------------------[ Photo page images ]---
     /**
-     * Get image URLs for (default 6) pictures from photo page
-     * @param $amount, int for how many images, max = 9999
-     * @param $thumb boolean
+     * Get person photos image URLs
+     * @note Default: 6 images, max=9999 (set in config)
+     * @param int $amount
+     * @param bool $thumb
      *      true: height is always the same (set in config), width is variable!
      *      false: untouched max width 1000 pixels
-     * @return array [0..n] of string image source
+     * @return array
      */
     public function mainphoto($amount = 6, $thumb = true)
     {
@@ -1202,51 +1153,32 @@ EOF;
 
     #-------------------------------------------------------[ Awards ]---
     /**
-     * Get all awards for a name
-     * @param $winsOnly boolean Default: false, set to true to only get won awards
-     * @param $event string Default: "" eventId Example " ev0000003" to only get Oscars
+     * Get person awards
+     * @param bool $winsOnly Default: false, set to true to only get won awards
+     * @param string $event Default: "" (eventId Example: " ev0000003" to only get Oscars)
      *  Possible values for $event:
-     *  ev0000003 (Oscar)
-     *  ev0000223 (Emmy)
-     *  ev0000292 (Golden Globe)
-     * @return array[festivalName][0..n] of 
-     *      array[awardYear,awardWinner(bool),awardCategory,awardName,awardNotes
-     *      array awardTitles[titleId,titleName,titleNote],awardOutcome] array total(win, nom)
-     *  Array
-     *       (
-     *           [Academy Awards, USA] => Array
-     *               (
-     *                   [0] => Array
-     *                   (
-     *                   [awardYear] => 1972
-     *                   [awardWinner] => 
-     *                   [awardCategory] => Best Picture
-     *                   [awardName] => Oscar
-     *                   [awardTitles] => Array
-     *                       (
-     *                           [0] => Array
-     *                               (
-     *                                   [titleId] => 0000040
-     *                                   [titleName] => 1408
-     *                                   [titleNote] => screenplay/director
-     *                                   [titleFullImageUrl] => https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_.jpg
-     *                                   [titleThumbImageUrl] => https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_QL75_SX281_.jpg
-     *                               )
-     *
-     *                       )
-     *                   [awardNotes] => Based on the novel
-     *                   [awardOutcome] => Nominee
-     *                   )
-     *               )
-     *           )
-     *           [total] => Array
-     *           (
-     *               [win] => 12
-     *               [nom] => 26
-     *           )
-     *
-     *       )
-     * @see IMDB page / (TitlePage)
+     *      ev0000003 (Oscar)
+     *      ev0000223 (Emmy)
+     *      ev0000292 (Golden Globe)
+     * @return array
+     *      [Academy Awards, USA] Array()
+     *          [0] Array()
+     *              [awardYear] int 1972
+     *              [awardWinner] string
+     *              [awardCategory] string Best Picture
+     *              [awardName] string Oscar
+     *              [awardTitles] Array()
+     *                  [0] => Array()
+     *                      [titleId] string 0000040
+     *                      [titleName] string 1408
+     *                      [titleNote] string screenplay/director
+     *                      [titleFullImageUrl] string  https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_.jpg
+     *                      [titleThumbImageUrl] string https://m.media-amazon.com/images/M/MV5BMTg3ODY2ODM3OF5BMl5BanBnXkFtZTYwOTQ5NTM3._V1_QL75_SX281_.jpg
+     *              [awardNotes] string Based on the novel
+     *              [awardOutcome] string Nominee
+     *     [total] => Array()
+     *          [win] => 12
+     *          [nom] => 26
      */
     public function award($winsOnly = false, $event = "")
     {
@@ -1322,11 +1254,11 @@ EOF;
                             }
                             $titles[] = array(
                                 'titleId' => isset($title->title->id) ?
-                                                str_replace('tt', '', $title->title->id) : null,
+                                                   str_replace('tt', '', $title->title->id) : null,
                                 'titleName' => isset($title->title->titleText->text) ?
-                                                    $title->title->titleText->text : null,
+                                                     $title->title->titleText->text : null,
                                 'titleNote' => isset($title->note->plainText) ?
-                                                    trim($title->note->plainText, " ()") : null,
+                                                     trim($title->note->plainText, " ()") : null,
                                 'titleFullImageUrl' => $titleFullImageUrl,
                                 'titleThumbImageUrl' => $titleThumbImageUrl
                             );
@@ -1334,14 +1266,14 @@ EOF;
                     }
                     $this->awards[$eventName][] = array(
                         'awardYear' => isset($edge->node->award->eventEdition->year) ?
-                                            $edge->node->award->eventEdition->year : null,
+                                             $edge->node->award->eventEdition->year : null,
                         'awardWinner' => $awardIsWinner,
                         'awardCategory' => isset($edge->node->award->category->text) ?
-                                                $edge->node->award->category->text : null,
+                                                 $edge->node->award->category->text : null,
                         'awardName' => isset($edge->node->award->text) ?
-                                            $edge->node->award->text : null,
+                                             $edge->node->award->text : null,
                         'awardNotes' => isset($edge->node->award->notes->plainText) ?
-                                            $edge->node->award->notes->plainText : null,
+                                              $edge->node->award->notes->plainText : null,
                         'awardTitles' => $titles,
                         'awardOutcome' => $conclusion
                     );
@@ -1357,10 +1289,9 @@ EOF;
         return $this->awards;
     }
 
-    #============================================================[ /creditKnownFor ]===
-    /** All prestigious title credits for this person
-     * @return array creditKnownFor array[0..n] of array[title, titleId, titleYear, titleEndYear, titleFullImageUrl, titleThumbImageUrl, array titleCharacters]
-     * @see IMDB person page /credits
+    #-------------------------------------------------------[ CreditKnownFor ]---
+    /** Get person prestigious title credits
+     * @return array
      */
     public function creditKnownFor()
     {
@@ -1435,11 +1366,11 @@ EOF;
                     }
                     $this->creditKnownFor[] = array(
                         'title' => isset($edge->node->credit->title->titleText->text) ?
-                                        $edge->node->credit->title->titleText->text : null,
+                                         $edge->node->credit->title->titleText->text : null,
                         'titleId' => isset($edge->node->credit->title->id) ?
-                                        str_replace('tt', '', $edge->node->credit->title->id) : null,
+                                           str_replace('tt', '', $edge->node->credit->title->id) : null,
                         'titleYear' => isset($edge->node->credit->title->releaseYear->year) ?
-                                            $edge->node->credit->title->releaseYear->year : null,
+                                             $edge->node->credit->title->releaseYear->year : null,
                         'titleEndYear' => isset($edge->node->credit->title->releaseYear->endYear) ?
                                                 $edge->node->credit->title->releaseYear->endYear : null,
                         'titleCharacters' => $characters,
@@ -1453,10 +1384,8 @@ EOF;
     }
 
     #-------------------------------------------------------[ Credits ]---
-    /** Get all credits for a person
-     * @return array[categoryId] of array('titleId: string, 'titleName: string, titleType: string,
-     *      year: int, endYear: int, characters: array(),jobs: array(), titleFullImageUrl, titleThumbImageUrl,)
-     * @see IMDB page /credits
+    /** Get all person credits
+     * @return array
      */
     public function credit()
     {
@@ -1543,15 +1472,15 @@ EOF;
                     $categoryId = lcfirst($categoryId);
                     $this->credits[$categoryId][] = array(
                         'titleId' => isset($edge->node->title->id) ?
-                                        str_replace('tt', '', $edge->node->title->id) : null,
+                                           str_replace('tt', '', $edge->node->title->id) : null,
                         'titleName' => isset($edge->node->title->titleText->text) ?
-                                            $edge->node->title->titleText->text : null,
+                                             $edge->node->title->titleText->text : null,
                         'titleType' => isset($edge->node->title->titleType->text) ?
-                                            $edge->node->title->titleType->text : null,
+                                             $edge->node->title->titleType->text : null,
                         'year' => isset($edge->node->title->releaseYear->year) ?
                                         $edge->node->title->releaseYear->year : null,
                         'endYear' => isset($edge->node->title->releaseYear->endYear) ?
-                                        $edge->node->title->releaseYear->endYear : null,
+                                           $edge->node->title->releaseYear->endYear : null,
                         'characters' => $characters,
                         'jobs' => $jobs,
                         'titleFullImageUrl' => $titleFullImageUrl,
@@ -1565,28 +1494,18 @@ EOF;
 
     #-------------------------------------------------[ Video ]---
     /**
-     * Get all video URL's and images from videogallery page
-     * @return categorized array videos
-     *     [Trailer] => Array
-     *          [0] => Array()
-     *              [id] => 4030506521
-     *              [name] => A Clockwork Orange
-     *              [runtime] => 130
-     *              [description] => Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
-     *              [titleName] => A Clockwork Orange
-     *              [titleYear] => 1971
-     *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/
-     *              [imageUrl] => https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
-     *      [Clip] => Array()
-     *          [0] => Array()
-     *              [id] => 815316505
-     *              [name] => 'The Platform' & Future Films From the IMDb Top 250
-     *              [runtime] => 244
-     *              [description] => On this IMDbrief, we break down our favorite movies from the IMDb Top 250 that boldly look to what might lie ahead.
-     *              [titleName] => 'The Platform' & Future Films From the IMDb Top 250
-     *              [titleYear] => 2020
-     *              [playbackUrl] => https://www.imdb.com/video/vi815316505/
-     *              [imageUrl] => https://m.media-amazon.com/images/M/MV5BMW8@._V1_QL75_UX500_CR0,0,500,281_.jpg
+     * Get person video URL's and images from videogallery page
+     * @return array
+     *     [Trailer] Array()
+     *          [0] Array()
+     *              [id]            string 4030506521
+     *              [name]          string A Clockwork Orange
+     *              [runtime]       int    130 (in seconds)
+     *              [description]   string Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
+     *              [titleName]     string A Clockwork Orange
+     *              [titleYear]     int    1971
+     *              [playbackUrl]   string https://www.imdb.com/video/vi4030506521/
+     *              [imageUrl]      string https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
      */
     public function video()
     {
@@ -1643,7 +1562,7 @@ EOF;
                 foreach ($data->name->primaryVideos->edges as $edge) {
                     $thumbUrl = null;
                     $videoId = isset($edge->node->id) ?
-                                    str_replace('vi', '', $edge->node->id) : null;
+                                     str_replace('vi', '', $edge->node->id) : null;
                     if (!empty($edge->node->thumbnail->url)) {
                         $fullImageWidth = $edge->node->thumbnail->width;
                         $fullImageHeight = $edge->node->thumbnail->height;
@@ -1656,13 +1575,13 @@ EOF;
                         'name' => isset($edge->node->name->value) ?
                                         $edge->node->name->value : null,
                         'runtime' => isset($edge->node->runtime->value) ?
-                                        $edge->node->runtime->value : null,
+                                           $edge->node->runtime->value : null,
                         'description' => isset($edge->node->description->value) ?
-                                            $edge->node->description->value : null,
+                                               $edge->node->description->value : null,
                         'titleName' => isset($edge->node->primaryTitle->titleText->text) ?
-                                            $edge->node->primaryTitle->titleText->text : null,
+                                             $edge->node->primaryTitle->titleText->text : null,
                         'titleYear' => isset($edge->node->primaryTitle->releaseYear->year) ?
-                                            $edge->node->primaryTitle->releaseYear->year : null,
+                                             $edge->node->primaryTitle->releaseYear->year : null,
                         'playbackUrl' => !empty($videoId) ?
                                                 'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                         'imageUrl' => $thumbUrl
@@ -1675,18 +1594,18 @@ EOF;
 
     #----------------------------------------------------------[ News ]---
     /**
-     * Get news items about this name, max 100 items!
-     * @return array of array()
-     *      [id] =>                 (string)
-     *      [title] =>              (string) e.g. The best movies on Netflix right now
-     *      [author] =>             (string) e.g. The A.V. Club
-     *      [date] =>               (string) e.g. 2024-12-01T02:00:00Z
-     *      [extUrl] =>             (string) e.g. https://www.avclub.com/1842540580
-     *      [extHomepageUrl] =>     (string) e.g. http://www.avclub.com/content/home
-     *      [extHomepageLabel] =>   (string) e.g. avclub.com
-     *      [textHtml] =>           (string) (including html)
-     *      [textText] =>           (string)
-     *      [thumbnailUrl] =>       (string)
+     * Get person news items
+     * @return array
+     *      [id]                  (string)
+     *      [title]               (string) e.g. The best movies on Netflix right now
+     *      [author]              (string) e.g. The A.V. Club
+     *      [date]                (string) e.g. 2024-12-01T02:00:00Z
+     *      [extUrl]              (string) e.g. https://www.avclub.com/1842540580
+     *      [extHomepageUrl]      (string) e.g. http://www.avclub.com/content/home
+     *      [extHomepageLabel]    (string) e.g. avclub.com
+     *      [textHtml]            (string) (including html)
+     *      [textText]            (string)
+     *      [thumbnailUrl]        (string)
      */
     public function news()
     {
@@ -1746,19 +1665,19 @@ EOF;
                     }
                     $this->news[] = array(
                         'id' => isset($edge->node->id) ?
-                                    str_replace('ni', '', $edge->node->id) : null,
+                                      str_replace('ni', '', $edge->node->id) : null,
                         'title' => isset($edge->node->articleTitle->plainText) ?
-                                        $edge->node->articleTitle->plainText : null,
+                                         $edge->node->articleTitle->plainText : null,
                         'author' => isset($edge->node->byline) ?
-                                        $edge->node->byline : null,
+                                          $edge->node->byline : null,
                         'date' => isset($edge->node->date) ?
                                         $edge->node->date : null,
                         'extUrl' => isset($edge->node->externalUrl) ?
-                                        $edge->node->externalUrl : null,
+                                          $edge->node->externalUrl : null,
                         'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
-                                                $edge->node->source->homepage->url : null,
+                                                  $edge->node->source->homepage->url : null,
                         'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
-                                            $edge->node->source->homepage->label : null,
+                                                    $edge->node->source->homepage->label : null,
                         'textHtml' => isset($edge->node->text->plaidHtml) ?
                                             $edge->node->text->plaidHtml : null,
                         'textText' => isset($edge->node->text->plainText) ?
@@ -1771,12 +1690,9 @@ EOF;
         return $this->news;
     }
 
-    #========================================================[ Helper functions ]===
-
-    #========================================================[ photo/poster ]===
+    #-----------------------------------------[ Helper for photo() ]---
     /**
-     * Setup cover photo (thumbnail and big variant)
-     * @see IMDB page / (NamePage)
+     * Fetch person cover photo (thumbnail and big variant)
      */
     private function populatePoster()
     {
@@ -1794,10 +1710,8 @@ EOF;
         $data = $this->graphql->query($query, "Poster", ["id" => "nm$this->imdbID"]);
         if (!empty($data->name->primaryImage->url)) {
             $img = str_replace('.jpg', '', $data->name->primaryImage->url);
-
             // full image
             $this->mainPoster = $img . 'QL100_UX1000_.jpg';
-
             // thumb image
             if (!empty($data->name->primaryImage->width) && !empty($data->name->primaryImage->height)) {
                 $fullImageWidth = $data->name->primaryImage->width;
@@ -1811,9 +1725,10 @@ EOF;
     }
 
     #-----------------------------------------[ Helper for Trivia, Quotes and Trademarks ]---
-    /** Parse Trivia, Quotes and Trademarks
-     * @param string $name
-     * @param array $arrayName
+    /** Fetch Trivia, Quotes and Trademarks data
+     * @param string $name Name of data type e.g. trivia
+     * @param array $arrayName output array name
+     * @return array
      */
     protected function dataParse($name, $arrayName)
     {
@@ -1834,10 +1749,9 @@ EOF;
     }
 
     #-----------------------------------------[ Helper for children, parents, relatives ]---
-    /** Parse children, parents, relatives
-     * @param string $name
-     *     possible values for $name: CHILDREN, PARENTS, OTHERS
-     * @param array $arrayName
+    /** Fetch children, parents, relatives data
+     * @param string $name data type name like CHILDREN, PARENTS, OTHERS
+     * @param array $arrayName output array name
      * @return array
      */
     protected function nameDetailsParse($name, $arrayName)
@@ -1867,27 +1781,27 @@ EOF;
                     $id = isset($edge->node->relationName->name->id) ?
                                 str_replace('nm', '', $edge->node->relationName->name->id) : null;
                     $name = isset($edge->node->relationName->name->nameText->text) ?
-                                $edge->node->relationName->name->nameText->text : null;
+                                  $edge->node->relationName->name->nameText->text : null;
                 } else {
                     $id = null;
                     $name = isset($edge->node->relationName->nameText) ?
-                                $edge->node->relationName->nameText : null;
+                                  $edge->node->relationName->nameText : null;
                 }
                 $arrayName[] = array(
                     'imdb' => $id,
                     'name' => $name,
                     'relType' => isset($edge->node->relationshipType->text) ?
-                                    $edge->node->relationshipType->text : null
+                                       $edge->node->relationshipType->text : null
                 );
             }
         }
         return $arrayName;
     }
 
-    #-----------------------------------------------------------[ Other Publicity Listings helper]---
-    /** helper for Article, Interview, Magazine and Pictorial publicity listings about this person
-     * @return array listing
-     * @see IMDB person page /publicity
+    #-----------------------------------------------------------[ helper for Article, Interview, Magazine and Pictorial ]---
+    /** Fetch data for Article, Interview, Magazine and Pictorial
+     * @param string $listingType data type e.g. PublicityArticle
+     * @return array
      */
     protected function pubOtherListing($listingType)
     {
@@ -1914,9 +1828,9 @@ EOF;
             foreach ($data as $edge) {
                 $date = array(
                     'day' => isset($edge->node->date->day) ?
-                                $edge->node->date->day : null,
+                                   $edge->node->date->day : null,
                     'month' => isset($edge->node->date->month) ?
-                                    $edge->node->date->month : null,
+                                     $edge->node->date->month : null,
                     'year' => isset($edge->node->date->year) ?
                                     $edge->node->date->year : null
                 );
@@ -1934,14 +1848,14 @@ EOF;
                 }
                 $results[] = array(
                     'publication' => isset($edge->node->publication) ?
-                                        $edge->node->publication : null,
+                                           $edge->node->publication : null,
                     'regionId' => isset($edge->node->region->id) ?
                                         $edge->node->region->id : null,
                     'title' => isset($edge->node->title->text) ?
-                                    $edge->node->title->text : null,
+                                     $edge->node->title->text : null,
                     'date' => $date,
                     'reference' => isset($edge->node->reference) ?
-                                        $edge->node->reference : null,
+                                         $edge->node->reference : null,
                     'authors' => $authors
                 );
             }
@@ -1951,12 +1865,12 @@ EOF;
 
     #-----------------------------------------[ Helper GraphQL Paginated ]---
     /**
-     * Get all edges of a field in the name type
+     * Fetch all data if paginated so all data is collected
      * @param string $queryName The cached query name
      * @param string $fieldName The field on name you want to get
      * @param string $nodeQuery Graphql query that fits inside node { }
      * @param string $filter Add's extra Graphql query filters like categories
-     * @return \stdClass[]
+     * @return array
      */
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
@@ -1979,8 +1893,6 @@ query $queryName(\$id: ID!, \$after: ID) {
 EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
-
-        // Results are paginated, so loop until we've got all the data
         $endCursor = null;
         $hasNextPage = true;
         $edges = array();
@@ -1998,12 +1910,9 @@ EOF;
     #----------------------------------------------------------[ imdbID redirect ]---
     /**
      * Check if imdbid is redirected to another id or not.
-     * It sometimes happens that imdb redirects an existing id to a new id.
-     * If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
-     * @var $this->imdbID The imdbid used to call this class
-     * @var $nameImdbId the returned imdbid from Graphql call (in some cases this can be different)
-     * @return $nameImdbId (the new redirected imdbId) or false (no redirect)
-     * @see IMDB page / (TitlePage)
+     * @note It sometimes happens that imdb redirects an existing id to a new id.
+     * @note If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
+     * @return string|false (the new redirected imdbId) or false (no redirect)
      */
     public function checkRedirect()
     {
@@ -2023,7 +1932,6 @@ EOF;
         {
             $nameImdbId = str_replace('nm', '', $data->name->meta->canonicalId);
             if ($nameImdbId  != $this->imdbID) {
-                // todo write to log?
                 return $nameImdbId;
             } else {
                 return false;
@@ -2035,8 +1943,12 @@ EOF;
     #----------------------------------------------------------[ Award filter helper ]---
     /**
      * Build award filter string
-     * @param $winsOnly boolean
-     * @param $event string eventId
+     * @param bool $winsOnly true: includes wins only, false: includes all awards
+     * @param string $event eventId Example: " ev0000003" to only get Oscars)
+     *  Possible values for $event:
+     *      ev0000003 (Oscar)
+     *      ev0000223 (Emmy)
+     *      ev0000292 (Golden Globe)
      * @return string $filter
      */
     public function awardFilter($winsOnly, $event)
