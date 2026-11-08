@@ -11,15 +11,15 @@
 namespace Imdb;
 
 /**
- * Search for names on IMDb
+ * Search for persons on IMDb
  */
 class NameSearch extends MdbBase
 
 {
     /**
-     * Search IMDb for names matching $searchTerms
-     * @param string $searchTerms
-     * @return array of names
+     * Search IMDb for persons matching $searchTerms
+     * @param string $searchTerms e.g. "peter fonda"
+     * @return array
      */
     public function search($searchTerms)
     {
@@ -103,4 +103,5 @@ EOF;
         }
         return $results;
     }
+
 }
