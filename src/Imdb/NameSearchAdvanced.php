@@ -11,6 +11,7 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\Log\LoggerInterface;
 use Imdb\Image;
 
 /**
@@ -24,9 +25,9 @@ class NameSearchAdvanced extends MdbBase
     protected $newImageHeight;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -38,41 +39,31 @@ class NameSearchAdvanced extends MdbBase
 
     /**
      * Advanced Name Search
-     * 
-     * @param string $searchTerm input searchTerm to search with specific name
-     *
+     * @param string $searchTerm input searchTerm to search within a specific person name
      * @param string $birthDay like (month-day iso) "--11-19" or "11-19" (both are supported)
-     *
      * @param string $birthDateRangeStart start date (iso date string) ("1975-01-01")
      * @param string $birthDateRangeEnd end date (iso date string) ("1995-01-01")
-     * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
-     * 
+     *      @note if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * @param string $deathDateRangeStart start date (iso date string) ("1975-01-01")
      * @param string  $deathDateRangeEnd end date (iso date string) ("1995-01-01")
-     * if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
-     *
-     * @param string $birthPlace input searchTerm to search names with specific birth places
-     *
-     * @return array of Names
-     * array[]
-     *  [totalFoundResults] => (int) 2 Total found from search result,
-     *      this will not be the total results from this method as it is limited by config setting nameSearchAdvancedAmount
-     *  [names] => Array()
-     *      [0] => Array()
-     *          [imdbid] => (string) 0001228 (without nm)
-     *          [name] =>   (string) Peter Fonda
-     *          [bio] =>    (string) Name bio text
-     *          [professions] => Array()
-     *              [0] => (string) Actor
-     *              [1] => (string) Director
-     *              [2] => (string) Writer
-     *          [knownFor] => Array()
-     *              [0] => Array()
-     *                  [titleId] =>    (string) 0064276 (without tt)
-     *                  [title] =>      (string) Easy Rider
-     *                  [year] =>       (int) 1969
-     *                  [endYear] =>    (int) (will be null if not available)
-     *          [imgUrl] => (string) ImageUrl for thumbnail
+     *      @note if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
+     * @param string $birthPlace input searchTerm to search persons with specific birth places
+     * @return array
+     *      [totalFoundResults] (int)
+     *      [names] Array()
+     *          [0] => Array()
+     *              [imdbid] (string) 0001228 (without nm)
+     *              [name]   (string) Peter Fonda
+     *              [bio]    (string) Name bio text
+     *              [professions] Array()
+     *                  [0] (string) Actor
+     *              [knownFor] Array()
+     *                  [0] Array()
+     *                      [titleId]    (string) 0064276 (without tt)
+     *                      [title]      (string) Easy Rider
+     *                      [year]       (int) 1969
+     *                      [endYear]    (int) (will be null if not available)
+     *              [imgUrl] (string) ImageUrl for thumbnail
      */
     public function advancedNameSearch(
         $searchTerm = '',
@@ -184,13 +175,13 @@ EOF;
                     foreach ($edge->node->name->knownFor->edges as $known) {
                         $knownFor[] = array(
                             'titleId' => isset($known->node->credit->title->id) ?
-                                            str_replace('tt', '', $known->node->credit->title->id) : null,
+                                               str_replace('tt', '', $known->node->credit->title->id) : null,
                             'title' => isset($known->node->credit->title->titleText->text) ?
-                                            $known->node->credit->title->titleText->text : null,
+                                             $known->node->credit->title->titleText->text : null,
                             'year' => isset($known->node->credit->title->releaseYear->year) ?
                                             $known->node->credit->title->releaseYear->year : null,
                             'endYear' => isset($known->node->credit->title->releaseYear->endYear) ?
-                                            $known->node->credit->title->releaseYear->endYear : null
+                                               $known->node->credit->title->releaseYear->endYear : null
                         );
                     }
                 }
@@ -208,11 +199,11 @@ EOF;
                 // Found names
                 $names[] = array(
                     'imdbid' => isset($edge->node->name->id) ?
-                                    str_replace('nm', '', $edge->node->name->id) : null,
+                                      str_replace('nm', '', $edge->node->name->id) : null,
                     'name' => isset($edge->node->name->nameText->text) ?
                                     $edge->node->name->nameText->text : null,
                     'bio' => isset($edge->node->name->bio->text->plainText) ?
-                                $edge->node->name->bio->text->plainText : null,
+                                   $edge->node->name->bio->text->plainText : null,
                     'professions' => $professions,
                     'knownFor'=> $knownFor,
                     'imgUrl' => $imgUrl
@@ -232,7 +223,7 @@ EOF;
     #========================================================[ Helper functions]===
 
     /**
-     * Check input parameters and build constraints
+     * Check and validate which input parameters are filled in and build constraints
      * @param string $searchTerm
      * @param string $birthDay
      * @param string $birthDateRangeStart
@@ -240,7 +231,7 @@ EOF;
      * @param string $deathDateRangeStart
      * @param string $deathDateRangeEnd
      * @param string $birthPlace
-     * @return string constraints or false
+     * @return string|false
      */
     private function buildConstraints(
     $searchTerm,
@@ -292,7 +283,7 @@ EOF;
     /**
      * Check if provided date is valid
      * @param string $date input date
-     * @return boolean true or false
+     * @return bool
      */
     private function validateDate($date)
     {
@@ -303,7 +294,7 @@ EOF;
     /**
      * Check if input birthday is not empty and valid
      * @param string $date iso date string ('--04-24')
-     * @return $date|string
+     * @return string|false
      */
     private function checkBirthDay($birthDate)
     {
@@ -320,9 +311,9 @@ EOF;
     /**
      * Check if input birth dates not empty and valid
      * @param string $startDate (searches between startDate and present date) iso date string ('1975-01-01')
-     * @param $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
-     * @param $birthDay input birhtday string like "--10-19" or "10-19"
-     * @return string constraints or false
+     * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
+     * @param string $birthDay input birhtday string like "--10-19" or "10-19"
+     * @return string|false
      */
     private function checkBirthDates($startDate, $endDate, $birthDay)
     {
@@ -372,8 +363,8 @@ EOF;
     /**
      * Check if input death dates not empty and valid
      * @param string $startDate (searches between startDate and present date) iso date string ('1975-01-01')
-     * @param $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
-     * @return string constraints or false
+     * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
+     * @return string|false
      */
     private function checkDeathDates($startDate, $endDate)
     {
