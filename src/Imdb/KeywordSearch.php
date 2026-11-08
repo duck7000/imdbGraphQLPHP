@@ -20,29 +20,23 @@ class KeywordSearch extends MdbBase
     /**
      * Search IMDb for titles matching $keywords
      * @param string $keywords input keywords, ("nihilism" or "sex drugs")
-     *
-     * @return array[]
-     * Array
-     * (
-     *  [nihilism]
-     *      [keywordId] => 0022341 (without kw)
-     *      [totalTitles] => 517
-     *  [reference to nihilism]
-     *      [keywordId] => 0467796
-     *      [totalTitles] => 1
-     * )
+     * @return array
+     *      [nihilism]
+     *          [keywordId] 0022341 (without kw)
+     *          [totalTitles] 517
+     *      [referenceToNihilism]
+     *          [keywordId] 0467796
+     *          [totalTitles] 1
      */
     public function searchKeyword($keywords)
     {
         $results = array();
-
         // check if $keywords is empty, return empty array
         if (empty(trim($keywords))) {
             return $results;
         }
         $inputKeywords = '"' . trim($keywords) . '"';
         $amount = $this->config->keywordSearchAmount;
-
         $query = <<<EOF
 query SearchKeyword {
   mainSearch(
@@ -82,16 +76,16 @@ EOF;
         {
             foreach ($data->mainSearch->edges as $key => $edge) {
                 $keywordText = isset($edge->node->entity->text->text) ?
-                                    $edge->node->entity->text->text : null;
+                                     $edge->node->entity->text->text : null;
                 if (empty($keywordText)) {
                     continue;
                 }
                 $keywordText = lcfirst(str_replace(' ', '', ucwords($keywordText, ' ')));
                 $results[$keywordText] = array(
                     'keywordId' => isset($edge->node->entity->id) ?
-                                        str_replace('kw', '', $edge->node->entity->id) : null,
+                                         str_replace('kw', '', $edge->node->entity->id) : null,
                     'totalTitles' => isset($edge->node->entity->titles->total) ?
-                                        $edge->node->entity->titles->total : null
+                                           $edge->node->entity->titles->total : null
                 );
             }
         }
