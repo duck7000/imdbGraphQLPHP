@@ -1,4 +1,5 @@
 <?php
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by Ed                                                             #
@@ -10,6 +11,7 @@
 namespace Imdb;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\Log\LoggerInterface;
 use Imdb\Image;
 
 /**
@@ -27,9 +29,9 @@ class TitleCombined extends MdbBase
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -42,81 +44,28 @@ class TitleCombined extends MdbBase
 
     /**
      * This method will only get main values of a imdb title (inside the black top part of the imdb page)
-     * @return Array
-        * (
-            * [title] => A Clockwork Orange
-            * [originalTitle] => A Clockwork Orange
-            * [imdbid] => 0066921
-            * [reDirectId] => (redirected ID or false)
-            * [movieType] => Movie
-            * [year] => 1971
-            * [endYear] => 
-            * [imgThumb] => https://m.media-amazon.com/images/M/MV5BMTY3MjM1Mzc4N15BMl5BanBnXkFtZTgwODM0NzAxMDE@._V1_QL75_SX190_CR0,0,190,281_.jpg (190x281 pixels)
-            * [imgFull] => https://m.media-amazon.com/images/M/MV5BMTY3MjM1Mzc4N15BMl5BanBnXkFtZTgwODM0NzAxMDE@._V1_QL100_SX1000_.jpg (max 1000 pixels)
-            * [runtime] => 136
-            * [rating] => 8.2
-            * [genre] => Array
-                * (
-                    * [0] => Array
-                        * (
-                            * [mainGenre] => Crime
-                            * [subGenre] => Array
-                                * (
-                                * )
-                        * )
-                    * [1] => Array
-                        * (
-                            * [mainGenre] => Sci-Fi
-                            * [subGenre] => Array
-                                * (
-                                    * [0] => dystopian sci fi
-                                * )
-                        * )
-                * )
-            * [plotoutline] => Alex DeLarge and his droogs barbarize a decaying near-future.
-            * [credits] => Array
-                * (
-                    * [Director] => Array
-                        * (
-                            * [0] => Array
-                                * (
-                                    * [name] => Stanley Kubrick
-                                    * [imdbid] => 0000040
-                                * )
-                        * )
-                    * [Writer] => Array
-                        * (
-                            * [0] => Array
-                                * (
-                                    * [name] => Stanley Kubrick
-                                    * [imdbid] => 0000040
-                                * )
-                            * [1] => Array
-                                * (
-                                    * [name] => Anthony Burgess
-                                    * [imdbid] => 0121256
-                                * )
-                        * )
-                    * [Star] => Array
-                        * (
-                            * [0] => Array
-                                * (
-                                    * [name] => Malcolm McDowell
-                                    * [imdbid] => 0000532
-                                * )
-                            * [1] => Array
-                                * (
-                                    * [name] => Patrick Magee
-                                    * [imdbid] => 0535861
-                                * )
-                            * [2] => Array
-                                * (
-                                    * [name] => Michael Bates
-                                    * [imdbid] => 0060988
-                                * )
-                        * )
-                * )
-        * )
+     * @return array
+     *      [title]         string          A Clockwork Orange
+     *      [originalTitle] string          A Clockwork Orange
+     *      [imdbid]        string          0066921
+     *      [reDirectId]    string|false    (redirected ID or false)
+     *      [movieType]     string          Movie
+     *      [year]          int             1971
+     *      [endYear]       int
+     *      [imgThumb]      string          https://m.media-amazon.com/images/M/MV5BMTY3MjM1Mzc4N15BMl5BanBnXkFtZTgwODM0NzAxMDE@._V1_QL75_SX190_CR0,0,190,281_.jpg (190x281 pixels)
+     *      [imgFull]       string          https://m.media-amazon.com/images/M/MV5BMTY3MjM1Mzc4N15BMl5BanBnXkFtZTgwODM0NzAxMDE@._V1_QL100_SX1000_.jpg (max 1000 pixels)
+     *      [runtime]       int             136
+     *      [rating]        float           8.2
+     *      [genre]  array()
+     *          [0]  array()
+     *              [mainGenre] string Crime
+     *              [subGenre]  array()
+     *      [plotoutline] string Alex DeLarge and his droogs barbarize a decaying near-future.
+     *      [credits]  array()
+     *          [Director]  array()
+     *              [0]  array()
+     *                  [name]  string   Stanley Kubrick
+     *                  [imdbid] string  0000040
      */
     public function main()
     {
@@ -221,14 +170,11 @@ EOF;
         return $this->main;
     }
 
-
-    #========================================================[ Helper functions ]===
-
-    #--------------------------------------------------------------[ Photo/Poster ]---
+    #--------------------------------------------------------------[ Helper Photo/Poster ]---
     /**
-     * Setup cover photo (thumbnail and big variant)
+     * Fetch cover photo (thumbnail and big variant)
      * @param object $primaryImage primary image object found in main()
-     * @see IMDB page / (TitlePage)
+     * @return string|null
      */
     private function populatePoster($primaryImage, $thumb)
     {
@@ -246,11 +192,10 @@ EOF;
         return null;
     }
 
-    #--------------------------------------------------------------[ Genre(s) ]---
+    #--------------------------------------------------------------[ Helper genre ]---
     /** Get all genres the movie is registered for
      * @param array $genreArray found genres array from main()
-     * @return array genres (array[0..n] of mainGenre| string, subGenre| array())
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     private function genre($genreArray)
     {
@@ -279,11 +224,11 @@ EOF;
         return array();
     }
 
-    #----------------------------------------------------------------[ PrincipalCredits ]---
-    /*
+    #----------------------------------------------------------------[ Helper for PrincipalCredits ]---
+    /**
     * Get the PrincipalCredits for this title
     * @param array $principalCredits principal credits array from main()
-    * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
+    * @return array
     */
     private function principalCredits($principalCredits)
     {
@@ -308,7 +253,7 @@ EOF;
                             'name' => isset($credit->name->nameText->text) ?
                                             $credit->name->nameText->text : null,
                             'imdbid' => isset($credit->name->id) ?
-                                            str_replace('nm', '', $credit->name->id) : null
+                                              str_replace('nm', '', $credit->name->id) : null
                         );
                     }
                 } elseif ($category == 'Unknown') {
@@ -320,13 +265,12 @@ EOF;
         return $creditsPrincipal;
     }
 
-    #----------------------------------------------------------[ imdbID redirect ]---
+    #----------------------------------------------------------[ Helper imdbID redirect ]---
     /**
      * Check if imdbid is redirected to another id or not
-     * Sometimes it happens that imdb redirects an existing id to a new id
+     * @note Sometimes it happens that imdb redirects an existing id to a new id
      * @param string $titleImdbId the returned imdbid from Graphql call
-     * @return string $titleImdbId (the new redirected imdbId) or false (no redirect)
-     * @see IMDB page / (TitlePage)
+     * @return string|false
      */
     private function checkRedirect($titleImdbId)
     {
