@@ -1,4 +1,5 @@
 <?php
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (github user: duck7000)                                     #
@@ -18,29 +19,28 @@ use Psr\SimpleCache\CacheInterface;
  * @author Georgos Giagas
  * @author Ed
  * @author Izzy (izzysoft AT qumran DOT org)
- * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class MdbBase extends Config
 {
     public $version = '3.2.0';
 
     /**
-     * @var CacheInterface
+     * @var string CacheInterface
      */
     protected $cache;
 
     /**
-     * @var LoggerInterface
+     * @var string LoggerInterface
      */
     protected $logger;
 
     /**
-     * @var Config
+     * @var string Config
      */
     protected $config;
 
     /**
-     * @var GraphQL
+     * @var string GraphQL
      */
     protected $graphql;
 
@@ -50,9 +50,9 @@ class MdbBase extends Config
     protected $imdbID;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -101,4 +101,5 @@ class MdbBase extends Config
     {
         $this->logger->error(htmlentities($html));
     }
+
 }
