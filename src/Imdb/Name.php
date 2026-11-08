@@ -77,7 +77,8 @@ class Name extends MdbBase
     }
 
     #------------------------------------------------------------------[ Name ]---
-    /** Get person full name
+    /**
+     * Get person full name
      * @return string|null
      */
     public function name()
@@ -124,7 +125,8 @@ EOF;
     }
 
     #------------------------------------------------------------[ Birth Name ]---
-    /** Get person birth name
+    /**
+     * Get person birth name
      * @return string|null birthname
      */
     public function birthname()
@@ -148,7 +150,8 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Nick Name ]---
-    /** Get person nick name
+    /**
+     * Get person nick name
      * @return array
      */
     public function nickname()
@@ -183,7 +186,8 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Alternative Names ]---
-    /** Get person alternative names
+    /**
+     * Get person alternative names
      * @return array
      */
     public function akaName()
@@ -222,7 +226,8 @@ EOF;
     }
 
     #------------------------------------------------------------------[ Birthday ]---
-    /** Get person birthday
+    /**
+     * Get person birthday
      * @note $monthName is the month name, and $monthInt the month number
      * @return array|null
      */
@@ -321,7 +326,8 @@ EOF;
     }
 
     #------------------------------------------------------------------[ Age ]---
-    /** Get person age
+    /**
+     * Get person age
      * @return int|null
      */
     public function age()
@@ -345,7 +351,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Primary Professions ]---
-    /** Get person primary professions
+    /**
+     * Get person primary professions
      * @return array
      */
     public function profession()
@@ -418,7 +425,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Body Height ]---
-    /** Get person body height
+    /**
+     * Get person body height
      * @return array
      */
     public function height()
@@ -455,7 +463,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Spouse ]---
-    /** Get person spouse(s)
+    /**
+     * Get person spouse(s)
      * @return array
      */
     public function spouse()
@@ -586,7 +595,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Children ]---
-    /** Get person children
+    /**
+     * Get person children
      * @return array
      */
     public function children()
@@ -598,7 +608,8 @@ EOF;
     }
     
     #----------------------------------------------------------------[ Parents ]---
-    /** Get person parents
+    /**
+     * Get person parents
      * @return array
      */
     public function parents()
@@ -610,7 +621,8 @@ EOF;
     }
     
     #----------------------------------------------------------------[ Relatives ]---
-    /** Get person relatives
+    /**
+     * Get person relatives
      * @return array
      */
     public function relatives()
@@ -622,7 +634,8 @@ EOF;
     }
 
     #---------------------------------------------------------------[ MiniBio ]---
-    /** Get person mini bio
+    /**
+     * Get person mini bio
      * @return array
      */
     public function bio()
@@ -669,7 +682,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Trivia ]---
-    /** Get person trivia
+    /**
+     * Get person trivia
      * @return array
      */
     public function trivia()
@@ -681,7 +695,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Quotes ]---
-    /** Get person quotes
+    /**
+     * Get person quotes
      * @return array
      */
     public function quotes()
@@ -693,7 +708,8 @@ EOF;
     }
 
     #------------------------------------------------------------[ Trademarks ]---
-    /** Get person trademarks
+    /**
+     * Get person trademarks
      * @return array
      */
     public function trademark()
@@ -705,7 +721,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Salary ]---
-    /** Get person salary list
+    /**
+     * Get person salary list
      * @return array
      */
     public function salary()
@@ -760,7 +777,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Printed media ]---
-    /** Person printed media
+    /**
+     * Person printed media
      * @return array
      */
     public function pubprints()
@@ -806,7 +824,8 @@ EOF;
     }
 
     #----------------------------------------------------[ Biographical movies ]---
-    /** Person biographical Movies
+    /**
+     * Person biographical Movies
      * @return array
      */
     public function pubmovies()
@@ -865,7 +884,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ Portrayal]---
-    /** Person portrayal listings
+    /**
+     * Person portrayal listings
      * @return array
      */
     public function pubportrayal()
@@ -903,7 +923,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Article ]---
-    /** Get person publicity articles
+    /**
+     * Get person publicity articles
      * @return array
      *      [publication]    (string)
      *      [regionId]       (string)
@@ -925,7 +946,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Interview ]---
-    /** Get person publicity interviews
+    /**
+     * Get person publicity interviews
      * @return array
      *      [publication]    (string)
      *      [regionId]       (string)
@@ -947,7 +969,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Magazines ]---
-    /** Get person publicity magazines
+    /**
+     * Get person publicity magazines
      * @return array
      *      [publication]    (string)
      *      [regionId]       (string)
@@ -969,7 +992,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ Pictorials ]---
-    /** Get person publicity pictoryials
+    /**
+     * Get person publicity pictoryials
      * @return array
      *      [publication]    (string)
      *      [regionId]       (string)
@@ -991,7 +1015,8 @@ EOF;
     }
 
     #----------------------------------------------------------------[ OtherWorks ]---
-    /** Get person other works
+    /**
+     * Get person other works
      * @return array
      */
     public function otherWorks()
@@ -1043,7 +1068,8 @@ EOF;
     }
 
     #-------------------------------------------------------[ External sites ]---
-    /** Get person external websites
+    /**
+     * Get person external websites
      * @return array
      */
     public function extSites()
@@ -1290,7 +1316,8 @@ EOF;
     }
 
     #-------------------------------------------------------[ CreditKnownFor ]---
-    /** Get person prestigious title credits
+    /**
+     * Get person prestigious title credits
      * @return array
      */
     public function creditKnownFor()
@@ -1384,7 +1411,8 @@ EOF;
     }
 
     #-------------------------------------------------------[ Credits ]---
-    /** Get all person credits
+    /**
+     * Get all person credits
      * @return array
      */
     public function credit()
@@ -1725,7 +1753,8 @@ EOF;
     }
 
     #-----------------------------------------[ Helper for Trivia, Quotes and Trademarks ]---
-    /** Fetch Trivia, Quotes and Trademarks data
+    /**
+     * Fetch Trivia, Quotes and Trademarks data
      * @param string $name Name of data type e.g. trivia
      * @param array $arrayName output array name
      * @return array
@@ -1749,7 +1778,8 @@ EOF;
     }
 
     #-----------------------------------------[ Helper for children, parents, relatives ]---
-    /** Fetch children, parents, relatives data
+    /**
+     * Fetch children, parents, relatives data
      * @param string $name data type name like CHILDREN, PARENTS, OTHERS
      * @param array $arrayName output array name
      * @return array
@@ -1799,7 +1829,8 @@ EOF;
     }
 
     #-----------------------------------------------------------[ helper for Article, Interview, Magazine and Pictorial ]---
-    /** Fetch data for Article, Interview, Magazine and Pictorial
+    /**
+     * Fetch data for Article, Interview, Magazine and Pictorial
      * @param string $listingType data type e.g. PublicityArticle
      * @return array
      */

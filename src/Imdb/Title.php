@@ -1,4 +1,5 @@
 <?php
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by Giorgos Giagas                                                 #
@@ -21,7 +22,6 @@ use Imdb\Image;
  * @author Georgos Giagas
  * @author Izzy (izzysoft AT qumran DOT org)
  * @author Ed
- * @copyright (c) 2002-2004 by Giorgos Giagas and (c) 2004-2009 by Itzchak Rehberg and IzzySoft
  */
 class Title extends MdbBase
 {
@@ -96,9 +96,9 @@ class Title extends MdbBase
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -107,10 +107,10 @@ class Title extends MdbBase
         $this->imageFunctions = new Image();
     }
 
-    #-------------------------------------------------------------[ Title ]---
+    #-------------------------------------------------------------[ Title, originalTitle, year, endYear and movietype ]---
     /**
-     * Get title, originalTitle, year, endYear and movietype properties
-     * @return array(title:string|null, originalTitle:string|null, year:int|null, endYear:int|null, movietype:string|null)
+     * Get title, originalTitle, year, endYear and movietype data in one method
+     * @return array
      */
     public function titleYearMovietype()
     {
@@ -139,9 +139,12 @@ EOF;
                              trim(str_replace('"', ':', trim($data->title->titleText->text, '"'))) : null,
             'originalTitle' => isset($data->title->originalTitleText->text) ?
                                      trim(str_replace('"', ':', trim($data->title->originalTitleText->text, '"'))) : null,
-            'year' => isset($data->title->releaseYear->year) ? $data->title->releaseYear->year : null,
-            'endYear' => isset($data->title->releaseYear->endYear) ? $data->title->releaseYear->endYear : null,
-            'movietype' => isset($data->title->titleType->text) ? $data->title->titleType->text : null
+            'year' => isset($data->title->releaseYear->year) ?
+                            $data->title->releaseYear->year : null,
+            'endYear' => isset($data->title->releaseYear->endYear) ?
+                               $data->title->releaseYear->endYear : null,
+            'movietype' => isset($data->title->titleType->text) ?
+                                 $data->title->titleType->text : null
         );
         return $this->mainTitleYearMovietype;
     }
@@ -149,8 +152,8 @@ EOF;
     #---------------------------------------------------------------[ Runtime ]---
     /**
      * Retrieve all runtimes and their descriptions
-     * @return array<array{time: integer, country: string|null, annotations: array()}>
-     * time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments
+     * @note time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments
+     * @return array
      */
     public function runtime()
     {
@@ -201,7 +204,7 @@ EOF;
                                         $edge->node->seconds / 60 : null,
                         'annotations' => $attributes,
                         'country' => isset($edge->node->country->text) ?
-                                        $edge->node->country->text : null
+                                           $edge->node->country->text : null
                     );
                 }
             }
@@ -209,11 +212,10 @@ EOF;
         return $this->runtimes;
     }
 
-    #----------------------------------------------------------[ Rating Votes Metacritics]---
+    #----------------------------------------------------------[ Rating Votes ]---
     /**
      * Get movie rating and votes
-     * @return array(rating:float, votes:int)
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     public function ratingVotes()
     {
@@ -239,9 +241,10 @@ EOF;
         return $this->mainRatingVotes;
     }
 
+    #----------------------------------------------------------[ Metacritics ]---
     /**
-     * Metacritic data like score and reviews
-     * @return array(url:string, score:int, reviewCount:int, reviews:array(reviewer:string, score:int, quote:string, siteName:string, siteUrl:string))
+     * Get metacritic data like score and reviews
+     * @return array
      */
     public function metacritic()
     {
@@ -284,16 +287,22 @@ EOF;
             {
                 foreach ($data->title->metacritic->reviews->edges as $edge) {
                     $reviews[] = array(
-                        'reviewer' => isset($edge->node->reviewer) ? $edge->node->reviewer : null,
-                        'score' => isset($edge->node->score) ? $edge->node->score : 0,
-                        'quote' => isset($edge->node->quote->value) ? $edge->node->quote->value : null,
-                        'siteName' => isset($edge->node->site) ? $edge->node->site : null,
-                        'siteUrl' => isset($edge->node->url) ? $edge->node->url : null
+                        'reviewer' => isset($edge->node->reviewer) ?
+                                            $edge->node->reviewer : null,
+                        'score' => isset($edge->node->score) ?
+                                         $edge->node->score : 0,
+                        'quote' => isset($edge->node->quote->value) ?
+                                         $edge->node->quote->value : null,
+                        'siteName' => isset($edge->node->site) ?
+                                            $edge->node->site : null,
+                        'siteUrl' => isset($edge->node->url) ?
+                                           $edge->node->url : null
                     );
                 }
             }
             $this->mainMetacritics = array(
-                    'url' => isset($data->title->metacritic->url) ? $data->title->metacritic->url : null,
+                    'url' => isset($data->title->metacritic->url) ?
+                                   $data->title->metacritic->url : null,
                     'score' => isset($data->title->metacritic->metascore->score) ?
                                      $data->title->metacritic->metascore->score : 0,
                     'reviewCount' => isset($data->title->metacritic->metascore->reviewCount) ?
@@ -307,8 +316,7 @@ EOF;
     #----------------------------------------------------------[ Popularity ]---
     /**
      * Get movie popularity rank
-     * @return array(currentRank: int, changeDirection: string, difference: int)
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     public function rank()
     {
@@ -343,9 +351,8 @@ EOF;
     #----------------------------------------------------------[ FAQ ]---
     /**
      * Get movie frequently asked questions, it includes questions with and without answer
-     * @param $spoil boolean (true or false) to include spoilers or not, isSpoiler indicates if this question is spoiler or not
-     * @return array of array(question: string, answer: string, isSpoiler: boolean)
-     * @see IMDB page / (Faq)
+     * @param bool $spoil include spoilers or not
+     * @return array
      */
     public function faq($spoil = false)
     {
@@ -367,7 +374,7 @@ EOF;
                         'question' => isset($edge->node->question->plainText) ?
                                             $edge->node->question->plainText : null,
                         'answer' => isset($edge->node->answer->plainText) ?
-                                        $edge->node->answer->plainText : null,
+                                          $edge->node->answer->plainText : null,
                         'isSpoiler' => $edge->node->isSpoiler
                     );
                 }
@@ -377,11 +384,9 @@ EOF;
     }
 
     #-------------------------------------------------------[ Recommendations ]---
-
     /**
-     * Get recommended movies (People who liked this...also liked)
-     * @return array<array{title: string, imdbid: string, rating: int, img: string, year: int}>
-     * @see IMDB page / (TitlePage)
+     * Get recommended/more like this movies
+     * @return array
      */
     public function recommendation()
     {
@@ -435,11 +440,11 @@ EOF;
                     }
                     $this->recommendations[] = array(
                         'title' => isset($edge->node->titleText->text) ?
-                                        $edge->node->titleText->text : null,
+                                         $edge->node->titleText->text : null,
                         'imdbid' => isset($edge->node->id) ?
-                                        str_replace('tt', '', $edge->node->id) : null,
+                                          str_replace('tt', '', $edge->node->id) : null,
                         'rating' => isset($edge->node->ratingsSummary->aggregateRating) ?
-                                        $edge->node->ratingsSummary->aggregateRating : null,
+                                          $edge->node->ratingsSummary->aggregateRating : null,
                         'img' => $thumb,
                         'year' => isset($edge->node->releaseYear->year) ?
                                         $edge->node->releaseYear->year : null
@@ -450,10 +455,10 @@ EOF;
         return $this->recommendations;
     }
 
-    #--------------------------------------------------------[ Language Stuff ]---
-    /** Get all spoken languages spoken in this title
-     * @return array languages (array[0..n] of array(id|string, text|string))
-     * @see IMDB page / (TitlePage)
+    #--------------------------------------------------------[ Language ]---
+    /**
+     * Get all spoken languages spoken in this title
+     * @return array
      */
     public function language()
     {
@@ -482,7 +487,8 @@ EOF;
                 foreach ($data->title->spokenLanguages->spokenLanguages as $language) {
                     if (!empty($language->text)) {
                         $this->languages[] = array(
-                            'id' => isset($language->id) ? $language->id : null,
+                            'id' => isset($language->id) ?
+                                          $language->id : null,
                             'text' => $language->text
                         );
                     }
@@ -492,10 +498,10 @@ EOF;
         }
     }
 
-    #--------------------------------------------------------------[ Genre(s) ]---
-    /** Get all genres the movie is registered for
-     * @return array genres (array[0..n] of mainGenre| string, subGenre| array())
-     * @see IMDB page / (TitlePage)
+    #--------------------------------------------------------------[ Genre ]---
+    /**
+     * Get all genres the movie is registered for
+     * @return array
      */
     public function genre()
     {
@@ -553,10 +559,10 @@ EOF;
         return $this->genres;
     }
 
-    #--------------------------------------------------------[ Plot (Outline) ]---
-    /** Get the main Plot outline for the movie as displayed on top of title page
-     * @return string plotoutline
-     * @see IMDB page / (TitlePage)
+    #--------------------------------------------------------[ PlotOutline ]---
+    /**
+     * Get the plotoutline for the movie
+     * @return string
      */
     public function plotoutline()
     {
@@ -580,12 +586,11 @@ EOF;
         return $this->mainPlotoutline;
     }
 
-    #--------------------------------------------------------[ Photo specific ]---
+    #--------------------------------------------------------[ Photo ]---
     /**
      * Get the main photo image url for thumbnail or full size
-     * @param bool $thumb get the thumbnail (height: 281) or large (max 1000 pixels)
-     * @return string|false photo (string URL if found, FALSE otherwise)
-     * @see IMDB page / (TitlePage)
+     * @param bool $thumb true: thumbnail (height: 281), false: large (max 1000 pixels)
+     * @return string|false
      */
     public function photo($thumb = true)
     {
@@ -604,11 +609,10 @@ EOF;
         return $this->mainPoster;
     }
 
-    #-------------------------------------------------[ Country of Origin ]---
+    #-------------------------------------------------[ Country ]---
     /**
      * Get country of origin
-     * @return array country (array[0..n] of array(id|string, text|string))
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     public function country()
     {
@@ -637,7 +641,8 @@ EOF;
                 foreach ($data->title->countriesOfOrigin->countries as $country) {
                     if (!empty($country->text)) {
                         $this->countries[] = array(
-                            'id' => isset($country->id) ? $country->id : null,
+                            'id' => isset($country->id) ?
+                                          $country->id : null,
                             'text' => $country->text
                         );
                     }
@@ -647,11 +652,10 @@ EOF;
         return $this->countries;
     }
 
-    #-------------------------------------------------[ Release dates ]---
+    #-------------------------------------------------[ Release date ]---
     /**
      * Get all release dates for this title
-     * @return releaseDates array[0..n] of array[country, day, month, year, array attributes]
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     public function releaseDate()
     {
@@ -690,7 +694,7 @@ EOF;
                         'month' => isset($edge->node->month) ?
                                          $edge->node->month : null,
                         'year' => isset($edge->node->year) ?
-                                       $edge->node->year : null,
+                                        $edge->node->year : null,
                         'attributes' => $attributes
                     );
                 }
@@ -699,13 +703,12 @@ EOF;
         return $this->releaseDates;
     }
 
-    #------------------------------------------------------------[ Movie AKAs ]---
+    #------------------------------------------------------------[ Movie AKA ]---
     /**
      * Get movie's alternative names
-     * The first item in the list will be the original title
-     * @return array<array{title: string, country: string, countryId: string, language: string, languageId: string, comment: array()}>
-     * Ordered Ascending by Country
-     * @see IMDB page ReleaseInfo
+     * @note The first item in the list will be the original title
+     * @note Ordered Ascending by Country
+     * @return array
      */
     public function alsoknow()
     {
@@ -756,15 +759,15 @@ EOF;
                     }
                     $this->akas[] = array(
                         'title' => isset($edge->node->text) ?
-                                        $edge->node->text : null,
+                                         $edge->node->text : null,
                         'country' => isset($edge->node->country->text) ?
-                                        ucwords($edge->node->country->text) : 'Unknown',
+                                           ucwords($edge->node->country->text) : 'Unknown',
                         'countryId' => isset($edge->node->country->id) ?
-                                            $edge->node->country->id : null,
+                                             $edge->node->country->id : null,
                         'language' => isset($edge->node->language->text) ?
                                             ucwords($edge->node->language->text) : null,
                         'languageId' => isset($edge->node->language->id) ?
-                                            $edge->node->language->id : null,
+                                              $edge->node->language->id : null,
                         'comment' => $comments
                     );
                 }
@@ -776,8 +779,7 @@ EOF;
     #-------------------------------------------------------[ MPAA / PG / FSK ]---
     /**
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
-     * @return array array[0..n] of array[country,rating,comment of array()] comment whithout brackets
-     * @see IMDB Parental Guidance page / (parentalguide)
+     * @return array
      */
     public function mpaa()
     {
@@ -808,9 +810,9 @@ EOF;
                     }
                     $this->mpaas[] = array(
                         'country' => isset($edge->node->country->text) ?
-                                        $edge->node->country->text : null,
+                                           $edge->node->country->text : null,
                         'rating' => isset($edge->node->rating) ?
-                                        $edge->node->rating : null,
+                                          $edge->node->rating : null,
                         'comment' => $comments
                     );
                 }
@@ -820,18 +822,18 @@ EOF;
     }
 
     #-------------------------------------------------------[ ParentsGuide ]---
-    /** Info for parents like Violence, Drugs. Alcohol etc
-     * @param $spoil boolean if true spoilers are also included.
-     * @return array categorized array of array()
-     *  [nudity] => Array
-     *      [severity] =>           (string) None (like mild,severe,none etc)
-     *      [severityVotedFor] =>   (int) 34 (how many people voted for this severity)
-     *      [totalSeverityVotes] => (int) 64 (total amount of voters)
-     *      [guideItems] => Array()
-     *          [0] => Array()
-     *              [isSpoiler] => (boolean) (indicates if entry is a spoiler or not)
-     *              [guideText] => (string) A couple in swimwear are seen lying in a sexualised pose together.
-     * @see IMDB page /parentsguide
+    /**
+     * Info for parents like Violence, Drugs. Alcohol etc
+     * @param bool $spoil if true spoilers are also included
+     * @return array
+     *      [nudity]  Array()
+     *          [severity]            (string) None (like mild,severe,none etc)
+     *          [severityVotedFor]    (int) 34 (how many people voted for this severity)
+     *          [totalSeverityVotes]  (int) 64 (total amount of voters)
+     *          [guideItems]  Array()
+     *              [0]  Array()
+     *                  [isSpoiler]  (bool) (indicates if entry is a spoiler or not)
+     *                  [guideText]  (string) A couple in swimwear are seen lying in a sexualised pose together
      */
     public function parentsGuide($spoil = false)
     {
@@ -888,7 +890,7 @@ EOF;
                         $guideItems[] = array(
                             'isSpoiler' => $edge->node->isSpoiler,
                             'guideText' => isset($edge->node->text->plainText) ?
-                                                $edge->node->text->plainText : null
+                                                 $edge->node->text->plainText : null
                         );
                     }
                 }
@@ -898,7 +900,7 @@ EOF;
                     'severityVotedFor' => isset($category->severity->votedFor) ?
                                                 $category->severity->votedFor : null,
                     'totalSeverityVotes' => isset($category->totalSeverityVotes) ?
-                                                $category->totalSeverityVotes : null,
+                                                  $category->totalSeverityVotes : null,
                     'guideItems' => $guideItems
                 );
             }
@@ -906,11 +908,10 @@ EOF;
         return $this->parentsGuide;
     }
 
-    #----------------------------------------------[ Position in the "Top250" ]---
+    #----------------------------------------------[ Top250 ]---
     /**
-     * Find the position of a movie or tv show in the top 250 ranked movies or tv shows
-     * @return int position a number between 1..250 if ranked, 0 otherwise
-     * @author Ed
+     * Find the position of a movie or tv show in the top 250
+     * @return int
      */
     public function top250()
     {
@@ -936,11 +937,11 @@ EOF;
         return $this->mainTop250;
     }
 
-    #=====================================================[ /plotsummary page ]===
-    /** Get movie plots without Spoilers
-     * @param $spoil boolean if true spoilers are also included, default: false.
-     * @return array array[0..n] string plot, string author]
-     * @see IMDB page /plotsummary
+    #----------------------------------------------[ Plot ]---
+    /**
+     * Get movie plots
+     * @param bool $spoil true: spoilers are also included, default: false.
+     * @return array
      */
     public function plot($spoil = false)
     {
@@ -976,7 +977,7 @@ EOF;
                         $this->plot[] = array(
                             'plot' => $edge->node->plotText->plainText,
                             'author' => isset($edge->node->author) ?
-                                            $edge->node->author : null
+                                              $edge->node->author : null
                         );
                     }
                 }
@@ -985,11 +986,10 @@ EOF;
         return $this->plot;
     }
 
-    #========================================================[ /taglines page ]===
+    #----------------------------------------------[ Tagline ]---
     /**
      * Get all available taglines for the movie
-     * @return string[] taglines
-     * @see IMDB page /taglines
+     * @return array
      */
     public function tagline()
     {
@@ -1026,12 +1026,10 @@ EOF;
         return $this->taglines;
     }
 
-    #=====================================================[ /fullcredits page ]===
     #----------------------------------------------------------------[ PrincipalCredits ]---
-    /*
-    * Get the PrincipalCredits for this title (limited to 3 items per category)
-    * @return array creditsPrincipal[category][Director, Writer, Creator, Stars] (array[0..n] of array[name,imdbid])
-    * Not all categories are always available
+    /**
+    * Get principalCredits for this title (limited to 3 items per category)
+    * @return array
     */
     public function principalCredits()
     {
@@ -1083,7 +1081,7 @@ EOF;
                                 'name' => isset($credit->name->nameText->text) ?
                                                 $credit->name->nameText->text : null,
                                 'imdbid' => isset($credit->name->id) ?
-                                                str_replace('nm', '', $credit->name->id) : null
+                                                  str_replace('nm', '', $credit->name->id) : null
                             );
                         }
                     } elseif ($category == 'Unknown') {
@@ -1096,23 +1094,17 @@ EOF;
         return $this->creditsPrincipal;
     }
 
-    #----------------------------------------------------------------[ Actors]---
-    /*
-     * Get the actors/cast members for this title
-     * @return array cast (array[0..n] of array[imdb,name,name_alias,credited,array character,array comments,thumb])
-     * e.g.
-     * <pre>
-     * array (
-     *  'imdb' => '0922035',
-     *  'name' => 'Dominic West', // Actor's name on imdb,
-     *  'name_alias' => alias name (as D west),
-     *  'credited' => true\false False if stated (uncredited),
-     *  'character' => array "Det. James 'Jimmy' McNulty",
-     *  'comment' => array comments like archive voice etc,
-     *  'thumb' => 'https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg',
-     * )
-     * </pre>
-     * @see IMDB page /fullcredits
+    #----------------------------------------------------------------[ Cast]---
+    /**
+     * Get cast members for this title
+     * @return array
+     *      [imdb]          string  0922035
+     *      [name]          string  Dominic West
+     *      [alias]         string  alias name
+     *      [credited]      bool    false if stated (uncredited)
+     *      [character]     array   Det. James 'Jimmy' McNulty
+     *      [comment]       array   comments like archive voice etc
+     *      [thumb]         string  https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg
      */
     public function cast()
     {
@@ -1203,9 +1195,8 @@ EOF;
 
     #-------------------------------------------------------------[ Directors ]---
     /**
-     * Get the director(s) of the movie
-     * @return array director (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+     * Get the directors of this movie
+     * @return array
      */
     public function director()
     {
@@ -1213,15 +1204,13 @@ EOF;
             return $this->creditsDirector;
         }
         $directorData = $this->creditHelper("director");
-        
         return $this->creditsDirector = $directorData;
     }
 
     #-------------------------------------------------------------[ Cinematographers ]---
     /**
-     * Get the cinematographer of the title
-     * @return array creditsCinematographer (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+     * Get the cinematographers of this title
+     * @return array
      */
     public function cinematographer()
     {
@@ -1229,14 +1218,13 @@ EOF;
             return $this->creditsCinematographer;
         }
         $cinematographerData = $this->creditHelper("cinematographer");
-        
         return $this->creditsCinematographer = $cinematographerData;
     }
 
     #---------------------------------------------------------------[ Writers ]---
-    /** Get the writer(s)
-     * @return array writers (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the writers of this title
+     * @return array
      */
     public function writer()
     {
@@ -1248,9 +1236,9 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Producers ]---
-    /** Obtain the producer credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the producers credits of this title
+     * @return array
      */
     public function producer()
     {
@@ -1262,9 +1250,9 @@ EOF;
     }
 
     #-------------------------------------------------------------[ Composers ]---
-    /** Obtain the composer(s) ("Original Music by...")
-     * @return array composer (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the composers ("Original Music by...") of this title
+     * @return array
      */
     public function composer()
     {
@@ -1276,9 +1264,9 @@ EOF;
     }
     
     #-------------------------------------------------------------[ Stunts ]---
-    /** Obtain the stunts credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the stunts credits of this title
+     * @return array
      */
     public function stunts()
     {
@@ -1290,9 +1278,9 @@ EOF;
     }
     
     #-------------------------------------------------------------[ Thanks ]---
-    /** Obtain thanks credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the thanks credits of this title
+     * @return array
      */
     public function thanks()
     {
@@ -1304,9 +1292,9 @@ EOF;
     }
     
     #-------------------------------------------------------------[ Visual Effects ]---
-    /** Obtain Visual Effects credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the Visual Effects credits of this title
+     * @return array
      */
     public function visualEffects()
     {
@@ -1318,9 +1306,9 @@ EOF;
     }
     
     #-------------------------------------------------------------[ Special Effects ]---
-    /** Obtain Special Effects credits of this title
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the Special Effects credits of this title
+     * @return array
      */
     public function specialEffects()
     {
@@ -1332,9 +1320,9 @@ EOF;
     }
 
     #-------------------------------------------------------------[ voice actor credits ]---
-    /** Obtain voice actor credits of this title, normally listed under miscelleanous but now filtered
-     * @return array (array[0..n] of arrays[imdb,name,jobs[],attributes[],episode array(total, year, endYear)])
-     * @see IMDB page /fullcredits
+    /**
+     * Get the voice actor credits of this title
+     * @return array
      */
     public function voiceActor()
     {
@@ -1345,12 +1333,10 @@ EOF;
         return $this->creditsVoiceActor = $voiceActorData;
     }
 
-    #====================================================[ /crazycredits page ]===
-    #----------------------------------------------------[ CrazyCredits Array ]---
+    #----------------------------------------------------[ CrazyCredits ]---
     /**
-     * Get the Crazy Credits
-     * @return string[]
-     * @see IMDB page /crazycredits
+     * Get the Crazy Credits of this title
+     * @return array
      */
     public function crazyCredit()
     {
@@ -1372,34 +1358,25 @@ EOF;
         return $this->crazyCredits;
     }
 
-    #========================================================[ /episodes page ]===
-    #--------------------------------------------------------[ Episodes Array ]---
+    #--------------------------------------------------------[ Episodes ]---
     /**
-     * Get the series episode(s)
-     * @return array episodes
-     * array(1) {
-     *   [1]=>
-     *   array(13) {
-     *       [1]=>          //can be seasonnumber, year or -1 (Unknown)
-     *       array(6) {
-     *       ["imdbid"]=>   string "1495166"
-     *       ["title"]=>    string "Pilot"
-     *       ["airdate"]=>  string "7 jun. 2010"
-     *       [airdateParts] => Array
-     *                   (
-     *                       [day] =>   int 7
-     *                       [month] => int 6
-     *                       [year] =>  int 2010
-     *                   )
-     *       ["plot"]=>     string
-     *       ["episode"]=>  string //can be episodenumber or -1 (Unknown)
-     *       ["imgUrl"]=>   string
-     *       }
-     *   }
-     * @see IMDB page /episodes
-     * @param $thumb boolean true: thumbnail (cropped from center 224x126), false: large (max width 1000 pixels)
+     * Get the tv show episodes of this title
+     * @version The array keys reflects the real season and episodenumber! Episodes can start at 0 (pilot episode)
+     * @param bool $thumb true: thumbnail (cropped from center 224x126), false: large (max width 1000 pixels)
      * @param $yearbased This gives user control if returned episodes are yearbased or season based
-     * @version The outer array keys reflects the real season seasonnumber! Episodes can start at 0 (pilot episode)
+     * @return array
+     *   [1] array()        //can be seasonnumber, year or -1 (Unknown)
+     *       [1] array()          //can be episodenumber or -1 (Unknown)
+     *          [imdbid]        string 1495166
+     *          [title]         string Pilot
+     *          [airdate]       string 7 jun. 2010
+     *          [airdateParts]  array()
+     *              [day]    int 7
+     *              [month]  int 6
+     *              [year]   int 2010
+     *          [plot]     string
+     *          [episode]  string //can be episodenumber or -1 (Unknown)
+     *          [imgUrl]   string
      */
     public function episode($thumb = true, $yearbased = 0)
     {
@@ -1425,9 +1402,9 @@ EOF;
                     foreach ($episodesData as $edge) {
                         $dateParts = array(
                             'day' => isset($edge->node->releaseDate->day) ?
-                                        $edge->node->releaseDate->day : null,
+                                           $edge->node->releaseDate->day : null,
                             'month' => isset($edge->node->releaseDate->month) ?
-                                            $edge->node->releaseDate->month : null,
+                                             $edge->node->releaseDate->month : null,
                             'year' => isset($edge->node->releaseDate->year) ?
                                             $edge->node->releaseDate->year : null
                         );
@@ -1456,9 +1433,9 @@ EOF;
                         }
                         $episode = array(
                                 'imdbid' => isset($edge->node->id) ?
-                                                str_replace('tt', '', $edge->node->id) : null,
+                                                  str_replace('tt', '', $edge->node->id) : null,
                                 'title' => isset($edge->node->titleText->text) ?
-                                                $edge->node->titleText->text : null,
+                                                 $edge->node->titleText->text : null,
                                 'airdate' => $airDate,
                                 'airdateParts' => $dateParts,
                                 'plot' => isset($edge->node->plot->plotText->plainText) ?
@@ -1478,8 +1455,8 @@ EOF;
 
     #-----------------------------------------------------------[ IsOngoing TV Series ]---
      /**
-     * Boolean flag if this is a still running tv series or ended
-     * @return boolean: false if ended, true if still running or null (not a tv series)
+     * Can be used to check if this is a still running tv series or ended one
+     * @return bool|null false if ended, true if still running or null (not a tv series)
      */
     public function isOngoing()
     {
@@ -1498,12 +1475,11 @@ EOF;
         return $this->isOngoing;
     }
 
-    #===========================================================[ /goofs page ]===
-    #-----------------------------------------------------------[ Goofs Array ]---
-    /** Get the goofs
-     * @param $spoil boolean if true spoilers are also included.
-     * @return array goofs (array[categoryId] of array[content, isSpoiler]
-     * @see IMDB page /goofs
+    #-----------------------------------------------------------[ Goofs ]---
+    /**
+     * Get the goofs of this title
+     * @param bool $spoil true: spoilers are also included
+     * @return array
      */
     public function goof($spoil = false)
     {
@@ -1533,7 +1509,7 @@ EOF;
                     $categoryId = lcfirst($categoryId);
                     $this->goofs[$categoryId][] = array(
                         'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                        $edge->node->displayableArticle->body->plainText : null,
+                                           $edge->node->displayableArticle->body->plainText : null,
                         'isSpoiler' => $edge->node->isSpoiler
                     );
                 }
@@ -1542,10 +1518,10 @@ EOF;
         return $this->goofs;
     }
 
-    #==========================================================[ /quotes page ]===
-    /** Get the quotes for a given movie
-     * @return array quote array[string quote];
-     * @see IMDB page /quotes
+    #-----------------------------------------------------------[ Quotes ]---
+    /**
+     * Get the quotes of this title
+     * @return array
      */
     public function quote()
     {
@@ -1574,12 +1550,11 @@ EOF;
         return $this->quotes;
     }
 
-    #==========================================================[ /trivia page ]===
+    #-----------------------------------------------------------[ Trivia ]---
     /**
-     * Get the trivia info
-     * @param boolean $spoil if true spoilers are also included.
-     * @return array (array[categoryId] of array[content, names: array(name, id), trademark, isSpoiler]
-     * @see IMDB page /trivia
+     * Get the trivia of this title
+     * @param bool $spoil true: spoilers are also included
+     * @return array
      */
     public function trivia($spoil = false)
     {
@@ -1619,7 +1594,7 @@ EOF;
                                 'name' => isset($name->nameText->text) ?
                                                 $name->nameText->text : null,
                                 'id' => isset($name->id) ?
-                                            str_replace('nm', '', $name->id) : null
+                                              str_replace('nm', '', $name->id) : null
                             );
                         }
                     }
@@ -1633,10 +1608,10 @@ EOF;
                     $categoryId = lcfirst($categoryId);
                     $this->trivias[$categoryId][] = array(
                         'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                        preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
+                                           preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
                         'names' => $names,
                         'trademark' => isset($edge->node->trademark->plainText) ?
-                                            $edge->node->trademark->plainText : null,
+                                             $edge->node->trademark->plainText : null,
                         'isSpoiler' => $edge->node->isSpoiler
                     );
                 }
@@ -1645,31 +1620,29 @@ EOF;
         return $this->trivias;
     }
 
-    #======================================================[ Soundtrack ]===
+    #-----------------------------------------------------------[ Soundtrack ]---
     /**
-     * Get the soundtrack listing
-     * @return array soundtracks
-     * [credits]: all credit lines as text, each in one element
-     * [creditSplit]: credits split by type, name, nameId and attribute
-     * [comments]: if not a credited person, it is considered comment as plain text
-     * Array()
+     * Get the soundtracks listing of this title
+     * @note [credits]: all credit lines as text, each index one creditline
+     * @note [creditSplit]: credits split by type, name, nameId and attribute
+     * @note [comment]: if not a credited person, it is considered comment as plain text
+     * @return array
      *      [0] => Array()
-     *          [soundtrack] => (string) Dangerous
-     *          [credits] => Array()
-     *              [0] => (string) Performed by The Doobie Brothers
-     *              [1] => (string) Written by Patrick Simmons (as Pat Simmons)
-     *              [2] => (string) Published by Soquel Songs and ASCAP
-     *              [3] => (string) Courtesy of Capitol Records
-     *          [creditSplit] => Array()
-     *              [creditors] => Array()
-     *                  [0] => Array()
-     *                      [creditType] => (string) Written by
-     *                      [name] =>       (string) Patrick Simmons
-     *                      [nameId] =>     (string) 2003944
-     *                      [attribute] =>  (string) as Pat Simmons
-     *              [comment] => Array()
-     *                  [0] => (string) Courtesy of Capitol Records 
-     * @see IMDB page /soundtrack
+     *          [soundtrack]  string Dangerous
+     *          [credits]  Array()
+     *              [0]  string Performed by The Doobie Brothers
+     *              [1]  string Written by Patrick Simmons (as Pat Simmons)
+     *              [2]  string Published by Soquel Songs and ASCAP
+     *              [3]  string Courtesy of Capitol Records
+     *          [creditSplit]  Array()
+     *              [creditors]  Array()
+     *                  [0]  Array()
+     *                      [creditType]  string Written by
+     *                      [name]        string Patrick Simmons
+     *                      [nameId]      string 2003944
+     *                      [attribute]   string as Pat Simmons
+     *              [comment]  Array()
+     *                  [0]  string Courtesy of Capitol Records
      */
     public function soundtrack()
     {
@@ -1777,12 +1750,11 @@ EOF;
         return $this->soundtracks;
     }
 
-    #=======================================================[ /locations page ]===
+    #-----------------------------------------------------------[ Location ]---
     /**
-     * Filming locations
-     * @return array locations (array[0..n] of arrays[real,array movie])
-     * real: Real filming location, movie: location in the movie
-     * @see IMDB page /locations
+     * Filming locations of this title
+     * @note real: Real filming location, movie: location in the movie
+     * @return array
      */
     public function location()
     {
@@ -1824,13 +1796,10 @@ EOF;
         return $this->locations;
     }
 
-    #==================================================[ /companycredits page ]===
-
     #---------------------------------------------------[ Producing Companies ]---
-
-    /** Info about Production Companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
-     * @see IMDB page /companycredits
+    /**
+     * Get Production Companies
+     * @return array
      */
     public function prodCompany()
     {
@@ -1841,10 +1810,9 @@ EOF;
     }
 
     #------------------------------------------------[ Distributing Companies ]---
-
-    /** Info about distributors
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
-     * @see IMDB page /companycredits
+    /**
+     * Get distributors
+     * @return array
      */
     public function distCompany()
     {
@@ -1855,10 +1823,9 @@ EOF;
     }
 
     #---------------------------------------------[ Special Effects Companies ]---
-
-    /** Info about Special Effects companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
-     * @see IMDB page /companycredits
+    /**
+     * Get Special Effects companies
+     * @return array
      */
     public function specialCompany()
     {
@@ -1869,10 +1836,9 @@ EOF;
     }
 
     #-------------------------------------------------------[ Other Companies ]---
-
-    /** Info about other companies
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: int}>
-     * @see IMDB page /companycredits
+    /**
+     * Get  other companies
+     * @return array
      */
     public function otherCompany()
     {
@@ -1883,9 +1849,9 @@ EOF;
     }
 
     #-------------------------------------------------------[ Connections ]---
-    /** Info about connections or references with other titles
-     * @return array of array('titleId: string, 'titleName: string, titleType: string, year: int, endYear: int, seriesName: string, description: string)
-     * @see IMDB page /companycredits
+    /**
+     * Get connections or references with other titles
+     * @return array
      */
     public function connection()
     {
@@ -1931,19 +1897,19 @@ EOF;
                     $categoryId = lcfirst($categoryId);
                     $this->connections[$categoryId][] = array(
                         'titleId' => isset($edge->node->associatedTitle->id) ?
-                                        str_replace('tt', '', $edge->node->associatedTitle->id) : null,
+                                           str_replace('tt', '', $edge->node->associatedTitle->id) : null,
                         'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
-                                            $edge->node->associatedTitle->titleText->text : null,
+                                             $edge->node->associatedTitle->titleText->text : null,
                         'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
-                                            $edge->node->associatedTitle->titleType->text : null,
+                                             $edge->node->associatedTitle->titleType->text : null,
                         'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
                                         $edge->node->associatedTitle->releaseYear->year : null,
                         'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
-                                        $edge->node->associatedTitle->releaseYear->endYear : null,
+                                           $edge->node->associatedTitle->releaseYear->endYear : null,
                         'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
-                                            $edge->node->associatedTitle->series->series->titleText->text : null,
+                                              $edge->node->associatedTitle->series->series->titleText->text : null,
                         'description' => isset($edge->node->description->plainText) ?
-                                            $edge->node->description->plainText : null
+                                               $edge->node->description->plainText : null
                     );
                 }
             }
@@ -1952,9 +1918,9 @@ EOF;
     }
 
     #-------------------------------------------------------[ External sites ]---
-    /** external websites with info of this title, excluding external reviews.
-     * @return array of array('label: string, 'url: string, language: array[])
-     * @see IMDB page /externalsites
+    /**
+     * Get external website urls with info of this title, excluding external reviews.
+     * @return array
      */
     public function extSites()
     {
@@ -1987,9 +1953,9 @@ EOF;
                     }
                     $this->externalSites[$edge->node->externalLinkCategory->id][] = array(
                         'label' => isset($edge->node->label) ?
-                                        $edge->node->label : null,
+                                         $edge->node->label : null,
                         'url' => isset($edge->node->url) ?
-                                    $edge->node->url : null,
+                                       $edge->node->url : null,
                         'language' => $language
                     );
                 }
@@ -1998,11 +1964,10 @@ EOF;
         return $this->externalSites;
     }
 
-    #========================================================[ /Box Office page ]===
     #-------------------------------------------------------[ productionBudget ]---
-    /** Info about productionBudget
-     * @return productionBudget: array[amount, currency]>
-     * @see IMDB page /title
+    /**
+     * Get productionBudget of this title
+     * @return array
      */
     public function budget()
     {
@@ -2034,10 +1999,10 @@ EOF;
         return $this->productionBudget;
     }
 
-    #-------------------------------------------------------[ rankedLifetimeGrosses ]---
-    /** Info about Grosses, ranked by amount
-     * @return array[] array[areatype: string, amount: int, currency: string]>
-     * @see IMDB page /title
+    #-------------------------------------------------------[ ranked Lifetime Grosses ]---
+    /**
+     * Get Grosses, ranked by amount of this title
+     * @return array
      */
     public function gross()
     {
@@ -2075,7 +2040,7 @@ EOF;
                         $this->grosses[] = array(
                             'areatype' => $edge->node->boxOfficeAreaType->text,
                             'amount' => isset($edge->node->total->amount) ?
-                                            $edge->node->total->amount : null,
+                                              $edge->node->total->amount : null,
                             'currency' => isset($edge->node->total->currency) ?
                                                 $edge->node->total->currency : null
                         );
@@ -2086,13 +2051,11 @@ EOF;
         return $this->grosses;
     }
 
-    #========================================================[ /Interests page ]===
-
+    #-------------------------------------------------------[ Interests ]---
     /**
-     * Get all interests from movie
-     * Interests are real and checked to be accurate
-     * @return array interests
-     * @see IMDB page /interests/all
+     * Get all interests of this title
+     * @note Interests are real and checked to be accurate
+     * @return array
      */
     public function interests()
     {
@@ -2475,11 +2438,11 @@ EOF;
         return $this->interests;
     }
 
+    #-------------------------------------------------------[ Interesting keywords ]---
     /**
-     * Get all interesting keywords for a movie
-     * It is a mix of keywords and main genres and an alternative for the real interests from imdb
-     * @return array interestKeywords
-     * @see IMDB page /interests, /keywords
+     * Get all interesting keywords of this title
+     * @note It is a mix of keywords and main genres and an alternative for the real interests from imdb
+     * @return array
      */
     public function interestingKeywords()
     {
@@ -2520,11 +2483,10 @@ EOF;
         return $this->interestKeywords;
     }
 
-    #========================================================[ /keywords page ]===
+    #-------------------------------------------------------[ Keywords ]---
     /**
-     * Get all keywords from movie
-     * @return array keywords
-     * @see IMDB page /keywords
+     * Get all keywords of this title
+     * @return array
      */
     public function keyword()
     {
@@ -2558,11 +2520,10 @@ EOF;
         return $this->keywords;
     }
 
-    #========================================================[ /Alternate versions page ]===
+    #-------------------------------------------------------[ Alternate versions ]---
     /**
-     * Get the Alternate Versions for a given movie
-     * @return array Alternate Version (array[0..n] of string)
-     * @see IMDB page /alternateversions
+     * Get the Alternate Versions of this title
+     * @return array
      */
     public function alternateVersion()
     {
@@ -2584,14 +2545,15 @@ EOF;
         return $this->alternateversions;
     }
 
-    #-------------------------------------------------[ Main images ]---
+    #-------------------------------------------------[ Photo images ]---
     /**
-     * Get image URLs for (default 6) pictures from photo page
-     * @param $amount, int for how many images, max = 9999
-     * @param $thumb boolean
+     * Get title photos image URLs
+     * @note Default: 6 images, max=9999 (set in config)
+     * @param int $amount, how many images
+     * @param bool $thumb
      *      true: height is always the same (set in config), width is variable!
      *      false: untouched max width 1000 pixels
-     * @return array [0..n] of string image source
+     * @return array
      */
     public function mainphoto($amount = 6, $thumb = true)
     {
@@ -2642,29 +2604,29 @@ EOF;
 
     #-------------------------------------------------[ Video ]---
     /**
-     * Get all video URL's and images from videogallery page
-     * See config settings for this method
-     * @return array categorized by type array videos
-     *     [Trailer] => Array
-     *          [0] => Array()
-     *              [id] => 4030506521
-     *              [name] => A Clockwork Orange
-     *              [runtime] => 130 (seconds)
-     *              [description] => Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
-     *              [titleName] => A Clockwork Orange
-     *              [titleYear] => 1971
-     *              [playbackUrl] => https://www.imdb.com/video/vi4030506521/ (this is playable in browser)
-     *              [fullPlaybackUrls] => Array()
+     * Get all video URL's including images from videogallery page
+     * @see config settings for this method
+     * @return array
+     *     [Trailer]  Array()
+     *          [0]  Array()
+     *              [id]            string 4030506521
+     *              [name]          string A Clockwork Orange
+     *              [runtime]       int 130 (seconds)
+     *              [description]   string Trailer for A Clockwork Orange - Two-Disc Anniversary Edition Blu-ray Book Packaging
+     *              [titleName]     string A Clockwork Orange
+     *              [titleYear]     int 1971
+     *              [playbackUrl]   string https://www.imdb.com/video/vi4030506521/ (this is playable in browser)
+     *              [fullPlaybackUrls]  Array()
+     *                  [0]  Array()
+     *                      [url]           string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                      [mimeType]      string MP4
+     *                      [definition]  s tring  DEF_SD
+     *              [fullPreviewUrls]  Array()
      *                  [0] => Array()
-     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
-     *                      [mimeType] => string MP4
-     *                      [definition] => string DEF_SD
-     *              [fullPreviewUrls] => Array()
-     *                  [0] => Array()
-     *                      [url] => string 
-     *                      [mimeType] => string M3U8
-     *                      [definition] => string DEF_AUTO
-     *              [imageUrl] => https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
+     *                      [url]           string
+     *                      [mimeType]      string M3U8
+     *                      [definition]    string DEF_AUTO
+     *              [imageUrl]      string https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
      */
     public function video()
     {
@@ -2737,7 +2699,6 @@ EOF;
                     {
                         continue;
                     }
-
                     // fullPlaybackURLs
                     $fullPlaybackUrl = array();
                     if (isset($edge->node->playbackURLs) &&
@@ -2757,7 +2718,6 @@ EOF;
                             }
                         }
                     }
-
                     // fullPreviewURLs
                     $fullPreviewUrls = array();
                     if (isset($edge->node->previewURLs) &&
@@ -2777,7 +2737,6 @@ EOF;
                             }
                         }
                     }
-
                     $thumbUrl = null;
                     $videoId = isset($edge->node->id) ?
                                      str_replace('vi', '', $edge->node->id) : null;
@@ -2814,11 +2773,10 @@ EOF;
         return $this->videos;
     }
 
-    #-------------------------------------------------------[ Main Awards ]---
+    #-------------------------------------------------------[ Prestigious/Main Awards ]---
     /**
-     * Get main awards (not including total wins and total nominations)
-     * @return array mainAwards (array[award|string, nominations|int, wins|int])
-     * @see IMDB page / (TitlePage)
+     * Get prestigious awards (not including total wins and total nominations)
+     * @return array
      */
     public function mainaward()
     {
@@ -2857,64 +2815,45 @@ EOF;
     #-------------------------------------------------------[ Awards ]---
     /**
      * Get all awards for a title
-     * @param $winsOnly Default: false, set to true to only get won awards
-     * @param $event Default: "" fill eventId Example "ev0000003" to only get Oscars
+     * @param bool $winsOnly true: only get won awards, false: get all awards
+     * @param $event Default: "" (eventId Example: " ev0000003" to only get Oscars)
      *  Possible values for $event:
-     *  ev0000003 (Oscar)
-     *  ev0000223 (Emmy)
-     *  ev0000292 (Golden Globe)
-     *  ev0000471 (National Society of Film Critics Awards, USA)
-     *  ev0000004 (Academy of Science Fiction, Fantasy & Horror Films, USA)
-     *  ev0000123 (BAFTA Awards)
-     *  ev0000296 (Satellite Awards)
-     *  ev0000453 (MTV Movie + TV Awards)
-     *  ev0000511 (Online Film Critics Society Awards)
-     *  ev0000786 (Empire Awards, UK)
-     *  ev0001644 (DVD Exclusive Awards)
-     *  ev0002704 (Online Film & Television Association)
-     *  ev0002990 (Awards Circuit Community Awards)
-     *  ev0003023 (Golden Schmoes Awards)
-     *  ev0000133 (Critics Choice Awards)
-     *  ev0000403 (London Critics Circle Film Awards)
-     *  ev0000530 (People's Choice Awards, USA)
-     * @return array[festivalName][0..n] of 
-     *      array[awardYear,awardWinner(bool),awardCategory,awardName,awardNotes
-     *      array awardPerons[creditId,creditName,creditNote],awardOutcome] array total(win, nom)
-     *  Array
-     *       (
-     *           [Academy Awards, USA] => Array
-     *               (
-     *                   [0] => Array
-     *                   (
-     *                   [awardYear] => 1972
-     *                   [awardWinner] => 
-     *                   [awardCategory] => Best Picture
-     *                   [awardName] => Oscar
-     *                   [awardPerons] => Array
-     *                       (
-     *                           [0] => Array
-     *                               (
-     *                                   [creditId] => 0000040
-     *                                   [creditName] => Stanley Kubrick
-     *                                   [creditNote] => screenplay/director
-     *                                   [nameFullImageUrl] => (string) max width 1000 pixels
-     *                                   [nameThumbImageUrl] => string 140x207 pixels fixed
-     *                               )
-     *
-     *                       )
-     *                   [awardNotes] => Based on the novel
-     *                   [awardOutcome] => Nominee
-     *                   )
-     *               )
-     *           )
-     *           [total] => Array
-     *           (
-     *               [win] => 12
-     *               [nom] => 26
-     *           )
-     *
-     *       )
-     * @see IMDB page / (TitlePage)
+     *      ev0000003 (Oscar)
+     *      ev0000223 (Emmy)
+     *      ev0000292 (Golden Globe)
+     *      ev0000471 (National Society of Film Critics Awards, USA)
+     *      ev0000004 (Academy of Science Fiction, Fantasy & Horror Films, USA)
+     *      ev0000123 (BAFTA Awards)
+     *      ev0000296 (Satellite Awards)
+     *      ev0000453 (MTV Movie + TV Awards)
+     *      ev0000511 (Online Film Critics Society Awards)
+     *      ev0000786 (Empire Awards, UK)
+     *      ev0001644 (DVD Exclusive Awards)
+     *      ev0002704 (Online Film & Television Association)
+     *      ev0002990 (Awards Circuit Community Awards)
+     *      ev0003023 (Golden Schmoes Awards)
+     *      ev0000133 (Critics Choice Awards)
+     *      ev0000403 (London Critics Circle Film Awards)
+     *      ev0000530 (People's Choice Awards, USA)
+     * @return array
+     *           [Academy Awards, USA]  Array()
+     *                   [0]  Array()
+     *                       [awardYear] int 1972
+     *                       [awardWinner]       String
+     *                       [awardCategory]     string Best Picture
+     *                       [awardName]         string Oscar
+     *                       [awardPerons]  Array()
+     *                           [0] => Array()
+     *                                   [creditId]              string 0000040
+     *                                   [creditName]            string Stanley Kubrick
+     *                                   [creditNote]            string screenplay/director
+     *                                   [nameFullImageUrl]      string max width 1000 pixels
+     *                                   [nameThumbImageUrl] =>  string 140x207 pixels fixed
+     *                       [awardNotes]    string Based on the novel
+     *                       [awardOutcome]  string Nominee
+     *           [total] => Array()
+     *               [win] int 12
+     *               [nom] int 26
      */
     public function award($winsOnly = false, $event = "")
     {
@@ -2992,9 +2931,9 @@ EOF;
                                 'creditId' => isset($creditor->name->id) ?
                                                     str_replace('nm', '', $creditor->name->id) : null,
                                 'creditName' => isset($creditor->name->nameText->text) ?
-                                                    $creditor->name->nameText->text : null,
+                                                      $creditor->name->nameText->text : null,
                                 'creditNote' => isset($creditor->note->plainText) ?
-                                                    trim($creditor->note->plainText, " ()") : null,
+                                                      trim($creditor->note->plainText, " ()") : null,
                                 'nameFullImageUrl' => $nameFullImageUrl,
                                 'nameThumbImageUrl' => $nameThumbImageUrl
                             );
@@ -3003,14 +2942,14 @@ EOF;
                     
                     $this->awards[$eventName][] = array(
                         'awardYear' => isset($edge->node->award->eventEdition->year) ?
-                                            $edge->node->award->eventEdition->year : null,
+                                             $edge->node->award->eventEdition->year : null,
                         'awardWinner' => $awardIsWinner,
                         'awardCategory' => isset($edge->node->award->category->text) ?
-                                                $edge->node->award->category->text : null,
+                                                 $edge->node->award->category->text : null,
                         'awardName' => isset($edge->node->award->text) ?
-                                            $edge->node->award->text : null,
+                                             $edge->node->award->text : null,
                         'awardNotes' => isset($edge->node->award->notes->plainText) ?
-                                            $edge->node->award->notes->plainText : null,
+                                              $edge->node->award->notes->plainText : null,
                         'awardPersons' => $names,
                         'awardOutcome' => $conclusion
                     );
@@ -3026,11 +2965,10 @@ EOF;
         return $this->awards;
     }
 
-    #----------------------------------------------------------[ Sound mix ]---
+    #----------------------------------------------------------[ Sound ]---
     /**
      * Get movie sound mixes
-     * @return array of array[0..n] of array[type, array attributes]
-     * @see IMDB page / (specifications)
+     * @return array
      */
     public function sound()
     {
@@ -3043,8 +2981,7 @@ EOF;
     #----------------------------------------------------------[ Colorations ]---
     /**
      * Get movie colorations like color or Black and white
-     * @return array of array[0..n] of array[type, array attributes]
-     * @see IMDB page / (specifications)
+     * @return array
      */
     public function color()
     {
@@ -3057,8 +2994,7 @@ EOF;
     #----------------------------------------------------------[ Aspect ratio ]---
     /**
      * Get movie aspect ratio like 1.66:1 or 16:9
-     * @return array of array[0..n] of array[aspectRatio, array attributes]
-     * @see IMDB page / (specifications)
+     * @return array
      */
     public function aspectRatio()
     {
@@ -3071,8 +3007,7 @@ EOF;
     #----------------------------------------------------------[ Cameras ]---
     /**
      * Get cameras used in this title
-     * @return array of array[0..n] of array[cameras, array attributes]
-     * @see IMDB page / (specifications)
+     * @return array
      */
     public function camera()
     {
@@ -3085,8 +3020,7 @@ EOF;
     #----------------------------------------------------------[ Movie Featured Reviews ]---
     /**
      * Get movie featured reviews (max 5 available)
-     * @return array[] of array(authorNickName| string, authorRating| int, summaryText| string, reviewText| string, submissionDate| iso date string)
-     * @see IMDB page / (TitlePage)
+     * @return array
      */
     public function featuredReview()
     {
@@ -3147,7 +3081,7 @@ EOF;
     #----------------------------------------------------------[ Movie isAdult ]---
     /**
      * Get adult status of a title
-     * @return boolean
+     * @return bool|null
      * @see IMDB page / (TitlePage)
      */
     public function isAdult()
@@ -3173,12 +3107,12 @@ EOF;
     /**
      * watch options by category for this title
      * @Note: (DEC 2024) Only Amazon providers are returned, no others!
-     * @return categorized array()
-     *  [rent/buy] => Array
-     *      [0] => Array
-     *          [providerId] =>     (string) amzn1.imdb.w2w.provider.prime_video
-     *          [providerName] =>   (string) Prime Video
-     *          [logoUrl] =>        (string) (PNG!) https://m.media-amazon.com/images/M/4c6e._V1_QL100_UX250_.png
+     * @return array
+     *  [rent/buy]  array()
+     *      [0]  array()
+     *          [providerId]      string amzn1.imdb.w2w.provider.prime_video
+     *          [providerName]    string Prime Video
+     *          [logoUrl]         string (PNG!) https://m.media-amazon.com/images/M/4c6e._V1_QL100_UX250_.png
      */
     public function watchOption()
     {
@@ -3236,7 +3170,7 @@ EOF;
                             }
                             $watchOptions[] = array(
                                 'providerId' => isset($option->provider->id) ?
-                                                    $option->provider->id : null,
+                                                      $option->provider->id : null,
                                 'providerName' => isset($option->provider->name->value) ?
                                                         $option->provider->name->value : null,
                                 'logoUrl' => $logoUrl
@@ -3253,7 +3187,7 @@ EOF;
     #----------------------------------------------------------[ Production Status ]---
     /**
      * Get current production status of a title e.g. Released, In Development, Pre-Production, Complete, Production etc
-     * @return string status
+     * @return string|null
      */
     public function productionStatus()
     {
@@ -3282,17 +3216,17 @@ EOF;
     #----------------------------------------------------------[ News ]---
     /**
      * Get news items about this title, max 100 items!
-     * @return array of array()
-     *      [id] =>                 (string)
-     *      [title] =>              (string) e.g. The best movies on Netflix right now
-     *      [author] =>             (string) e.g. The A.V. Club
-     *      [date] =>               (string) e.g. 2024-12-01T02:00:00Z
-     *      [extUrl] =>             (string) e.g. https://www.avclub.com/1842540580
-     *      [extHomepageUrl] =>     (string) e.g. http://www.avclub.com/content/home
-     *      [extHomepageLabel] =>   (string) e.g. avclub.com
-     *      [textHtml] =>           (string) (including html)
-     *      [textText] =>           (string)
-     *      [thumbnailUrl] =>       (string)
+     * @return array
+     *      [id]                  string
+     *      [title]               string e.g. The best movies on Netflix right now
+     *      [author]              string e.g. The A.V. Club
+     *      [date]                string e.g. 2024-12-01T02:00:00Z
+     *      [extUrl]              string e.g. https://www.avclub.com/1842540580
+     *      [extHomepageUrl]      string e.g. http://www.avclub.com/content/home
+     *      [extHomepageLabel]    string e.g. avclub.com
+     *      [textHtml]            string (including html)
+     *      [textText]            string
+     *      [thumbnailUrl]        string
      */
     public function news()
     {
@@ -3352,17 +3286,17 @@ EOF;
                     }
                     $this->news[] = array(
                         'id' => isset($edge->node->id) ?
-                                    str_replace('ni', '', $edge->node->id) : null,
+                                      str_replace('ni', '', $edge->node->id) : null,
                         'title' => isset($edge->node->articleTitle->plainText) ?
-                                        $edge->node->articleTitle->plainText : null,
+                                         $edge->node->articleTitle->plainText : null,
                         'author' => isset($edge->node->byline) ?
-                                        $edge->node->byline : null,
+                                          $edge->node->byline : null,
                         'date' => isset($edge->node->date) ?
                                         $edge->node->date : null,
                         'extUrl' => isset($edge->node->externalUrl) ?
-                                        $edge->node->externalUrl : null,
+                                          $edge->node->externalUrl : null,
                         'extHomepageUrl' => isset($edge->node->source->homepage->url) ?
-                                                $edge->node->source->homepage->url : null,
+                                                  $edge->node->source->homepage->url : null,
                         'extHomepageLabel' => isset($edge->node->source->homepage->label) ?
                                                     $edge->node->source->homepage->label : null,
                         'textHtml' => isset($edge->node->text->plaidHtml) ?
@@ -3377,14 +3311,9 @@ EOF;
         return $this->news;
     }
 
-
-    #========================================================[ Helper functions ]===
-    #===============================================================================
-
-    #========================================================[ photo/poster ]===
+    #-----------------------------------------[ Helper for photo() ]---
     /**
-     * Setup cover photo (thumbnail and big variant)
-     * @see IMDB page / (TitlePage)
+     * Fetch cover photo (thumbnail and big variant)
      */
     private function populatePoster()
     {
@@ -3416,11 +3345,11 @@ EOF;
         }
     }
 
-    #========================================================[ CompanyCredits ]===
+    #-----------------------------------------[ Helper for companyCredits ]---
     /**
      * Fetch all company credits
      * @param string $category e.g. distribution, production
-     * @return array<array{name: string, id: string, country: string, attribute: string, year: string}>
+     * @return array
      */
     protected function companyCredits($category)
     {
@@ -3462,26 +3391,23 @@ EOF;
                     "name" => isset($edge->node->displayableProperty->value->plainText) ?
                                     $edge->node->displayableProperty->value->plainText : null,
                     "id" => isset($edge->node->company->id) ?
-                                str_replace('co', '', $edge->node->company->id ) : null,
+                                  str_replace('co', '', $edge->node->company->id ) : null,
                     "country" => isset($edge->node->countries[0]->text) ?
-                                    $edge->node->countries[0]->text : null,
+                                       $edge->node->countries[0]->text : null,
                     "attribute" => $companyAttribute,
                     "year" => isset($edge->node->yearsInvolved->year) ?
-                                    $edge->node->yearsInvolved->year : null,
+                                    $edge->node->yearsInvolved->year : null
                 );
             }
         }
         return $results;
     }
 
-    #========================================================[ Crew Category ]===
-    #---------------------------------------------------------------[ credit helper ]---
+    #---------------------------------------------------------------[ helper for crew credits ]---
     /** helper for stunts, thanks, visualEffects, specialEffects, producer,
      *      writer, director, composer, cinematographer, voiceActor
      * @param string $aditionalType filter type for miscelleanous credits, only "voice actor" is supported
-     * @return array (array[0..n] of arrays[imdb, name, jobs array[], attributes array[],
-     *      episode array(total, year, endYear)], titleFullImageUrl, titleThumbImageUrl)
-     * @see IMDB page /fullcredits
+     * @return array
      */
     private function creditHelper($crewCategory, $aditionalType = '')
     {
@@ -3549,11 +3475,11 @@ EOF;
                 if (!empty($edge->node->episodeCredits)) {
                     $episodes = array(
                         'total' => isset($edge->node->episodeCredits->total) ?
-                                        $edge->node->episodeCredits->total : null,
+                                         $edge->node->episodeCredits->total : null,
                         'year' => isset($edge->node->episodeCredits->yearRange->year) ?
                                         $edge->node->episodeCredits->yearRange->year : null,
                         'endYear' => isset($edge->node->episodeCredits->yearRange->endYear) ?
-                                        $edge->node->episodeCredits->yearRange->endYear : null
+                                           $edge->node->episodeCredits->yearRange->endYear : null
                     );
                 }
                 $attributes = array();
@@ -3596,11 +3522,11 @@ EOF;
         return $output;
     }
 
-    #----------------------------------------------------------[ Episode build filter]---
+    #----------------------------------------------------------[ Helper for Episode() build filter ]---
     /**
      * Build filter constraint for episode()
-     * @param $seasonYear node->text from season or year
-     * @return string $filter
+     * @param int $seasonYear node->text from season or year
+     * @return string
      */
     public function buildFilter($seasonYear)
     {
@@ -3622,10 +3548,10 @@ EOF;
         return $filter;
     }
 
-    #========================================================[ Season Year check ]===
-    /** Check if TV Series season or year based
+    #----------------------------------------------------------[ Helper for Episode() Season or year check ]---
+    /** Check if TV Series season or year based is wanted by the user
      * @param int $yearbased 0: year based, 1: season based
-     * @return array or false
+     * @return array|false
      */
     private function seasonYearCheck($yearbased)
     {
@@ -3667,11 +3593,11 @@ EOF;
 
     }
 
-    #========================================================[ GraphQL Get All Episodes]===
+    #----------------------------------------------------------[ Helper for Episode() GraphQL Get All Episodes ]---
     /**
      * Get all episodes of a title
-     * @param $filter add filter options to query
-     * @return \stdClass[]
+     * @param string $filter add filter options to query
+     * @return array
      */
     protected function graphQlGetAllEpisodes($filter)
     {
@@ -3721,8 +3647,6 @@ query Episodes(\$id: ID!, \$after: ID) {
 EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
-
-        // Results are paginated, so loop until we've got all the data
         $endCursor = null;
         $hasNextPage = true;
         $edges = array();
@@ -3735,14 +3659,40 @@ EOF;
         return $edges;
     }
 
-    #========================================================[ Helper Technical specifications ]===
+    #----------------------------------------------------------[ Helper for episode() build date string ]---
+    /**
+     * build date string for episode()
+     * @param array $date input date array(['day'], ['month'], ['year'])
+     * @return string|null $airDate e.g. '20 jan. 2008'
+     */
+    private function buildDateString($date)
+    {
+        $airDate = null;
+        if (!empty($date['day'])) {
+            $airDate .= $date['day'];
+            if (!empty($date['month'])) {
+                $airDate .= ' ';
+            }
+        }
+        if (!empty($date['month'])) {
+            $airDate .= date('M', mktime(0, 0, 0, $date['month'], 10)) . '.';
+            if (!empty($date['year'])) {
+                $airDate .= ' ';
+            }
+        }
+        if (!empty($date['year'])) {
+            $airDate .= $date['year'];
+        }
+        return $airDate;
+    }
+
+    #----------------------------------------------------------[ Helper for Technical specifications  ]---
     /**
      * Get movie tech specs
-     * @param $type input techspec type like soundMixes or aspectRatios
-     * @param $valueType input type like text or soundMix
-     * @param $arrayName output array name
-     * @return array of array[0..n] of array[type, array attributes]
-     * @see IMDB page / (specifications)
+     * @param string $type input techspec type like soundMixes or aspectRatios
+     * @param string $valueType input type like text or soundMix
+     * @param string $arrayName output array name
+     * @return array
      */
     protected function techSpec($type, $valueType, $arrayName)
     {
@@ -3794,14 +3744,14 @@ EOF;
         return $arrayName;
     }
 
-    #========================================================[ GraphQL Get All]===
+    #----------------------------------------------------------[ Helper GraphQL Get All ]---
     /**
-     * Get all edges of a field in the title type
+     * Get all date when the data is paginated
      * @param string $queryName The cached query name
      * @param string $fieldName The field on title you want to get
      * @param string $nodeQuery Graphql query that fits inside node { }
      * @param string $filter Add's extra Graphql query filters like categories
-     * @return \stdClass[]
+     * @return array
      */
     protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
     {
@@ -3824,8 +3774,6 @@ query $queryName(\$id: ID!, \$after: ID) {
 EOF;
         // strip spaces from query due to hosters request limit
         $fullQuery = implode("\n", array_map('trim', explode("\n", $query)));
-
-        // Results are paginated, so loop until we've got all the data
         $endCursor = null;
         $hasNextPage = true;
         $edges = array();
@@ -3843,12 +3791,9 @@ EOF;
     #----------------------------------------------------------[ imdbID redirect ]---
     /**
      * Check if imdbid is redirected to another id or not.
-     * It sometimes happens that imdb redirects an existing id to a new id.
-     * If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
-     * @var $this->imdbID The imdbid used to call this class
-     * @var $titleImdbId the returned imdbid from Graphql call (in some cases this can be different)
-     * @return $titleImdbId (the new redirected imdbId) or false (no redirect)
-     * @see IMDB page / (TitlePage)
+     * @note It sometimes happens that imdb redirects an existing id to a new id.
+     * @note If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
+     * @return string|false $titleImdbId (the new redirected imdbId) or false (no redirect)
      */
     public function checkRedirect()
     {
@@ -3868,7 +3813,6 @@ EOF;
         {
             $titleImdbId = str_replace('tt', '', $data->title->meta->canonicalId);
             if ($titleImdbId  != $this->imdbID) {
-                // todo write to log?
                 return $titleImdbId;
             } else {
                 return false;
@@ -3877,39 +3821,12 @@ EOF;
         return false;
     }
 
-    #----------------------------------------------------------[ Build date string for Episode() ]---
-    /**
-     * build date string for episode()
-     * @param array $date input date array(['day'], ['month'], ['year'])
-     * @return string $airDate e.g. '20 jan. 2008'
-     */
-    private function buildDateString($date)
-    {
-        $airDate = null;
-        if (!empty($date['day'])) {
-            $airDate .= $date['day'];
-            if (!empty($date['month'])) {
-                $airDate .= ' ';
-            }
-        }
-        if (!empty($date['month'])) {
-            $airDate .= date('M', mktime(0, 0, 0, $date['month'], 10)) . '.';
-            if (!empty($date['year'])) {
-                $airDate .= ' ';
-            }
-        }
-        if (!empty($date['year'])) {
-            $airDate .= $date['year'];
-        }
-        return $airDate;
-    }
-
-    #----------------------------------------------------------[ Award filter helper ]---
+    #----------------------------------------------------------[ Helper Award() build filter ]---
     /**
      * Build award filter string
-     * @param $winsOnly boolean
-     * @param $event string eventId
-     * @return string $filter
+     * @param bool $winsOnly true: only won is included, false: all is included
+     * @param string $event eventId
+     * @return string
      */
     public function awardFilter($winsOnly, $event)
     {
@@ -3930,11 +3847,12 @@ EOF;
         return $filter;
     }
 
+    #----------------------------------------------------------[ Helper interests() sort by name ]---
     /**
      * Sort by name function for interests()
      * @param array $array input to be sorted
      * @param string $sortOrder "ASC" "DESC"
-     * @return array sorted array
+     * @return array
      */
     public function sortByName($array, $sortOrder)
     {
@@ -3943,11 +3861,9 @@ EOF;
             usort($array, function($a, $b) {
                 $ad = $a['displayName'];
                 $bd = $b['displayName'];
-
                 if ($ad == $bd) {
                 return 0;
                 }
-
                 return $ad > $bd ? -1 : 1;
             });
         } else {
@@ -3955,11 +3871,9 @@ EOF;
             usort($array, function($a, $b) {
                 $ad = $a['displayName'];
                 $bd = $b['displayName'];
-
                 if ($ad == $bd) {
                 return 0;
                 }
-
                 return $ad < $bd ? -1 : 1;
             });
         }
