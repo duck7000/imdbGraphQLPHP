@@ -105,7 +105,7 @@ EOF;
     /**
      * Get person photo image url
      * @param bool $thumb true: thumbnail (140x207 pixels), false: large (max 1000 pixels)
-     * @return string|false
+     * @return string|bool
      */
     public function photo($thumb = true)
     {
