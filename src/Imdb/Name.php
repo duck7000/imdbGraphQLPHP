@@ -1074,17 +1074,7 @@ EOF;
      */
     public function extSites()
     {
-        $categoryIds = array(
-            'official' => 'official',
-            'video' => 'video',
-            'photo' => 'photo',
-            'sound' => 'sound',
-            'misc' => 'misc'
-        );
         if (empty($this->externalSites)) {
-            foreach ($categoryIds as $categoryId) {
-                $this->externalSites[$categoryId] = array();
-            }
             $query = <<<EOF
 label
 url
@@ -1107,7 +1097,9 @@ EOF;
                             }
                         }
                     }
-                    $this->externalSites[$categoryIds[$edge->node->externalLinkCategory->id]][] = array(
+                    $categoryIds = !empty($edge->node->externalLinkCategory->id) ?
+                                          $edge->node->externalLinkCategory->id : "unknown";
+                    $this->externalSites[$categoryIds][] = array(
                         'label' => !empty($edge->node->label) ?
                                           $edge->node->label : null,
                         'url' => !empty($edge->node->url) ?
