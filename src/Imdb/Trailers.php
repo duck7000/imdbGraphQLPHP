@@ -10,6 +10,7 @@
 
 namespace Imdb;
 
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Imdb\Image;
 
@@ -27,9 +28,9 @@ class Trailers extends MdbBase
     protected $newImageHeight;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -40,33 +41,28 @@ class Trailers extends MdbBase
     }
 
     /**
-     * Get the latest trailers as seen on IMDb https://www.imdb.com/trailers/
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *              [videoId] =>                    (string) (without vi)
-     *              [titleId] =>                    (string) (without tt)
-     *              [title] =>                      (string)
-     *              [trailerCreateDate] =>          (string iso date) 2024-11-17T13:16:18.708Z
-     *              [trailerRuntime] =>             (int) (in seconds!)
-     *              [playbackUrl] =>                (string) This url will playback in browser only)
-     *              [fullPlaybackUrls] => Array()
-     *                  [0] => Array()
-     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
-     *                      [mimeType] => string MP4
-     *                      [definition] => string DEF_SD
-     *              [fullPreviewUrls] => Array()
-     *                  [0] => Array()
-     *                      [url] => string 
-     *                      [mimeType] => string M3U8
-     *                      [definition] => string DEF_AUTO
-     *              [thumbnailUrl] =>               (string) (thumbnail (140x207) image of the title)
-     *              [releaseDate] =>                (string) (date string: December 4, 2024)
-     *              [contentType] =>                (string ) like Trailer Season 1 [OV]
-     *          )
-     *  )
+     * Get the latest/recent trailers as seen on IMDb https://www.imdb.com/trailers/
+     * @return array
+     *      [0]  array()
+     *          [videoId]                     string (without vi)
+     *          [titleId]                     string (without tt)
+     *          [title]                       string
+     *          [trailerCreateDate]           string  iso date) 2024-11-17T13:16:18.708Z
+     *          [trailerRuntime]              int     (in seconds!)
+     *          [playbackUrl]                 string  This url will playback in browser only)
+     *          [fullPlaybackUrls]  array()
+     *              [0]  array()
+     *                  [url]  string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                  [mimeType]  string MP4
+     *                  [definition]  string DEF_SD
+     *          [fullPreviewUrls]  array()
+     *              [0]  array()
+     *                  [url]  string 
+     *                  [mimeType]  string M3U8
+     *                  [definition]  string DEF_AUTO
+     *          [thumbnailUrl]                string (thumbnail (140x207) image of the title)
+     *          [releaseDate]                 string (date string: December 4, 2024)
+     *          [contentType]                 string  like Trailer Season 1 [OV]
      */
     public function recentVideo()
     {
@@ -128,7 +124,6 @@ EOF;
            )
         {
             foreach ($data->recentVideos->videos as $edge) {
-
                 // fullPlaybackURLs
                 $fullPlaybackUrl = array();
                 if (isset($edge->playbackURLs) &&
@@ -143,12 +138,11 @@ EOF;
                                 'mimeType' => isset($playbackUrl->videoMimeType) ?
                                                     $playbackUrl->videoMimeType : null,
                                 'definition' => isset($playbackUrl->videoDefinition) ?
-                                                      $playbackUrl->videoDefinition : null,
+                                                      $playbackUrl->videoDefinition : null
                             );
                         }
                     }
                 }
-
                 // fullPreviewURLs
                 $fullPreviewUrls = array();
                 if (isset($edge->previewURLs) &&
@@ -163,15 +157,14 @@ EOF;
                                 'mimeType' => isset($previewUrl->videoMimeType) ?
                                                     $previewUrl->videoMimeType : null,
                                 'definition' => isset($previewUrl->videoDefinition) ?
-                                                      $previewUrl->videoDefinition : null,
+                                                      $previewUrl->videoDefinition : null
                             );
                         }
                     }
                 }
-
                 $thumbUrl = null;
                 $videoId = isset($edge->id) ?
-                                str_replace('vi', '', $edge->id) : null;
+                                 str_replace('vi', '', $edge->id) : null;
                 if (!empty($edge->primaryTitle->primaryImage->url)) {
                     $fullImageWidth = $edge->primaryTitle->primaryImage->width;
                     $fullImageHeight = $edge->primaryTitle->primaryImage->height;
@@ -182,56 +175,51 @@ EOF;
                 $recentVideoResults[] = array(
                     'videoId' => $videoId,
                     'titleId' => isset($edge->primaryTitle->id) ?
-                                    str_replace('tt', '', $edge->primaryTitle->id) : null,
+                                       str_replace('tt', '', $edge->primaryTitle->id) : null,
                     'title' => isset($edge->primaryTitle->titleText->text) ?
                                      $edge->primaryTitle->titleText->text : null,
                     'trailerCreateDate' => isset($edge->createdDate) ?
                                                  $edge->createdDate : null,
                     'trailerRuntime' => isset($edge->runtime->value) ?
-                                             $edge->runtime->value : null,
+                                              $edge->runtime->value : null,
                     'playbackUrl' => !empty($videoId) ?
                                      'https://www.imdb.com/video/vi' . $videoId . '/' : null,
                     'fullPlaybackUrls' => $fullPlaybackUrl,
                     'fullPreviewUrls' => $fullPreviewUrls,
                     'thumbnailUrl' => $thumbUrl,
                     'releaseDate' => isset($edge->primaryTitle->releaseDate->displayableProperty->value->plainText) ?
-                                        $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
+                                           $edge->primaryTitle->releaseDate->displayableProperty->value->plainText : null,
                     'contentType' => isset($edge->name->value) ?
-                                        $edge->name->value : null
+                                           $edge->name->value : null
                 );
             }
         }
         return $recentVideoResults;
     }
-    
+
     /**
      * Get trending trailers as seen on IMDb https://www.imdb.com/trailers/
-     * @return
-     * Array
-     *   (
-     *      [0] => Array
-     *          (
-     *              [videoId] =>            (string) (without vi)
-     *              [titleId] =>            (string) (without tt)
-     *              [title] =>              (string)
-     *              [trailerCreateDate] =>  (string iso date) 2024-11-17T13:16:18.708Z
-     *              [trailerRuntime] =>     (int) (in seconds!)
-     *              [playbackUrl] =>        (string) This url will playback in browser only)
-     *              [fullPlaybackUrls] => Array()
-     *                  [0] => Array()
-     *                      [url] => string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
-     *                      [mimeType] => string MP4
-     *                      [definition] => string DEF_SD
-     *              [fullPreviewUrls] => Array()
-     *                  [0] => Array()
-     *                      [url] => string 
-     *                      [mimeType] => string M3U8
-     *                      [definition] => string DEF_AUTO
-     *              [thumbnailUrl] =>       (string) (thumbnail (140x207)image of the title)
-     *              [releaseDate] =>        (string) (date string: December 4, 2024)
-     *              [contentType] =>        (string ) like Trailer Season 1 [OV]
-     *          )
-     *  )
+     * @return array
+     *      [0]  array()
+     *          [videoId]                     string (without vi)
+     *          [titleId]                     string (without tt)
+     *          [title]                       string
+     *          [trailerCreateDate]           string  iso date) 2024-11-17T13:16:18.708Z
+     *          [trailerRuntime]              int     (in seconds!)
+     *          [playbackUrl]                 string  This url will playback in browser only)
+     *          [fullPlaybackUrls]  array()
+     *              [0]  array()
+     *                  [url]  string https://imdb-video.media-imdb.com/vi3115516185/1434659454657-dx9ykf-1564078123074.mp4
+     *                  [mimeType]  string MP4
+     *                  [definition]  string DEF_SD
+     *          [fullPreviewUrls]  array()
+     *              [0]  array()
+     *                  [url]  string 
+     *                  [mimeType]  string M3U8
+     *                  [definition]  string DEF_AUTO
+     *          [thumbnailUrl]                string (thumbnail (140x207) image of the title)
+     *          [releaseDate]                 string (date string: December 4, 2024)
+     *          [contentType]                 string  like Trailer Season 1 [OV]
      */
     public function trendingVideo()
     {
@@ -298,7 +286,6 @@ EOF;
            )
         {
             foreach ($data->trendingTitles->titles as $edge) {
-
                 // full playback and preview URLs
                 $fullPlaybackUrls = array();
                 $fullPreviewUrls = array();
@@ -328,7 +315,7 @@ EOF;
                                         'mimeType' => isset($playbackUrl->videoMimeType) ?
                                                             $playbackUrl->videoMimeType : null,
                                         'definition' => isset($playbackUrl->videoDefinition) ?
-                                                              $playbackUrl->videoDefinition : null,
+                                                              $playbackUrl->videoDefinition : null
                                     );
                                 }
                             }
@@ -340,14 +327,13 @@ EOF;
                                         'mimeType' => isset($previewUrl->videoMimeType) ?
                                                             $previewUrl->videoMimeType : null,
                                         'definition' => isset($previewUrl->videoDefinition) ?
-                                                              $previewUrl->videoDefinition : null,
+                                                              $previewUrl->videoDefinition : null
                                     );
                                 }
                             }
                         }
                     }
                 }
-
                 $thumbUrl = null;
                 $videoId = isset($edge->latestTrailer->id) ?
                                  str_replace('vi', '', $edge->latestTrailer->id) : null;

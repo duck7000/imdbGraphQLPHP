@@ -10,6 +10,8 @@
 
 namespace Imdb;
 
+use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Imdb\Image;
 
 class TitleSearch extends MdbBase
@@ -19,9 +21,9 @@ class TitleSearch extends MdbBase
     protected $newImageHeight;
 
     /**
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -35,21 +37,21 @@ class TitleSearch extends MdbBase
      * Search IMDb for titles matching $searchTerms
      * @param string $searchTerms
      * @param string $types input search types like "MOVIE" or "MOVIE,TV" (separate by comma if more then one)
-     * Default for $types: null (search within all types)
+     * @note Default for $types: null (search within all types)
      * Possible values for $types:
-     *  MOVIE
-     *  MUSIC_VIDEO
-     *  PODCAST_EPISODE
-     *  PODCAST_SERIES
-     *  TV
-     *  TV_EPISODE
-     *  VIDEO_GAME
-     * 
+     *      MOVIE
+     *      MUSIC_VIDEO
+     *      PODCAST_EPISODE
+     *      PODCAST_SERIES
+     *      TV
+     *      TV_EPISODE
+     *      VIDEO_GAME
+     *      null
      * @param string $startDate search from startDate til present date, iso date (year-month-day) ("1975-01-01")
      * @param string $endDate search from endDate and earlier, iso date (year-month-day) ("1975-01-01")
      * @param bool $exactMatch true:only return results if exactly match searchTerm, default: false
      *      if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
-     * @return array<int, array<string, string|Title>>
+     * @return array
      */
     public function search($searchTerms, $types = null, $startDate = '', $endDate = '', $exactMatch = false)
     {
@@ -57,12 +59,10 @@ class TitleSearch extends MdbBase
         $amount = $this->config->titleSearchAmount;
         $results = array();
         $inputReleaseDates = $this->checkReleaseDates($startDate, $endDate);
-
         // check if $searchTerm is empty or releaseDates === false, return empty array
         if (empty(trim($searchTerms)) || $inputReleaseDates === false) {
             return $results;
         }
-
         $query = <<<EOF
 query Search{
   mainSearch(
@@ -158,13 +158,11 @@ EOF;
         return $this->sortBySearch($results, $searchTerms);
     }
 
-
     #========================================================[ Helper functions]===
-
     /**
      * Check if provided date is valid
      * @param string $date input date
-     * @return boolean true or false
+     * @return string|false
      */
     private function validateDate($date)
     {
@@ -175,8 +173,8 @@ EOF;
     /**
      * Check if input date is not empty and valid
      * @param string $startDate (searches between startDate and present date) iso date string ('1975-01-01')
-     * @param $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
-     * @return array startDate|string, endDate|string or null
+     * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
+     * @return array|false
      */
     private function checkReleaseDates($startDate, $endDate)
     {
@@ -222,13 +220,12 @@ EOF;
      * Sort by exact match searchItem for search()
      * @param array $array input to be sorted
      * @param string $sortItem where sort is based on e'g $searchItem from search()
-     * @return array sorted array
+     * @return array
      */
     public function sortBySearch($array, $sortItem)
     {
         $matches = array();
         $others  = array();
-
         foreach ($array as $t) {
             if (strcasecmp($t['title'], $sortItem) === 0) {
                 $matches[] = $t;
@@ -236,7 +233,6 @@ EOF;
                 $others[] = $t;
             }
         }
-
         return array_merge($matches, $others);
     }
 

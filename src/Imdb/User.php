@@ -1,4 +1,5 @@
 <?php
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written & maintained by ed (github user: duck7000)                        #
@@ -30,9 +31,9 @@ class User extends MdbBase
 
     /**
      * @param string $id IMDb USER ID. e.g. ur285331
-     * @param Config $config OPTIONAL override default config
-     * @param LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param string Config $config OPTIONAL override default config
+     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -41,11 +42,9 @@ class User extends MdbBase
         $this->imageFunctions = new Image();
     }
 
-    #-------------------------------------------------------------[ User ]---
-
     /**
      * Get public predefind watch_list of a User Id
-     * @return array()
+     * @return array
      */
     public function watch()
     {
@@ -55,7 +54,7 @@ class User extends MdbBase
 
     /**
      * Get public predefind favorite_actors list of a User Id
-     * @return array()
+     * @return array
      */
     public function favoriteActors()
     {
@@ -65,7 +64,7 @@ class User extends MdbBase
 
     /**
      * Get public predefind not_interested list of a User Id
-     * @return array()
+     * @return array
      */
     public function notInterested()
     {
@@ -75,7 +74,7 @@ class User extends MdbBase
 
     /**
      * Get public predefind seen list of a User Id
-     * @return array()
+     * @return array
      */
     public function seen()
     {
@@ -85,7 +84,7 @@ class User extends MdbBase
 
     /**
      * Get public user defined Titles list of a User Id
-     * @return array()
+     * @return array
      */
     public function userTitles()
     {
@@ -95,7 +94,7 @@ class User extends MdbBase
 
     /**
      * Get public user defined People list of a User Id
-     * @return array()
+     * @return array
      */
     public function userPeople()
     {
@@ -104,11 +103,10 @@ class User extends MdbBase
     }
 
     #========================================================[ Helper functions ]===
-
     /**
-     * Get public predefind lists like watchList of a User Id
-     * @param string $listClass ENUM list class: SEEN, NOT_INTERESTED, FAVORITE_THEATRES, FAVORITE_ACTORS, CHECK_INS, WATCH_LIST
-     * @return array()
+     * Fetch data for public predefind lists like watchList of a User Id
+     * @param string $listClass values: SEEN, NOT_INTERESTED, FAVORITE_THEATRES, FAVORITE_ACTORS, CHECK_INS, WATCH_LIST
+     * @return array
      */
     protected function ListHelperPredefind($listClass)
     {
@@ -179,7 +177,8 @@ EOF;
                     }
                 }
                 $items[] = array(
-                    'id' => isset($item->node->item->id) ? $item->node->item->id : null,
+                    'id' => isset($item->node->item->id) ?
+                                  $item->node->item->id : null,
                     'title' => isset($item->node->item->titleText->text) ?
                                      $item->node->item->titleText->text : null,
                     'createdDate' => isset($item->node->createdDate) ?
@@ -192,7 +191,8 @@ EOF;
                 );
             }
             $results = array(
-                'id' => isset($data->predefinedList->id) ? $data->predefinedList->id : null,
+                'id' => isset($data->predefinedList->id) ?
+                              $data->predefinedList->id : null,
                 'name' => isset($data->predefinedList->name->originalText) ?
                                 $data->predefinedList->name->originalText : null,
                 'createdDate' => isset($data->predefinedList->createdDate) ?
@@ -212,9 +212,9 @@ EOF;
     }
 
     /**
-     * Get public user made lists of a User Id
-     * @param string $listElementType ENUM list class: TITLES, PEOPLE, VIDEOS, IMAGES, GALLERIES
-     * @return array()
+     * Fetch data for public user made lists of a User Id
+     * @param string $listElementType values: TITLES, PEOPLE, VIDEOS, IMAGES, GALLERIES
+     * @return array
      */
     protected function ListHelperUser($listElementType)
     {
@@ -315,7 +315,8 @@ EOF;
                         }
                         if ($listElementType === 'PEOPLE') {
                             $userItems['names'][] = array(
-                                'id' => isset($listItems->node->item->id) ? $listItems->node->item->id : null,
+                                'id' => isset($listItems->node->item->id) ?
+                                              $listItems->node->item->id : null,
                                 'name' => isset($listItems->node->item->nameText->text) ?
                                                 $listItems->node->item->nameText->text : null,
                                 'createdDate' => isset($listItems->node->createdDate) ?
@@ -326,7 +327,8 @@ EOF;
                             );
                         } elseif ($listElementType === 'TITLES') {
                             $userItems['titles'][] = array(
-                                'id' => isset($listItems->node->item->id) ? $listItems->node->item->id : null,
+                                'id' => isset($listItems->node->item->id) ?
+                                              $listItems->node->item->id : null,
                                 'title' => isset($listItems->node->item->titleText->text) ?
                                                  $listItems->node->item->titleText->text : null,
                                 'createdDate' => isset($listItems->node->createdDate) ?
@@ -341,7 +343,8 @@ EOF;
                     }
                 }
                 $userResults[] = array(
-                    'id' => isset($item->node->id) ? $item->node->id : null,
+                    'id' => isset($item->node->id) ?
+                                  $item->node->id : null,
                     'name' => isset($item->node->name->originalText) ?
                                     $item->node->name->originalText : null,
                     'createdDate' => isset($item->node->createdDate) ?
@@ -360,4 +363,5 @@ EOF;
         }
         return $userResults;
     }
+
 }
