@@ -590,7 +590,7 @@ EOF;
     /**
      * Get the main photo image url for thumbnail or full size
      * @param bool $thumb true: thumbnail (height: 281), false: large (max 1000 pixels)
-     * @return string|false
+     * @return string|bool|null
      */
     public function photo($thumb = true)
     {
