@@ -37,7 +37,7 @@ class Request
         curl_setopt($this->ch, CURLOPT_ACCEPT_ENCODING, "");
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, array(&$this, "callbackCurloptHeaderFunction"));
-        curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
+        curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko/20100101 Firefox/153.0');
         curl_setopt($this->ch, CURLOPT_TIMEOUT, $this->config->curloptTimeout);
     }
 
