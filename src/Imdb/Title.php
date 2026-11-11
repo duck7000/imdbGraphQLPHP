@@ -1357,7 +1357,7 @@ EOF;
      * Get the tv show episodes of this title
      * @version The array keys reflects the real season and episodenumber! Episodes can start at 0 (pilot episode)
      * @param bool $thumb true: thumbnail (cropped from center 224x126), false: large (max width 1000 pixels)
-     * @param $yearbased This gives user control if returned episodes are yearbased or season based
+     * @param int $yearbased 0: season based, 1: year based
      * @return array
      *   [1] array()        //can be seasonnumber, year or -1 (Unknown)
      *       [1] array()          //can be episodenumber or -1 (Unknown)
