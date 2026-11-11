@@ -70,7 +70,7 @@ class Title extends MdbBase
     protected $soundtracks = array();
     protected $taglines = array();
     protected $trivias = array();
-    protected $isOngoing = null;
+    protected $isOngoing = false;
     protected $goofs = array();
     protected $crazyCredits = array();
     protected $locations = array();
@@ -1450,7 +1450,8 @@ EOF;
     #-----------------------------------------------------------[ IsOngoing TV Series ]---
      /**
      * Can be used to check if this is a still running tv series or ended one
-     * @return bool|null false if ended, true if still running or null (not a tv series)
+     * @note true: still running tv series, false: ended or not a tv series
+     * @return bool
      */
     public function isOngoing()
     {
@@ -1465,7 +1466,7 @@ query IsOngoing(\$id: ID!) {
 EOF;
         $data = $this->graphql->query($query, "IsOngoing", ["id" => "tt$this->imdbID"]);
         $this->isOngoing = isset($data->title->episodes->isOngoing) ?
-                                 $data->title->episodes->isOngoing : null;
+                                 $data->title->episodes->isOngoing : false;
         return $this->isOngoing;
     }
 
