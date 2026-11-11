@@ -3691,7 +3691,7 @@ EOF;
      * Get movie tech specs
      * @param string $type input techspec type like soundMixes or aspectRatios
      * @param string $valueType input type like text or soundMix
-     * @param string $arrayName output array name
+     * @param array $arrayName output array
      * @return array
      */
     protected function techSpec($type, $valueType, $arrayName)
