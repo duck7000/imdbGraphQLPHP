@@ -124,6 +124,10 @@ class Request
         return (int)$matches[1];
     }
 
+    /**
+     * Get last response headers
+     * @return array
+     */
     public function getLastResponseHeaders()
     {
         return $this->responseHeaders;
