@@ -3521,7 +3521,7 @@ EOF;
     #----------------------------------------------------------[ Helper for Episode() build filter ]---
     /**
      * Build filter constraint for episode()
-     * @param int $seasonYear node->text from season or year
+     * @param string $seasonYear node->text from season or year
      * @return string
      */
     public function buildFilter($seasonYear)
