@@ -49,6 +49,13 @@ class GraphQL
         $this->config = $config;
     }
 
+    /**
+     * query request and check if cache can be used
+     * @param string $query
+     * @param string|null $qn property name
+     * @param array $variables
+     * @return object
+     */
     public function query($query, $qn = null, $variables = array())
     {
         $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . ".json";
