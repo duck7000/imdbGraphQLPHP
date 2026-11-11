@@ -598,10 +598,10 @@ EOF;
             $this->populatePoster();
         }
         if (!$thumb && empty($this->mainPoster)) {
-            return false;
+            return '';
         }
         if ($thumb && empty($this->mainPosterThumb)) {
-            return false;
+            return '';
         }
         if ($thumb) {
             return $this->mainPosterThumb;
