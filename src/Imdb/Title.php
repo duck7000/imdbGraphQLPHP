@@ -924,7 +924,7 @@ EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->ratingsSummary->topRanking->rank)) {
                 if ($data->title->ratingsSummary->topRanking->rank <= 250) {
-                    $this->mainTop250 = $data->title->ratingsSummary->topRanking->rank;
+                    $this->mainTop250 = (int)$data->title->ratingsSummary->topRanking->rank;
                 }
             }
         }
