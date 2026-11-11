@@ -112,4 +112,5 @@ class GraphQL
             }
         }
     }
+
 }
