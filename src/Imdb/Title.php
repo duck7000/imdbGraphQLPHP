@@ -91,7 +91,7 @@ class Title extends MdbBase
     protected $faqs = array();
     protected $isAdult = false;
     protected $watchOption = array();
-    protected $status = null;
+    protected $status = '';
     protected $news = array();
 
     /**
@@ -3185,7 +3185,7 @@ EOF;
     #----------------------------------------------------------[ Production Status ]---
     /**
      * Get current production status of a title e.g. Released, In Development, Pre-Production, Complete, Production etc
-     * @return string|null
+     * @return string
      */
     public function productionStatus()
     {
@@ -3205,8 +3205,8 @@ EOF;
             if (!isset($data->title)) {
                 return $this->status;
             }
-            $this->status = isset($data->title->productionStatus->currentProductionStage->text) ? 
-                                  $data->title->productionStatus->currentProductionStage->text : null;
+            $this->status = isset($data->title->productionStatus->currentProductionStage->text) ?
+                                  $data->title->productionStatus->currentProductionStage->text : '';
         }
         return $this->status;
     }
