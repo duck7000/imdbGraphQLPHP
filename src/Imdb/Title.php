@@ -3314,6 +3314,7 @@ EOF;
     #-----------------------------------------[ Helper for photo() ]---
     /**
      * Fetch cover photo (thumbnail and big variant)
+     * @return void
      */
     private function populatePoster()
     {
