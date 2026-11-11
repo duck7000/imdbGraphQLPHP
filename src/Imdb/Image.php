@@ -118,7 +118,7 @@ class Image
     {
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $rawNewWidth = $fullImageWidth / $newScalefactor;
-        return ceil($rawNewWidth);
+        return (int) ceil($rawNewWidth);
     }
 
 }
