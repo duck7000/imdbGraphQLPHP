@@ -597,12 +597,6 @@ EOF;
         if (empty($this->mainPoster)) {
             $this->populatePoster();
         }
-        if (!$thumb && empty($this->mainPoster)) {
-            return '';
-        }
-        if ($thumb && empty($this->mainPosterThumb)) {
-            return '';
-        }
         if ($thumb) {
             return $this->mainPosterThumb;
         }
