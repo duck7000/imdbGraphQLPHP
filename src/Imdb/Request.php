@@ -133,6 +133,12 @@ class Request
         return $this->responseHeaders;
     }
 
+    /**
+     * Callback curl_opt header function
+     * @param $ch
+     * @param $str
+     * @return int
+     */
     private function callbackCurloptHeaderFunction($ch, $str)
     {
         $len = strlen($str);
