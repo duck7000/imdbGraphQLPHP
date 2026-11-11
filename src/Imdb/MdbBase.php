@@ -25,22 +25,22 @@ class MdbBase extends Config
     public $version = '3.2.0';
 
     /**
-     * @var string CacheInterface
+     * @var object CacheInterface
      */
     protected $cache;
 
     /**
-     * @var string LoggerInterface
+     * @var object LoggerInterface
      */
     protected $logger;
 
     /**
-     * @var string Config
+     * @var object Config
      */
     protected $config;
 
     /**
-     * @var string GraphQL
+     * @var object GraphQL
      */
     protected $graphql;
 
@@ -50,9 +50,9 @@ class MdbBase extends Config
     protected $imdbID;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -64,7 +64,7 @@ class MdbBase extends Config
 
     /**
      * Retrieve the IMDB ID
-     * @return string id IMDBID currently used
+     * @return string
      */
     public function imdbid()
     {
@@ -73,7 +73,7 @@ class MdbBase extends Config
 
     /**
      * Set and validate the IMDb ID
-     * @param string id IMDb ID
+     * @param string
      */
     protected function setid($id)
     {
@@ -82,22 +82,22 @@ class MdbBase extends Config
         } elseif (preg_match("/(?:nm|tt|ur)(\d{7,10})/", $id, $matches)) {
             $this->imdbID = $matches[1];
         } else {
-            $this->debug_scalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
+            $this->debugScalar("<BR>setid: Invalid IMDB ID '$id'!<BR>");
         }
     }
 
     #---------------------------------------------------------[ Debug helpers ]---
-    protected function debug_scalar($scalar)
+    protected function debugScalar($scalar)
     {
         $this->logger->error($scalar);
     }
 
-    protected function debug_object($object)
+    protected function debugObject($object)
     {
         $this->logger->error('{object}', array('object' => $object));
     }
 
-    protected function debug_html($html)
+    protected function debugHtml($html)
     {
         $this->logger->error(htmlentities($html));
     }
