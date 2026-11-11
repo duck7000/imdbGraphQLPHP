@@ -562,7 +562,7 @@ EOF;
     #--------------------------------------------------------[ PlotOutline ]---
     /**
      * Get the plotoutline for the movie
-     * @return string
+     * @return string|null
      */
     public function plotoutline()
     {
