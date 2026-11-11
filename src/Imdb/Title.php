@@ -3202,11 +3202,11 @@ query ProductionStatus(\$id: ID!) {
 }
 EOF;
             $data = $this->graphql->query($query, "ProductionStatus", ["id" => "tt$this->imdbID"]);
-            if (!isset($data->title)) {
-                return $this->status;
+            if (isset($data->title->productionStatus->currentProductionStage->text) &&
+                is_string($data->title->productionStatus->currentProductionStage->text))
+            {
+                $this->status = $data->title->productionStatus->currentProductionStage->text;
             }
-            $this->status = isset($data->title->productionStatus->currentProductionStage->text) ?
-                                  $data->title->productionStatus->currentProductionStage->text : '';
         }
         return $this->status;
     }
