@@ -54,8 +54,8 @@ class Request
 
     /**
      * Send a POST request
-     * @param string|array $content
-     * @return array
+     * @param string $content
+     * @return bool
      */
     public function post($content)
     {
