@@ -3659,11 +3659,11 @@ EOF;
     /**
      * build date string for episode()
      * @param array $date input date array(['day'], ['month'], ['year'])
-     * @return string|null $airDate e.g. '20 jan. 2008'
+     * @return string $airDate e.g. '20 jan. 2008'
      */
     private function buildDateString($date)
     {
-        $airDate = null;
+        $airDate = '';
         if (!empty($date['day'])) {
             $airDate .= $date['day'];
             if (!empty($date['month'])) {
