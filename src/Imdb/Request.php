@@ -41,6 +41,12 @@ class Request
         curl_setopt($this->ch, CURLOPT_TIMEOUT, $this->config->curloptTimeout);
     }
 
+    /**
+     * Add header line to requestHeaders array
+     * @param string $name
+     * @param string $value
+     * @return void
+     */
     public function addHeaderLine($name, $value)
     {
         $this->requestHeaders[] = "$name: $value";
