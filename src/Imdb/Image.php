@@ -68,7 +68,7 @@ class Image
             $num = ceil($totalPixelCropSize);
             $num += $num % 2;
         }
-        return $num;
+        return (int)$num;
     }
 
     /**
