@@ -3526,7 +3526,7 @@ EOF;
      */
     public function buildFilter($seasonYear)
     {
-        if (strlen((string)$seasonYear) === 4) {
+        if (strlen($seasonYear) === 4) {
             // year based Tv Series
             $filter = 'filter:{releasedOnOrAfter:{day:1,month:1,year:' . $seasonYear . '},'
                               . 'releasedOnOrBefore:{day:31,month:12,year:' . $seasonYear . '}}';
