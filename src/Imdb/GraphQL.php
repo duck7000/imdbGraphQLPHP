@@ -22,25 +22,25 @@ use Psr\SimpleCache\CacheInterface;
 class GraphQL
 {
     /**
-     * @var string CacheInterface
+     * @var object CacheInterface
      */
     private $cache;
 
     /**
-     * @var string LoggerInterface
+     * @var object LoggerInterface
      */
     private $logger;
 
     /**
-     * @var string Config
+     * @var object Config
      */
     private $config;
 
     /**
      * GraphQL constructor.
-     * @param string CacheInterface $cache
-     * @param string LoggerInterface $logger
-     * @param string Config $config
+     * @param object CacheInterface $cache
+     * @param object LoggerInterface $logger
+     * @param object Config $config
      */
     public function __construct($cache, $logger, $config)
     {
