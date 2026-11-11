@@ -48,7 +48,7 @@ class Title extends MdbBase
     protected $keywords = array();
     protected $mainPoster = null;
     protected $mainPosterThumb = null;
-    protected $mainPlotoutline = null;
+    protected $mainPlotoutline = '';
     protected $mainTitleYearMovietype = array();
     protected $mainTop250 = 0;
     protected $mainRatingVotes = array();
@@ -562,7 +562,7 @@ EOF;
     #--------------------------------------------------------[ PlotOutline ]---
     /**
      * Get the plotoutline for the movie
-     * @return string|null
+     * @return string
      */
     public function plotoutline()
     {
