@@ -1465,8 +1465,11 @@ query IsOngoing(\$id: ID!) {
 }
 EOF;
         $data = $this->graphql->query($query, "IsOngoing", ["id" => "tt$this->imdbID"]);
-        $this->isOngoing = isset($data->title->episodes->isOngoing) ?
-                                 $data->title->episodes->isOngoing : false;
+        if (isset($data->title->episodes->isOngoing) &&
+            is_bool($data->title->episodes->isOngoing))
+        {
+            $this->isOngoing = $data->title->episodes->isOngoing;
+        }
         return $this->isOngoing;
     }
 
