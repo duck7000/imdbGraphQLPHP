@@ -3401,6 +3401,7 @@ EOF;
     #---------------------------------------------------------------[ helper for crew credits ]---
     /** helper for stunts, thanks, visualEffects, specialEffects, producer,
      *      writer, director, composer, cinematographer, voiceActor
+     * @param string $crewCategory like director, composer etc
      * @param string $aditionalType filter type for miscelleanous credits, only "voice actor" is supported
      * @return array
      */
