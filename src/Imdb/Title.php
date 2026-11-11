@@ -46,8 +46,8 @@ class Title extends MdbBase
     protected $interestKeywords = array();
     protected $interests = array();
     protected $keywords = array();
-    protected $mainPoster = null;
-    protected $mainPosterThumb = null;
+    protected $mainPoster = '';
+    protected $mainPosterThumb = '';
     protected $mainPlotoutline = '';
     protected $mainTitleYearMovietype = array();
     protected $mainTop250 = 0;
@@ -590,7 +590,7 @@ EOF;
     /**
      * Get the main photo image url for thumbnail or full size
      * @param bool $thumb true: thumbnail (height: 281), false: large (max 1000 pixels)
-     * @return string|bool
+     * @return string
      */
     public function photo($thumb = true)
     {
