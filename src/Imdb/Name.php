@@ -26,8 +26,8 @@ class Name extends MdbBase
 {
 
     protected $imageFunctions;
-    protected $mainPoster = null;
-    protected $mainPosterThumb = null;
+    protected $mainPoster = '';
+    protected $mainPosterThumb = '';
     protected $fullName = '';
     protected $birthday = array();
     protected $deathday = array();
@@ -105,18 +105,12 @@ EOF;
     /**
      * Get person photo image url
      * @param bool $thumb true: thumbnail (140x207 pixels), false: large (max 1000 pixels)
-     * @return string|bool
+     * @return string
      */
     public function photo($thumb = true)
     {
         if (empty($this->mainPoster)) {
             $this->populatePoster();
-        }
-        if (!$thumb && empty($this->mainPoster)) {
-            return false;
-        }
-        if ($thumb && empty($this->mainPosterThumb)) {
-            return false;
         }
         if ($thumb) {
             return $this->mainPosterThumb;
