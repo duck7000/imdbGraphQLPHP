@@ -1189,8 +1189,8 @@ EOF;
      *              [awardNotes] string Based on the novel
      *              [awardOutcome] string Nominee
      *     [total] => Array()
-     *          [win] => 12
-     *          [nom] => 26
+     *          [win] int 12
+     *          [nom] int 26
      */
     public function award($winsOnly = false, $event = "")
     {
