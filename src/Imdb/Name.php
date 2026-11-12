@@ -34,7 +34,7 @@ class Name extends MdbBase
     protected $akaName = array();
     protected $birthday = array();
     protected $deathday = array();
-    protected $age = null;
+    protected $age = 0;
     protected $professions = array();
     protected $popRank = array();
     protected $mainPhoto = array();
@@ -322,7 +322,7 @@ EOF;
     #------------------------------------------------------------------[ Age ]---
     /**
      * Get person age
-     * @return int|null
+     * @return int
      */
     public function age()
     {
