@@ -36,7 +36,7 @@ class TitleSearch extends MdbBase
     /**
      * Search IMDb for titles matching $searchTerms
      * @param string $searchTerms
-     * @param string $types input search types like "MOVIE" or "MOVIE,TV" (separate by comma if more then one)
+     * @param string|null $types input search types like "MOVIE" or "MOVIE,TV" (separate by comma if more then one)
      * @note Default for $types: null (search within all types)
      * Possible values for $types:
      *      MOVIE
