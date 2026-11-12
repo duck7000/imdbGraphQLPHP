@@ -28,7 +28,7 @@ class Name extends MdbBase
     protected $imageFunctions;
     protected $mainPoster = null;
     protected $mainPosterThumb = null;
-    protected $fullName = null;
+    protected $fullName = '';
     protected $birthday = array();
     protected $deathday = array();
     protected $age = null;
@@ -79,7 +79,7 @@ class Name extends MdbBase
     #------------------------------------------------------------------[ Name ]---
     /**
      * Get person full name
-     * @return string|null
+     * @return string
      */
     public function name()
     {
