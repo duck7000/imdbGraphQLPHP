@@ -223,7 +223,7 @@ EOF;
     /**
      * Get person birthday
      * @note $monthName is the month name, and $monthInt the month number
-     * @return array|null
+     * @return array
      */
     public function born()
     {
