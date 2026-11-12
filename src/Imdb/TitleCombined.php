@@ -174,6 +174,7 @@ EOF;
     /**
      * Fetch cover photo (thumbnail and big variant)
      * @param object $primaryImage primary image object found in main()
+     * @param bool $thumb thumbnail or full image
      * @return string
      */
     private function populatePoster($primaryImage, $thumb)
