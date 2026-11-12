@@ -37,7 +37,7 @@ class Name extends MdbBase
     protected $mainPhoto = array();
     protected $videos = array();
     protected $news = array();
-    protected $birthName = null;
+    protected $birthName = '';
     protected $nickName = array();
     protected $akaName = array();
     protected $bodyheight = array();
@@ -121,7 +121,7 @@ EOF;
     #------------------------------------------------------------[ Birth Name ]---
     /**
      * Get person birth name
-     * @return string|null birthname
+     * @return string
      */
     public function birthname()
     {
