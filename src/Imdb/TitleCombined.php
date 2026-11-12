@@ -153,9 +153,9 @@ EOF;
             'endYear' => isset($data->title->releaseYear->endYear) ?
                                $data->title->releaseYear->endYear : null,
             'imgThumb' => isset($data->title->primaryImage) ?
-                                $this->populatePoster($data->title->primaryImage, true) : null,
+                                $this->populatePoster($data->title->primaryImage, true) : '',
             'imgFull' => isset($data->title->primaryImage) ?
-                               $this->populatePoster($data->title->primaryImage, false) : null,
+                               $this->populatePoster($data->title->primaryImage, false) : '',
             'runtime' => isset($data->title->runtime->seconds) ?
                                $data->title->runtime->seconds / 60 : 0,
             'rating' => isset($data->title->ratingsSummary->aggregateRating) ?
@@ -174,7 +174,7 @@ EOF;
     /**
      * Fetch cover photo (thumbnail and big variant)
      * @param object $primaryImage primary image object found in main()
-     * @return string|null
+     * @return string
      */
     private function populatePoster($primaryImage, $thumb)
     {
@@ -189,7 +189,7 @@ EOF;
                 return $img . 'QL100_SX1000_.jpg';
             }
         }
-        return null;
+        return '';
     }
 
     #--------------------------------------------------------------[ Helper genre ]---
