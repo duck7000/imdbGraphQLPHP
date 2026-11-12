@@ -1,7 +1,7 @@
 <?php
 
 #############################################################################
-# imdbGraphQLPHP Company                 https://www.imdb.com/trailers/     #
+# imdbGraphQLPHP Company                                                    #
 # written by Ed (github user: duck7000)                                     #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -22,9 +22,9 @@ class Company extends MdbBase
 {
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -34,6 +34,7 @@ class Company extends MdbBase
     /**
      * Get all info about a specific company (only freely available info)
      * @note PrimaryImage and bio is available but returns always null so those are not included.
+     * @param string $companyId company ID from CompanySearch class
      * @return array
      *      [0] Array()
      *              [id]             string (without co)
