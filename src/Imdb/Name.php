@@ -29,6 +29,9 @@ class Name extends MdbBase
     protected $mainPoster = '';
     protected $mainPosterThumb = '';
     protected $fullName = '';
+    protected $birthName = '';
+    protected $nickName = array();
+    protected $akaName = array();
     protected $birthday = array();
     protected $deathday = array();
     protected $age = null;
@@ -37,9 +40,6 @@ class Name extends MdbBase
     protected $mainPhoto = array();
     protected $videos = array();
     protected $news = array();
-    protected $birthName = '';
-    protected $nickName = array();
-    protected $akaName = array();
     protected $bodyheight = array();
     protected $spouses = array();
     protected $children = array();
