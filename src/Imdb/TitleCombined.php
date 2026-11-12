@@ -161,11 +161,11 @@ EOF;
             'rating' => isset($data->title->ratingsSummary->aggregateRating) ?
                               $data->title->ratingsSummary->aggregateRating : 0,
             'genre' => isset($data->title->titleGenres->genres) ?
-                             $this->genre($data->title->titleGenres->genres) : null,
+                             $this->genre($data->title->titleGenres->genres) : array(),
             'plotoutline' => isset($data->title->plot->plotText->plainText) ?
                                    $data->title->plot->plotText->plainText : null,
             'credits' => isset($data->title->principalCredits) ?
-                               $this->principalCredits($data->title->principalCredits) : null
+                               $this->principalCredits($data->title->principalCredits) : array()
         );
         return $this->main;
     }
