@@ -397,7 +397,7 @@ EOF;
 
     /**
      * build date string
-     * @param array $dateParts input date
+     * @param associative-array $dateParts array(['month'], ['day'], ['year'])input date
      * @return string|false
      */
     private function buildDateString($dateParts)
