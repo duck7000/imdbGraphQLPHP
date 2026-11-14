@@ -119,7 +119,7 @@ class Cache implements CacheInterface
     /**
      * This method looks for files older than the cache_expire set in the
      * \Imdb\Config and removes them
-     * @return void|null
+     * @return void
      */
     public function purge()
     {
@@ -147,6 +147,8 @@ class Cache implements CacheInterface
 
     /**
      * Replace characters the OS won't like using with the filesystem
+     * @param string $key   The key of the item to sanitise
+     * @return string
      */
     protected function sanitiseKey($key)
     {
