@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP Company                                                    #
 # written by Ed (github user: duck7000)                                     #
@@ -73,7 +75,7 @@ class Company extends MdbBase
      *                      [companyName] string Warner Bros. Entertainment
      *                      [description] string Also Known As
      */
-    public function companyInfo($companyId)
+    public function companyInfo(string $companyId): array
     {
         $companyResults = array();
         $query = <<<EOF
