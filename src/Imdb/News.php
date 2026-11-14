@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                         https://www.imdb.com/trailers/     #
 # written by Ed (github user: duck7000)                                     #
@@ -22,14 +24,14 @@ use Imdb\Image;
 class News extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -62,7 +64,7 @@ class News extends MdbBase
      *          [textText]        string
      *          [thumbnailUrl]    string
      */
-    public function newsList($listType = "MOVIE")
+    public function newsList(string $listType = "MOVIE"): array
     {
         $newsListItems = array();
         $query = <<<EOF
