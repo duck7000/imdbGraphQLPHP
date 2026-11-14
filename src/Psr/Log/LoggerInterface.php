@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP Trailers                https://www.imdb.com/trailers/     #
 # written by Ed (github user: duck7000)                                     #

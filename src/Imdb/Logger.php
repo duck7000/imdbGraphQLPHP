@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                ed (github user: duck7000)  #
 # written by ed (github user: duck7000)                                     #
