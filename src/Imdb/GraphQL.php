@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # PHP GraphQL API                                             (c) Tboothman #
 # written by Tom Boothman                                                   #
+# @author Ed                                                                #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
 # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -17,7 +20,6 @@ use Psr\SimpleCache\CacheInterface;
  * Accessing Movie information through GraphQL
  * @author Tom Boothman
  * @author Ed (duck7000)
- * @copyright (c) 2002-2023 by Tom Boothman
  */
 class GraphQL
 {
@@ -56,7 +58,7 @@ class GraphQL
      * @param array $variables
      * @return object
      */
-    public function query($query, $qn = null, $variables = array())
+    public function query(string $query, ?string $qn = null, array $variables = array()): object
     {
         $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . ".json";
         $fromCache = $this->cache->get($key);
@@ -77,7 +79,7 @@ class GraphQL
      * @param array $variables
      * @return object
      */
-    private function doRequest($query, $queryName = null, $variables = array())
+    private function doRequest(string $query, ?string $queryName = null, array $variables = array()): object
     {
         $request = new Request('https://api.graphql.imdb.com/', $this->config);
         $request->addHeaderLine("Content-Type", "application/json");
