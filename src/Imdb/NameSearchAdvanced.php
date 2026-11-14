@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                  (c) Ed (github: duck7000) #
 # written & maintained by Ed                                                #
@@ -20,14 +22,14 @@ use Imdb\Image;
  */
 class NameSearchAdvanced extends MdbBase
 {
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -66,14 +68,14 @@ class NameSearchAdvanced extends MdbBase
      *              [imgUrl] string ImageUrl for thumbnail
      */
     public function advancedNameSearch(
-        $searchTerm = '',
-        $birthDay = '',
-        $birthDateRangeStart = '',
-        $birthDateRangeEnd = '',
-        $deathDateRangeStart = '',
-        $deathDateRangeEnd = '',
-        $birthPlace = ''
-    )
+        string $searchTerm = '',
+        string $birthDay = '',
+        string $birthDateRangeStart = '',
+        string $birthDateRangeEnd = '',
+        string $deathDateRangeStart = '',
+        string $deathDateRangeEnd = '',
+        string $birthPlace = ''
+    ): array
     {
 
         $results = array();
@@ -233,14 +235,14 @@ EOF;
      * @return string|false
      */
     private function buildConstraints(
-    $searchTerm,
-    $birthDay,
-    $birthDateRangeStart,
-    $birthDateRangeEnd,
-    $deathDateRangeStart,
-    $deathDateRangeEnd,
-    $birthPlace
-    )
+        string $searchTerm,
+        string $birthDay,
+        string $birthDateRangeStart,
+        string $birthDateRangeEnd,
+        string $deathDateRangeStart,
+        string $deathDateRangeEnd,
+        string $birthPlace
+    ): string|false
     {
         $constraint = '{';
 
@@ -284,7 +286,7 @@ EOF;
      * @param string $date input date
      * @return string
      */
-    private function validateDate($date)
+    private function validateDate(string $date): string|false
     {
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
@@ -295,7 +297,7 @@ EOF;
      * @param string $date iso date string ('--04-24')
      * @return string|false
      */
-    private function checkBirthDay($birthDate)
+    private function checkBirthDay(string $birthDate): string|false
     {
         $parts = explode('-', $birthDate);
         if (count($parts) == 4) {
@@ -314,7 +316,7 @@ EOF;
      * @param string $birthDay input birhtday string like "--10-19" or "10-19"
      * @return string|false
      */
-    private function checkBirthDates($startDate, $endDate, $birthDay)
+    private function checkBirthDates(string $startDate, string $endDate, string $birthDay): string|false
     {
         if (!empty($birthDay) || !empty($startDate) || !empty($endDate)) {
             $constraint = 'birthDateConstraint: {';
@@ -365,7 +367,7 @@ EOF;
      * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
      * @return string|false
      */
-    private function checkDeathDates($startDate, $endDate)
+    private function checkDeathDates(string $startDate, string $endDate): string|false
     {
         if (!empty($startDate) || !empty($endDate)) {
             $constraint = 'deathDateConstraint: {';
