@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (duck7000)                                                  #
@@ -35,7 +37,7 @@ class Image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return string
      */
-    public function resultParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    public function resultParameter(int $fullImageWidth, int $fullImageHeight, int $newImageWidth, int $newImageHeight): string
     {
         // original source aspect ratio
         $ratio_orig = $fullImageWidth / $fullImageHeight;
@@ -58,7 +60,7 @@ class Image
      * @param float $totalPixelCropSize how much pixels in total need to be cropped
      * @return int
      */
-    private function roundInteger($totalPixelCropSize)
+    private function roundInteger(float $totalPixelCropSize): int
     {
         if ((($totalPixelCropSize - floor($totalPixelCropSize)) < 0.5)) {
             // Previous even integer
@@ -68,7 +70,7 @@ class Image
             $num = ceil($totalPixelCropSize);
             $num += $num % 2;
         }
-        return (int)$num;
+        return (int) $num;
     }
 
     /**
@@ -80,7 +82,7 @@ class Image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return int
      */
-    public function thumbUrlCropParameter($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    public function thumbUrlCropParameter(int $fullImageWidth, int $fullImageHeight, int $newImageWidth, int $newImageHeight): int
     {
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $scaledWidth = $fullImageWidth / $newScalefactor;
@@ -98,7 +100,7 @@ class Image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return int
      */
-    public function thumbUrlCropParameterVertical($fullImageWidth, $fullImageHeight, $newImageWidth, $newImageHeight)
+    public function thumbUrlCropParameterVertical(int $fullImageWidth, int $fullImageHeight, int $newImageWidth, int $newImageHeight): int
     {
         $newScalefactor = $fullImageWidth / $newImageWidth;
         $scaledHeight = $fullImageHeight / $newScalefactor;
@@ -114,7 +116,7 @@ class Image
      * @param int $newImageHeight the height in pixels of the desired cropt/resized thumb image
      * @return int
      */
-    public function thumbUrlNewWidth($fullImageWidth, $fullImageHeight, $newImageHeight)
+    public function thumbUrlNewWidth(int $fullImageWidth, int $fullImageHeight, int $newImageHeight): int
     {
         $newScalefactor = $fullImageHeight / $newImageHeight;
         $rawNewWidth = $fullImageWidth / $newScalefactor;
