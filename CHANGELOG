@@ -13,7 +13,7 @@ v3.2.1
 * Request class updated user agent
 * Title class plotoutline() changed return type to always string instead of null when there is no data
 * Title class photo() changed return type to always string instead of null when there is no data
-* Title class top250() changed return type to always int, if no dataor not in top250 0 is returned
+* Title class top250() changed return type to always int, if no data or not in top250 0 is returned
 * Title class isOngoing() output is now always bool
 * Title class isAdult() output is now always bool
 * Title class productionStatus() output is now always string
