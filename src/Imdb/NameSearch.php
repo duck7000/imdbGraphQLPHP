@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                             (c) Ed                         #
 # written by ed (github user: duck7000)                                     #
@@ -21,7 +23,7 @@ class NameSearch extends MdbBase
      * @param string $searchTerms e.g. "peter fonda"
      * @return array
      */
-    public function search($searchTerms)
+    public function search(string $searchTerms): array
     {
         $amount = $this->config->nameSearchAmount;
         $results = array();
