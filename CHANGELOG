@@ -2,6 +2,28 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.2.
+-------------------
+* massive updates for all doc blocks as they where in a lot of cases wrong or incomplete
+* Title class keyword() added keyword Id and changed output array to associative array
+* Raised minimium PHP version to 8.3
+* Title and Name class removed savephoto() and photoLocalurl() as they don't belong in a library and nodbody seems to use it
+* Title and Name class removed fromSearchResults() as nodbody seems to use it
+* Calendar class added missing loggerInterface class
+* Request class updated user agent
+* Title class plotoutline() changed return type to always string instead of null when there is no data
+* Title class photo() changed return type to always string instead of null when there is no data
+* Title class top250() changed return type to always int, if no dataor not in top250 0 is returned
+* Title class isOngoing() output is now always bool
+* Title class isAdult() output is now always bool
+* Title class productionStatus() output is now always string
+* Name class name() output is now always string
+* Name class birthname() output is now always string
+* Name class photo() output is now always string
+* Name class age() output is now always int, if no data 0 is returned
+* TitleCombined class main() image output is now always string
+* TitleCombined class main() genre and credits output is now always array()
+
 v3.2.0
 -------------------
 * TitleSearch class added exactMatch parameter to search()
