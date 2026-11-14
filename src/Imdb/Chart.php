@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP Chart                       https://www.imdb.com/chart     #
 # written by Ed (github user: duck7000)                                     #
@@ -23,14 +25,14 @@ use Imdb\Image;
 class Chart extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -60,7 +62,7 @@ class Chart extends MdbBase
      *              [runtimeText]        string 45m
      *              [imgUrl]             string (140x207 set in config)
      */
-    public function top250Title($listType = "TOP_250")
+    public function top250Title(string $listType = "TOP_250"): array
     {
         $top250TitleResults = array();
         $query = <<<EOF
@@ -162,7 +164,7 @@ EOF;
      *                  [year]     int 2012
      *              [imgUrl]     string (140x207 set in config)
      */
-    public function top250Name()
+    public function top250Name(): array
     {
         $top250NameResults = array();
         $query = <<<EOF
@@ -280,7 +282,7 @@ EOF;
      *                  [year]   int 2012
      *              [imgUrl]     string (140x207 set in config)
      */
-    public function mostPopularName()
+    public function mostPopularName(): array
     {
         $mostPopularNameResults = array();
         $query = <<<EOF
@@ -388,19 +390,19 @@ EOF;
 
     /**
      * Get most popular Titles lists as seen on https://imdb.com/chart/moviemeter
-     * @param string $genreId This filters the results on a genreId like "Horror"
+     * @param string $listType This defines different kind of lists like Movie or TV
+     * possible values for $listType:
+     *      LOWEST_RATED_MOVIES         (Lowest Rated IMDb Bottom List)
+     *      MOST_POPULAR_MOVIES         (Most Popular IMDb Movies List)
+     *      MOST_POPULAR_TV_SHOWS       (Most Popular IMDb TV List)
+     *      TOP_RATED_MOVIES            (Top Rated IMDb Movies List)
+     *      TOP_RATED_ENGLISH_MOVIES    (Top Rated English IMDb Movies List)
+     *      TOP_RATED_TV_SHOWS          (Top Rated IMDb TV List)
+     * @param string|null $genreId This filters the results on a genreId like "Horror"
      * GenreIDs: Action, Adult, Adventure, Animation, Biography, Comedy, Crime,
      *           Documentary, Drama, Family, Fantasy, Film-Noir, Game-Show,
      *           History, Horror, Music, Musical, Mystery, News, Reality-TV,
      *           Romance, Sci-Fi, Short, Sport, Talk-Show, Thriller, War, Western
-     * @param string $listType This defines different kind of lists like Movie or TV
-     * possible values for $listType:
-     *  LOWEST_RATED_MOVIES         (Lowest Rated IMDb Bottom List)
-     *  MOST_POPULAR_MOVIES         (Most Popular IMDb Movies List)
-     *  MOST_POPULAR_TV_SHOWS       (Most Popular IMDb TV List)
-     *  TOP_RATED_MOVIES            (Top Rated IMDb Movies List)
-     *  TOP_RATED_ENGLISH_MOVIES    (Top Rated English IMDb Movies List)
-     *  TOP_RATED_TV_SHOWS          (Top Rated IMDb TV List)
      * @return array
      *      [0] => Array()
      *          [title]              string The Substance
@@ -414,7 +416,7 @@ EOF;
      *          [votes]              int 124556
      *          [imgUrl]             string (140x207 set in config)
      */
-    public function mostPopularTitle($listType = "MOST_POPULAR_MOVIES", $genreId = null)
+    public function mostPopularTitle(string $listType = "MOST_POPULAR_MOVIES", ?string $genreId = null): array
     {
         $mostPopularTitleResults = array();
         $filter = '';
@@ -540,7 +542,7 @@ EOF;
      *              [weeksReleased]          int
      *              [imgUrl]                 string
      */
-    public function topBoxOffice()
+    public function topBoxOffice(): array
     {
         $boxOfficeResults = array();
         $results = array();
@@ -654,12 +656,12 @@ EOF;
      * @param string $endDate current date! like '1/2/2013' (month/day/year)
      * @return int
      */
-    function datediffInWeeks($startDate, $endDate)
+    function datediffInWeeks(string $startDate, string $endDate): int
     {
         if($startDate > $endDate) return $this->datediffInWeeks($endDate, $startDate);
         $first = \DateTime::createFromFormat('m/d/Y', $startDate);
         $second = \DateTime::createFromFormat('m/d/Y', $endDate);
-        return ceil($first->diff($second)->days/7);
+        return (int) ceil($first->diff($second)->days/7);
     }
 
 }
