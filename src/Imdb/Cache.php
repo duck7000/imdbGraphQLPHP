@@ -50,7 +50,12 @@ class Cache implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * Fetches a value from the cache
+     * @param string $key     The unique key of this item in the cache
+     * @param string|null  $default Default value to return if the key does not exist
+     * @return string|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *   MUST be thrown if the $key string is not a legal value
      */
     public function get($key, $default = null)
     {
