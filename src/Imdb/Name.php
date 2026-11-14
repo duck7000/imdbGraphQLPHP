@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                       (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
@@ -25,49 +27,49 @@ use Imdb\Image;
 class Name extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $mainPoster = '';
-    protected $mainPosterThumb = '';
-    protected $fullName = '';
-    protected $birthName = '';
-    protected $nickName = array();
-    protected $akaName = array();
-    protected $birthday = array();
-    protected $deathday = array();
-    protected $age = 0;
-    protected $professions = array();
-    protected $popRank = array();
-    protected $mainPhoto = array();
-    protected $videos = array();
-    protected $news = array();
-    protected $bodyheight = array();
-    protected $spouses = array();
-    protected $children = array();
-    protected $parents = array();
-    protected $relatives = array();
-    protected $bioBio = array();
-    protected $bioTrivia = array();
-    protected $bioQuotes = array();
-    protected $bioTrademark = array();
-    protected $bioSalary = array();
-    protected $pubPrints = array();
-    protected $pubMovies = array();
-    protected $pubPortrayal = array();
-    protected $pubArticle = array();
-    protected $pubInterview = array();
-    protected $pubMagazine = array();
-    protected $pubPictorial = array();
-    protected $otherWorks = array();
-    protected $externalSites = array();
-    protected $awards = array();
-    protected $creditKnownFor = array();
-    protected $credits = array();
+    protected Image $imageFunctions;
+    protected string $mainPoster = '';
+    protected string $mainPosterThumb = '';
+    protected string $fullName = '';
+    protected string $birthName = '';
+    protected array $nickName = array();
+    protected array $akaName = array();
+    protected array $birthday = array();
+    protected array $deathday = array();
+    protected int $age = 0;
+    protected array $professions = array();
+    protected array $popRank = array();
+    protected array $mainPhoto = array();
+    protected array $videos = array();
+    protected array $news = array();
+    protected array $bodyheight = array();
+    protected array $spouses = array();
+    protected array $children = array();
+    protected array $parents = array();
+    protected array $relatives = array();
+    protected array $bioBio = array();
+    protected array $bioTrivia = array();
+    protected array $bioQuotes = array();
+    protected array $bioTrademark = array();
+    protected array $bioSalary = array();
+    protected array $pubPrints = array();
+    protected array $pubMovies = array();
+    protected array $pubPortrayal = array();
+    protected array $pubArticle = array();
+    protected array $pubInterview = array();
+    protected array $pubMagazine = array();
+    protected array $pubPictorial = array();
+    protected array $otherWorks = array();
+    protected array $externalSites = array();
+    protected array $awards = array();
+    protected array $creditKnownFor = array();
+    protected array $credits = array();
 
     /**
      * @param string $id IMDBID to use for data retrieval
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -81,7 +83,7 @@ class Name extends MdbBase
      * Get person full name
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         if (empty($this->fullName)) {
             $query = <<<EOF
@@ -107,7 +109,7 @@ EOF;
      * @param bool $thumb true: thumbnail (140x207 pixels), false: large (max 1000 pixels)
      * @return string
      */
-    public function photo($thumb = true)
+    public function photo(bool $thumb = true): string
     {
         if (empty($this->mainPoster)) {
             $this->populatePoster();
@@ -123,7 +125,7 @@ EOF;
      * Get person birth name
      * @return string
      */
-    public function birthname()
+    public function birthname(): string
     {
         if (empty($this->birthName)) {
             $query = <<<EOF
@@ -148,7 +150,7 @@ EOF;
      * Get person nick name
      * @return array
      */
-    public function nickname()
+    public function nickname(): array
     {
         if (empty($this->nickName)) {
             $query = <<<EOF
@@ -184,7 +186,7 @@ EOF;
      * Get person alternative names
      * @return array
      */
-    public function akaName()
+    public function akaName(): array
     {
         if (empty($this->akaName)) {
             $query = <<<EOF
@@ -225,7 +227,7 @@ EOF;
      * @note $monthName is the month name, and $monthInt the month number
      * @return array
      */
-    public function born()
+    public function born(): array
     {
         if (empty($this->birthday)) {
             $query = <<<EOF
@@ -271,7 +273,7 @@ EOF;
      * @note New: Status returns current state: ALIVE,DEAD or PRESUMED_DEAD
      * @return array
      */
-    public function died()
+    public function died(): array
     {
         if (empty($this->deathday)) {
             $query = <<<EOF
@@ -324,7 +326,7 @@ EOF;
      * Get person age
      * @return int
      */
-    public function age()
+    public function age(): int
     {
         if (empty($this->age)) {
             $query = <<<EOF
@@ -349,7 +351,7 @@ EOF;
      * Get person primary professions
      * @return array
      */
-    public function profession()
+    public function profession(): array
     {
         if (empty($this->professions)) {
             $query = <<<EOF
@@ -387,7 +389,7 @@ EOF;
      * Get person current popularity rank
      * @return array
      */
-    public function rank()
+    public function rank(): array
     {
         if (empty($this->popRank)) {
             $query = <<<EOF
@@ -423,7 +425,7 @@ EOF;
      * Get person body height
      * @return array
      */
-    public function height()
+    public function height(): array
     {
         if (empty($this->bodyheight)) {
             $query = <<<EOF
@@ -461,7 +463,7 @@ EOF;
      * Get person spouse(s)
      * @return array
      */
-    public function spouse()
+    public function spouse(): array
     {
         if (empty($this->spouses)) {
             $query = <<<EOF
@@ -593,7 +595,7 @@ EOF;
      * Get person children
      * @return array
      */
-    public function children()
+    public function children(): array
     {
         if (empty($this->children)) {
             return $this->nameDetailsParse("CHILDREN", $this->children);
@@ -606,7 +608,7 @@ EOF;
      * Get person parents
      * @return array
      */
-    public function parents()
+    public function parents(): array
     {
         if (empty($this->parents)) {
             return $this->nameDetailsParse("PARENTS", $this->parents);
@@ -619,7 +621,7 @@ EOF;
      * Get person relatives
      * @return array
      */
-    public function relatives()
+    public function relatives(): array
     {
         if (empty($this->relatives)) {
             return $this->nameDetailsParse("OTHERS", $this->relatives);
@@ -632,7 +634,7 @@ EOF;
      * Get person mini bio
      * @return array
      */
-    public function bio()
+    public function bio(): array
     {
         if (empty($this->bioBio)) {
             $query = <<<EOF
@@ -680,7 +682,7 @@ EOF;
      * Get person trivia
      * @return array
      */
-    public function trivia()
+    public function trivia(): array
     {
         if (empty($this->bioTrivia)) {
             return $this->dataParse("trivia", $this->bioTrivia);
@@ -693,7 +695,7 @@ EOF;
      * Get person quotes
      * @return array
      */
-    public function quotes()
+    public function quotes(): array
     {
         if (empty($this->bioQuotes)) {
             return $this->dataParse("quotes", $this->bioQuotes);
@@ -706,7 +708,7 @@ EOF;
      * Get person trademarks
      * @return array
      */
-    public function trademark()
+    public function trademark(): array
     {
         if (empty($this->bioTrademark)) {
             return $this->dataParse("trademarks", $this->bioTrademark);
@@ -719,7 +721,7 @@ EOF;
      * Get person salary list
      * @return array
      */
-    public function salary()
+    public function salary(): array
     {
         if (empty($this->bioSalary)) {
             $query = <<<EOF
@@ -775,7 +777,7 @@ EOF;
      * Person printed media
      * @return array
      */
-    public function pubprints()
+    public function pubprints(): array
     {
         if (empty($this->pubPrints)) {
             $filter = ', filter: {categories: ["namePrintBiography"]}';
@@ -822,7 +824,7 @@ EOF;
      * Person biographical Movies
      * @return array
      */
-    public function pubmovies()
+    public function pubmovies(): array
     {
         if (empty($this->pubMovies)) {
             $filter = ', filter: {categories: ["nameFilmBiography"]}';
@@ -882,7 +884,7 @@ EOF;
      * Person portrayal listings
      * @return array
      */
-    public function pubportrayal()
+    public function pubportrayal(): array
     {
         if (empty($this->pubPortrayal)) {
             $filter = ', filter: {categories: ["namePortrayal"]}';
@@ -931,7 +933,7 @@ EOF;
      *      [authors] array()
      *          [0] (string)
      */
-    public function pubarticle()
+    public function pubarticle(): array
     {
         if (empty($this->pubArticle)) {
             $this->pubArticle = $this->pubOtherListing("PublicityArticle");
@@ -954,7 +956,7 @@ EOF;
      *      [authors] Array()
      *          [0] (string)
      */
-    public function pubinterview()
+    public function pubinterview(): array
     {
         if (empty($this->pubInterview)) {
             $this->pubInterview = $this->pubOtherListing("PublicityInterview");
@@ -977,7 +979,7 @@ EOF;
      *      [authors] Array()
      *          [0] (string)
      */
-    public function pubmagazine()
+    public function pubmagazine(): array
     {
         if (empty($this->pubMagazine)) {
             $this->pubMagazine = $this->pubOtherListing("PublicityMagazineCover");
@@ -1000,7 +1002,7 @@ EOF;
      *      [authors] Array()
      *          [0] (string)
      */
-    public function pubpictorial()
+    public function pubpictorial(): array
     {
         if (empty($this->pubPictorial)) {
             $this->pubPictorial = $this->pubOtherListing("PublicityPictorial");
@@ -1013,7 +1015,7 @@ EOF;
      * Get person other works
      * @return array
      */
-    public function otherWorks()
+    public function otherWorks(): array
     {
         if (empty($this->otherWorks)) {
             $query = <<<EOF
@@ -1066,7 +1068,7 @@ EOF;
      * Get person external websites
      * @return array
      */
-    public function extSites()
+    public function extSites(): array
     {
         if (empty($this->externalSites)) {
             $query = <<<EOF
@@ -1116,7 +1118,7 @@ EOF;
      *      false: untouched max width 1000 pixels
      * @return array
      */
-    public function mainphoto($amount = 6, $thumb = true)
+    public function mainphoto(int $amount = 6, bool $thumb = true): array
     {
         if (empty($this->mainPhoto)) {
             $query = <<<EOF
@@ -1192,7 +1194,7 @@ EOF;
      *          [win] int 12
      *          [nom] int 26
      */
-    public function award($winsOnly = false, $event = "")
+    public function award(bool $winsOnly = false, string $event = ""): array
     {
         if (empty($this->awards)) {
             $filter = $this->awardFilter($winsOnly, $event);
@@ -1306,7 +1308,7 @@ EOF;
      * Get person prestigious title credits
      * @return array
      */
-    public function creditKnownFor()
+    public function creditKnownFor(): array
     {
         if (empty($this->creditKnownFor)) {
             $query = <<<EOF
@@ -1401,7 +1403,7 @@ EOF;
      * Get all person credits
      * @return array
      */
-    public function credit()
+    public function credit(): array
     {
         if (empty($this->credits)) {
             $query = <<<EOF
@@ -1521,7 +1523,7 @@ EOF;
      *              [playbackUrl]   string https://www.imdb.com/video/vi4030506521/
      *              [imageUrl]      string https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
      */
-    public function video()
+    public function video(): array
     {
         if (empty($this->videos)) {
             $query = <<<EOF
@@ -1621,7 +1623,7 @@ EOF;
      *      [textText]            (string)
      *      [thumbnailUrl]        (string)
      */
-    public function news()
+    public function news(): array
     {
         if (empty($this->news)) {
             $query = <<<EOF
@@ -1708,7 +1710,7 @@ EOF;
     /**
      * Fetch person cover photo (thumbnail and big variant)
      */
-    private function populatePoster()
+    private function populatePoster(): void
     {
         $query = <<<EOF
 query Poster(\$id: ID!) {
@@ -1745,7 +1747,7 @@ EOF;
      * @param array $arrayName output array name
      * @return array
      */
-    protected function dataParse($name, $arrayName)
+    protected function dataParse(string $name, array $arrayName): array
     {
         $query = <<<EOF
 text {
@@ -1770,7 +1772,7 @@ EOF;
      * @param array $arrayName output array name
      * @return array
      */
-    protected function nameDetailsParse($name, $arrayName)
+    protected function nameDetailsParse(string $name, array $arrayName): array
     {
         $filter = ', filter: {relationshipTypes: ' . $name . '}';
         $query = <<<EOF
@@ -1820,7 +1822,7 @@ EOF;
      * @param string $listingType data type e.g. PublicityArticle
      * @return array
      */
-    protected function pubOtherListing($listingType)
+    protected function pubOtherListing(string $listingType): array
     {
         $results = array();
         $filter = ', filter: {categories: ["' . lcfirst($listingType) . '"]}';
@@ -1889,7 +1891,7 @@ EOF;
      * @param string $filter Add's extra Graphql query filters like categories
      * @return array
      */
-    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
+    protected function graphQlGetAll(string $queryName, string $fieldName, string $nodeQuery, string $filter = ''): array
     {
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
@@ -1931,7 +1933,7 @@ EOF;
      * @note If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
      * @return string|false (the new redirected imdbId) or false (no redirect)
      */
-    public function checkRedirect()
+    public function checkRedirect(): string|false
     {
         $query = <<<EOF
 query Redirect(\$id: ID!) {
@@ -1968,7 +1970,7 @@ EOF;
      *      ev0000292 (Golden Globe)
      * @return string $filter
      */
-    public function awardFilter($winsOnly, $event)
+    public function awardFilter(bool $winsOnly, string $event): string
     {
         $filter = ', sort: {by: PRESTIGIOUS, order: DESC}';
         if (!empty($event) || $winsOnly === true) {
