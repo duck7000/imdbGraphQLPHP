@@ -119,6 +119,7 @@ class Cache implements CacheInterface
     /**
      * This method looks for files older than the cache_expire set in the
      * \Imdb\Config and removes them
+     * @return void|null
      */
     public function purge()
     {
