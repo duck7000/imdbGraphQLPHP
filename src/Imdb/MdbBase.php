@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (github user: duck7000)                                     #
@@ -47,7 +49,7 @@ class MdbBase extends Config
     /**
      * @var string 7 or 8 digit identifier for this person or title
      */
-    protected $imdbID;
+    protected string $imdbID;
 
     /**
      * @param object Config $config OPTIONAL override default config
@@ -66,7 +68,7 @@ class MdbBase extends Config
      * Retrieve the IMDB ID
      * @return string
      */
-    public function imdbid()
+    public function imdbid(): string
     {
         return $this->imdbID;
     }
@@ -74,8 +76,9 @@ class MdbBase extends Config
     /**
      * Set and validate the IMDb ID
      * @param string
+     * @return void
      */
-    protected function setid($id)
+    protected function setid(string $id): void
     {
         if (is_numeric($id)) {
             $this->imdbID = str_pad($id, 7, '0', STR_PAD_LEFT);
