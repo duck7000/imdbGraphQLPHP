@@ -81,7 +81,7 @@ class Logger implements LoggerInterface
      */
     public function warning(Stringable|string $message, array $context = []): void
     {
-        $this->log('debug', $message, $context);
+        $this->log('warning', $message, $context);
     }
 
     /**
@@ -92,7 +92,7 @@ class Logger implements LoggerInterface
      */
     public function notice(Stringable|string $message, array $context = []): void
     {
-        $this->log('debug', $message, $context);
+        $this->log('notice', $message, $context);
     }
 
     /**
@@ -104,7 +104,7 @@ class Logger implements LoggerInterface
      */
     public function info(Stringable|string $message, array $context = []): void
     {
-        $this->log('debug', $message, $context);
+        $this->log('info', $message, $context);
     }
 
     /**
