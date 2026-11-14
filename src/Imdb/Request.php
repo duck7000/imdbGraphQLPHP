@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # IMDBPHP                              (c) Giorgos Giagas & Itzchak Rehberg #
 # written by Giorgos Giagas                                                 #
@@ -21,14 +23,14 @@ class Request
 {
     private $ch;
     private $page;
-    private $requestHeaders = array();
-    private $responseHeaders = array();
-    private $config;
+    private array $requestHeaders = array();
+    private array $responseHeaders = array();
+    private object $config;
 
     /**
      * No need to call this.
      * @param string $url URL to fetch data
-     * @param string Config $config OPTIONAL override default config
+     * @param object Config $config OPTIONAL override default config
      */
     public function __construct($url, Config $config)
     {
@@ -47,7 +49,7 @@ class Request
      * @param string $value
      * @return void
      */
-    public function addHeaderLine($name, $value)
+    public function addHeaderLine(string $name, string $value): void
     {
         $this->requestHeaders[] = "$name: $value";
     }
@@ -57,7 +59,7 @@ class Request
      * @param string $content
      * @return bool
      */
-    public function post($content)
+    public function post(string $content): bool
     {
         curl_setopt($this->ch, CURLOPT_POST, true);
         curl_setopt($this->ch, CURLOPT_POSTFIELDS, $content);
@@ -68,7 +70,7 @@ class Request
      * Send a request to the movie site
      * @return bool
      */
-    public function sendRequest()
+    public function sendRequest(): bool
     {
         $this->responseHeaders = array();
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
@@ -83,7 +85,7 @@ class Request
      * Get the Response body
      * @return array
      */
-    public function getResponseBody()
+    public function getResponseBody(): string
     {
         return $this->page;
     }
@@ -93,7 +95,7 @@ class Request
      * @param string $header header field name
      * @return string
      */
-    public function getResponseHeader($header)
+    public function getResponseHeader(string $header): string
     {
         $headers = $this->getLastResponseHeaders();
         foreach ($headers as $head) {
@@ -110,17 +112,15 @@ class Request
      * HTTP status code of the last response
      * @return int|null
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         $headers = $this->getLastResponseHeaders();
         if (empty($headers[0])) {
             return null;
         }
-
         if (!preg_match("#^HTTP/[\d\.]+ (\d+)#i", $headers[0], $matches)) {
             return null;
         }
-
         return (int)$matches[1];
     }
 
@@ -128,18 +128,18 @@ class Request
      * Get last response headers
      * @return array
      */
-    public function getLastResponseHeaders()
+    public function getLastResponseHeaders(): array
     {
         return $this->responseHeaders;
     }
 
     /**
      * Callback curl_opt header function
-     * @param $ch
-     * @param $str
+     * @param object $ch curlHandle
+     * @param string $str
      * @return int
      */
-    private function callbackCurloptHeaderFunction($ch, $str)
+    private function callbackCurloptHeaderFunction($ch, string $str): int
     {
         $len = strlen($str);
         if ($len) {
