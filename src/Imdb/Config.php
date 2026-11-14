@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by ed (github user: duck7000)                                     #
@@ -23,19 +25,19 @@ class Config
      * server. It doesn't need to be under documentroot
      * @var string
      */
-    public $cacheDir = './cache/';
+    public string $cacheDir = './cache/';
 
     /**
      * Use cached pages if available?
      * @var bool
      */
-    public $cacheUse = false;
+    public bool $cacheUse = false;
 
     /**
      * Store the pages retrieved for later use?
      * @var bool
      */
-    public $cacheStore = false;
+    public bool $cacheStore = false;
 
     /**
      * Use zip compression for caching the retrieved html-files?
@@ -43,21 +45,21 @@ class Config
      * @see $converttozip if you're changing from false to true
      * @var bool
      */
-    public $cacheUseZip = false;
+    public bool $cacheUseZip = false;
 
     /**
      * Convert non-zip cache-files to zip
      * @note You might want to use this if you weren't gzipping your cache files, but now are. They will be rewritten when they're used
      * @var boolean
      */
-    public $cacheConvertZip = false;
+    public bool $cacheConvertZip = false;
 
     /**
      * Cache expiration time - cached pages older than this value (in seconds) will be automatically deleted
      * @note If 0 cached pages will never expire
      * @var int
      */
-    public $cacheExpire = 604800;
+    public int $cacheExpire = 604800;
 
 
     #========================================================[ Localization options ]===
@@ -66,7 +68,7 @@ class Config
      * @var bool
      * @note leave this to false if you want default US American English
      */
-    public $useLocalization = false;
+    public bool $useLocalization = false;
 
     /**
      * Set country code
@@ -81,7 +83,7 @@ class Config
      *      ES (Spain)
      *      MX (Mexico)
      */
-    public $country = "DE";
+    public string $country = "DE";
 
     /**
      * Set language code
@@ -96,7 +98,7 @@ class Config
      *      es-ES (Spanisch Spain)
      *      es-MX (Spanisch Mexico)
      */
-    public $language = "de-DE";
+    public string $language = "de-DE";
 
     #========================================================[ TitleSearch options ]===
     /**
@@ -104,7 +106,7 @@ class Config
      * @note default: 10
      * @var int
      */
-    public $titleSearchAmount = 10;
+    public int $titleSearchAmount = 10;
 
 
     #========================================================[ NameSearch options ]===
@@ -113,7 +115,7 @@ class Config
      * @note default: 10
      * @var int
      */
-    public $nameSearchAmount = 10;
+    public int $nameSearchAmount = 10;
 
 
     #========================================================[ KeywordSearch options ]===
@@ -122,7 +124,7 @@ class Config
      * @note default: 30
      * @var int
      */
-    public $keywordSearchAmount = 30;
+    public int $keywordSearchAmount = 30;
 
 
     #========================================================[ CompanySearch options ]===
@@ -131,7 +133,7 @@ class Config
      * @note default: 30
      * @var int
      */
-    public $companySearchAmount = 30;
+    public int $companySearchAmount = 30;
 
 
     #========================================================[ TitleSearchAdvanced options ]===
@@ -140,7 +142,7 @@ class Config
      * @note should be 250 or less
      * @var int
      */
-    public $titleSearchAdvancedAmount = 250;
+    public int $titleSearchAdvancedAmount = 250;
 
     /**
      * TitleSearchAdvanced Sort by options
@@ -193,7 +195,7 @@ class Config
      *      https://help.imdb.com/article/contribution/titles/title-formatting/G56U5ERK7YY47CQB
      *      ASC: Earlier (older) titles will be first.
      */
-    public $sortBy = "POPULARITY";
+    public string $sortBy = "POPULARITY";
 
     /**
      * TitleSearchAdvanced Sort order options
@@ -204,7 +206,7 @@ class Config
      * DESC
      *      Descending order e.g. 3,2,1
      */
-    public $sortOrder = "ASC";
+    public string $sortOrder = "ASC";
 
 
     #========================================================[ NameSearchAdvanced options ]===
@@ -213,7 +215,7 @@ class Config
      * @note should be 250 or less
      * @var int
      */
-    public $nameSearchAdvancedAmount = 250;
+    public int $nameSearchAdvancedAmount = 250;
 
     /**
      * NameSearchAdvanced sort by options
@@ -233,7 +235,7 @@ class Config
      *      Sort Names based on their starMeterCurrentWeekRank
      *      ASC: Lower popularity score means that the name is more popular, so the most popular names will be first.
      */
-    public $nameSortBy = "POPULARITY";
+    public string $nameSortBy = "POPULARITY";
 
     /**
      * NameSearchAdvanced sort order options
@@ -245,7 +247,7 @@ class Config
      * DESC
      *      Descending order e.g. 3,2,1
      */
-    public $nameSortOrder = "ASC";
+    public string $nameSortOrder = "ASC";
 
 
     #========================================================[ comingSoonStreaming options ]===
@@ -259,7 +261,7 @@ class Config
      *      MODIFIED_DATE (Sort titles based on their modified date)
      *      POPULARITY
      */
-    public $streamSortBy = "LIST_ORDER";
+    public string $streamSortBy = "LIST_ORDER";
 
     /**
      * Sort order options
@@ -269,7 +271,7 @@ class Config
      *      ASC (Ascending order e.g. 1,2,3)
      *      DESC (Descending order e.g. 3,2,1)
      */
-    public $streamSortOrder = "ASC";
+    public string $streamSortOrder = "ASC";
 
     #========================================================[ Thumbnail options ]===
 
@@ -280,7 +282,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $photoThumbnailWidth = 190;
+    public int $photoThumbnailWidth = 190;
 
     /**
      * photo() thumbnail height in pixels
@@ -288,7 +290,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $photoThumbnailHeight = 281;
+    public int $photoThumbnailHeight = 281;
 
     #----------------------------------------[Title class Recommendation thumbnail]---
     /**
@@ -297,7 +299,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $recommendationThumbnailWidth = 140;
+    public int $recommendationThumbnailWidth = 140;
 
     /**
      * recommendation() thumbnail height in pixels
@@ -305,7 +307,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $recommendationThumbnailHeight = 207;
+    public int $recommendationThumbnailHeight = 207;
 
     #----------------------------------------[Title class Cast thumbnail]---
     /**
@@ -314,7 +316,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $castThumbnailWidth = 32;
+    public int $castThumbnailWidth = 32;
 
     /**
      * cast() thumbnail height in pixels
@@ -322,7 +324,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $castThumbnailHeight = 44;
+    public int $castThumbnailHeight = 44;
 
     #----------------------------------------[Title class Episodes thumbnail]---
     /**
@@ -331,7 +333,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $episodeThumbnailWidth = 224;
+    public int $episodeThumbnailWidth = 224;
 
     /**
      * episode() thumbnail height
@@ -339,7 +341,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $episodeThumbnailHeight = 126;
+    public int $episodeThumbnailHeight = 126;
 
     #----------------------------------------[Title and Name class mainphoto thumbnail]---
     /**
@@ -348,7 +350,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $mainphotoThumbnailHeight = 100;
+    public int $mainphotoThumbnailHeight = 100;
 
     #---------------------------------------[Name class Photo thumbnail]---
     /**
@@ -357,7 +359,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $namePhotoThumbnailWidth = 140;
+    public int $namePhotoThumbnailWidth = 140;
 
     /**
      * photo() thumbnail height in pixels
@@ -365,7 +367,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $namePhotoThumbnailHeight = 207;
+    public int $namePhotoThumbnailHeight = 207;
 
     #---------------------------------------[Trailers and Chart class Photo thumbnail]---
     /**
@@ -374,7 +376,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $thumbnailWidth = 140;
+    public int $thumbnailWidth = 140;
 
     /**
      * ALL methods thumbnail height in pixels
@@ -382,7 +384,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $thumbnailHeight = 207;
+    public int $thumbnailHeight = 207;
 
     #---------------------------------------[Calendar class thumbnail]---
     /**
@@ -391,7 +393,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $calendarThumbnailWidth = 140;
+    public int $calendarThumbnailWidth = 140;
 
     /**
      * All methods thumbnail height in pixels
@@ -399,7 +401,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $calendarThumbnailHeight = 207;
+    public int $calendarThumbnailHeight = 207;
 
     #---------------------------------------[NameSearchAdvanced class thumbnail]---
     /**
@@ -408,7 +410,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $nameSearchAdvancedThumbnailWidth = 140;
+    public int $nameSearchAdvancedThumbnailWidth = 140;
 
     /**
      * All methods thumbnail height in pixels
@@ -416,7 +418,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $nameSearchAdvancedThumbnailHeight = 207;
+    public int $nameSearchAdvancedThumbnailHeight = 207;
 
     #---------------------------------------[TitleSearchAdvanced class thumbnail]---
     /**
@@ -425,7 +427,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $titleSearchAdvancedThumbnailWidth = 140;
+    public int $titleSearchAdvancedThumbnailWidth = 140;
 
     /**
      * All methods thumbnail height in pixels
@@ -433,7 +435,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $titleSearchAdvancedThumbnailHeight = 207;
+    public int $titleSearchAdvancedThumbnailHeight = 207;
 
     #----------------------------------------[Title class Video thumbnail]---
     /**
@@ -442,7 +444,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $videoThumbnailWidth = 250;
+    public int $videoThumbnailWidth = 250;
 
     /**
      * video() thumbnail height in pixels
@@ -450,7 +452,7 @@ class Config
      * @note Keep ratio in mind, square thumbnails don't work
      * @var int
      */
-    public $videoThumbnailHeight = 140;
+    public int $videoThumbnailHeight = 140;
 
     #========================================================[ Title class video() options ]===
     /**
@@ -458,7 +460,7 @@ class Config
      * @note Default: true
      * @var bool
      */
-    public $videoIncludeMature = true;
+    public bool $videoIncludeMature = true;
 
     /**
      * include all video content types or only trailers
@@ -468,7 +470,7 @@ class Config
      *      all (include all video content types)
      *      trailer (include only trailers)
      */
-    public $videoContentType = 'trailer';
+    public string $videoContentType = 'trailer';
 
     #========================================================[ Debug / Expert options ]===
     /**
@@ -476,20 +478,20 @@ class Config
      * @note Default: false
      * @var bool
      */
-    public $debug = false;
+    public bool $debug = false;
 
     /**
      * Throw exceptions when a request to fetch some content fails?
      * @note true: throws exception, false: returns empty object
      * @var bool
      */
-    public $throwHttpExceptions = true;
+    public bool $throwHttpExceptions = true;
     
     /**
      * Set curlopt_timout (in seconds), this is the time out if curl has a connection problem
      * @note Default: 30
      * @var int
      */
-    public $curloptTimeout = 30;
+    public int $curloptTimeout = 30;
 
 }
