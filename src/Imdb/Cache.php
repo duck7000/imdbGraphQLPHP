@@ -90,7 +90,13 @@ class Cache implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time
+     * @param string $key   The key of the item to store
+     * @param string $value The value of the item to store, must be serializable
+     * @param null|int|DateInterval $ttl   Optional. The TTL value of this item. If no value is sent and
+     *                                     the driver supports TTL then the library may set a default value
+     *                                     for it or let the driver take care of that
+     * @return bool
      */
     public function set($key, $value, $ttl = null)
     {
