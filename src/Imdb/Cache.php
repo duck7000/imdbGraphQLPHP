@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                          (c) Ed (duck7000) #
 # written by Ed                                                             #
@@ -57,7 +59,7 @@ class Cache implements CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function get($key, $default = null)
+    public function get(string $key, ?string $default = null): ?string
     {
         if (!$this->config->cacheUse) {
             return $default;
@@ -98,7 +100,7 @@ class Cache implements CacheInterface
      *                                     for it or let the driver take care of that
      * @return bool
      */
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, string $value, ?int $ttl = null): bool
     {
         if (!$this->config->cacheStore) {
             return false;
@@ -121,7 +123,7 @@ class Cache implements CacheInterface
      * \Imdb\Config and removes them
      * @return void
      */
-    public function purge()
+    public function purge(): void
     {
         if (!$this->config->cacheStore || $this->config->cacheExpire == 0) {
             return;
@@ -150,7 +152,7 @@ class Cache implements CacheInterface
      * @param string $key   The key of the item to sanitise
      * @return string
      */
-    protected function sanitiseKey($key)
+    protected function sanitiseKey(string $key): string
     {
         return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
     }
