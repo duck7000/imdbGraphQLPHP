@@ -120,12 +120,12 @@ class Logger implements LoggerInterface
 
     /**
      * Logs with an arbitrary level
-     * @param mixed $level
+     * @param string $level
      * @param string $message
      * @param array $context
      * @return void
      */
-    public function log($level, Stringable|string $message, array $context = []): void
+    public function log(string $level, Stringable|string $message, array $context = []): void
     {
         if ($this->enabled) {
             $replace = array();

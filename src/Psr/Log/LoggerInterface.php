@@ -98,9 +98,9 @@ interface LoggerInterface
 
     /**
      * Logs with an arbitrary level
-     * @param mixed  $level
+     * @param string $level
      * @param string $message
-     * @param array  $context
+     * @param array $context
      * @return void
      */
     public function log($level, Stringable|string $message, array $context = []): void;
