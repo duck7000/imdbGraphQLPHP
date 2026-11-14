@@ -155,35 +155,4 @@ class Cache implements CacheInterface
         return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
     }
 
-    // Some empty functions so we match the interface. These will never be used
-    public function getMultiple($keys, $default = null)
-    {
-        return [];
-    }
-
-    public function clear()
-    {
-        return false;
-    }
-
-    public function delete($key)
-    {
-        return false;
-    }
-
-    public function deleteMultiple($keys)
-    {
-        return false;
-    }
-
-    public function has($key)
-    {
-        return false;
-    }
-
-    public function setMultiple($values, $ttl = null)
-    {
-        return false;
-    }
-
 }
