@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                ed (github user: duck7000)  #
 # written by ed (github user: duck7000)                                     #
@@ -28,7 +30,7 @@ class CompanySearch extends MdbBase
      *      [country]    string United States
      *      [type]       string Distributor
      */
-    public function searchCompany($company)
+    public function searchCompany(string $company): array
     {
         $results = array();
 
