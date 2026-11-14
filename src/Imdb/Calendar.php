@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
-# imdbGraphQLPHP comingSoon                                                 #
+# imdbGraphQLPHP Calendar                                                   #
 # written by Ed (github user: duck7000)                                     #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
@@ -21,14 +23,14 @@ use Imdb\Image;
  */
 class Calendar extends MdbBase
 {
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -59,7 +61,7 @@ class Calendar extends MdbBase
      *                  [1] =>      (string) Chris Evans
      *              [imgUrl] => (string) https://m.media-amazon.com/images/M/MV5Bc@._V1_QL75_SX50_CR0,0,140,207_.jpg
      */
-    public function comingSoon($region = "US", $type = "MOVIE", $startDateOverride = 0, $endDateOverride = 0, $filter = "true")
+    public function comingSoon(string $region = "US", string $type = "MOVIE", int $startDateOverride = 0, int $endDateOverride = 0, string $filter = "true"): array
     {
         $calendar = array();
         $startDate = date("Y-m-d");
@@ -234,7 +236,7 @@ EOF;
      *                      [nameId]  string 1293885 (without nm)
      *                      [name]    string Bobby Moynihan
      */
-    public function comingSoonStreaming($listProviderId)
+    public function comingSoonStreaming(string $listProviderId): array
     {
         $calendarStreaming = array();
         $sortBy = $this->config->streamSortBy;
@@ -400,7 +402,7 @@ EOF;
      * @param associative-array $dateParts array(['month'], ['day'], ['year'])input date
      * @return string|false
      */
-    private function buildDateString($dateParts)
+    private function buildDateString(array $dateParts): string|false
     {
         if (!empty($dateParts['month']) && !empty($dateParts['day']) && !empty($dateParts['year'])) {
             return $dateParts['month'] . '-' .
