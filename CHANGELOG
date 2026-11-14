@@ -2,7 +2,7 @@
 History for imdbGraphQLPHP
 ====================
 
-v3.2.
+v3.2.1
 -------------------
 * massive updates for all doc blocks as they where in a lot of cases wrong or incomplete
 * Title class keyword() added keyword Id and changed output array to associative array
