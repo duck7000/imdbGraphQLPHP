@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                ed (github user: duck7000)  #
 # written by ed (github user: duck7000)                                     #
@@ -28,7 +30,7 @@ class KeywordSearch extends MdbBase
      *          [keywordId]     string  0467796
      *          [totalTitles]   int     1
      */
-    public function searchKeyword($keywords)
+    public function searchKeyword(string $keywords): array
     {
         $results = array();
         // check if $keywords is empty, return empty array
