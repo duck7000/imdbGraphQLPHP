@@ -1497,7 +1497,8 @@ EOF;
             if (count($data) > 0) {
                 foreach ($data as $edge) {
                     // category Id
-                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catId = !empty($edge->node->category->id) ?
+                             $edge->node->category->id : "unknown";
                     $catIdSplit = explode('_', $catId);
                     $categoryId = '';
                     foreach ($catIdSplit as $catIdKey => $catIdItem) {
@@ -1505,8 +1506,7 @@ EOF;
                     }
                     $categoryId = lcfirst($categoryId);
                     $this->goofs[$categoryId][] = array(
-                        'content' => isset($edge->node->displayableArticle->body->plainText) ?
-                                           $edge->node->displayableArticle->body->plainText : null,
+                        'content' => $edge->node->displayableArticle->body->plainText ?? null,
                         'isSpoiler' => $edge->node->isSpoiler
                     );
                 }
