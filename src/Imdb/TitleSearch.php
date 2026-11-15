@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                ed (github user: duck7000)  #
 # written by ed (github user: duck7000)                                     #
@@ -16,14 +18,14 @@ use Imdb\Image;
 
 class TitleSearch extends MdbBase
 {
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -53,7 +55,7 @@ class TitleSearch extends MdbBase
      *      if both dates are provided searches within the date span ("1950-01-01" - "1980-01-01")
      * @return array
      */
-    public function search($searchTerms, $types = null, $startDate = '', $endDate = '', $exactMatch = false)
+    public function search(string $searchTerms, ?string $types = null, string $startDate = '', string $endDate = '', bool $exactMatch = false): array
     {
         $match = $exactMatch === true ? 'true' : 'false';
         $amount = $this->config->titleSearchAmount;
@@ -164,7 +166,7 @@ EOF;
      * @param string $date input date
      * @return string|false
      */
-    private function validateDate($date)
+    private function validateDate(string $date): string
     {
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
@@ -176,7 +178,7 @@ EOF;
      * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
      * @return array|false
      */
-    private function checkReleaseDates($startDate, $endDate)
+    private function checkReleaseDates(string $startDate, string $endDate): array|false
     {
         if (empty(trim($startDate)) && empty(trim($endDate))) {
             return array(
@@ -222,7 +224,7 @@ EOF;
      * @param string $sortItem where sort is based on e'g $searchItem from search()
      * @return array
      */
-    public function sortBySearch($array, $sortItem)
+    public function sortBySearch(array $array, string $sortItem): array
     {
         $matches = array();
         $others  = array();
