@@ -1498,7 +1498,7 @@ EOF;
                 foreach ($data as $edge) {
                     // category Id
                     $catId = !empty($edge->node->category->id) ?
-                             $edge->node->category->id : "unknown";
+                                    $edge->node->category->id : "unknown";
                     $catIdSplit = explode('_', $catId);
                     $categoryId = '';
                     foreach ($catIdSplit as $catIdKey => $catIdItem) {
@@ -1596,7 +1596,8 @@ EOF;
                         }
                     }
                     // category Id
-                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catId = !empty($edge->node->category->id) ?
+                                    $edge->node->category->id : "unknown";
                     $catIdSplit = explode('-', $catId);
                     $categoryId = '';
                     foreach ($catIdSplit as $catIdKey => $catIdItem) {
@@ -1607,9 +1608,8 @@ EOF;
                         'content' => isset($edge->node->displayableArticle->body->plainText) ?
                                            preg_replace('/\s\s+/', ' ', $edge->node->displayableArticle->body->plainText) : null,
                         'names' => $names,
-                        'trademark' => isset($edge->node->trademark->plainText) ?
-                                             $edge->node->trademark->plainText : null,
-                        'isSpoiler' => $edge->node->isSpoiler
+                        'trademark' => $edge->node->trademark->plainText ?? null,
+                        'isSpoiler' => $edge->node->isSpoiler ?? null
                     );
                 }
             }
