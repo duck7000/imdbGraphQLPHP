@@ -3471,7 +3471,7 @@ EOF;
                     }
                 }
                 $episodes = array();
-                if (!empty($edge->node->episodeCredits)) {
+                if (!empty($edge->node->episodeCredits->total)) {
                     $episodes = array(
                         'total' => isset($edge->node->episodeCredits->total) ?
                                          $edge->node->episodeCredits->total : null,
