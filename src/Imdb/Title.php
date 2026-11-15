@@ -1885,7 +1885,8 @@ EOF;
             if (count($edges) > 0) {
                 foreach ($edges as $edge) {
                     // category Id
-                    $catId = !empty($edge->node->category->id) ? $edge->node->category->id : "unknown";
+                    $catId = !empty($edge->node->category->id) ?
+                                    $edge->node->category->id : "unknown";
                     $catIdSplit = explode('_', $catId);
                     $categoryId = '';
                     foreach ($catIdSplit as $catIdKey => $catIdItem) {
@@ -1895,18 +1896,12 @@ EOF;
                     $this->connections[$categoryId][] = array(
                         'titleId' => isset($edge->node->associatedTitle->id) ?
                                            str_replace('tt', '', $edge->node->associatedTitle->id) : null,
-                        'titleName' => isset($edge->node->associatedTitle->titleText->text) ?
-                                             $edge->node->associatedTitle->titleText->text : null,
-                        'titleType' => isset($edge->node->associatedTitle->titleType->text) ?
-                                             $edge->node->associatedTitle->titleType->text : null,
-                        'year' => isset($edge->node->associatedTitle->releaseYear->year) ?
-                                        $edge->node->associatedTitle->releaseYear->year : null,
-                        'endYear' => isset($edge->node->associatedTitle->releaseYear->endYear) ?
-                                           $edge->node->associatedTitle->releaseYear->endYear : null,
-                        'seriesName' => isset($edge->node->associatedTitle->series->series->titleText->text) ?
-                                              $edge->node->associatedTitle->series->series->titleText->text : null,
-                        'description' => isset($edge->node->description->plainText) ?
-                                               $edge->node->description->plainText : null
+                        'titleName' => $edge->node->associatedTitle->titleText->text ?? null,
+                        'titleType' => $edge->node->associatedTitle->titleType->text ?? null,
+                        'year' => $edge->node->associatedTitle->releaseYear->year ?? null,
+                        'endYear' => $edge->node->associatedTitle->releaseYear->endYear ?? null,
+                        'seriesName' => $edge->node->associatedTitle->series->series->titleText->text ?? null,
+                        'description' => $edge->node->description->plainText ?? null
                     );
                 }
             }
