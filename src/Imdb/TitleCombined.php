@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written by Ed                                                             #
@@ -22,16 +24,16 @@ use Imdb\Image;
 class TitleCombined extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
-    protected $main = array();
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
+    protected array $main = array();
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -67,7 +69,7 @@ class TitleCombined extends MdbBase
      *                  [name]  string   Stanley Kubrick
      *                  [imdbid] string  0000040
      */
-    public function main()
+    public function main(): array
     {
         $query = <<<EOF
 query TitleCombinedMain(\$id: ID!) {
@@ -177,7 +179,7 @@ EOF;
      * @param bool $thumb thumbnail or full image
      * @return string
      */
-    private function populatePoster($primaryImage, $thumb)
+    private function populatePoster(object $primaryImage, bool $thumb): string
     {
         if (isset($primaryImage->url)) {
             $img = str_replace('.jpg', '', $primaryImage->url);
@@ -198,7 +200,7 @@ EOF;
      * @param array $genreArray found genres array from main()
      * @return array
      */
-    private function genre($genreArray)
+    private function genre(array $genreArray): array
     {
         if (is_array($genreArray) && count($genreArray) > 0) {
             foreach ($genreArray as $edge) {
@@ -231,7 +233,7 @@ EOF;
     * @param array $principalCredits principal credits array from main()
     * @return array
     */
-    private function principalCredits($principalCredits)
+    private function principalCredits(array $principalCredits): array
     {
         $creditsPrincipal = array();
         if (is_array($principalCredits) && count($principalCredits) > 0) {
@@ -273,7 +275,7 @@ EOF;
      * @param string $titleImdbId the returned imdbid from Graphql call
      * @return string|false
      */
-    private function checkRedirect($titleImdbId)
+    private function checkRedirect(string $titleImdbId): string|false
     {
         $titleImdbId = str_replace('tt', '', $titleImdbId);
         if ($titleImdbId  != $this->imdbID) {
