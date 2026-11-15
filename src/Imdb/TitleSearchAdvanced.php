@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                  (c) Ed (github: duck7000) #
 # written & maintained by Ed                                                #
@@ -21,14 +23,14 @@ use Imdb\Image;
 class TitleSearchAdvanced extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -71,17 +73,17 @@ class TitleSearchAdvanced extends MdbBase
      *      [imgUrl]          string
      */
     public function advancedSearch(
-        $searchTerm = '',
-        $genres = '',
-        $types = '',
-        $creditId = '',
-        $startDate = '',
-        $endDate = '',
-        $countryId = '',
-        $languageId = '',
-        $keywords = '',
-        $companyId = ''
-    )
+        string $searchTerm = '',
+        string $genres = '',
+        string $types = '',
+        string $creditId = '',
+        string $startDate = '',
+        string $endDate = '',
+        string $countryId = '',
+        string $languageId = '',
+        string $keywords = '',
+        string $companyId = ''
+    ): array
     {
         $results = array();
         $titles = array();
@@ -232,17 +234,17 @@ EOF;
      * @return string|false
      */
     private function buildConstraints(
-        $searchTerm,
-        $genres,
-        $types,
-        $creditId,
-        $startDate,
-        $endDate,
-        $countryId,
-        $languageId,
-        $keywords,
-        $companyId
-    )
+        string $searchTerm,
+        string $genres,
+        string $types,
+        string $creditId,
+        string $startDate,
+        string $endDate,
+        string $countryId,
+        string $languageId,
+        string $keywords,
+        string $companyId
+    ): string|false
     {
         $constraint = '{';
         // Title search input
@@ -310,7 +312,7 @@ EOF;
      * @param string $items if multiple items separate by , (Horror,Action etc)
      * @return string|false
      */
-    private function checkItems($items)
+    private function checkItems(string $items): string|false
     {
         if (empty(trim($items))) {
             return false;
@@ -336,7 +338,7 @@ EOF;
      * @param string $date input date
      * @return string|false
      */
-    private function validateDate($date)
+    private function validateDate(string $date): string|false
     {
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
@@ -348,7 +350,7 @@ EOF;
      * @param string $endDate (searches between endDate and earlier) iso date string ('1975-01-01')
      * @return string|false
      */
-    private function checkDates($startDate, $endDate)
+    private function checkDates(string $startDate, string $endDate): string|false
     {
         if (!empty($startDate) || !empty($endDate)) {
             $constraint = 'releaseDateConstraint:{';
