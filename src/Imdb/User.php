@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
 # written & maintained by ed (github user: duck7000)                        #
@@ -21,19 +23,19 @@ use Imdb\Image;
 class User extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $watchList = array();
-    protected $favoriteActorsList = array();
-    protected $notInterestedList = array();
-    protected $seenList = array();
-    protected $userListTitles = array();
-    protected $userListPeople = array();
+    protected Image $imageFunctions;
+    protected array $watchList = array();
+    protected array $favoriteActorsList = array();
+    protected array $notInterestedList = array();
+    protected array $seenList = array();
+    protected array $userListTitles = array();
+    protected array $userListPeople = array();
 
     /**
      * @param string $id IMDb USER ID. e.g. ur285331
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -46,7 +48,7 @@ class User extends MdbBase
      * Get public predefind watch_list of a User Id
      * @return array
      */
-    public function watch()
+    public function watch(): array
     {
         $this->watchList = $this->ListHelperPredefind('WATCH_LIST');
         return $this->watchList;
@@ -56,7 +58,7 @@ class User extends MdbBase
      * Get public predefind favorite_actors list of a User Id
      * @return array
      */
-    public function favoriteActors()
+    public function favoriteActors(): array
     {
         $this->favoriteActorsList = $this->ListHelperPredefind('FAVORITE_ACTORS');
         return $this->favoriteActorsList;
@@ -66,7 +68,7 @@ class User extends MdbBase
      * Get public predefind not_interested list of a User Id
      * @return array
      */
-    public function notInterested()
+    public function notInterested(): array
     {
         $this->notInterestedList = $this->ListHelperPredefind('NOT_INTERESTED');
         return $this->notInterestedList;
@@ -76,7 +78,7 @@ class User extends MdbBase
      * Get public predefind seen list of a User Id
      * @return array
      */
-    public function seen()
+    public function seen(): array
     {
         $this->seenList = $this->ListHelperPredefind('SEEN');
         return $this->seenList;
@@ -86,7 +88,7 @@ class User extends MdbBase
      * Get public user defined Titles list of a User Id
      * @return array
      */
-    public function userTitles()
+    public function userTitles(): array
     {
         $this->userListTitles = $this->ListHelperUser('TITLES');
         return $this->userListTitles;
@@ -96,7 +98,7 @@ class User extends MdbBase
      * Get public user defined People list of a User Id
      * @return array
      */
-    public function userPeople()
+    public function userPeople(): array
     {
         $this->userListPeople = $this->ListHelperUser('PEOPLE');
         return $this->userListPeople;
@@ -108,7 +110,7 @@ class User extends MdbBase
      * @param string $listClass values: SEEN, NOT_INTERESTED, FAVORITE_THEATRES, FAVORITE_ACTORS, CHECK_INS, WATCH_LIST
      * @return array
      */
-    protected function ListHelperPredefind($listClass)
+    protected function ListHelperPredefind(string $listClass): array
     {
         $results = array();
         $query = <<<EOF
@@ -216,7 +218,7 @@ EOF;
      * @param string $listElementType values: TITLES, PEOPLE, VIDEOS, IMAGES, GALLERIES
      * @return array
      */
-    protected function ListHelperUser($listElementType)
+    protected function ListHelperUser(string $listElementType): array
     {
         $userResults = array();
         $query = <<<EOF
