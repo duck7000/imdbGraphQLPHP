@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP Trailers                https://www.imdb.com/trailers/     #
 # written by Ed (github user: duck7000)                                     #
@@ -23,14 +25,14 @@ use Imdb\Image;
 class Trailers extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $newImageWidth;
-    protected $newImageHeight;
+    protected Image $imageFunctions;
+    protected int $newImageWidth;
+    protected int $newImageHeight;
 
     /**
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -64,7 +66,7 @@ class Trailers extends MdbBase
      *          [releaseDate]                 string (date string: December 4, 2024)
      *          [contentType]                 string  like Trailer Season 1 [OV]
      */
-    public function recentVideo()
+    public function recentVideo(): array
     {
         $recentVideoResults = array();
         $query = <<<EOF
@@ -221,7 +223,7 @@ EOF;
      *          [releaseDate]                 string (date string: December 4, 2024)
      *          [contentType]                 string  like Trailer Season 1 [OV]
      */
-    public function trendingVideo()
+    public function trendingVideo(): array
     {
         $trendingVideoResults = array();
         $query = <<<EOF
