@@ -1,11 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP                                 ed (github user: duck7000) #
-# written by Giorgos Giagas                                                 #
-# written extended & maintained by ed (github user: duck7000)               #
-# extended & maintained by Itzchak Rehberg <izzysoft AT qumran DOT org>     #
-# http://www.izzysoft.de/                                                   #
+# written & maintained by ed (github user: duck7000)                        #
 # ------------------------------------------------------------------------- #
 # This program is free software; you can redistribute and/or modify it      #
 # under the terms of the GNU General Public License (see doc/LICENSE)       #
@@ -26,79 +25,79 @@ use Imdb\Image;
 class Title extends MdbBase
 {
 
-    protected $imageFunctions;
-    protected $akas = array();
-    protected $releaseDates = array();
-    protected $countries = array();
-    protected $creditsCast = array();
-    protected $creditsPrincipal = array();
-    protected $creditsComposer = array();
-    protected $creditsStunts = array();
-    protected $creditsThanks = array();
-    protected $creditsVisualEffects = array();
-    protected $creditsSpecialEffects = array();
-    protected $creditsVoiceActor = array();
-    protected $creditsDirector = array();
-    protected $creditsProducer = array();
-    protected $creditsWriter = array();
-    protected $creditsCinematographer = array();
-    protected $languages = array();
-    protected $interestKeywords = array();
-    protected $interests = array();
-    protected $keywords = array();
-    protected $mainPoster = '';
-    protected $mainPosterThumb = '';
-    protected $mainPlotoutline = '';
-    protected $mainTitleYearMovietype = array();
-    protected $mainTop250 = 0;
-    protected $mainRatingVotes = array();
-    protected $mainMetacritics = array();
-    protected $mainRank = array();
-    protected $mainPhoto = array();
-    protected $trailers = array();
-    protected $videos = array();
-    protected $mainAwards = array();
-    protected $awards = array();
-    protected $genres = array();
-    protected $quotes = array();
-    protected $recommendations = array();
-    protected $runtimes = array();
-    protected $mpaas = array();
-    protected $parentsGuide = array();
-    protected $plot = array();
-    protected $seasonEpisodes = array();
-    protected $soundtracks = array();
-    protected $taglines = array();
-    protected $trivias = array();
-    protected $isOngoing = false;
-    protected $goofs = array();
-    protected $crazyCredits = array();
-    protected $locations = array();
-    protected $compCreditsProd = array();
-    protected $compCreditsDist = array();
-    protected $compCreditsSpecial = array();
-    protected $compCreditsOther = array();
-    protected $connections = array();
-    protected $externalSites = array();
-    protected $productionBudget = array();
-    protected $grosses = array();
-    protected $alternateversions = array();
-    protected $soundMix = array();
-    protected $colors = array();
-    protected $aspectRatio = array();
-    protected $cameras = array();
-    protected $featuredReviews = array();
-    protected $faqs = array();
-    protected $isAdult = false;
-    protected $watchOption = array();
-    protected $status = '';
-    protected $news = array();
+    protected Image $imageFunctions;
+    protected array $akas = array();
+    protected array $releaseDates = array();
+    protected array $countries = array();
+    protected array $creditsCast = array();
+    protected array $creditsPrincipal = array();
+    protected array $creditsComposer = array();
+    protected array $creditsStunts = array();
+    protected array $creditsThanks = array();
+    protected array $creditsVisualEffects = array();
+    protected array $creditsSpecialEffects = array();
+    protected array $creditsVoiceActor = array();
+    protected array $creditsDirector = array();
+    protected array $creditsProducer = array();
+    protected array $creditsWriter = array();
+    protected array $creditsCinematographer = array();
+    protected array $languages = array();
+    protected array $interestKeywords = array();
+    protected array $interests = array();
+    protected array $keywords = array();
+    protected string $mainPoster = '';
+    protected string $mainPosterThumb = '';
+    protected string $mainPlotoutline = '';
+    protected array $mainTitleYearMovietype = array();
+    protected int $mainTop250 = 0;
+    protected array $mainRatingVotes = array();
+    protected array $mainMetacritics = array();
+    protected array $mainRank = array();
+    protected array $mainPhoto = array();
+    protected array $trailers = array();
+    protected array $videos = array();
+    protected array $mainAwards = array();
+    protected array $awards = array();
+    protected array $genres = array();
+    protected array $quotes = array();
+    protected array $recommendations = array();
+    protected array $runtimes = array();
+    protected array $mpaas = array();
+    protected array $parentsGuide = array();
+    protected array $plot = array();
+    protected array $seasonEpisodes = array();
+    protected array $soundtracks = array();
+    protected array $taglines = array();
+    protected array $trivias = array();
+    protected bool $isOngoing = false;
+    protected array $goofs = array();
+    protected array $crazyCredits = array();
+    protected array $locations = array();
+    protected array $compCreditsProd = array();
+    protected array $compCreditsDist = array();
+    protected array $compCreditsSpecial = array();
+    protected array $compCreditsOther = array();
+    protected array $connections = array();
+    protected array $externalSites = array();
+    protected array $productionBudget = array();
+    protected array $grosses = array();
+    protected array $alternateversions = array();
+    protected array $soundMix = array();
+    protected array $colors = array();
+    protected array $aspectRatio = array();
+    protected array $cameras = array();
+    protected array $featuredReviews = array();
+    protected array $faqs = array();
+    protected bool $isAdult = false;
+    protected array $watchOption = array();
+    protected string $status = '';
+    protected array $news = array();
 
     /**
      * @param string $id IMDb ID. e.g. 285331 for https://www.imdb.com/title/tt0285331/
-     * @param string Config $config OPTIONAL override default config
-     * @param string LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
-     * @param string CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
+     * @param object Config $config OPTIONAL override default config
+     * @param object LoggerInterface $logger OPTIONAL override default logger `\Imdb\Logger` with a custom one
+     * @param object CacheInterface $cache OPTIONAL override the default cache with any PSR-16 cache.
      */
     public function __construct(string $id, ?Config $config = null, ?LoggerInterface $logger = null, ?CacheInterface $cache = null)
     {
@@ -112,7 +111,7 @@ class Title extends MdbBase
      * Get title, originalTitle, year, endYear and movietype data in one method
      * @return array
      */
-    public function titleYearMovietype()
+    public function titleYearMovietype(): array
     {
         $query = <<<EOF
 query TitleYearMovietype(\$id: ID!) {
@@ -155,7 +154,7 @@ EOF;
      * @note time is the length in minutes, country optionally exists for alternate cuts, annotations is an array of comments
      * @return array
      */
-    public function runtime()
+    public function runtime(): array
     {
         if (empty($this->runtimes)) {
             $query = <<<EOF
@@ -217,7 +216,7 @@ EOF;
      * Get movie rating and votes
      * @return array
      */
-    public function ratingVotes()
+    public function ratingVotes(): array
     {
         if (empty($this->mainRatingVotes)) {
             $query = <<<EOF
@@ -246,7 +245,7 @@ EOF;
      * Get metacritic data like score and reviews
      * @return array
      */
-    public function metacritic()
+    public function metacritic(): array
     {
         if (empty($this->mainMetacritics)) {
             $query = <<<EOF
@@ -318,7 +317,7 @@ EOF;
      * Get movie popularity rank
      * @return array
      */
-    public function rank()
+    public function rank(): array
     {
         if (empty($this->mainRank)) {
             $query = <<<EOF
@@ -354,7 +353,7 @@ EOF;
      * @param bool $spoil include spoilers or not
      * @return array
      */
-    public function faq($spoil = false)
+    public function faq(bool $spoil = false): array
     {
         if (empty($this->faqs)) {
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
@@ -388,7 +387,7 @@ EOF;
      * Get recommended/more like this movies
      * @return array
      */
-    public function recommendation()
+    public function recommendation(): array
     {
         if (empty($this->recommendations)) {
             $query = <<<EOF
@@ -460,7 +459,7 @@ EOF;
      * Get all spoken languages spoken in this title
      * @return array
      */
-    public function language()
+    public function language(): array
     {
         if (empty($this->languages)) {
             $query = <<<EOF
@@ -503,7 +502,7 @@ EOF;
      * Get all genres the movie is registered for
      * @return array
      */
-    public function genre()
+    public function genre(): array
     {
         if (empty($this->genres)) {
             $query = <<<EOF
@@ -564,7 +563,7 @@ EOF;
      * Get the plotoutline for the movie
      * @return string
      */
-    public function plotoutline()
+    public function plotoutline(): string
     {
         if (empty($this->mainPlotoutline)) {
             $query = <<<EOF
@@ -592,7 +591,7 @@ EOF;
      * @param bool $thumb true: thumbnail (height: 281), false: large (max 1000 pixels)
      * @return string
      */
-    public function photo($thumb = true)
+    public function photo(bool $thumb = true): string
     {
         if (empty($this->mainPoster)) {
             $this->populatePoster();
@@ -608,7 +607,7 @@ EOF;
      * Get country of origin
      * @return array
      */
-    public function country()
+    public function country(): array
     {
         if (empty($this->countries)) {
             $query = <<<EOF
@@ -651,7 +650,7 @@ EOF;
      * Get all release dates for this title
      * @return array
      */
-    public function releaseDate()
+    public function releaseDate(): array
     {
         if (empty($this->releaseDates)) {
             $query = <<<EOF
@@ -704,7 +703,7 @@ EOF;
      * @note Ordered Ascending by Country
      * @return array
      */
-    public function alsoknow()
+    public function alsoknow(): array
     {
         if (empty($this->akas)) {
             $filter = ', sort: {order: ASC by: COUNTRY}';
@@ -775,7 +774,7 @@ EOF;
      * Get the MPAA rating / Parental Guidance / Age rating for this title by country
      * @return array
      */
-    public function mpaa()
+    public function mpaa(): array
     {
         if (empty($this->mpaas)) {
             $query = <<<EOF
@@ -829,7 +828,7 @@ EOF;
      *                  [isSpoiler]  (bool) (indicates if entry is a spoiler or not)
      *                  [guideText]  (string) A couple in swimwear are seen lying in a sexualised pose together
      */
-    public function parentsGuide($spoil = false)
+    public function parentsGuide(bool $spoil = false): array
     {
         $filter = '';
         if ($spoil === false) {
@@ -907,7 +906,7 @@ EOF;
      * Find the position of a movie or tv show in the top 250
      * @return int
      */
-    public function top250()
+    public function top250(): int
     {
         if ($this->mainTop250 == 0) {
             $query = <<<EOF
@@ -924,7 +923,7 @@ EOF;
             $data = $this->graphql->query($query, "TopRated", ["id" => "tt$this->imdbID"]);
             if (!empty($data->title->ratingsSummary->topRanking->rank)) {
                 if ($data->title->ratingsSummary->topRanking->rank <= 250) {
-                    $this->mainTop250 = (int)$data->title->ratingsSummary->topRanking->rank;
+                    $this->mainTop250 = (int) $data->title->ratingsSummary->topRanking->rank;
                 }
             }
         }
@@ -937,7 +936,7 @@ EOF;
      * @param bool $spoil true: spoilers are also included, default: false.
      * @return array
      */
-    public function plot($spoil = false)
+    public function plot(bool $spoil = false): array
     {
         if (empty($this->plot)) {
             $filter = $spoil === false ? ',filter:{spoilers:EXCLUDE_SPOILERS}' : '';
@@ -985,7 +984,7 @@ EOF;
      * Get all available taglines for the movie
      * @return array
      */
-    public function tagline()
+    public function tagline(): array
     {
         if (empty($this->taglines)) {
             $query = <<<EOF
@@ -1025,7 +1024,7 @@ EOF;
     * Get principalCredits for this title (limited to 3 items per category)
     * @return array
     */
-    public function principalCredits()
+    public function principalCredits(): array
     {
         if (empty($this->creditsPrincipal)) {
             $query = <<<EOF
@@ -1100,7 +1099,7 @@ EOF;
      *      [comment]       array   comments like archive voice etc
      *      [thumb]         string  https://ia.media-imdb.com/images/M/MV5BMTY5NjQwNDY2OV5BMl5BanBnXkFtZTcwMjI2ODQ1MQ@@._V1_SY44_CR0,0,32,44_AL_.jpg
      */
-    public function cast()
+    public function cast(): array
     {
         if (empty($this->creditsCast)) {
             $filter = ', filter:{categories:["cast"]}';
@@ -1192,7 +1191,7 @@ EOF;
      * Get the directors of this movie
      * @return array
      */
-    public function director()
+    public function director(): array
     {
         if (!empty($this->creditsDirector)) {
             return $this->creditsDirector;
@@ -1206,7 +1205,7 @@ EOF;
      * Get the cinematographers of this title
      * @return array
      */
-    public function cinematographer()
+    public function cinematographer(): array
     {
         if (!empty($this->creditsCinematographer)) {
             return $this->creditsCinematographer;
@@ -1220,7 +1219,7 @@ EOF;
      * Get the writers of this title
      * @return array
      */
-    public function writer()
+    public function writer(): array
     {
         if (!empty($this->creditsWriter)) {
             return $this->creditsWriter;
@@ -1234,7 +1233,7 @@ EOF;
      * Get the producers credits of this title
      * @return array
      */
-    public function producer()
+    public function producer(): array
     {
         if (!empty($this->creditsProducer)) {
             return $this->creditsProducer;
@@ -1248,7 +1247,7 @@ EOF;
      * Get the composers ("Original Music by...") of this title
      * @return array
      */
-    public function composer()
+    public function composer(): array
     {
         if (!empty($this->creditsComposer)) {
             return $this->creditsComposer;
@@ -1262,7 +1261,7 @@ EOF;
      * Get the stunts credits of this title
      * @return array
      */
-    public function stunts()
+    public function stunts(): array
     {
         if (!empty($this->creditsStunts)) {
             return $this->creditsStunts;
@@ -1276,7 +1275,7 @@ EOF;
      * Get the thanks credits of this title
      * @return array
      */
-    public function thanks()
+    public function thanks(): array
     {
         if (!empty($this->creditsThanks)) {
             return $this->creditsThanks;
@@ -1290,7 +1289,7 @@ EOF;
      * Get the Visual Effects credits of this title
      * @return array
      */
-    public function visualEffects()
+    public function visualEffects(): array
     {
         if (!empty($this->creditsVisualEffects)) {
             return $this->creditsVisualEffects;
@@ -1304,7 +1303,7 @@ EOF;
      * Get the Special Effects credits of this title
      * @return array
      */
-    public function specialEffects()
+    public function specialEffects(): array
     {
         if (!empty($this->creditsSpecialEffects)) {
             return $this->creditsSpecialEffects;
@@ -1318,7 +1317,7 @@ EOF;
      * Get the voice actor credits of this title
      * @return array
      */
-    public function voiceActor()
+    public function voiceActor(): array
     {
         if (!empty($this->creditsVoiceActor)) {
             return $this->creditsVoiceActor;
@@ -1332,7 +1331,7 @@ EOF;
      * Get the Crazy Credits of this title
      * @return array
      */
-    public function crazyCredit()
+    public function crazyCredit(): array
     {
         if (empty($this->crazyCredits)) {
             $query = <<<EOF
@@ -1372,7 +1371,7 @@ EOF;
      *          [episode]  string //can be episodenumber or -1 (Unknown)
      *          [imgUrl]   string
      */
-    public function episode($thumb = true, $yearbased = 0)
+    public function episode(bool $thumb = true, int $yearbased = 0): array
     {
         if (empty($this->seasonEpisodes)) {
             // Check if season or year based
@@ -1453,7 +1452,7 @@ EOF;
      * @note true: still running tv series, false: ended or not a tv series
      * @return bool
      */
-    public function isOngoing()
+    public function isOngoing(): bool
     {
         $query = <<<EOF
 query IsOngoing(\$id: ID!) {
@@ -1479,7 +1478,7 @@ EOF;
      * @param bool $spoil true: spoilers are also included
      * @return array
      */
-    public function goof($spoil = false)
+    public function goof(bool $spoil = false): array
     {
         if (empty($this->goofs)) {
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
@@ -1521,7 +1520,7 @@ EOF;
      * Get the quotes of this title
      * @return array
      */
-    public function quote()
+    public function quote(): array
     {
         if (empty($this->quotes)) {
             $query = <<<EOF
@@ -1554,7 +1553,7 @@ EOF;
      * @param bool $spoil true: spoilers are also included
      * @return array
      */
-    public function trivia($spoil = false)
+    public function trivia(bool $spoil = false): array
     {
         if (empty($this->trivias)) {
             $filter = $spoil === false ? ', filter: {spoilers: EXCLUDE_SPOILERS}' : '';
@@ -1642,7 +1641,7 @@ EOF;
      *              [comment]  Array()
      *                  [0]  string Courtesy of Capitol Records
      */
-    public function soundtrack()
+    public function soundtrack(): array
     {
         if (empty($this->soundtracks)) {
             $query = <<<EOF
@@ -1754,7 +1753,7 @@ EOF;
      * @note real: Real filming location, movie: location in the movie
      * @return array
      */
-    public function location()
+    public function location(): array
     {
         if (empty($this->locations)) {
             $query = <<<EOF
@@ -1799,7 +1798,7 @@ EOF;
      * Get Production Companies
      * @return array
      */
-    public function prodCompany()
+    public function prodCompany(): array
     {
         if (empty($this->compCreditsProd)) {
             $this->compCreditsProd = $this->companyCredits("production");
@@ -1812,7 +1811,7 @@ EOF;
      * Get distributors
      * @return array
      */
-    public function distCompany()
+    public function distCompany(): array
     {
         if (empty($this->compCreditsDist)) {
             $this->compCreditsDist = $this->companyCredits("distribution");
@@ -1825,7 +1824,7 @@ EOF;
      * Get Special Effects companies
      * @return array
      */
-    public function specialCompany()
+    public function specialCompany(): array
     {
         if (empty($this->compCreditsSpecial)) {
             $this->compCreditsSpecial = $this->companyCredits("specialEffects");
@@ -1838,7 +1837,7 @@ EOF;
      * Get  other companies
      * @return array
      */
-    public function otherCompany()
+    public function otherCompany(): array
     {
         if (empty($this->compCreditsOther)) {
             $this->compCreditsOther = $this->companyCredits("miscellaneous");
@@ -1851,7 +1850,7 @@ EOF;
      * Get connections or references with other titles
      * @return array
      */
-    public function connection()
+    public function connection(): array
     {
         if (empty($this->connections)) {
             $query = <<<EOF
@@ -1920,7 +1919,7 @@ EOF;
      * Get external website urls with info of this title, excluding external reviews.
      * @return array
      */
-    public function extSites()
+    public function extSites(): array
     {
         if (empty($this->externalSites)) {
             $query = <<<EOF
@@ -1967,7 +1966,7 @@ EOF;
      * Get productionBudget of this title
      * @return array
      */
-    public function budget()
+    public function budget(): array
     {
         if (empty($this->productionBudget)) {
             $query = <<<EOF
@@ -2002,7 +2001,7 @@ EOF;
      * Get Grosses, ranked by amount of this title
      * @return array
      */
-    public function gross()
+    public function gross(): array
     {
         if (empty($this->grosses)) {
             $query = <<<EOF
@@ -2055,7 +2054,7 @@ EOF;
      * @note Interests are real and checked to be accurate
      * @return array
      */
-    public function interests()
+    public function interests(): array
     {
         if (empty($this->interests)) {
             $keywords = array (
@@ -2442,7 +2441,7 @@ EOF;
      * @note It is a mix of keywords and main genres and an alternative for the real interests from imdb
      * @return array
      */
-    public function interestingKeywords()
+    public function interestingKeywords(): array
     {
         if (empty($this->interestKeywords)) {
             $query = <<<EOF
@@ -2486,7 +2485,7 @@ EOF;
      * Get all keywords of this title
      * @return array
      */
-    public function keyword()
+    public function keyword(): array
     {
         if (empty($this->keywords)) {
             $query = <<<EOF
@@ -2523,7 +2522,7 @@ EOF;
      * Get the Alternate Versions of this title
      * @return array
      */
-    public function alternateVersion()
+    public function alternateVersion(): array
     {
         if (empty($this->alternateversions)) {
             $query = <<<EOF
@@ -2553,7 +2552,7 @@ EOF;
      *      false: untouched max width 1000 pixels
      * @return array
      */
-    public function mainphoto($amount = 6, $thumb = true)
+    public function mainphoto(int $amount = 6, bool $thumb = true): array
     {
         if (empty($this->mainPhoto)) {
             $query = <<<EOF
@@ -2626,7 +2625,7 @@ EOF;
      *                      [definition]    string DEF_AUTO
      *              [imageUrl]      string https://m.media-amazon.com/images/M/MVTg@._V1_QL75_UX500_CR0,47,500,281_.jpg
      */
-    public function video()
+    public function video(): array
     {
         if (empty($this->videos)) {
             $filter = $this->config->videoIncludeMature === true ? ',filter:{maturityLevel:INCLUDE_MATURE}' : '';
@@ -2776,7 +2775,7 @@ EOF;
      * Get prestigious awards (not including total wins and total nominations)
      * @return array
      */
-    public function mainaward()
+    public function mainaward(): array
     {
         if (empty($this->mainAwards)) {
             $query = <<<EOF
@@ -2853,7 +2852,7 @@ EOF;
      *               [win] int 12
      *               [nom] int 26
      */
-    public function award($winsOnly = false, $event = "")
+    public function award(bool $winsOnly = false, string $event = ""): array
     {
         $filter = $this->awardFilter($winsOnly, $event);
         if (empty($this->awards)) {
@@ -2968,7 +2967,7 @@ EOF;
      * Get movie sound mixes
      * @return array
      */
-    public function sound()
+    public function sound(): array
     {
         if (empty($this->soundMix)) {
             return $this->techSpec("soundMixes", "text", $this->soundMix);
@@ -2981,7 +2980,7 @@ EOF;
      * Get movie colorations like color or Black and white
      * @return array
      */
-    public function color()
+    public function color(): array
     {
         if (empty($this->colors)) {
             return $this->techSpec("colorations", "text", $this->colors);
@@ -2994,7 +2993,7 @@ EOF;
      * Get movie aspect ratio like 1.66:1 or 16:9
      * @return array
      */
-    public function aspectRatio()
+    public function aspectRatio(): array
     {
         if (empty($this->aspectRatio)) {
             return $this->techSpec("aspectRatios", "aspectRatio", $this->aspectRatio);
@@ -3007,7 +3006,7 @@ EOF;
      * Get cameras used in this title
      * @return array
      */
-    public function camera()
+    public function camera(): array
     {
         if (empty($this->cameras)) {
             return $this->techSpec("cameras", "camera", $this->cameras);
@@ -3020,7 +3019,7 @@ EOF;
      * Get movie featured reviews (max 5 available)
      * @return array
      */
-    public function featuredReview()
+    public function featuredReview(): array
     {
         if (empty($this->featuredReviews)) {
             $query = <<<EOF
@@ -3081,7 +3080,7 @@ EOF;
      * Get adult status of a title
      * @return bool
      */
-    public function isAdult()
+    public function isAdult(): bool
     {
         if (empty($this->isAdult)) {
             $query = <<<EOF
@@ -3112,7 +3111,7 @@ EOF;
      *          [providerName]    string Prime Video
      *          [logoUrl]         string (PNG!) https://m.media-amazon.com/images/M/4c6e._V1_QL100_UX250_.png
      */
-    public function watchOption()
+    public function watchOption(): array
     {
         if (empty($this->watchOption)) {
             $query = <<<EOF
@@ -3187,7 +3186,7 @@ EOF;
      * Get current production status of a title e.g. Released, In Development, Pre-Production, Complete, Production etc
      * @return string
      */
-    public function productionStatus()
+    public function productionStatus(): string
     {
         if (empty($this->status)) {
             $query = <<<EOF
@@ -3226,7 +3225,7 @@ EOF;
      *      [textText]            string
      *      [thumbnailUrl]        string
      */
-    public function news()
+    public function news(): array
     {
         if (empty($this->news)) {
             $query = <<<EOF
@@ -3314,7 +3313,7 @@ EOF;
      * Fetch cover photo (thumbnail and big variant)
      * @return void
      */
-    private function populatePoster()
+    private function populatePoster(): void
     {
         $query = <<<EOF
 query Poster(\$id: ID!) {
@@ -3350,7 +3349,7 @@ EOF;
      * @param string $category e.g. distribution, production
      * @return array
      */
-    protected function companyCredits($category)
+    protected function companyCredits(string $category): array
     {
         $filter = ', filter: { categories: ["' .$category . '"] }';
         $query = <<<EOF
@@ -3409,7 +3408,7 @@ EOF;
      * @param string $aditionalType filter type for miscelleanous credits, only "voice actor" is supported
      * @return array
      */
-    private function creditHelper($crewCategory, $aditionalType = '')
+    private function creditHelper(string $crewCategory, string $aditionalType = ''): array
     {
         $filter = ', filter: { categories: ["' .$crewCategory . '"] }';
         $output = array();
@@ -3528,7 +3527,7 @@ EOF;
      * @param string $seasonYear node->text from season or year
      * @return string
      */
-    public function buildFilter($seasonYear)
+    public function buildFilter(string $seasonYear): string
     {
         if (strlen($seasonYear) === 4) {
             // year based Tv Series
@@ -3553,7 +3552,7 @@ EOF;
      * @param int $yearbased 0: year based, 1: season based
      * @return array|false
      */
-    private function seasonYearCheck($yearbased)
+    private function seasonYearCheck(int $yearbased): array|false
     {
         $querySeasons = <<<EOF
 query Seasons(\$id: ID!) {
@@ -3599,7 +3598,7 @@ EOF;
      * @param string $filter add filter options to query
      * @return array
      */
-    protected function graphQlGetAllEpisodes($filter)
+    protected function graphQlGetAllEpisodes(string $filter): array
     {
         $query = <<<EOF
 query Episodes(\$id: ID!, \$after: ID) {
@@ -3665,7 +3664,7 @@ EOF;
      * @param array $date input date array(['day'], ['month'], ['year'])
      * @return string $airDate e.g. '20 jan. 2008'
      */
-    private function buildDateString($date)
+    private function buildDateString(array $date): string
     {
         $airDate = '';
         if (!empty($date['day'])) {
@@ -3694,7 +3693,7 @@ EOF;
      * @param array $arrayName output array
      * @return array
      */
-    protected function techSpec($type, $valueType, $arrayName)
+    protected function techSpec(string $type, string $valueType, array $arrayName): array
     {
         $query = <<<EOF
 query TechSpec(\$id: ID!) {
@@ -3753,7 +3752,7 @@ EOF;
      * @param string $filter Add's extra Graphql query filters like categories
      * @return array
      */
-    protected function graphQlGetAll($queryName, $fieldName, $nodeQuery, $filter = '')
+    protected function graphQlGetAll(string $queryName, string $fieldName, string $nodeQuery, string $filter = ''): array
     {
         $query = <<<EOF
 query $queryName(\$id: ID!, \$after: ID) {
@@ -3795,7 +3794,7 @@ EOF;
      * @note If user uses search class this check isn't nessecary as the returned results already contain a possible new imdbid
      * @return string|false $titleImdbId (the new redirected imdbId) or false (no redirect)
      */
-    public function checkRedirect()
+    public function checkRedirect(): string|false
     {
         $query = <<<EOF
 query Redirect(\$id: ID!) {
@@ -3828,7 +3827,7 @@ EOF;
      * @param string $event eventId
      * @return string
      */
-    public function awardFilter($winsOnly, $event)
+    public function awardFilter(bool $winsOnly, string $event): string
     {
         $filter = ', sort: {by: PRESTIGIOUS, order: DESC}';
         if (!empty($event) || $winsOnly === true) {
@@ -3854,7 +3853,7 @@ EOF;
      * @param string $sortOrder "ASC" "DESC"
      * @return array
      */
-    public function sortByName($array, $sortOrder)
+    public function sortByName(array $array, string $sortOrder): array
     {
         if ($sortOrder == 'DESC') {
             // sort array by date
