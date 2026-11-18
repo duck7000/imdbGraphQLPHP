@@ -2,6 +2,11 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.2.2
+-------------------
+Title class fixed bug creditHelper now returns empty array when there is no episode data
+All classes added and enabled strict types, type hints and strict return values (php 8.3 or higher is required)
+
 v3.2.1
 -------------------
 * massive updates for all doc blocks as they where in a lot of cases wrong or incomplete
