@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 #############################################################################
 # imdbGraphQLPHP                                          (c) Ed (duck7000) #
 # written by Ed                                                             #
@@ -28,8 +26,8 @@ class Cache implements CacheInterface
 
     /**
      * Cache constructor.
-     * @param object Config $config
-     * @param object LoggerInterface $logger
+     * @param Config $config
+     * @param LoggerInterface $logger
      * @throws Exception
      */
     public function __construct(Config $config, LoggerInterface $logger)
@@ -59,7 +57,7 @@ class Cache implements CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get($key, $default = null)
     {
         if (!$this->config->cacheUse) {
             return $default;
@@ -100,7 +98,7 @@ class Cache implements CacheInterface
      *                                     for it or let the driver take care of that
      * @return bool
      */
-    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    public function set($key, $value, $ttl = null)
     {
         if (!$this->config->cacheStore) {
             return false;
@@ -123,7 +121,7 @@ class Cache implements CacheInterface
      * \Imdb\Config and removes them
      * @return void
      */
-    public function purge(): void
+    public function purge()
     {
         if (!$this->config->cacheStore || $this->config->cacheExpire == 0) {
             return;
@@ -152,7 +150,7 @@ class Cache implements CacheInterface
      * @param string $key   The key of the item to sanitise
      * @return string
      */
-    protected function sanitiseKey(string $key): string
+    protected function sanitiseKey($key)
     {
         return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
     }
