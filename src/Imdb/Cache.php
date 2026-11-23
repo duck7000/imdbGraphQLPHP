@@ -54,12 +54,12 @@ class Cache implements CacheInterface
     /**
      * Fetches a value from the cache
      * @param string $key     The unique key of this item in the cache
-     * @param string|null  $default Default value to return if the key does not exist
-     * @return string|null
+     * @param mixed  $default Default value to return if the key does not exist
+     * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function get(string $key, ?string $default = null): ?string
+    public function get(string $key, mixed $default = null): mixed
     {
         if (!$this->config->cacheUse) {
             return $default;
@@ -94,13 +94,13 @@ class Cache implements CacheInterface
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time
      * @param string $key   The key of the item to store
-     * @param string $value The value of the item to store, must be serializable
+     * @param mixed $value The value of the item to store, must be serializable
      * @param null|int|DateInterval $ttl   Optional. The TTL value of this item. If no value is sent and
      *                                     the driver supports TTL then the library may set a default value
      *                                     for it or let the driver take care of that
      * @return bool
      */
-    public function set(string $key, string $value, ?int $ttl = null): bool
+    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
         if (!$this->config->cacheStore) {
             return false;
@@ -155,6 +155,37 @@ class Cache implements CacheInterface
     protected function sanitiseKey(string $key): string
     {
         return str_replace(array('/', '\\', '?', '%', '*', ':', '|', '"', '<', '>'), '.', $key);
+    }
+
+    // Some empty functions so we match the interface. These will never be used
+    public function getMultiple($keys, $default = null)
+    {
+        return [];
+    }
+
+    public function clear()
+    {
+        return false;
+    }
+
+    public function delete($key)
+    {
+        return false;
+    }
+
+    public function deleteMultiple($keys)
+    {
+        return false;
+    }
+
+    public function has($key)
+    {
+        return false;
+    }
+
+    public function setMultiple($values, $ttl = null)
+    {
+        return false;
     }
 
 }
