@@ -493,8 +493,8 @@ EOF;
                     }
                 }
             }
-            return $this->languages;
         }
+        return $this->languages;
     }
 
     #--------------------------------------------------------------[ Genre ]---
@@ -1182,8 +1182,8 @@ EOF;
                     );
                 }
             }
-            return $this->creditsCast;
         }
+        return $this->creditsCast;
     }
 
     #-------------------------------------------------------------[ Directors ]---
