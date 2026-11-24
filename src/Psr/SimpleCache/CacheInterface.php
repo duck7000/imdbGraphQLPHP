@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 #############################################################################
 # imdbGraphQLPHP Trailers                https://www.imdb.com/trailers/     #
 # written by Ed (github user: duck7000)                                     #
@@ -20,7 +22,7 @@ interface CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function get($key, $default = null);
+    public function get(string $key, mixed $default = null): mixed;
 
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time
@@ -31,7 +33,7 @@ interface CacheInterface
      *                                     for it or let the driver take care of that
      * @return bool
      */
-    public function set($key, $value, $ttl = null);
+    public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool;
 
     /**
      * Delete an item from the cache by its unique key
