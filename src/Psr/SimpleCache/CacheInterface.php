@@ -42,13 +42,13 @@ interface CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function delete($key);
+    public function delete(string $key): bool;
 
     /**
      * Wipes clean the entire cache's keys
      * @return bool
      */
-    public function clear();
+    public function clear(): bool;
 
     /**
      * Obtains multiple cache items by their unique keys
@@ -59,7 +59,7 @@ interface CacheInterface
      *   MUST be thrown if $keys is neither an array nor a Traversable,
      *   or if any of the $keys are not a legal value
      */
-    public function getMultiple($keys, $default = null);
+    public function getMultiple(iterable $keys, mixed $default = null): iterable;
 
     /**
      * Persists a set of key => value pairs in the cache, with an optional TTL
@@ -72,7 +72,7 @@ interface CacheInterface
      *   MUST be thrown if $values is neither an array nor a Traversable,
      *   or if any of the $values are not a legal value
      */
-    public function setMultiple($values, $ttl = null);
+    public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool;
 
     /**
      * Deletes multiple cache items in a single operation
@@ -82,7 +82,7 @@ interface CacheInterface
      *   MUST be thrown if $keys is neither an array nor a Traversable,
      *   or if any of the $keys are not a legal value
      */
-    public function deleteMultiple($keys);
+    public function deleteMultiple(iterable $keys): bool;
 
     /**
      * Determines whether an item is present in the cache
@@ -95,6 +95,6 @@ interface CacheInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      *   MUST be thrown if the $key string is not a legal value
      */
-    public function has($key);
+    public function has(string $key): bool;
 
 }

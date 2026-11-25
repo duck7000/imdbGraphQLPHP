@@ -158,32 +158,32 @@ class Cache implements CacheInterface
     }
 
     // Some empty functions so we match the interface. These will never be used
-    public function getMultiple($keys, $default = null)
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         return [];
     }
 
-    public function clear()
+    public function clear(): bool
     {
         return false;
     }
 
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return false;
     }
 
-    public function deleteMultiple($keys)
+    public function deleteMultiple(iterable $keys): bool
     {
         return false;
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         return false;
     }
 
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
     {
         return false;
     }
