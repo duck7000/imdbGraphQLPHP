@@ -2,6 +2,11 @@
 History for imdbGraphQLPHP
 ====================
 
+v3.2.3
+-------------------
+Title class fixed bugs language() and cast() no return value if from cache due to strict types
+Fixed cache, cacheInterface, logger and loggerInterface strict types issues thanks @jonatanalvarsson!
+
 v3.2.2
 -------------------
 Title class fixed bug creditHelper now returns empty array when there is no episode data
