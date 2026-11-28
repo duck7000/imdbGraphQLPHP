@@ -60,7 +60,15 @@ class GraphQL
      */
     public function query(string $query, ?string $qn = null, array $variables = array()): object
     {
-        $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . ".json";
+        $localeSuffix = '';
+        if ($this->config->useLocalization === true) {
+            $localeSuffix = '-' . preg_replace(
+                '/[^a-z0-9]+/',
+                '_',
+                strtolower($this->config->country . '_' . $this->config->language)
+            );
+        }
+        $key = "gql.$qn." . ($variables ? json_encode($variables) : '') . md5($query) . $localeSuffix . ".json";
         $fromCache = $this->cache->get($key);
         if ($fromCache != null) {
             return json_decode($fromCache);
